@@ -1,0 +1,35 @@
+<div class="mx-auto flex h-screen w-fit flex-col justify-center gap-4">
+  <!-- <h1 class="text-lg text-center">Login</h1> -->
+  <div class="form-control w-full">
+    <!-- <label class="label">
+        <span class="label-text">Email</span>
+      </label> -->
+    <label class="border-1 input-group border-red-500">
+      <span>Email</span>
+      <input
+        [(ngModel)]="email"
+        type="text"
+        placeholder="info@site.com"
+        class="input-bordered input w-full"
+      />
+    </label>
+  </div>
+
+  <div class="form-control">
+    <!-- <label class="label">
+        <span class="label-text">Password</span>
+      </label> -->
+    <label class="input-group">
+      <span>Password</span>
+      <input
+        [(ngModel)]="password"
+        type="password"
+        placeholder="password"
+        class="input-bordered input"
+      />
+    </label>
+  </div>
+
+  <button class="btn-primary btn" (click)="login()">Login</button>
+  <button class="btn-outline btn" (click)="register()">Sign Up</button>
+</div>
