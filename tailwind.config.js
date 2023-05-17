@@ -2,7 +2,30 @@
 module.exports = {
   content: ["./src/**/*.{html,ts}"],
   theme: {
-    extend: {},
+    screens: {
+      sm1: "600px",
+      sm2: "905px",
+      md: "1240px",
+      lg: "1440px",
+    },
+  },
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          primary: "#3127b4",
+          secondary: "#0b874b",
+          accent: "#d64546",
+          neutral: "#4b5563",
+          "base-100": "#fdfffa",
+          info: "#3ABFF8",
+          success: "#36D399",
+          warning: "#FBBD23",
+          error: "#F87272",
+        },
+      },
+      "cupcake",
+    ],
   },
   plugins: [require("daisyui")],
 };

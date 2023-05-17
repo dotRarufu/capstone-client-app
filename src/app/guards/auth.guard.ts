@@ -28,14 +28,11 @@ export class AuthGuard implements CanActivate {
     | UrlTree {
     const currentUser = this.supabaseService.getCurrentUser();
     const isAuthenticated = !!currentUser;
-    console.log('guard runs');
+
     if (isAuthenticated) {
-      // console.log('guard allows');
       return true;
     }
 
-    // console.log('guard disallowed');
-    // console.log(`current user: ${currentUser}`);
     this.router.navigate(['login']);
 
     return false;
