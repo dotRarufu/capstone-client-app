@@ -22,34 +22,56 @@
       <app-input placeholder="Password" type="password" />
       <app-button>LOGIN</app-button>
       <div class="flex flex-col gap-2">
-        <div  
-          class="flex flex-row content-center gap-2  text-red-500 opacity-75 border border-blue-500"
-        >
-          <div
-            class="w-full flex-grow  h-full border border-red-500"
-           
-          >
-          <svg class="fill-current" width="144" height="2" viewBox="0 0 144 2" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line y1="1" x2="143.5" y2="1" stroke="currentColor" stroke-opacity="0.5" />
+        <div class="flex flex-row items-center gap-2 opacity-75">
+          <div class="flex h-full flex-grow items-center">
+            <!-- TODO: move this svg in its own component -->
+            <svg
+              class="fill-current"
+              width="144"
+              height="2"
+              viewBox="0 0 144 2"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                y1="1"
+                x2="143.5"
+                y2="1"
+                stroke="currentColor"
+                stroke-opacity="0.5"
+              />
             </svg>
-            
-      </div>OR<img
-            src="assets/divider.svg"
-            alt=""
-            class="w-full flex-grow"
-            srcset=""
-          />
+          </div>
+          OR
+          <div class="flex h-full flex-grow items-center ">
+            <!-- TODO: move this svg in its own component -->
+            <svg
+              class="fill-current"
+              width="144" 
+              height="2"
+              viewBox="0 0 144 2"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                y1="1"
+                x2="143.5"
+                y2="1"
+                stroke="currentColor"
+                stroke-opacity="0.5"
+              />
+            </svg>
+          </div>
         </div>
-        <div
-          class="flex w-full flex-row justify-center gap-2 px-1 text-[#4F4F4F]"
-        >
+        <button class="btn btn-ghost flex w-full flex-row items-center justify-center gap-2 px-1 opacity-75">
           <img src="assets/google.svg" alt="" />
-          <a href="/">Login with Google</a>
-        </div>
+          <a >Login with Google</a>
+        </button>
       </div>
       <div class="flex-grow"></div>
-      <div class="flex w-full flex-row justify-center gap-2 text-[#4F4F4F]">
-        Don't have an account? <a class="text-black" href="/">SIGN UP</a>
+      <div class="flex w-full flex-row justify-center gap-2">
+        <div class="opacity-75">Don't have an account?</div>
+        <a href="/">SIGN UP</a>
       </div>
     </div>
   </div>

@@ -5,7 +5,7 @@ import { Component, Input } from '@angular/core';
   template: `<input
     [type]="type"
     [placeholder]="placeholder"
-    class="h-[35px] w-full border border-[#E0E4E4] px-3 py-2 placeholder:text-base placeholder:opacity-75"
+    class=" input w-full border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:opacity-70 placeholder:text-base-content rounded-[3px]"
   /> `,
 })
 export class InputComponent {

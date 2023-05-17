@@ -10,9 +10,10 @@ module.exports = {
     },
   },
   daisyui: {
+    
     themes: [
       {
-        mytheme: {
+        original: {
           primary: "#3127b4",
           secondary: "#0b874b",
           accent: "#d64546",
@@ -24,7 +25,7 @@ module.exports = {
           error: "#F87272",
         },
       },
-      "cupcake",
+      "dark", "cupcake", 
     ],
   },
   plugins: [require("daisyui")],
