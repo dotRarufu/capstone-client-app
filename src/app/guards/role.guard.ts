@@ -12,7 +12,7 @@ import { SupabaseService } from '../services/supabase.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard implements CanActivate {
+export class RoleGuard implements CanActivate {
   constructor(
     private supabaseService: SupabaseService,
     private router: Router
@@ -29,13 +29,7 @@ export class AuthGuard implements CanActivate {
     const currentUser = this.supabaseService.getCurrentUser();
     const isAuthenticated = !!currentUser;
 
-    if (isAuthenticated) {
-      console.log('user is authenticated, and passed the guard');
-      return true;
-    }
-    
-    console.log('user is not authenticated, and repelled by the guard');
-    this.router.navigate(['/']);
+      console.log('role guard runs');
 
     return false;
   }

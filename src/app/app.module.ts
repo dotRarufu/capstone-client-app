@@ -2,28 +2,65 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { LoginComponent } from './pages/login/login.component';
+
+import { LoginComponent } from './pages/old-login/login.component';
 import { AuthGuard } from './guards/auth.guard';
-import { LandingComponent } from './pages/landing/landing.component';
-import { ProjectComponent } from './pages/project/project.component';
+import { ProjectComponent as CapstoneAdviserProject} from './capstoneAdviser/pages/project.component';
 import { SharedModule } from './shared/shared.module';
+import { LandingPageModule } from './pages/landing/landingPage.module';
+import { LandingComponent } from './pages/landing/components/landing.component';
+import { HomeComponent as CapstoneAdviserHome } from './capstoneAdviser/pages/home.component';
+import { CapstoneAdviserModule } from './capstoneAdviser/capstoneAdviser.module';
+import { RoleGuard } from './guards/role.guard';
 
 const routes: Routes = [
   { path: '', component: LandingComponent },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
-  { path: ':projectId', component: ProjectComponent },
+  {
+    path: 'c',
+    children: [
+      {
+        path: 'home',
+        children: [
+          {
+            path: 'projects',
+            component: CapstoneAdviserHome,
+            // canActivate: [AuthGuard],
+          },
+          // todo: add role guard, use data property
+          {
+            path: 'dashboard',
+            component: CapstoneAdviserHome,
+            // canActivate: [AuthGuard],
+          },
+
+          { path: '', redirectTo: '/', pathMatch: 'full' },
+        ],
+      },
+      {
+        path: 'project',
+        children: [
+          { path: ':projectId', component: CapstoneAdviserProject },
+          { path: '', redirectTo: '/c/home/projects', pathMatch: 'full' },
+        ],
+      },
+      { path: '', redirectTo: '/', pathMatch: 'full' },
+    ],
+  },
+
+  //  roles
+  // parts of hte page
+  // todo: when a capstone adviser role share a link to a student role, it should be automatically redirected to 's' tree
 ];
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    LoginComponent,
-    LandingComponent,
-    ProjectComponent,
+  declarations: [AppComponent, LoginComponent],
+  imports: [
+    BrowserModule,
+    LandingPageModule,
+    CapstoneAdviserModule,
+    SharedModule,
+    RouterModule.forRoot(routes),
   ],
-  imports: [BrowserModule, SharedModule, RouterModule.forRoot(routes)],
   providers: [],
   bootstrap: [AppComponent],
 })

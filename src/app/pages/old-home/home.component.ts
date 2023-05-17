@@ -8,7 +8,7 @@ import { SupabaseService } from 'src/app/services/supabase.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
-export class HomeComponent {
+export class OldHomeComponent {
   user: CapstoolUser | null = null;
   title: string = '';
   result: any = 'Loading';

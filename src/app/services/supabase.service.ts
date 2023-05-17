@@ -43,6 +43,7 @@ export class SupabaseService {
   }
 
   getCurrentUser() {
+    // todo: improve this so that, on reload, user is still authenticated
     return this.capstoolUserSubject.getValue();
   }
 
@@ -95,7 +96,7 @@ export class SupabaseService {
     user: { name: string; roleId: number }
   ) {
     const query = this.supabase.from('user').upsert({
-      id: userId,
+      uid: userId,
       name: user.name,
       role_id: user.roleId,
     });
