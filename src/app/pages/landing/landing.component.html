@@ -11,8 +11,8 @@
       class="flex h-fit w-full max-w-[387px] flex-col gap-4 rounded-[3px] bg-base-100 px-[2rem] py-8"
     >
       <div class="flex flex-col gap-2 py-4">
-        <h1 class="text-[2rem] ">Login</h1>
-        <p class="text-xs ">
+        <h1 class="text-[2rem]">Login</h1>
+        <p class="text-xs opacity-80">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
           minim veniam, quis nostru
@@ -22,15 +22,18 @@
       <app-input placeholder="Password" type="password" />
       <app-button>LOGIN</app-button>
       <div class="flex flex-col gap-2">
-        <div
-          class="flex flex-row content-center gap-2 text-[14px] text-[#4F4F4F]"
+        <div  
+          class="flex flex-row content-center gap-2  text-red-500 opacity-75 border border-blue-500"
         >
-          <img
-            class="w-full flex-grow"
-            src="assets/divider.svg"
-            alt=""
-            srcset=""
-          />OR<img
+          <div
+            class="w-full flex-grow  h-full border border-red-500"
+           
+          >
+          <svg class="fill-current" width="144" height="2" viewBox="0 0 144 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line y1="1" x2="143.5" y2="1" stroke="currentColor" stroke-opacity="0.5" />
+            </svg>
+            
+      </div>OR<img
             src="assets/divider.svg"
             alt=""
             class="w-full flex-grow"
