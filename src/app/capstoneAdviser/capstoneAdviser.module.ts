@@ -8,6 +8,9 @@ import { TabsComponent } from './components/tabs.component';
 import { ProjectCardComponent } from './components/projectCard.component';
 import { AccordionComponent } from './components/accordion.component';
 import { DashboardComponent } from './components/dashboard.component';
+import { NavigationRailComponent } from './components/navigationRail.component';
+import { ProjectComponent } from './pages/project.component';
+import { SideBarComponent } from './components/sidebar.component';
 
 @NgModule({
   declarations: [
@@ -17,8 +20,11 @@ import { DashboardComponent } from './components/dashboard.component';
     ProjectCardComponent,
     AccordionComponent,
     DashboardComponent,
+    NavigationRailComponent,
+    ProjectComponent,
+    SideBarComponent
   ],
-  imports: [SharedModule],
-  exports: [HomeComponent],
+  imports: [SharedModule, ],
+  exports: [HomeComponent, ProjectComponent],
 })
 export class CapstoneAdviserModule {}

@@ -7,6 +7,7 @@ import { LoginComponent } from './pages/old-login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import { ProjectComponent as CapstoneAdviserProject} from './capstoneAdviser/pages/project.component';
 import { SharedModule } from './shared/shared.module';
+import { FormGeneratorComponent } from './shared/components/formGenerator.component';
 import { LandingPageModule } from './pages/landing/landingPage.module';
 import { LandingComponent } from './pages/landing/components/landing.component';
 import { HomeComponent as CapstoneAdviserHome } from './capstoneAdviser/pages/home.component';
@@ -14,7 +15,10 @@ import { CapstoneAdviserModule } from './capstoneAdviser/capstoneAdviser.module'
 import { RoleGuard } from './guards/role.guard';
 
 const routes: Routes = [
-  { path: '', component: LandingComponent },
+  { path: '', 
+  // component: LandingComponent,
+  component: CapstoneAdviserProject
+  },
   {
     path: 'c',
     children: [
@@ -30,6 +34,7 @@ const routes: Routes = [
           {
             path: 'dashboard',
             component: CapstoneAdviserHome,
+            // todo: this might be misplaced
             // canActivate: [AuthGuard],
           },
 
@@ -39,7 +44,11 @@ const routes: Routes = [
       {
         path: 'project',
         children: [
-          { path: ':projectId', component: CapstoneAdviserProject },
+          { path: ':projectId', component: CapstoneAdviserProject,
+            children: [
+              { path: 'forms', component: FormGeneratorComponent}
+            ]
+          },
           { path: '', redirectTo: '/c/home/projects', pathMatch: 'full' },
         ],
       },
