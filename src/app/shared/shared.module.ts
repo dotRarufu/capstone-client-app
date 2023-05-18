@@ -8,10 +8,33 @@ import { TabsComponent } from './components/tabs.component';
 import { NotFoundComponent } from './components/notFound.component';
 import { FormComponent } from './components/form.component';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
+import { FeatherModule } from 'angular-feather';
+import { ArrowLeft, Menu, List, Download, FileText, Trello, Trash, Users, Sidebar, Clipboard, Monitor } from 'angular-feather/icons';
+
+const icons = {
+  ArrowLeft,
+  Menu,
+  List,
+  Download,
+  FileText,
+  Trello, Trash, Users, Sidebar, Clipboard, Monitor
+};
 
 @NgModule({
-  declarations: [FormGeneratorComponent, TabsComponent, FormComponent, NotFoundComponent],
-  imports: [CommonModule, FormsModule, RouterModule, PdfViewerModule, NgxDocViewerModule],
+  declarations: [
+    FormGeneratorComponent,
+    TabsComponent,
+    FormComponent,
+    NotFoundComponent,
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    PdfViewerModule,
+    NgxDocViewerModule,
+    FeatherModule.pick(icons),
+  ],
   exports: [
     FormsModule,
     CommonModule,
@@ -19,7 +42,8 @@ import { NgxDocViewerModule } from 'ngx-doc-viewer';
     FormGeneratorComponent,
     NotFoundComponent,
     FormComponent,
-    TabsComponent
+    TabsComponent,
+    FeatherModule,
   ],
 })
 export class SharedModule {}

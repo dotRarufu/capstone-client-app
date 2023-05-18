@@ -46,7 +46,7 @@ const routes: Routes = [
       
           },
 
-          { path: '', redirectTo: '/', pathMatch: 'full' },
+          { path: '', redirectTo: '/c/home/projects', pathMatch: 'full' },
         ],
       },
       {
