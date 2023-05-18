@@ -13,6 +13,7 @@ import { CapstoolUser } from '../models/capstool-user';
 })
 // todo: might have to separate auth from database service
 export class SupabaseService {
+  // todo: rename to auth service
   private supabase: SupabaseClient;
   private capstoolUserSubject = new BehaviorSubject<CapstoolUser | null>(null);
   capstoolUser$ = this.capstoolUserSubject.asObservable();

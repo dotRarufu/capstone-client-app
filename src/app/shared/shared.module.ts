@@ -7,10 +7,11 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { TabsComponent } from './components/tabs.component';
 import { NotFoundComponent } from './components/notFound.component';
 import { FormComponent } from './components/form.component';
+import { NgxDocViewerModule } from 'ngx-doc-viewer';
 
 @NgModule({
   declarations: [FormGeneratorComponent, TabsComponent, FormComponent, NotFoundComponent],
-  imports: [CommonModule, FormsModule, RouterModule, PdfViewerModule],
+  imports: [CommonModule, FormsModule, RouterModule, PdfViewerModule, NgxDocViewerModule],
   exports: [
     FormsModule,
     CommonModule,

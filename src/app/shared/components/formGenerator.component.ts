@@ -51,6 +51,7 @@ export class FormGeneratorComponent implements OnInit {
       handler: () => {
         // todo: create wrapper for this
         this.navigateTo('1');
+        this.projectService.generateForm(1);
 
         this.tabs = this.tabs.map((tab) =>
           tab.id === '1' ? { ...tab, active: true } : { ...tab, active: false }
@@ -62,6 +63,7 @@ export class FormGeneratorComponent implements OnInit {
       id: '2',
       handler: () => {
         this.navigateTo('2');
+        this.projectService.generateForm(2);
 
         this.tabs = this.tabs.map((tab) =>
           tab.id === '2' ? { ...tab, active: true } : { ...tab, active: false }
@@ -73,6 +75,8 @@ export class FormGeneratorComponent implements OnInit {
       id: '3',
       handler: () => {
         this.navigateTo('3');
+        this.projectService.generateForm(3);
+
         this.tabs = this.tabs.map((tab) =>
           tab.id === '3' ? { ...tab, active: true } : { ...tab, active: false }
         );
@@ -83,6 +87,9 @@ export class FormGeneratorComponent implements OnInit {
       id: '4',
       handler: () => {
         this.navigateTo('4');
+        this.projectService.generateForm(4);
+          // todo: add modal, loader
+          // todo: form does not work, the api still requires time range
         this.tabs = this.tabs.map((tab) =>
           tab.id === '4' ? { ...tab, active: true } : { ...tab, active: false }
         );
