@@ -51,6 +51,7 @@ export class LandingComponent {
     const signIn$ = this.supabaseService.signInUser(this.email, this.password);
     signIn$.subscribe((v) => {
       console.log('signIn$ emits');
+      // todo: navigate to either 'c', 's', 't', depending on role
       this.router.navigate(['home']);
     });
   }

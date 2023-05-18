@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'app-nav-rail',
@@ -8,7 +10,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     >
       <button
         (click)="handleMenuClick()"
-        class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] 0"
+        class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
       >
         <svg
           width="24"
@@ -25,8 +27,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
             stroke-linejoin="round"
           />
         </svg>
-
-      
       </button>
 
       <div class="flex h-fit  flex-col items-center gap-[12px]">
@@ -50,7 +50,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
           Tasks
         </button>
         <button
-          class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] 0"
+          class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -69,7 +69,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
           Dashboard
         </button>
         <button
-          class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] 0"
+          class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +88,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
           Consult
         </button>
         <button
-          class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] 0"
+          class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -107,7 +107,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
           Participants
         </button>
         <button
-          class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] 0"
+          (click)="navigateTo('forms')"
+          class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +129,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       </div>
 
       <button
-        class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] 0"
+        class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -149,9 +150,24 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     </div>
   `,
 })
-export class NavigationRailComponent {
+export class NavigationRailComponent implements OnInit {
   search: string = '';
   @Output() toggleDrawer: EventEmitter<string> = new EventEmitter();
+  projectId: string = '';
+
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private projectService: ProjectService
+  ) {}
+
+  ngOnInit() {
+    this.projectId = this.projectService.activeProjectId;
+  }
+
+  navigateTo(path: string) {
+    this.router.navigate(['c', 'project', this.projectId, path]);
+  }
 
   handleMenuClick() {
     this.toggleDrawer.emit();

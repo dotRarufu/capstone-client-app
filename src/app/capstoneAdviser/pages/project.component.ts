@@ -32,12 +32,13 @@ import { ChangeDetectorRef, Component } from '@angular/core';
             class="w-full px-[16px] sm1:px-[32px] sm2:px-0 md:px-[200px] lg:px-0"
           >
             <div
-              class="w-full border-2 border-red-500 sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"
+              class="h-screen w-full sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"
             >
               <!-- <label for="my-drawer" class="btn-primary drawer-button btn"
             >Open drawer</label
           > -->
-              <app-form-generator></app-form-generator>
+              <!-- <app-form-generator></app-form-generator> -->
+              <router-outlet></router-outlet>
             </div>
           </div>
         </div>

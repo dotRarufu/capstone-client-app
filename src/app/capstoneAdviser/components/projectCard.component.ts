@@ -65,11 +65,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 // todo: fix the background of login at laptop breakpoint
 export class ProjectCardComponent {
-  @Input() projectUid: string = '';
-  @Output() navigateToProject: EventEmitter<string> = new EventEmitter();
-
+  @Input() navigateTo?: Function;
 
   handleCardClick() {
-    this.navigateToProject.emit(this.projectUid)
+    if (!this.navigateTo) throw Error("wip, navigateTo was not passed a value")
+
+    this.navigateTo();
   }
 }

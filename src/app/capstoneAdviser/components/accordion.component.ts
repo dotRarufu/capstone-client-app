@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'app-accordion',
@@ -17,21 +18,37 @@ import { Router } from '@angular/router';
         <div
           class="flex flex-wrap justify-center gap-[24px] py-[1rem] sm1:justify-start"
         >
-          <app-project-card (navigateToProject)="navigateToProject($event)"></app-project-card>
-          <app-project-card (navigateToProject)="navigateToProject($event)"></app-project-card>
-          <app-project-card (navigateToProject)="navigateToProject($event)"></app-project-card>
+          <app-project-card
+            *ngFor="let project of projects"
+            [navigateTo]="navigateToProject(project.uid)"
+          >
+          </app-project-card>
+
+          <!-- <app-project-card
+            (navigateToProject)="navigateToProject($event)"
+          ></app-project-card>
+          <app-project-card
+            (navigateToProject)="navigateToProject($event)"
+          ></app-project-card> -->
         </div>
       </div>
     </div>
   `,
 })
 export class AccordionComponent {
+  constructor(private router: Router, private projectService: ProjectService) {}
 
-  constructor(private router: Router) {
-
-  }
+  @Input() projects: {
+    name: string;
+    uid: string;
+    description: string;
+    members: string[];
+  }[] = [];
 
   navigateToProject(uid: string) {
-    this.router.navigate(['c','project', uid])
+    return () => {
+      this.router.navigate(['c', 'project', uid]);
+      this.projectService.activeProjectId = uid;
+    };
   }
 }
