@@ -7,11 +7,11 @@ import { ProjectService } from 'src/app/services/project.service';
   selector: 'app-tabs',
   template: `
     <div
-      class="border-b border-base-content/20 px-[1rem] py-1 sm1:px-[32px] sm2:px-0 "
+      class="border-b md:border-none border-base-content/20 px-[1rem] py-1 sm1:px-[32px] sm2:px-0 "
     >
       <div
         [class.md:hidden]="isResponsive"
-        class="mx-auto flex w-full flex-row  overflow-x-scroll  sm2:w-[840px] "
+        class="mx-auto flex w-full flex-row  overflow-x-scroll sm1:overflow-x-visible sm2:w-[840px] "
       >
         <div
           *ngFor="let tab of tabs"
@@ -46,10 +46,12 @@ export class TabsComponent implements OnInit {
   ngOnInit(): void {
     const projectId = this.projectService.activeProjectId;
     // this.router.navigate(['c', 'project', projectId, 'forms', '1']);
+    // todo: fix tab is not in active color when user initially go to 'home' and does not specify a child path
 
+    // todo: change all icons to use feather icons
     const a = this.route.data.subscribe(data => { 
       // this.active = data.
-      console.log('data:', data['activeTab']);
+      // console.log('data:', data['activeTab']);
     });
 
     // const lastIndex = this.route.snapshot.url.length - 1;

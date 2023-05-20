@@ -9,7 +9,23 @@ import { NotFoundComponent } from './components/notFound.component';
 import { FormComponent } from './components/form.component';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { FeatherModule } from 'angular-feather';
-import { ArrowLeft, Menu, List, Download, FileText, Trello, Trash, Users, Sidebar, Clipboard, Monitor } from 'angular-feather/icons';
+import {
+  ArrowLeft,
+  Menu,
+  List,
+  Download,
+  FileText,
+  Trello,
+  Trash,
+  Users,
+  Sidebar,
+  Clipboard,
+  Monitor,
+  Plus,
+  Zap,
+} from 'angular-feather/icons';
+import { TopAppBarComponent } from './components/topAppBar.component';
+import { ProjectCardComponent } from './components/projectCard.component';
 
 const icons = {
   ArrowLeft,
@@ -17,7 +33,14 @@ const icons = {
   List,
   Download,
   FileText,
-  Trello, Trash, Users, Sidebar, Clipboard, Monitor
+  Trello,
+  Trash,
+  Users,
+  Sidebar,
+  Clipboard,
+  Monitor,
+  Plus,
+  Zap
 };
 
 @NgModule({
@@ -26,6 +49,8 @@ const icons = {
     TabsComponent,
     FormComponent,
     NotFoundComponent,
+    TopAppBarComponent,
+       ProjectCardComponent,
   ],
   imports: [
     CommonModule,
@@ -44,6 +69,8 @@ const icons = {
     FormComponent,
     TabsComponent,
     FeatherModule,
+    TopAppBarComponent,
+    ProjectCardComponent,
   ],
 })
 export class SharedModule {}
