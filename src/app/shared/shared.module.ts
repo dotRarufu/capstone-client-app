@@ -23,9 +23,11 @@ import {
   Monitor,
   Plus,
   Zap,
+  Heart
 } from 'angular-feather/icons';
 import { TopAppBarComponent } from './components/topAppBar.component';
 import { ProjectCardComponent } from './components/projectCard.component';
+import { ModalComponent } from './components/modal.component';
 
 const icons = {
   ArrowLeft,
@@ -40,7 +42,8 @@ const icons = {
   Clipboard,
   Monitor,
   Plus,
-  Zap
+  Zap,
+  Heart
 };
 
 @NgModule({
@@ -51,6 +54,7 @@ const icons = {
     NotFoundComponent,
     TopAppBarComponent,
        ProjectCardComponent,
+       ModalComponent
   ],
   imports: [
     CommonModule,
@@ -71,6 +75,7 @@ const icons = {
     FeatherModule,
     TopAppBarComponent,
     ProjectCardComponent,
+    ModalComponent
   ],
 })
 export class SharedModule {}

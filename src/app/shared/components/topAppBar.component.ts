@@ -1,4 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
+import { TopAppBarService } from 'src/app/services/top-app-bar.service';
 
 @Component({
   selector: 'app-top-app-bar',
@@ -9,8 +11,9 @@ import { Component, Input } from '@angular/core';
       <div
         class=" flex  w-full flex-row  items-center justify-between text-primary-content   sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"
       >
-        <h1 class="text-2xl ">Home</h1>
+        <h1 class="text-2xl ">{{ activePath || 'Home' }}</h1>
         <div class="flex flex-row items-center gap-2 text-base">
+          <!-- todo: fetch data from user service -->
           Markova Tanya
           <div class="avatar">
             <div class="w-[40px] rounded-full">
@@ -24,7 +27,15 @@ import { Component, Input } from '@angular/core';
 })
 // todo: fix the background of login at laptop breakpoint
 export class TopAppBarComponent {
-  @Input() profileUrl: string = '';
-  @Input() name: string = '';
-  @Input() title: string = '';
+  profileUrl: string = '';
+  name: string = '';
+  activePath: string = '';
+
+  // watch for changes in
+  constructor(private topAppBarService: TopAppBarService) {
+    // todo: add unsubscribe or convert to signal
+    this.topAppBarService.activePath$.subscribe(
+      // (path) => (this.activePath = path)
+    );
+  }
 }

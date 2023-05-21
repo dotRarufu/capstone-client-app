@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Tab } from 'src/app/models/tab';
 import { ProjectService } from 'src/app/services/project.service';
@@ -10,14 +10,13 @@ import { ProjectService } from 'src/app/services/project.service';
       <div class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full ">
         <div class="flex justify-between ">
           <h1 class="text-[32px] text-base-content">Title Analysis</h1>
-          <button
+          <label for="app-modal"
             (click)="analyzeTitle()"
             class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
             <i-feather name="zap"></i-feather>
-
             Analyze
-          </button>
+          </label>
         </div>
 
         <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -26,12 +25,13 @@ import { ProjectService } from 'src/app/services/project.service';
           *ngFor="let content of contents"
           [heading]="content.heading"
         >
-          <div class="pt-[16px] px-[16px] text-base-content">
+          <div class="px-[16px] pt-[16px] text-base-content">
             {{ content.content }}
           </div>
         </app-student-accordion>
       </div>
     </div>
+    
   `,
 })
 export class TitleAnalyzerComponent implements OnInit {
@@ -73,6 +73,7 @@ export class TitleAnalyzerComponent implements OnInit {
     {
       heading: 'Substantive Word Count',
       content:
+        // todo: use image of actual scores then explain it
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea.',
     },
     {
@@ -86,6 +87,7 @@ export class TitleAnalyzerComponent implements OnInit {
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea.',
     },
   ];
+  @Output() analyzeClicked = new EventEmitter<void>();
 
   //   todo: create a constant file, or fetch data from database. Maybe we can create an interface to edit the constants
   // does ng module accept script files, and not only modules, services etc..?
@@ -102,11 +104,12 @@ export class TitleAnalyzerComponent implements OnInit {
   }
 
   analyzeTitle() {
-    // todo: wip
-    this.router.navigate(['s', 'home', 'title-analyzer', 'result']);
+    this.analyzeClicked.emit();
   }
 
   ngOnInit(): void {
     this.projects = this.projectService.getProjects();
+
+   
   }
 }

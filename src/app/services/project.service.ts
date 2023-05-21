@@ -8,6 +8,7 @@ import { BehaviorSubject, from, map, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment.dev';
 import { CapstoolUser } from '../models/capstool-user';
 import { SupabaseService } from './supabase.service';
+import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
 
 @Injectable({
   providedIn: 'root',
@@ -55,24 +56,37 @@ export class ProjectService {
     return this.projects;
   }
 
-  async generateForm(number: number, dateTime?: number, dateTimeRange?: number[]) {
-    const response = await this.supabase.functions.invoke(
-      'form-generator',
-      {
-        body: {
-          formNumber: number,
-          projectId: Number(this.activeProjectId),
-          dateTime: 123,
-          // todo: update the edge fn to accept dateTimeRange
-          // why accept dateTimeRange? why not just output the form 4 without asking for range
-          // dateTimeRange,
-          name: 'Functions',
-        },
-      }
-    );
+  // todo: make the backend services automatically restart when something fails
+
+  // maybe rename this to backendService
+  async analyzeTitle(title: string) {
+    console.log('analyzing title:', title);
+    const result = await this.supabaseService.analyzeTitle(title);
+    const data = result.data as TitleAnalyzerResult;
+
+    // title analyzer result page is a dumb component
+    return data;
+  }
+
+  async generateForm(
+    number: number,
+    dateTime?: number,
+    dateTimeRange?: number[]
+  ) {
+    const response = await this.supabase.functions.invoke('form-generator', {
+      body: {
+        formNumber: number,
+        projectId: Number(this.activeProjectId),
+        dateTime: 123,
+        // todo: update the edge fn to accept dateTimeRange
+        // why accept dateTimeRange? why not just output the form 4 without asking for range
+        // dateTimeRange,
+        name: 'Functions',
+      },
+    });
     const url = response.data;
-    console.log("url:", response.data);
-  
+    console.log('url:', response.data);
+
     this._formUrl$.next(url);
   }
 }
