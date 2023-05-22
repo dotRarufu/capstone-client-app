@@ -14,7 +14,7 @@ import { User } from 'src/app/types/collection';
   selector: 'app-login',
   template: `
     <div
-      class="flex h-fit w-full max-w-[387px] flex-col gap-4 rounded-[3px] bg-base-100 px-[2rem] py-8"
+      class="max-h-[568px] flex h-fit w-full max-w-[387px] flex-col gap-4 rounded-[3px] bg-base-100 px-[2rem] py-8"
     >
       <div class="flex flex-col gap-2 py-4">
         <h1 class="text-[2rem]">Login</h1>
