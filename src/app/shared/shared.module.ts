@@ -23,7 +23,8 @@ import {
   Monitor,
   Plus,
   Zap,
-  Heart
+  Heart,
+  LogOut
 } from 'angular-feather/icons';
 import { TopAppBarComponent } from './components/topAppBar.component';
 import { ProjectCardComponent } from './components/projectCard.component';
@@ -43,7 +44,8 @@ const icons = {
   Monitor,
   Plus,
   Zap,
-  Heart
+  Heart,
+  LogOut
 };
 
 @NgModule({

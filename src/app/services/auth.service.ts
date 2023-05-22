@@ -8,7 +8,7 @@ import { BehaviorSubject, from, map, switchMap, tap } from 'rxjs';
 import { environment } from 'src/environments/environment.dev';
 import { CapstoolUser } from '../models/capstool-user';
 import { Database } from '../types/supabase';
-import { TitleStrategy } from '@angular/router';
+import { Router } from '@angular/router';
 import { SupabaseService } from './supabase.service';
 import { DatabaseService } from './database.service';
 import { User } from '../types/collection';
@@ -23,12 +23,22 @@ export class AuthService {
 
   constructor(
     private supabaseService: SupabaseService,
-    private databaseService: DatabaseService
-  ) {}
+    private databaseService: DatabaseService,
+    private router: Router,
+  ) {
+    const client = this.supabaseService.client
+    const unsubscribe = client.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
+        this.router.navigate(['']);
+      }
+    });
+  }
 
   getCurrentUser() {
     // todo: improve this so that, on reload, user is still authenticated
     return this._user$.getValue();
+
   }
 
   login(email: string, password: string) {
