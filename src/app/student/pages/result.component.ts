@@ -4,6 +4,7 @@ import { ProjectService } from '../../services/project.service';
 import { Tab } from 'src/app/models/tab';
 import { TitleAnalyzerResult } from 'src/app/models/titleAnalyzerResult';
 import { SupabaseService } from 'src/app/services/supabase.service';
+import { DatabaseService } from 'src/app/services/database.service';
 
 interface AnalysesDataItem {
   heading: string;
@@ -156,7 +157,7 @@ export class ResultComponent implements OnInit {
         data.substantive_words.words
       )}`,
     };
-    const titleCount = await this.supabaseService.getProjectCount();
+    const titleCount = await this.databaseService.getProjectCount();
     const titleUniqueness: AnalysesDataItem = {
       heading: 'Title Uniqueness',
       value: data.title_uniqueness,
@@ -178,7 +179,7 @@ export class ResultComponent implements OnInit {
     const titles = (
       await Promise.all(
         categoryIds.map(
-          async (id) => await this.supabaseService.getProjectsFromCategory(id)
+          async (id) => await this.databaseService.getProjectsFromCategory(id)
         )
       )
     ).flat();
@@ -242,7 +243,8 @@ export class ResultComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private projectService: ProjectService,
-    private supabaseService: SupabaseService
+    private supabaseService: SupabaseService,
+    private databaseService: DatabaseService
   ) {}
 
   ngOnInit(): void {

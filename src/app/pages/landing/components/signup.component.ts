@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 import { SupabaseService } from 'src/app/services/supabase.service';
 
 @Component({
@@ -131,6 +132,7 @@ export class SignupComponent {
 
   constructor(
     private supabaseService: SupabaseService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -139,8 +141,8 @@ export class SignupComponent {
 
     const user = { name: this.fullName, roleId: this.roleId };
 
-    this.supabaseService
-      .registerUser(this.email, this.password, user)
+    this.authService
+      .signUp(this.email, this.password, user)
       .subscribe((v) => {
         console.log('sign up:', v);
         this.router.navigate(['home']);

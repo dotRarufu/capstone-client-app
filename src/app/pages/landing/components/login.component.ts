@@ -6,6 +6,7 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 import { SupabaseService } from 'src/app/services/supabase.service';
 
 @Component({
@@ -106,14 +107,31 @@ export class LoginComponent {
 
   constructor(
     private supabaseService: SupabaseService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
   handleButtonClick() {
-    const signIn$ = this.supabaseService.signInUser(this.email, this.password);
-    signIn$.subscribe((v) => {
-      console.log('signIn$ emits');
-      this.router.navigate(['c', 'home', 'projects']);
+    const signIn$ = this.authService.login(this.email, this.password);
+    signIn$.subscribe((user) => {
+      // todo: refactor
+      let role = 'a';
+      switch (user.role_id) {
+        case 0:
+          role = 's';
+          break;
+        case 1:
+          role = 'c';
+          break;
+        case 2:
+          role = 't';
+          break;
+        default:
+          throw new Error('user role error')
+          
+      }
+      console.log('role:', role, 'role id:', user.role_id)
+      this.router.navigate([role]);
     });
   }
 

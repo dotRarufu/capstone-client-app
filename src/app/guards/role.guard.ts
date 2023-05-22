@@ -8,6 +8,7 @@ import {
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SupabaseService } from '../services/supabase.service';
+import { AuthService } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +16,7 @@ import { SupabaseService } from '../services/supabase.service';
 export class RoleGuard implements CanActivate {
   constructor(
     private supabaseService: SupabaseService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -26,7 +28,7 @@ export class RoleGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    const currentUser = this.supabaseService.getCurrentUser();
+    const currentUser = this.authService.getCurrentUser();
     const isAuthenticated = !!currentUser;
 
       console.log('role guard runs');

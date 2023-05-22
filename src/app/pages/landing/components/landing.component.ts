@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { SupabaseService } from 'src/app/services/supabase.service';
 
 @Component({
   selector: 'app-landing',
   template: `
-    <div class="relative grid h-[clamp(100%, fit-content)] w-full place-content-center py-16">
+    <div
+      class="h-[clamp(100%, fit-content)] relative grid w-full place-content-center py-16"
+    >
       <img
         src="assets/plv-100.jpg"
         alt=""
@@ -19,13 +19,13 @@ import { SupabaseService } from 'src/app/services/supabase.service';
         <ng-container *ngIf="isLogin">
           <app-login (toSignUp)="toSignUp()"></app-login>
         </ng-container>
-        
+
         <ng-container *ngIf="!isLogin">
           <app-signup (toLogin)="toLogin()"></app-signup>
         </ng-container>
-        
+
         <img
-          class="hidden bg-primary md:block object-cover"
+          class="hidden bg-primary object-cover md:block"
           src="assets/high-five.png"
           alt=""
         />
@@ -36,25 +36,7 @@ import { SupabaseService } from 'src/app/services/supabase.service';
 export class LandingComponent {
   isLogin: boolean = true;
 
-  title = 'capstone-client-app';
-  email: string = '';
-  password: string = '';
-
-  constructor(
-    private supabaseService: SupabaseService,
-    private router: Router
-  ) {}
-
- 
-
-  login() {
-    const signIn$ = this.supabaseService.signInUser(this.email, this.password);
-    signIn$.subscribe((v) => {
-      console.log('signIn$ emits');
-      // todo: navigate to either 'c', 's', 't', depending on role
-      this.router.navigate(['home']);
-    });
-  }
+  constructor() {}
 
   toSignUp() {
     this.isLogin = false;

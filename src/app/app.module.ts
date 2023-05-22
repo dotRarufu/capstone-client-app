@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { RouterModule, Routes } from '@angular/router';
 
-import { LoginComponent } from './pages/old-login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import { ProjectComponent as CapstoneAdviserProject } from './capstoneAdviser/pages/project.component';
 import { SharedModule } from './shared/shared.module';
@@ -26,14 +25,13 @@ const routes: Routes = [
   {
     path: '',
     component: LandingComponent,
-    // component: CapstoneAdviserProject,
   },
   {
     path: 's',
     children: [
       {
         path: 'home',
-        // component: StudentHome,
+        canActivate: [AuthGuard],
         children: [
           {
             path: 'title-analyzer',
@@ -41,11 +39,13 @@ const routes: Routes = [
               {
                 path: 'result',
                 component: StudentTitleAnalyzerResult,
+                canActivate: [AuthGuard],
               },
               {
                 path: '',
                 // component: TitleAnalyzerComponent,
                 component: StudentHome,
+                canActivate: [AuthGuard],
                 pathMatch: 'full',
                 data: {path: 'title-analyzer'}
               },
@@ -53,8 +53,7 @@ const routes: Routes = [
           },
           {
             path: 'projects',
-            // component: ProjectsComponent
-            // component: TitleAnalyzerComponent,
+            canActivate: [AuthGuard],
             component: StudentHome,
             data: {path: 'projects'}
           },
@@ -67,26 +66,32 @@ const routes: Routes = [
           {
             path: ':projectId',
             component: CapstoneAdviserProject,
+            canActivate: [AuthGuard],
             children: [
               {
                 path: 'forms',
                 component: FormGeneratorComponent,
+                canActivate: [AuthGuard],
                 children: [
                   {
                     path: '1',
                     component: FormComponent,
+                    canActivate: [AuthGuard],
                   },
                   {
                     path: '2',
                     component: FormComponent,
+                    canActivate: [AuthGuard],
                   },
                   {
                     path: '3',
                     component: FormComponent,
+                    canActivate: [AuthGuard],
                   },
                   {
                     path: '4',
                     component: FormComponent,
+                    canActivate: [AuthGuard],
                   },
                 ],
               },
@@ -95,7 +100,7 @@ const routes: Routes = [
           { path: '', redirectTo: '/c/home/projects', pathMatch: 'full' },
         ],
       },
-      { path: '', redirectTo: '/', pathMatch: 'full' },
+      { path: '', redirectTo: '/s/home/title-analyzer', pathMatch: 'full' },
       { path: '**', component: NotFoundComponent },
     ],
   },
@@ -105,18 +110,19 @@ const routes: Routes = [
       {
         path: 'home',
         component: CapstoneAdviserHome,
+        canActivate: [AuthGuard],
         children: [
           {
             path: 'projects',
             component: ProjectsComponent,
-            // canActivate: [AuthGuard],
+            canActivate: [AuthGuard],
           },
           // todo: add role guard, use data property
           {
             path: 'dashboard',
             component: DashboardComponent,
             // todo: this might be misplaced
-            // canActivate: [AuthGuard],
+            canActivate: [AuthGuard],
           },
 
           { path: '', redirectTo: '/c/home/projects', pathMatch: 'full' },
@@ -124,30 +130,37 @@ const routes: Routes = [
       },
       {
         path: 'project',
+        canActivate: [AuthGuard],
         children: [
           {
             path: ':projectId',
             component: CapstoneAdviserProject,
+            canActivate: [AuthGuard],
             children: [
               {
                 path: 'forms',
                 component: FormGeneratorComponent,
+                canActivate: [AuthGuard],
                 children: [
                   {
                     path: '1',
                     component: FormComponent,
+                    canActivate: [AuthGuard],
                   },
                   {
                     path: '2',
                     component: FormComponent,
+                    canActivate: [AuthGuard],
                   },
                   {
                     path: '3',
                     component: FormComponent,
+                    canActivate: [AuthGuard],
                   },
                   {
                     path: '4',
                     component: FormComponent,
+                    canActivate: [AuthGuard],
                   },
                 ],
               },
@@ -156,7 +169,7 @@ const routes: Routes = [
           { path: '', redirectTo: '/c/home/projects', pathMatch: 'full' },
         ],
       },
-      { path: '', redirectTo: '/', pathMatch: 'full' },
+      { path: '', redirectTo: '/c/home/projects', pathMatch: 'full' },
       { path: '**', component: NotFoundComponent },
     ],
   },
@@ -167,7 +180,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     LandingPageModule,
