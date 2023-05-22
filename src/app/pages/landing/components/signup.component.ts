@@ -123,12 +123,12 @@ import { SupabaseService } from 'src/app/services/supabase.service';
 })
 export class SignupComponent {
   @Output() toLogin: EventEmitter<void> = new EventEmitter<void>();
-  email: string = '';
-  password: string = '';
-  fullName: string = '';
-  emailMessage: string = 'test message email';
-  passwordMessage: string = 'test message password';
-  roleId: number = -1;
+  email = '';
+  password = '';
+  fullName = '';
+  emailMessage = 'test message email';
+  passwordMessage = 'test message password';
+  roleId = -1;
 
   constructor(
     private supabaseService: SupabaseService,
@@ -140,12 +140,13 @@ export class SignupComponent {
     if (this.fullName.length === 0) throw Error('wip: name is empty');
 
     const user = { name: this.fullName, roleId: this.roleId };
-
+    // todo: separate the fields in different screens to prevent resizing of container
     this.authService
       .signUp(this.email, this.password, user)
       .subscribe((v) => {
-        console.log('sign up:', v);
-        this.router.navigate(['home']);
+      
+        this.navigateToLogin()
+   
       });
   }
 

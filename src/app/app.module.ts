@@ -28,34 +28,31 @@ const routes: Routes = [
   },
   {
     path: 's',
+    canActivate: [AuthGuard, RoleGuard],
     children: [
       {
         path: 'home',
-        canActivate: [AuthGuard],
         children: [
           {
             path: 'title-analyzer',
             children: [
               {
+                // todo: create 'unathorized' page
                 path: 'result',
                 component: StudentTitleAnalyzerResult,
-                canActivate: [AuthGuard],
               },
               {
                 path: '',
-                // component: TitleAnalyzerComponent,
                 component: StudentHome,
-                canActivate: [AuthGuard],
                 pathMatch: 'full',
-                data: {path: 'title-analyzer'}
+                data: { path: 'title-analyzer' },
               },
             ],
           },
           {
             path: 'projects',
-            canActivate: [AuthGuard],
             component: StudentHome,
-            data: {path: 'projects'}
+            data: { path: 'projects' },
           },
           { path: '', redirectTo: '/s/home/title-analyzer', pathMatch: 'full' },
         ],
@@ -106,23 +103,22 @@ const routes: Routes = [
   },
   {
     path: 'c',
+    canActivate: [AuthGuard, RoleGuard],
     children: [
       {
         path: 'home',
         component: CapstoneAdviserHome,
-        canActivate: [AuthGuard],
+
         children: [
           {
             path: 'projects',
             component: ProjectsComponent,
-            canActivate: [AuthGuard],
           },
           // todo: add role guard, use data property
           {
             path: 'dashboard',
             component: DashboardComponent,
             // todo: this might be misplaced
-            canActivate: [AuthGuard],
           },
 
           { path: '', redirectTo: '/c/home/projects', pathMatch: 'full' },
@@ -135,32 +131,28 @@ const routes: Routes = [
           {
             path: ':projectId',
             component: CapstoneAdviserProject,
-            canActivate: [AuthGuard],
+
             children: [
               {
                 path: 'forms',
                 component: FormGeneratorComponent,
-                canActivate: [AuthGuard],
+
                 children: [
                   {
                     path: '1',
                     component: FormComponent,
-                    canActivate: [AuthGuard],
                   },
                   {
                     path: '2',
                     component: FormComponent,
-                    canActivate: [AuthGuard],
                   },
                   {
                     path: '3',
                     component: FormComponent,
-                    canActivate: [AuthGuard],
                   },
                   {
                     path: '4',
                     component: FormComponent,
-                    canActivate: [AuthGuard],
                   },
                 ],
               },

@@ -8,6 +8,7 @@ import {
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { SupabaseService } from 'src/app/services/supabase.service';
+import { User } from 'src/app/types/collection';
 
 @Component({
   selector: 'app-login',
@@ -115,21 +116,7 @@ export class LoginComponent {
     const signIn$ = this.authService.login(this.email, this.password);
     signIn$.subscribe((user) => {
       // todo: refactor
-      let role = 'a';
-      switch (user.role_id) {
-        case 0:
-          role = 's';
-          break;
-        case 1:
-          role = 'c';
-          break;
-        case 2:
-          role = 't';
-          break;
-        default:
-          throw new Error('user role error')
-          
-      }
+      const role = getRolePath(user);
       console.log('role:', role, 'role id:', user.role_id)
       this.router.navigate([role]);
     });
@@ -138,4 +125,25 @@ export class LoginComponent {
   navigateToSignUp() {
     this.toSignUp.emit();
   }
+}
+
+const getRolePath = (user: User) => {
+  let role = 'a';
+
+  switch (user.role_id) {
+    case 0:
+      role = 's';
+      break;
+    case 1:
+      role = 'c';
+      break;
+    case 2:
+      role = 't';
+      break;
+    default:
+      throw new Error('user role error')
+      
+  }
+
+  return role;
 }
