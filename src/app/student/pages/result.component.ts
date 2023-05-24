@@ -32,7 +32,7 @@ interface InformationalDataItem {
         <div
           class="flex w-full flex-col  gap-[16px] sm2:hidden sm2:w-[840px] md:w-full lg:w-[1040px]"
         >
-          <div class="flex justify-between ">
+          <div class="flex justify-between gap-2">
             <h1 class="text-[24px] text-base-content">
               {{ title }}
             </h1>
