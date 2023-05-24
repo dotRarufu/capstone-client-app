@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
+import { RouterEvent } from '@angular/router';
 
 @Component({
   selector: 'app-project',
@@ -61,7 +62,7 @@ export class ProjectComponent {
     inputRef.checked = this.isDrawerOpen;
   }
 
-  changeDrawerState(e: Event) {
+  changeDrawerState(e: Event ) {
     this.isDrawerOpen = (e.currentTarget as HTMLInputElement).checked;
   }
 }

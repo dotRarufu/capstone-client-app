@@ -1,55 +1,36 @@
-import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  Router,
-  RouterStateSnapshot,
-  UrlTree,
-} from '@angular/router';
+import { Injectable, inject } from '@angular/core';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SupabaseService } from '../services/supabase.service';
 import { AuthService } from '../services/auth.service';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class RoleGuard implements CanActivate {
-  constructor(
-    private supabaseService: SupabaseService,
-    private authService: AuthService,
-    private router: Router
-  ) {}
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ):
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree>
-    | boolean
-    | UrlTree {
-    const currentUser = this.authService.getCurrentUser();
+export const roleGuard = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  const state = inject(ActivatedRouteSnapshot);
 
-    if (!currentUser) throw new Error('wip, currentUser is not authenticated');
-    if (currentUser.role_id === null)
-      throw new Error('wip, currentUser has no role id');
+  const currentUser = authService.getCurrentUser();
 
-    const userRole = currentUser.role_id;
-    const firstChild = state.root.firstChild;
+  if (!currentUser) throw new Error('wip, currentUser is not authenticated');
+  if (currentUser.role_id === null)
+    throw new Error('wip, currentUser has no role id');
 
-    if (!firstChild) throw new Error('first child is undefined');
+  const userRole = currentUser.role_id;
+  const firstChild = state.root.firstChild;
 
-    const root = firstChild.url.toString();
-    const userRolePath = getRolePath(userRole);
+  if (!firstChild) throw new Error('first child is undefined');
 
-    if (root === userRolePath) return true;
+  const root = firstChild.url.toString();
+  const userRolePath = getRolePath(userRole);
 
-    // todo: navigate to unauthorized
-    this.router.navigate([userRolePath]);
+  if (root === userRolePath) return true;
 
-    return false;
-  }
-}
+  // todo: navigate to unauthorized
+  router.navigate([userRolePath]);
+
+  return false;
+};
 
 const getRolePath = (roleId: number) => {
   let role = 'a';

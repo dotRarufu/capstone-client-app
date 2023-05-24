@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { RouterModule, Routes } from '@angular/router';
 
-import { AuthGuard } from './guards/auth.guard';
+import { authGuard } from './guards/auth.guard';
 import { ProjectComponent as CapstoneAdviserProject } from './capstoneAdviser/pages/project.component';
 import { SharedModule } from './shared/shared.module';
 import { FormGeneratorComponent } from './shared/components/formGenerator.component';
@@ -11,7 +11,7 @@ import { LandingPageModule } from './pages/landing/landingPage.module';
 import { LandingComponent } from './pages/landing/components/landing.component';
 import { HomeComponent as CapstoneAdviserHome } from './capstoneAdviser/pages/home.component';
 import { CapstoneAdviserModule } from './capstoneAdviser/capstoneAdviser.module';
-import { RoleGuard } from './guards/role.guard';
+import { roleGuard } from './guards/role.guard';
 import { NotFoundComponent } from './shared/components/notFound.component';
 import { FormComponent } from './shared/components/form.component';
 import { DashboardComponent } from './capstoneAdviser/components/dashboard.component';
@@ -28,7 +28,7 @@ const routes: Routes = [
   },
   {
     path: 's',
-    canActivate: [AuthGuard, RoleGuard],
+    canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',
@@ -63,32 +63,32 @@ const routes: Routes = [
           {
             path: ':projectId',
             component: CapstoneAdviserProject,
-            canActivate: [AuthGuard],
+            canActivate: [authGuard],
             children: [
               {
                 path: 'forms',
                 component: FormGeneratorComponent,
-                canActivate: [AuthGuard],
+                canActivate: [authGuard],
                 children: [
                   {
                     path: '1',
                     component: FormComponent,
-                    canActivate: [AuthGuard],
+                    canActivate: [authGuard],
                   },
                   {
                     path: '2',
                     component: FormComponent,
-                    canActivate: [AuthGuard],
+                    canActivate: [authGuard],
                   },
                   {
                     path: '3',
                     component: FormComponent,
-                    canActivate: [AuthGuard],
+                    canActivate: [authGuard],
                   },
                   {
                     path: '4',
                     component: FormComponent,
-                    canActivate: [AuthGuard],
+                    canActivate: [authGuard],
                   },
                 ],
               },
@@ -126,7 +126,7 @@ const routes: Routes = [
       },
       {
         path: 'project',
-        canActivate: [AuthGuard],
+        canActivate: [authGuard],
         children: [
           {
             path: ':projectId',
