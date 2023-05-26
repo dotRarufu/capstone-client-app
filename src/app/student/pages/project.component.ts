@@ -14,7 +14,7 @@ import {
   template: `
     <!-- <div class="flex h-screen">
       <app-nav-rail></app-nav-rail>
-      <app-side-bar></app-side-bar>
+      <app-student-side-bar></app-student-side-bar>
 
       <div
         class="w-full px-[16px] sm1:px-[32px] sm2:px-0 md:px-[200px] lg:px-0"
@@ -57,7 +57,7 @@ import {
           <label for="my-drawer" class="drawer-overlay"></label>
           <ul class="menu w-fit bg-base-100 text-base-content">
             <!-- Sidebar content here -->
-            <app-side-bar></app-side-bar>
+            <app-student-side-bar></app-student-side-bar>
           </ul>
         </div>
       </div>
