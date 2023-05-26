@@ -30,7 +30,7 @@ const routes: Routes = [
   },
   {
     path: 's',
-    canActivate: [authGuard, roleGuard],
+    // canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',
@@ -65,7 +65,6 @@ const routes: Routes = [
           {
             path: ':projectId',
             component: StudentProject,
-            canActivate: [authGuard],
             children: [
               {
                 path: 'tasks',

@@ -48,7 +48,12 @@ export class AuthService {
       password,
     });
     const login$ = from(login).pipe(
-      switchMap((authRes) => this.databaseService.getUserData(authRes)),
+      switchMap((authRes) => {
+        if (!authRes.data.user) throw Error("wip, auth res user is undefined")
+        
+        return this.databaseService.getUserData(authRes.data.user.id)
+      }
+        ),
       tap((user) => this._user$.next(user))
     );
 

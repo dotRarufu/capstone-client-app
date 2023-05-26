@@ -5,7 +5,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   template: `
     <div
     (click)="handleCardClick()"
-      class="cursor-pointer card-compact card h-fit w-full max-w-[262px] rounded-[4px] bg-base-100 shadow-xl"
+      class="border border-base-content/50 cursor-pointer card-compact card h-fit w-full max-w-[262px] rounded-[4px] bg-base-100 shadow-xl"
     >
       <figure class="h-[92px] bg-secondary">
         <h2 class="card-title  w-full px-4 text-left text-secondary-content">

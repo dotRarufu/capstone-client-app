@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  AuthResponse,
+  AuthResponse, AuthUser,
 } from '@supabase/supabase-js';
 import { BehaviorSubject, from, map, switchMap, tap } from 'rxjs';
 import { SupabaseService } from './supabase.service';
@@ -35,10 +35,10 @@ export class DatabaseService {
     return query$;
   }
   
-  async getUserData(authRes: AuthResponse) {
-    if (authRes.data.user == null) throw new Error('user is null');
+  async getUserData(userId: string) {
+    if (userId == null) throw new Error('user is null');
 
-    const userUid = authRes.data.user.id;
+    const userUid = userId;
     const userRow = await this.supabaseService.client
       .from('user')
       .select('name, role_id')

@@ -30,7 +30,7 @@ import { AuthService } from 'src/app/services/auth.service';
             class="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
           >
             <!-- <li><a class="">Profile</a></li> -->
-            <li><a class="flex justify-between" (click)="signOut()">Sign Out <i-feather name="log-out"></i-feather></a></li>
+            <li><a class="flex justify-between text-base-content" (click)="signOut()">Sign Out <i-feather name="log-out"></i-feather></a></li>
           </ul>
         </div>
 

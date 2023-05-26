@@ -11,7 +11,7 @@ import { Database } from '../types/supabase';
 import { Router } from '@angular/router';
 import { SupabaseService } from './supabase.service';
 import { DatabaseService } from './database.service';
-import { User } from '../types/collection';
+import { Task, User } from '../types/collection';
 
 @Injectable({
   providedIn: 'root',
@@ -21,20 +21,45 @@ export class TaskService {
 
   constructor(
     private supabaseService: SupabaseService,
-    private databaseService: DatabaseService,
-    private router: Router,
   ) {
    this.client = this.supabaseService.client
   }
 
-  add() {}
+  add(task: Task) {
+    const request = this.client.from('task').insert(task);
+    const request$ = from(request);
 
-  // or edit
-  delete() {}
+    return request$;
+  }
 
-  edit() {}
+  delete(taskId: number) {
+    const request = this.client.from('task').delete().eq('id', taskId);
+    const request$ = from(request);
 
-  changeStatus() {}
+    return request$;
+  }
+
+  edit(id: number,title: string, description: string) {
+    const data = {
+      title,
+      description
+    }
+
+    const request = this.client.from('task').update(data).eq('id', id);
+    const request$ = from(request);
+
+    return request$;
+  }
+
+  changeStatus(id: number, statusId: number) {
+    const data = {
+      status_id: statusId
+    }
+    const request = this.client.from('task').update(data).eq('id', id);
+    const request$ = from(request);
+
+    return request$;
+  }
 
   getTasks(statusId: number, projectId: number) { 
     const request = this.client.from('task').select('*').eq('status_id', statusId).eq('project_id', projectId);

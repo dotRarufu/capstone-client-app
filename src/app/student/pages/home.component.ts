@@ -38,8 +38,8 @@ import { Tab } from 'src/app/models/tab';
       </div>
     </div>
 
-    <app-modal (checkboxChanged)="this.alreadyHaveTitle = !$event">
-      <div class="flex flex-col gap-[16px] p-6">
+    <app-modal inputId="title-analyzer" (checkboxChanged)="alreadyHaveTitle = !$event">
+      <div class="flex flex-col gap-[16px] p-6 bg-base-100 w-[712px]">
         <ng-container *ngIf="alreadyHaveTitle">
           <h1
             class="text-center text-[24px] text-base-content min-[444px]:text-left"
@@ -55,13 +55,13 @@ import { Tab } from 'src/app/models/tab';
 
           <textarea
             [(ngModel)]="titleFromAlreadyHaveTitle"
-            class="textarea-bordered textarea h-[136px] border-base-content/50 text-base  text-base-content placeholder:text-base-content/70"
+            class="rounded-[3px] textarea-bordered textarea h-[136px] border-base-content/50 text-base  text-base-content placeholder:text-base-content/70"
             placeholder="Development and Evaluation of ..."
           ></textarea>
 
           <div class="flex">
             <!-- todo: maybe we can set the default border in daisy ui config -->
-            <label class="btn-ghost btn grow rounded-[3px]" for="app-modal"
+            <label class="btn-ghost btn grow rounded-[3px]" for="title-analyzer"
               >Cancel</label
             >
             <button
@@ -163,6 +163,7 @@ export class HomeComponent implements OnInit {
   checkPath(path: string) {
     const a = this.path === path;
     // console.log('this.path:', this.path, 'path:', path);
+    console.log('alreadyHaveTitle:', this.alreadyHaveTitle)
 
     return a;
   }

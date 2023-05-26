@@ -17,24 +17,23 @@ import { Task } from 'src/app/types/collection';
 @Component({
   selector: 'app-tasks',
   template: `
-    
-
-    <div class="flex flex-col gap-[16px]">
+    <div class="flex flex-col gap-[16px] h-full ">
       <div class="flex justify-between ">
         <h1 class="text-[32px] text-base-content">Tasks</h1>
-        <button
+        <label
+          for="add-task"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
           <i-feather name="plus"></i-feather>
 
           Add
-        </button>
+        </label>
       </div>
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <div cdkDropListGroup class="flex gap-[32px]">
-        <div class="w-[294px] ">
+      <div cdkDropListGroup class="flex gap-[32px] lg:justify-center overflow-x-scroll h-full ">
+        <div class="w-[294px]  shrink-0">
           <app-shared-accordion
             [withArrow]="false"
             [forcedOpen]="true"
@@ -47,15 +46,20 @@ import { Task } from 'src/app/types/collection';
               [cdkDropListData]="todo"
               (cdkDropListDropped)="drop($event)"
             >
-              <app-task-card *ngFor="let item of todo" cdkDrag [cdkDragDisabled]="isDraggingDisabled">
-                {{ item.title }}
+              <app-task-card
+                *ngFor="let item of todo"
+                cdkDrag
+                [cdkDragDisabled]="isDraggingDisabled"
+                [task]="item"
+              >
+             
               </app-task-card>
             </div>
           </app-shared-accordion>
         </div>
 
         <!-- use ngfor directive instead -->
-        <div class="w-[294px] ">
+        <div class="w-[294px] shrink-0">
           <app-shared-accordion
             [withArrow]="false"
             [forcedOpen]="true"
@@ -68,16 +72,19 @@ import { Task } from 'src/app/types/collection';
               [cdkDropListData]="doing"
               (cdkDropListDropped)="drop($event)"
             >
-              
-                <app-task-card *ngFor="let item of doing" cdkDrag [cdkDragDisabled]="isDraggingDisabled">
-                  {{ item.title }}
-                </app-task-card>
-             
+              <app-task-card
+                *ngFor="let item of doing"
+                cdkDrag
+                [cdkDragDisabled]="isDraggingDisabled"
+                [task]="item"
+              >
+            
+              </app-task-card>
             </div>
           </app-shared-accordion>
         </div>
-        
-        <div class="w-[294px] ">
+
+        <div class="w-[294px] shrink-0">
           <app-shared-accordion
             [withArrow]="false"
             [forcedOpen]="true"
@@ -90,33 +97,45 @@ import { Task } from 'src/app/types/collection';
               [cdkDropListData]="done"
               (cdkDropListDropped)="drop($event)"
             >
-              <app-task-card *ngFor="let item of done" cdkDrag [cdkDragDisabled]="isDraggingDisabled">
-                {{ item.title }}
+              <app-task-card
+                *ngFor="let item of done"
+                cdkDrag
+                [cdkDragDisabled]="isDraggingDisabled"
+                [task]="item"
+              >
+               
               </app-task-card>
             </div>
           </app-shared-accordion>
         </div>
-       
       </div>
     </div>
 
     <app-modal>
-      <div class="flex flex-col border border-base-content/10 rounded-[3px]">
-        <div class="bg-primary p-[24px] flex justify-between">
+      <div class="flex flex-col rounded-[3px] border border-base-content/10 w-[712px]">
+        <div class="flex justify-between bg-primary p-[24px]">
           <div class="flex flex-col justify-between">
-            <h1 class="text-primary-content text-[24px]">Task title placeholder </h1>
+            <h1 class="text-[24px] text-primary-content">
+              Task title placeholder
+            </h1>
 
-            <div class="text-primary-content/50 text-[12px]">Created at 5/1/23 by Adviser Name | Currently in Doing</div>
+            <div class="text-[12px] text-primary-content/50">
+              Created at 5/1/23 by Adviser Name | Currently in Doing
+            </div>
           </div>
-          <label for="app-modal" class="btn btn-sm btn-ghost btn-circle text-primary-content/60"><i-feather name="x"></i-feather></label>
-        </div>  
-        <div class="flex">
-          <div class="w-full bg-base-100 px-6 py-4 flex flex-col gap-2">
-            <div class="flex justify-between items-center ">
+          <label
+            for="app-modal"
+            class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
+            ><i-feather name="x"></i-feather
+          ></label>
+        </div>
+        <div class="flex bg-base-100">
+          <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
+            <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
               <!-- border-base-content/30 bg-base-content/10 hover:border-base-content/30  -->
               <button
-                class="px-[14px] py-2 btn-ghost btn gap-2 rounded-[3px] text-base-content "
+                class="btn-ghost btn gap-2 rounded-[3px] px-[14px] py-2 text-base-content "
               >
                 <i-feather name="plus"></i-feather>
 
@@ -125,44 +144,89 @@ import { Task } from 'src/app/types/collection';
             </div>
 
             <div class="h-[2px] w-full bg-base-content/10"></div>
-            
-            <div class="text-base-content text-base">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit 
+
+            <div class="text-base text-base-content">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem
+              ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+              tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum
+              dolor sit
             </div>
-            
           </div>
-          <ul class=" bg-neutral/20 w-[223px]  px-[24px] py-[16px] flex flex-col ">
-            <li class="rounded-[3px] justify-end btn btn-ghost flex gap-2">
+          <ul
+            class=" flex w-[223px]  flex-col bg-neutral/20 px-[24px] py-[16px] "
+          >
+            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
               delete <i-feather name="trash"></i-feather>
             </li>
-            <li class="rounded-[3px] justify-end btn btn-ghost flex gap-2">
+            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
               move <i-feather name="trash"></i-feather>
             </li>
-            <li class="rounded-[3px] justify-end btn btn-ghost flex gap-2">
+            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
               edit <i-feather name="trash"></i-feather>
             </li>
-            <li class="rounded-[3px] justify-end btn btn-ghost flex gap-2">
+            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
               verify <i-feather name="trash"></i-feather>
             </li>
-            <li class="rounded-[3px] justify-end btn btn-ghost flex gap-2">
+            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
               save <i-feather name="trash"></i-feather>
             </li>
-            
-            <div class="h-full">
-              
-            </div>
-              
-            <li class="rounded-[3px] justify-end btn btn-ghost flex gap-2">
+
+            <div class="h-full"></div>
+
+            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
               close <i-feather name="trash"></i-feather>
             </li>
-            
           </ul>
         </div>
-      </div>  
+      </div>
+    </app-modal>
+
+    <app-modal inputId="add-task">
+      <div class="flex flex-col rounded-[3px] border border-base-content/10 w-[712px]">
+        <div class="flex justify-between bg-primary p-[24px]">
+          <div class="flex flex-col justify-between w-full">
+            <input
+              type="text"
+              placeholder="Task Title"
+              class="input w-full rounded-[3px] border-l-[2px] border-r-0 border-y-0 border-l-primary-content/50 bg-primary px-3 py-2 text-primary-content placeholder:text-[20px] text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
+            />
+          </div>
+          <label
+            for="add-task"
+            class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
+            ><i-feather name="x"></i-feather
+          ></label>
+        </div>
+        <div class="flex bg-base-100">
+          <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Description</h1>
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+
+            <textarea class="leading-normal textarea w-full rounded-[3px] border-l-[2px] border-r-0 border-y-0 border-l-primary-content/50 placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 h-[117px]" placeholder="Description"></textarea>
+          </div>
+          <ul
+            class=" flex w-[223px]  flex-col bg-neutral/20 p-0 "
+          >
+            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
+              done <i-feather name="trash"></i-feather>
+            </li>
+
+            <div class="h-full"></div>
+
+            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
+              close <i-feather name="trash"></i-feather>
+            </li>
+          </ul>
+        </div>
+      </div>
     </app-modal>
   `,
 })
-export class TasksComponent implements OnInit{
+export class TasksComponent implements OnInit {
   // - todo = ['Get to work', 'Pick up groceries', 'Go home', 'Fall asleep'];
 
   todo: Task[] = [];
@@ -200,21 +264,25 @@ export class TasksComponent implements OnInit{
 
   ngOnInit(): void {
     const projectId = this.projectService.activeProjectIdSignal();
-    // todo: make this observable complete 
+    // todo: make this observable complete
     // todo: improve these
-    this.taskService.getTasks(0, projectId).subscribe((task) => 
-      this.todo = task
-    ) 
-    this.taskService.getTasks(1, projectId).subscribe((task) => 
-      this.doing = task
-    ) 
-    this.taskService.getTasks(2, projectId).subscribe((task) => 
-      this.done = task
-    ) 
+    this.taskService
+      .getTasks(0, projectId)
+      .subscribe((task) => (this.todo = task));
+    this.taskService
+      .getTasks(1, projectId)
+      .subscribe((task) => (this.doing = task));
+    this.taskService
+      .getTasks(2, projectId)
+      .subscribe((task) => (this.done = task));
   }
 
-  constructor(private authService: AuthService, public taskService: TaskService, public projectService: ProjectService) {
-    const isStudent = this.authService.getCurrentUser()?.role_id === 0
+  constructor(
+    private authService: AuthService,
+    public taskService: TaskService,
+    public projectService: ProjectService
+  ) {
+    const isStudent = this.authService.getCurrentUser()?.role_id === 0;
     this.isDraggingDisabled = !isStudent;
 
     // console.log('projectid changed:', this.projectService.activeProjectIdSignal())
