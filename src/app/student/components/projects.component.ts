@@ -37,7 +37,7 @@ import { ProjectService } from 'src/app/services/project.service';
 export class ProjectsComponent implements OnInit {
   projects: {
     name: string;
-    uid: string;
+    uid: number;
     description: string;
     members: string[];
   }[] = [];
@@ -72,10 +72,11 @@ export class ProjectsComponent implements OnInit {
 
   constructor(private router: Router, private projectService: ProjectService) {}
 
-  navigateToProject(uid: string) {
+  navigateToProject(uid: number) {
     return () => {
+      console.log('student: navigate to project:', uid);
       this.router.navigate(['s', 'project', uid]);
-      this.projectService.activeProjectId = uid;
+      this.projectService.activeProjectIdSignal.set(uid);
     };
   }
 

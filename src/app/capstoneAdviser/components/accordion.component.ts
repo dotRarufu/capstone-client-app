@@ -40,15 +40,15 @@ export class AccordionComponent {
 
   @Input() projects: {
     name: string;
-    uid: string;
+    uid: number;
     description: string;
     members: string[];
   }[] = [];
 
-  navigateToProject(uid: string) {
+  navigateToProject(uid: number) {
     return () => {
       this.router.navigate(['c', 'project', uid]);
-      this.projectService.activeProjectId = uid;
+      this.projectService.activeProjectIdSignal.set(uid);
     };
   }
 }

@@ -37,7 +37,7 @@ import { ProjectService } from 'src/app/services/project.service';
 export class TitleAnalyzerComponent implements OnInit {
   projects: {
     name: string;
-    uid: string;
+    uid: number;
     description: string;
     members: string[];
   }[] = [];
@@ -96,10 +96,10 @@ export class TitleAnalyzerComponent implements OnInit {
 
   constructor(private router: Router, private projectService: ProjectService) {}
 
-  navigateToProject(uid: string) {
+  navigateToProject(uid: number) {
     return () => {
       this.router.navigate(['s', 'project', uid]);
-      this.projectService.activeProjectId = uid;
+      this.projectService.activeProjectIdSignal.set(uid);
     };
   }
 

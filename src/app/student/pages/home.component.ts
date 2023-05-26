@@ -39,7 +39,7 @@ import { Tab } from 'src/app/models/tab';
     </div>
 
     <app-modal (checkboxChanged)="this.alreadyHaveTitle = !$event">
-      <div class="flex flex-col gap-[16px]">
+      <div class="flex flex-col gap-[16px] p-6">
         <ng-container *ngIf="alreadyHaveTitle">
           <h1
             class="text-center text-[24px] text-base-content min-[444px]:text-left"
@@ -137,7 +137,7 @@ export class HomeComponent implements OnInit {
   ];
   projects: {
     name: string;
-    uid: string;
+    uid: number;
     description: string;
     members: string[];
   }[] = [];

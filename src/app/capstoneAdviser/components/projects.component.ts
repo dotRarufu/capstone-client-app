@@ -49,7 +49,7 @@ export class ProjectsComponent {
   search: string = '';
   projects: {
     name: string;
-    uid: string;
+    uid: number;
     description: string;
     members: string[];
   }[] = [];

@@ -5,8 +5,10 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { authGuard } from './guards/auth.guard';
 import { ProjectComponent as CapstoneAdviserProject } from './capstoneAdviser/pages/project.component';
+import { ProjectComponent as StudentProject } from './student/pages/project.component';
 import { SharedModule } from './shared/shared.module';
 import { FormGeneratorComponent } from './shared/components/formGenerator.component';
+import { TasksComponent } from './shared/components/tasks.component';
 import { LandingPageModule } from './pages/landing/landingPage.module';
 import { LandingComponent } from './pages/landing/components/landing.component';
 import { HomeComponent as CapstoneAdviserHome } from './capstoneAdviser/pages/home.component';
@@ -17,7 +19,7 @@ import { FormComponent } from './shared/components/form.component';
 import { DashboardComponent } from './capstoneAdviser/components/dashboard.component';
 import { HomeComponent as StudentHome } from './student/pages/home.component';
 import { StudentModule } from './student/student.module';
-import { ProjectsComponent } from './student/components/projects.component';
+import { ProjectsComponent } from './capstoneAdviser/components/projects.component';
 import { TitleAnalyzerComponent } from './student/components/titleAnalyzer.component';
 import { ResultComponent as StudentTitleAnalyzerResult } from './student/pages/result.component';
 
@@ -62,39 +64,39 @@ const routes: Routes = [
         children: [
           {
             path: ':projectId',
-            component: CapstoneAdviserProject,
+            component: StudentProject,
             canActivate: [authGuard],
             children: [
               {
+                path: 'tasks',
+                component: TasksComponent,
+              },
+              {
                 path: 'forms',
                 component: FormGeneratorComponent,
-                canActivate: [authGuard],
+
                 children: [
                   {
                     path: '1',
                     component: FormComponent,
-                    canActivate: [authGuard],
                   },
                   {
                     path: '2',
                     component: FormComponent,
-                    canActivate: [authGuard],
                   },
                   {
                     path: '3',
                     component: FormComponent,
-                    canActivate: [authGuard],
                   },
                   {
                     path: '4',
                     component: FormComponent,
-                    canActivate: [authGuard],
                   },
                 ],
               },
             ],
           },
-          { path: '', redirectTo: '/c/home/projects', pathMatch: 'full' },
+          { path: '', redirectTo: '/s/home/projects', pathMatch: 'full' },
         ],
       },
       { path: '', redirectTo: '/s/home/title-analyzer', pathMatch: 'full' },
@@ -126,13 +128,17 @@ const routes: Routes = [
       },
       {
         path: 'project',
-        canActivate: [authGuard],
+        // canActivate: [authGuard],
         children: [
           {
             path: ':projectId',
             component: CapstoneAdviserProject,
 
             children: [
+              {
+                path: 'tasks',
+                component: TasksComponent,
+              },
               {
                 path: 'forms',
                 component: FormGeneratorComponent,

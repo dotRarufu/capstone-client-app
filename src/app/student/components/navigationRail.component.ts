@@ -79,12 +79,12 @@ export class NavigationRailComponent implements OnInit {
   navigateTo(path: string) {
     console.log('path:', path);
     // todo: make the "c" dynamic
-    this.router.navigate(['c', 'project', this.projectId, path]);
+    this.router.navigate(['s', 'project', this.projectId, path]);
   
   }
 
   navigateToHome() {
-    this.router.navigate(['c', 'home']);
+    this.router.navigate(['s', 'home']);
   }
 
   handleMenuClick() {

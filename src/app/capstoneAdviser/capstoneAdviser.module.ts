@@ -9,6 +9,7 @@ import { NavigationRailComponent } from './components/navigationRail.component';
 import { ProjectComponent } from './pages/project.component';
 import { SideBarComponent } from './components/sidebar.component';
 import { ProjectsComponent } from './components/projects.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,7 @@ import { ProjectsComponent } from './components/projects.component';
     SideBarComponent,
     ProjectsComponent,
   ],
-  imports: [SharedModule],
+  imports: [SharedModule, DragDropModule],
   exports: [HomeComponent, ProjectComponent],
 })
 export class CapstoneAdviserModule {}

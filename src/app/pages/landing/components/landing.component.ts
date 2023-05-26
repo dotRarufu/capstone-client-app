@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-landing',
   template: `
     <div
-      class="h-[clamp(100%, fit-content)] relative grid w-full place-content-center py-16"
+      class="h-screen relative grid w-full place-content-center py-16"
     >
       <img
         src="assets/plv-100.jpg"

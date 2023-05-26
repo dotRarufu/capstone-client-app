@@ -8,6 +8,7 @@ import { TabsComponent } from './components/tabs.component';
 import { NotFoundComponent } from './components/notFound.component';
 import { FormComponent } from './components/form.component';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FeatherModule } from 'angular-feather';
 import {
   ArrowLeft,
@@ -24,11 +25,16 @@ import {
   Plus,
   Zap,
   Heart,
-  LogOut
+  LogOut,
+  User,
+  X
 } from 'angular-feather/icons';
 import { TopAppBarComponent } from './components/topAppBar.component';
 import { ProjectCardComponent } from './components/projectCard.component';
 import { ModalComponent } from './components/modal.component';
+import { AccordionComponent } from './components/accordion.component';
+import { TaskCardComponent } from './components/taskCard.component';
+import { TasksComponent } from './components/tasks.component';
 
 const icons = {
   ArrowLeft,
@@ -45,7 +51,9 @@ const icons = {
   Plus,
   Zap,
   Heart,
-  LogOut
+  LogOut,
+  User,
+  X
 };
 
 @NgModule({
@@ -55,8 +63,11 @@ const icons = {
     FormComponent,
     NotFoundComponent,
     TopAppBarComponent,
-       ProjectCardComponent,
-       ModalComponent
+    ProjectCardComponent,
+    ModalComponent,
+    AccordionComponent,
+    TaskCardComponent,
+    TasksComponent,
   ],
   imports: [
     CommonModule,
@@ -64,6 +75,7 @@ const icons = {
     RouterModule,
     PdfViewerModule,
     NgxDocViewerModule,
+    DragDropModule,
     FeatherModule.pick(icons),
   ],
   exports: [
@@ -77,7 +89,10 @@ const icons = {
     FeatherModule,
     TopAppBarComponent,
     ProjectCardComponent,
-    ModalComponent
+    ModalComponent,
+    AccordionComponent,
+    TaskCardComponent,
+    TasksComponent,
   ],
 })
 export class SharedModule {}

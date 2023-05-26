@@ -1,14 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SupabaseService } from '../services/supabase.service';
 import { AuthService } from '../services/auth.service';
 
 
-export const roleGuard = () => {
+export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  const state = inject(ActivatedRouteSnapshot);
+  // const state = inject(ActivatedRoute);
 
   const currentUser = authService.getCurrentUser();
 
@@ -23,7 +23,7 @@ export const roleGuard = () => {
 
   const root = firstChild.url.toString();
   const userRolePath = getRolePath(userRole);
-
+ 
   if (root === userRolePath) return true;
 
   // todo: navigate to unauthorized

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import {
   createClient,
   SupabaseClient,
@@ -16,25 +16,25 @@ import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
 export class ProjectService {
   projects: {
     name: string;
-    uid: string;
+    uid: number;
     description: string;
     members: string[];
   }[] = [
     {
       name: 'Capstool',
-      uid: '0',
+      uid: 0,
       description: 'project description example',
       members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
     },
     {
       name: 'Capstool 2',
-      uid: '213k-das2-fds3',
+      uid: 1,
       description: 'project description example',
       members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
     },
     {
       name: 'Capstool 3',
-      uid: '213k-das2-fds3',
+      uid: 1,
       description: 'project description example',
       members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
     },
@@ -51,6 +51,7 @@ export class ProjectService {
   }
 
   activeProjectId: string = '';
+  activeProjectIdSignal = signal(-1);
 
   getProjects() {
     return this.projects;

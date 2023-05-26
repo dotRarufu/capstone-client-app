@@ -14,7 +14,7 @@ import { ActivatedRoute } from '@angular/router';
       for="app-modal"
       class="modal modal-bottom cursor-pointer sm2:modal-middle"
     >
-      <label class="modal-box relative rounded-[4px]" for="">
+      <label class="modal-box relative p-0 rounded-[3px]" for="">
         <ng-content></ng-content>
       </label>
     </label>

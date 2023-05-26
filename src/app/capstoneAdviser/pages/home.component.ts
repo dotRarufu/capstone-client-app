@@ -119,7 +119,7 @@ export class HomeComponent implements OnInit {
   ];
   projects: {
     name: string;
-    uid: string;
+    uid: number;
     description: string;
     members: string[];
   }[] = [];

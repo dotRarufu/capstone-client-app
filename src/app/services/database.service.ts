@@ -10,7 +10,10 @@ import { User } from '../types/collection';
   providedIn: 'root',
 })
 export class DatabaseService {
-  constructor(private supabaseService: SupabaseService) {}
+  readonly client;
+  constructor(private supabaseService: SupabaseService) {
+    this.client = this.supabaseService.client
+  }
 
   updateUserData(
     userId: string,
@@ -31,7 +34,7 @@ export class DatabaseService {
 
     return query$;
   }
-
+  
   async getUserData(authRes: AuthResponse) {
     if (authRes.data.user == null) throw new Error('user is null');
 
@@ -58,6 +61,7 @@ export class DatabaseService {
   }
 
       // todo: do this in backend instead
+      // todo: move in projectService, just like in task.service
   async getProjectsFromCategory(categoryId: number) {
     const projectIds = (
       await this.supabaseService.client

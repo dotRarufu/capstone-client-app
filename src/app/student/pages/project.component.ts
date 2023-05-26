@@ -10,7 +10,7 @@ import {
 } from '@angular/cdk/drag-drop';
 
 @Component({
-  selector: 'app-project',
+  selector: 'app-student-project',
   template: `
     <!-- <div class="flex h-screen">
       <app-nav-rail></app-nav-rail>
