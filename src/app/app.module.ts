@@ -22,6 +22,8 @@ import { StudentModule } from './student/student.module';
 import { ProjectsComponent } from './capstoneAdviser/components/projects.component';
 import { TitleAnalyzerComponent } from './student/components/titleAnalyzer.component';
 import { ResultComponent as StudentTitleAnalyzerResult } from './student/pages/result.component';
+import { ParticipantsComponent } from './shared/components/participants.component';
+import { ConsultationsComponent as StudentConsultationsComponent } from './student/components/consultations.component';
 
 const routes: Routes = [
   {
@@ -56,6 +58,7 @@ const routes: Routes = [
             component: StudentHome,
             data: { path: 'projects' },
           },
+          
           { path: '', redirectTo: '/s/home/title-analyzer', pathMatch: 'full' },
         ],
       },
@@ -69,6 +72,15 @@ const routes: Routes = [
               {
                 path: 'tasks',
                 component: TasksComponent,
+              },
+              {
+                path: 'participants',
+                //todo: this comp should not be placed in shared, fix it later
+                component: ParticipantsComponent
+              },
+              {
+                path: 'consultations',
+                component: StudentConsultationsComponent
               },
               {
                 path: 'forms',

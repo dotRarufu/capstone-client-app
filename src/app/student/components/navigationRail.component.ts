@@ -31,12 +31,14 @@ import { ProjectService } from 'src/app/services/project.service';
           Dashboard
         </button>
         <button
+        (click)="navigateTo('consultations')"
           class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
         >
         <i-feather name="clipboard" ></i-feather>
           Consult
         </button>
         <button
+          (click)="navigateTo('participants')"
           class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
         >
         <i-feather name="users" ></i-feather>
@@ -64,7 +66,7 @@ import { ProjectService } from 'src/app/services/project.service';
 export class NavigationRailComponent implements OnInit {
   search: string = '';
   @Output() toggleDrawer: EventEmitter<string> = new EventEmitter();
-  projectId: string = '';
+  projectId = -1;
 
   constructor(
     private router: Router,
@@ -73,12 +75,13 @@ export class NavigationRailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.projectId = this.projectService.activeProjectId;
+    this.projectId = this.projectService.activeProjectIdSignal();
   }
 
   navigateTo(path: string) {
     console.log('path:', path);
     // todo: make the "c" dynamic
+    console.log('navigate with:', this.projectId);
     this.router.navigate(['s', 'project', this.projectId, path]);
   
   }

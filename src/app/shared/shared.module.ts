@@ -35,6 +35,7 @@ import { ModalComponent } from './components/modal.component';
 import { AccordionComponent } from './components/accordion.component';
 import { TaskCardComponent } from './components/taskCard.component';
 import { TasksComponent } from './components/tasks.component';
+import { ParticipantsComponent } from './components/participants.component';
 
 const icons = {
   ArrowLeft,
@@ -68,6 +69,7 @@ const icons = {
     AccordionComponent,
     TaskCardComponent,
     TasksComponent,
+    ParticipantsComponent
   ],
   imports: [
     CommonModule,
@@ -93,6 +95,7 @@ const icons = {
     AccordionComponent,
     TaskCardComponent,
     TasksComponent,
+    ParticipantsComponent
   ],
 })
 export class SharedModule {}
