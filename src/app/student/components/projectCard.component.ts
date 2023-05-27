@@ -4,7 +4,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   selector: 'app-student-project-card',
   template: `
     <div
-      class="border border-base-content/50 card-compact card h-fit w-full max-w-[262px] rounded-[4px] bg-base-100 shadow-md"
+      class="border border-base-content/50 card-compact card h-fit max-w-[262px] rounded-[4px] bg-base-100 shadow-md"
     >
       <figure class="h-[92px] bg-secondary">
         <h2  (click)="handleCardClick()" class="link-hover link card-title  w-full px-4 text-left text-secondary-content">

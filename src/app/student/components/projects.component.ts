@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Tab } from 'src/app/models/tab';
 import { ProjectService } from 'src/app/services/project.service';
@@ -6,8 +6,9 @@ import { ProjectService } from 'src/app/services/project.service';
 @Component({
   selector: 'app-student-projects',
   template: `
+  <ng-container *ngIf="!sideColumn">
     <div class="w-full md:w-[294px] md:flex-shrink-0  md:basis-[294px] ">
-      <div class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full ">
+      <div class="flex w-full flex-col gap-[16px] mx-auto sm2:w-[840px] md:w-full  ">
         <div class="flex justify-between ">
           <h1 class="text-[32px] text-base-content">Projects</h1>
           <label
@@ -23,7 +24,7 @@ import { ProjectService } from 'src/app/services/project.service';
         <div class="h-[2px] w-full bg-base-content/10"></div>
 
         <div
-          class="flex flex-wrap justify-center gap-[24px] py-[1rem] sm1:justify-start md:justify-center"
+          class="grid grid-cols-1 sm1:grid-cols-2 sm2:grid-cols-3 grid-flow-row items-center  justify-items-center gap-[24px] py-[1rem] sm1:justify-start md:justify-center"
         >
           <app-student-project-card
             *ngFor="let project of projects"
@@ -33,6 +34,37 @@ import { ProjectService } from 'src/app/services/project.service';
         </div>
       </div>
     </div>
+    </ng-container>
+
+    <ng-container *ngIf="sideColumn">
+    <div class="w-full md:w-[294px] md:flex-shrink-0  md:basis-[294px] ">
+      <div class="flex w-full flex-col gap-[16px] mx-auto sm2:w-[840px] md:w-full  ">
+        <div class="flex justify-between ">
+          <h1 class="text-[32px] text-base-content">Projects</h1>
+          <label
+            for="add-project"
+            class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+          >
+            <i-feather name="plus"></i-feather>
+
+            Add
+          </label>
+        </div>
+
+        <div class="h-[2px] w-full bg-base-content/10"></div>
+
+        <div
+          class="grid grid-cols-1  justify-items-center gap-[24px] py-[1rem] "
+        >
+          <app-student-project-card
+            *ngFor="let project of projects"
+            [navigateTo]="navigateToProject(project.uid)"
+          >
+          </app-student-project-card>
+        </div>
+      </div>
+    </div>
+    </ng-container>
 
     <app-modal inputId="add-project">
       <div class="flex flex-col rounded-[3px] border border-base-content/10 w-[712px]">
@@ -115,6 +147,7 @@ export class ProjectsComponent implements OnInit {
       },
     },
   ];
+  @Input() sideColumn? = false;
 
   constructor(private router: Router, private projectService: ProjectService) {}
 

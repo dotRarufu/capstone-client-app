@@ -104,6 +104,14 @@ export class DatabaseService {
     return count;
   }
 
+  async getCategoryName(categoryId: number) {
+    const response = await this.client.from('categories').select('name').eq('category_id', categoryId);
+
+    if (response.error) throw new Error(`error getting category name for ${categoryId}`)
+
+    return response.data[0].name;
+  }
+
 }
 
 // todo move in utils

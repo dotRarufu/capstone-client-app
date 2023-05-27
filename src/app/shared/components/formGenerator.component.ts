@@ -126,7 +126,7 @@ export class FormGeneratorComponent implements OnInit {
   ngOnInit(): void {
     this.projectId = this.projectService.activeProjectIdSignal();
     this.projectService.formUrl$.subscribe((a) => {
-      this.downloadUrl = a || this.pdfSrc();
+      this.downloadUrl = a;
       this.filename = getFileName(a);
 
     });

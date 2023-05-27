@@ -30,7 +30,7 @@ export class FormComponent {
 
   constructor(private projectService: ProjectService, private spinner: NgxSpinnerService) {
     this.spinner.show();
-    this.projectService.formUrl$.subscribe((url) => (this.src = url || this.src));
+    this.projectService.formUrl$.subscribe((url) => (this.src = url));
     
   }
 

@@ -5,6 +5,7 @@ import { Tab } from 'src/app/models/tab';
 import { TitleAnalyzerResult } from 'src/app/models/titleAnalyzerResult';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { DatabaseService } from 'src/app/services/database.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 interface AnalysesDataItem {
   heading: string;
@@ -139,6 +140,8 @@ interface InformationalDataItem {
         </div>
       </div>
     </div>
+
+    <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
   `,
 })
 export class ResultComponent implements OnInit {
@@ -148,6 +151,7 @@ export class ResultComponent implements OnInit {
   informationalData: { heading: string; content: string[] }[] = [];
 
   async prepareAnalysesData(data: TitleAnalyzerResult) {
+    this.spinner.show();
     const substantiveWordCount: AnalysesDataItem = {
       heading: 'Substantive Word Count',
       value: data.substantive_words.count,
@@ -171,15 +175,20 @@ export class ResultComponent implements OnInit {
       )}`,
     };
 
-    // do not show how the title and the past projects are similar to each other
-
     const categoryIds = data.category_rarity.report.map(
       (item) => item.category_id
     );
     const titles = (
       await Promise.all(
         categoryIds.map(
-          async (id) => await this.databaseService.getProjectsFromCategory(id)
+          // concatenate the category name to the title
+          async (id) => {
+            const category = await this.databaseService.getCategoryName(id);
+            const titles = await this.databaseService.getProjectsFromCategory(id);
+            const newTitles = titles.map(t => `${t} - ${category}`)  
+
+            return newTitles;
+          }
         )
       )
     ).flat();
@@ -207,6 +216,8 @@ export class ResultComponent implements OnInit {
     this.informationalData = [similarProjects, suggestions];
     this.title = data.title;
     this.analysesData = [substantiveWordCount, titleUniqueness, readability];
+
+    this.spinner.hide();
   }
 
   tabs: Tab[] = [
@@ -244,7 +255,8 @@ export class ResultComponent implements OnInit {
     private route: ActivatedRoute,
     private projectService: ProjectService,
     private supabaseService: SupabaseService,
-    private databaseService: DatabaseService
+    private databaseService: DatabaseService,
+    private spinner: NgxSpinnerService
   ) {}
 
   ngOnInit(): void {

@@ -16,7 +16,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
       <div
         class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
       >
-        <div class="md:hidden">
+        <div class="md:hidden w-full">
           <app-student-title-analyzer
             *ngIf="checkPath('title-analyzer')"
             (analyzeClicked)="this.alreadyHaveTitle = true"
@@ -33,7 +33,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
           ></app-student-title-analyzer>
 
           <div class=" w-[294px] flex-shrink-0  basis-[294px] ">
-            <app-student-projects></app-student-projects>
+            <app-student-projects [sideColumn]="true"></app-student-projects>
           </div>
         </div>
       </div>
