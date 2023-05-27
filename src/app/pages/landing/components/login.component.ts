@@ -6,6 +6,7 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { AuthService } from 'src/app/services/auth.service';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { User } from 'src/app/types/collection';
@@ -14,7 +15,7 @@ import { User } from 'src/app/types/collection';
   selector: 'app-login',
   template: `
     <div
-      class="max-h-[568px] flex h-fit w-full max-w-[387px] flex-col gap-4 rounded-[3px] bg-base-100 px-[2rem] py-8"
+      class="flex h-fit max-h-[568px] w-full max-w-[387px] flex-col gap-4 rounded-[3px] bg-base-100 px-[2rem] py-8"
     >
       <div class="flex flex-col gap-2 py-4">
         <h1 class="text-[2rem]">Login</h1>
@@ -36,12 +37,15 @@ import { User } from 'src/app/types/collection';
         [(ngModel)]="password"
         class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
       />
+
       <button
+        
         (click)="handleButtonClick()"
         class="btn-primary btn w-full  rounded-[3px]  text-center text-base "
       >
         LOGIN
       </button>
+      
       <div class="flex flex-col gap-2">
         <div class="flex flex-row items-center gap-2 opacity-75">
           <div class="flex h-full flex-grow items-center">
@@ -99,6 +103,9 @@ import { User } from 'src/app/types/collection';
         >
       </div>
     </div>
+
+    <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
+  
   `,
 })
 export class LoginComponent {
@@ -109,17 +116,23 @@ export class LoginComponent {
   constructor(
     private supabaseService: SupabaseService,
     private authService: AuthService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private spinner: NgxSpinnerService
+  ) {
+  }
 
   handleButtonClick() {
+    this.spinner.show();
     const signIn$ = this.authService.login(this.email, this.password);
-    signIn$.subscribe((user) => {
+    signIn$.subscribe({next: (user) => {
       // todo: refactor
       const role = getRolePath(user);
-      console.log('role:', role, 'role id:', user.role_id)
+      console.log('role:', role, 'role id:', user.role_id);
+      this.spinner.hide();
       this.router.navigate([role]);
-    });
+    },
+    error: () =>  this.spinner.hide()
+  });
   }
 
   navigateToSignUp() {
@@ -141,9 +154,8 @@ const getRolePath = (user: User) => {
       role = 't';
       break;
     default:
-      throw new Error('user role error')
-      
+      throw new Error('user role error');
   }
 
   return role;
-}
+};

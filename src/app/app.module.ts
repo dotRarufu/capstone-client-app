@@ -1,4 +1,4 @@
-import { Component, NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { ActivatedRoute, Router, RouterModule, Routes } from '@angular/router';
@@ -36,6 +36,8 @@ import { RedirectComponent } from './shared/components/redirect.component';
 import { ConsultationsComponent as CapstoneAdviserConsultationsComponent } from './capstoneAdviser/components/consultations.component';
 import { ConsultationsComponent as TechnicalAdviserConsultationsComponent } from './technicalAdviser/components/consultations.component';
 import { DashboardComponent } from './shared/components/dashboard.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 const routes: Routes = [
   {

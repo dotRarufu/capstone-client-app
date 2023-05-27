@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { AuthService } from 'src/app/services/auth.service';
 import { SupabaseService } from 'src/app/services/supabase.service';
 
@@ -145,6 +146,8 @@ import { SupabaseService } from 'src/app/services/supabase.service';
        
       </div>
     </ng-container>
+
+    <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
   `,
 })
 export class SignupComponent {
@@ -160,15 +163,18 @@ export class SignupComponent {
   constructor(
     private supabaseService: SupabaseService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private spinner: NgxSpinnerService
   ) {}
 
   handleButtonClick() {
+    this.spinner.show();
     if (this.fullName.length === 0) throw Error('wip: name is empty');
 
-    const user = { name: this.fullName, roleId: this.roleId };
+    const user = { name: this.fullName, roleId: this.roleId };  
     // todo: separate the fields in different screens to prevent resizing of container
     this.authService.signUp(this.email, this.password, user).subscribe((v) => {
+      this.spinner.hide();
       this.navigateToLogin();
     });
   }

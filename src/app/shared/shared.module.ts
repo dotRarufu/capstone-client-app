@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA  } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -38,6 +38,8 @@ import { ParticipantsComponent } from './components/participants.component';
 import { NgChartsModule } from 'ng2-charts';
 import { RedirectComponent } from './components/redirect.component';
 import { DashboardComponent } from './components/dashboard.component';
+import { NgxSpinnerModule } from "ngx-spinner";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 const icons = {
   ArrowLeft,
@@ -83,6 +85,8 @@ const icons = {
     DragDropModule,
     NgChartsModule,
     FeatherModule.pick(icons),
+    NgxSpinnerModule,
+    BrowserAnimationsModule,
   ],
   exports: [
     FormsModule,
@@ -102,6 +106,9 @@ const icons = {
     RedirectComponent,
     DashboardComponent,
     DragDropModule,
+    NgxSpinnerModule,
+    BrowserAnimationsModule,
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {}

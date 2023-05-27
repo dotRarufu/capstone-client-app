@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TopAppBarService } from 'src/app/services/top-app-bar.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-top-app-bar',
@@ -37,6 +38,7 @@ import { AuthService } from 'src/app/services/auth.service';
         
       </div>
     </div>
+    <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
   `,
 })
 // todo: fix the background of login at laptop breakpoint
@@ -46,7 +48,7 @@ export class TopAppBarComponent implements OnInit{
   activePath = '';
 
   // watch for changes in
-  constructor(private topAppBarService: TopAppBarService, private authService: AuthService) {
+  constructor(private topAppBarService: TopAppBarService, private authService: AuthService, private spinner: NgxSpinnerService) {
     // todo: add unsubscribe or convert to signal
     this.topAppBarService.activePath$
       .subscribe
@@ -55,7 +57,8 @@ export class TopAppBarComponent implements OnInit{
   }
 
   signOut() {
-    this.authService.signOut()
+    this.spinner.show();
+    this.authService.signOut().subscribe(v => this.spinner.hide())
   }
 
   ngOnInit(): void {

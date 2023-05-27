@@ -90,7 +90,10 @@ export class AuthService {
     return signUp$;
   }
 
-  async signOut() {
-    await this.supabaseService.client.auth.signOut();
+  signOut() {
+    const signOut = this.supabaseService.client.auth.signOut();
+    const signOut$ = from(signOut);
+
+    return signOut$;
   }
 }

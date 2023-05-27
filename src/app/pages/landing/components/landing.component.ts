@@ -31,12 +31,16 @@ import { Component } from '@angular/core';
         />
       </div>
     </div>
+
   `,
 })
 export class LandingComponent {
-  isLogin: boolean = true;
+  isLogin = true;
+ 
 
-  constructor() {}
+  constructor() {
+    // window.addEventListener('keydown', () => {this.isLoading = !this.isLoading; console.log('keypress')})
+  }
 
   toSignUp() {
     this.isLogin = false;

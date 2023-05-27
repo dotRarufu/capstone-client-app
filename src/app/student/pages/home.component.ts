@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { Tab } from 'src/app/models/tab';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   template: `
@@ -102,6 +103,8 @@ import { Tab } from 'src/app/models/tab';
         </ng-container>
       </div>
     </app-modal>
+
+    <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
   `,
 })
 export class HomeComponent implements OnInit {
@@ -147,7 +150,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private router: Router,
     private projectService: ProjectService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private spinner: NgxSpinnerService
   ) {}
   path: string = '';
 
@@ -171,7 +174,7 @@ export class HomeComponent implements OnInit {
   // todo maybe move in a service or not
   async navigateTo(path: string) {
     // todo: make the builder page under title analyzer route
-
+    this.spinner.show();
     if (path !== 'result') {
       this.router.navigate(['s', 'home', 'title-analyzer', path]);
       return;
@@ -180,7 +183,8 @@ export class HomeComponent implements OnInit {
     const titleAnalyzerResult = await this.projectService.analyzeTitle(
       this.titleFromAlreadyHaveTitle
     );
-    console.log("passed state:", titleAnalyzerResult)
+    console.log("passed state:", titleAnalyzerResult);
+    this.spinner.hide();
     this.router.navigate(['s', 'home', 'title-analyzer', 'result'], {
       state: { titleAnalyzerResult },
     });
