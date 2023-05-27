@@ -17,22 +17,18 @@ import { Task } from 'src/app/types/collection';
 @Component({
   selector: 'app-tasks',
   template: `
-    <div class="flex flex-col gap-[16px] h-full ">
+    <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
         <h1 class="text-[32px] text-base-content">Tasks</h1>
-        <label
-          for="add-task"
-          class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
-        >
-          <i-feather name="plus"></i-feather>
-
-          Add
-        </label>
+        
       </div>
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <div cdkDropListGroup class="flex gap-[32px] lg:justify-center overflow-x-scroll h-full ">
+      <div
+        cdkDropListGroup
+        class="flex h-full gap-[32px] overflow-x-scroll lg:justify-center "
+      >
         <div class="w-[294px]  shrink-0">
           <app-shared-accordion
             [withArrow]="false"
@@ -52,7 +48,6 @@ import { Task } from 'src/app/types/collection';
                 [cdkDragDisabled]="isDraggingDisabled"
                 [task]="item"
               >
-             
               </app-task-card>
             </div>
           </app-shared-accordion>
@@ -78,7 +73,6 @@ import { Task } from 'src/app/types/collection';
                 [cdkDragDisabled]="isDraggingDisabled"
                 [task]="item"
               >
-            
               </app-task-card>
             </div>
           </app-shared-accordion>
@@ -103,7 +97,6 @@ import { Task } from 'src/app/types/collection';
                 [cdkDragDisabled]="isDraggingDisabled"
                 [task]="item"
               >
-               
               </app-task-card>
             </div>
           </app-shared-accordion>
@@ -112,7 +105,9 @@ import { Task } from 'src/app/types/collection';
     </div>
 
     <app-modal>
-      <div class="flex flex-col rounded-[3px] border border-base-content/10 w-[712px]">
+      <div
+        class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
+      >
         <div class="flex justify-between bg-primary p-[24px]">
           <div class="flex flex-col justify-between">
             <h1 class="text-[24px] text-primary-content">
@@ -130,17 +125,10 @@ import { Task } from 'src/app/types/collection';
           ></label>
         </div>
         <div class="flex bg-base-100">
-          <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
+          <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
             <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
-              <!-- border-base-content/30 bg-base-content/10 hover:border-base-content/30  -->
-              <button
-                class="btn-ghost btn gap-2 rounded-[3px] px-[14px] py-2 text-base-content "
-              >
-                <i-feather name="plus"></i-feather>
-
-                Edit
-              </button>
+             
             </div>
 
             <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -154,28 +142,13 @@ import { Task } from 'src/app/types/collection';
             </div>
           </div>
           <ul
-            class=" flex w-[223px]  flex-col bg-neutral/20 px-[24px] py-[16px] "
+            class=" flex w-[223px]  flex-col bg-neutral/20 py-2 "
           >
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              delete <i-feather name="trash"></i-feather>
-            </li>
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              move <i-feather name="trash"></i-feather>
-            </li>
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              edit <i-feather name="trash"></i-feather>
-            </li>
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              verify <i-feather name="trash"></i-feather>
-            </li>
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              save <i-feather name="trash"></i-feather>
-            </li>
 
             <div class="h-full"></div>
 
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              close <i-feather name="trash"></i-feather>
+            <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+               <i-feather name="trash"></i-feather> close
             </li>
           </ul>
         </div>
@@ -183,13 +156,15 @@ import { Task } from 'src/app/types/collection';
     </app-modal>
 
     <app-modal inputId="add-task">
-      <div class="flex flex-col rounded-[3px] border border-base-content/10 w-[712px]">
+      <div
+        class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
+      >
         <div class="flex justify-between bg-primary p-[24px]">
-          <div class="flex flex-col justify-between w-full">
+          <div class="flex w-full flex-col justify-between">
             <input
               type="text"
               placeholder="Task Title"
-              class="input w-full rounded-[3px] border-l-[2px] border-r-0 border-y-0 border-l-primary-content/50 bg-primary px-3 py-2 text-primary-content placeholder:text-[20px] text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
+              class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
             />
           </div>
           <label
@@ -199,18 +174,19 @@ import { Task } from 'src/app/types/collection';
           ></label>
         </div>
         <div class="flex bg-base-100">
-          <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
+          <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
             <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
             </div>
 
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
-            <textarea class="leading-normal textarea w-full rounded-[3px] border-l-[2px] border-r-0 border-y-0 border-l-primary-content/50 placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 h-[117px]" placeholder="Description"></textarea>
+            <textarea
+              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
+              placeholder="Description"
+            ></textarea>
           </div>
-          <ul
-            class=" flex w-[223px]  flex-col bg-neutral/20 p-0 "
-          >
+          <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 ">
             <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
               done <i-feather name="trash"></i-feather>
             </li>

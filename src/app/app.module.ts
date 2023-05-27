@@ -8,7 +8,8 @@ import { ProjectComponent as CapstoneAdviserProject } from './capstoneAdviser/pa
 import { ProjectComponent as StudentProject } from './student/pages/project.component';
 import { SharedModule } from './shared/shared.module';
 import { FormGeneratorComponent } from './shared/components/formGenerator.component';
-import { TasksComponent } from './shared/components/tasks.component';
+import { TasksComponent } from './student/components/tasks.component';
+import { TasksComponent as CapstoneAdviserTasksComponent } from './capstoneAdviser/components/tasks.component';
 import { LandingPageModule } from './pages/landing/landingPage.module';
 import { LandingComponent } from './pages/landing/components/landing.component';
 import { HomeComponent as CapstoneAdviserHome } from './capstoneAdviser/pages/home.component';
@@ -22,6 +23,7 @@ import { ProjectsComponent } from './capstoneAdviser/components/projects.compone
 import { TitleAnalyzerComponent } from './student/components/titleAnalyzer.component';
 import { ResultComponent as StudentTitleAnalyzerResult } from './student/pages/result.component';
 import { ParticipantsComponent } from './shared/components/participants.component';
+import { ParticipantsComponent as CapstoneAdviserParticipantsComponent } from './capstoneAdviser/components/participants.component';
 import { ConsultationsComponent as StudentConsultationsComponent } from './student/components/consultations.component';
 import { ProjectService } from './services/project.service';
 import { RedirectComponent } from './shared/components/redirect.component';
@@ -61,7 +63,7 @@ const routes: Routes = [
             component: StudentHome,
             data: { path: 'projects' },
           },
-          
+
           { path: '', redirectTo: '/s/home/title-analyzer', pathMatch: 'full' },
         ],
       },
@@ -83,11 +85,11 @@ const routes: Routes = [
               {
                 path: 'participants',
                 //todo: this comp should not be placed in shared, fix it later
-                component: ParticipantsComponent
+                component: ParticipantsComponent,
               },
               {
                 path: 'consultations',
-                component: StudentConsultationsComponent
+                component: StudentConsultationsComponent,
               },
               {
                 path: 'forms',
@@ -116,7 +118,7 @@ const routes: Routes = [
                 path: '',
                 component: RedirectComponent,
                 // redirectTo: redirectToNewPath, pathMatch: 'full'
-                data: {path: ['s','project']}
+                data: { path: ['s', 'project'] },
               },
             ],
           },
@@ -161,13 +163,13 @@ const routes: Routes = [
             children: [
               {
                 path: 'tasks',
-                component: TasksComponent,
+                component: CapstoneAdviserTasksComponent,
               },
               {
                 path: 'participants',
-                component: ParticipantsComponent
+                component: CapstoneAdviserParticipantsComponent,
               },
-                {
+              {
                 path: 'consultations',
                 component: CapstoneAdviserConsultationsComponent,
               },
@@ -202,7 +204,7 @@ const routes: Routes = [
                 path: '',
                 component: RedirectComponent,
                 // redirectTo: redirectToNewPath, pathMatch: 'full'
-                data: {path: ['c','project']}
+                data: { path: ['c', 'project'] },
               },
             ],
           },
@@ -233,5 +235,3 @@ const routes: Routes = [
   bootstrap: [AppComponent],
 })
 export class AppModule {}
-
-

@@ -26,16 +26,16 @@ import { Consultation } from 'src/app/types/collection';
         <div
           class="flex flex-wrap justify-center gap-[24px] p-[1rem] sm1:justify-start"
         >
-          <label for="consultation-modal"
+          <div
             *ngFor="let consultation of scheduled"
-            class="card-compact card h-fit w-full max-w-[262px] cursor-pointer rounded-[4px] border border-base-content/50 bg-base-100 shadow-xl"
+            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
-              <h2
-                class="card-title  w-full px-4 text-left text-secondary-content"
+              <label for="consultation-modal"
+                class="link link-hover card-title  w-full px-4 text-left text-secondary-content"
               >
-                {{ 'untitled' }}
-              </h2>
+                {{ 'Untitled' }}
+              </label>
             </figure>
             <div class="card-body">
               <p class="text-sm">Location: {{ consultation.location }}</p>
@@ -45,43 +45,15 @@ import { Consultation } from 'src/app/types/collection';
               </p>
 
               <div class="card-actions justify-end">
-                <button
+                <label for="consultation-modal"
                   class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                </button>
-                <button
-                  class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
-                >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M16 9V19H8V9H16ZM14.5 3H9.5L8.5 4H5V6H19V4H15.5L14.5 3ZM18 7H6V19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
+                  <i-feather name="log-in"></i-feather>
+                </label>
+               
               </div>
             </div>
-          </label>
+          </div>
         </div>
       </app-shared-accordion>
       <app-shared-accordion heading="Completed">
@@ -90,14 +62,14 @@ import { Consultation } from 'src/app/types/collection';
         >
           <div
             *ngFor="let consultation of scheduled"
-            class="card-compact card h-fit w-full max-w-[262px] cursor-pointer rounded-[4px] border border-base-content/50 bg-base-100 shadow-xl"
+            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
-              <h2
-                class="card-title  w-full px-4 text-left text-secondary-content"
+              <label for="consultation-modal"
+                class="link link-hover card-title  w-full px-4 text-left text-secondary-content"
               >
-                {{ 'untitled' }}
-              </h2>
+                {{ 'Untitled' }}
+              </label>
             </figure>
             <div class="card-body">
               <p class="text-sm">Location: {{ consultation.location }}</p>
@@ -107,40 +79,12 @@ import { Consultation } from 'src/app/types/collection';
               </p>
 
               <div class="card-actions justify-end">
-                <button
+                <label for="consultation-modal"
                   class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                </button>
-                <button
-                  class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
-                >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M16 9V19H8V9H16ZM14.5 3H9.5L8.5 4H5V6H19V4H15.5L14.5 3ZM18 7H6V19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
+                  <i-feather name="log-in"></i-feather>
+                </label>
+               
               </div>
             </div>
           </div>
@@ -152,14 +96,14 @@ import { Consultation } from 'src/app/types/collection';
         >
           <div
             *ngFor="let consultation of scheduled"
-            class="card-compact card h-fit w-full max-w-[262px] cursor-pointer rounded-[4px] border border-base-content/50 bg-base-100 shadow-xl"
+            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
-              <h2
-                class="card-title  w-full px-4 text-left text-secondary-content"
+              <label for="consultation-modal"
+                class="link link-hover card-title  w-full px-4 text-left text-secondary-content"
               >
-                {{ 'untitled' }}
-              </h2>
+                {{ 'Untitled' }}
+              </label>
             </figure>
             <div class="card-body">
               <p class="text-sm">Location: {{ consultation.location }}</p>
@@ -169,40 +113,12 @@ import { Consultation } from 'src/app/types/collection';
               </p>
 
               <div class="card-actions justify-end">
-                <button
+                <label for="consultation-modal"
                   class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                </button>
-                <button
-                  class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
-                >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M16 9V19H8V9H16ZM14.5 3H9.5L8.5 4H5V6H19V4H15.5L14.5 3ZM18 7H6V19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
+                  <i-feather name="log-in"></i-feather>
+                </label>
+               
               </div>
             </div>
           </div>
@@ -237,7 +153,7 @@ import { Consultation } from 'src/app/types/collection';
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <textarea
-              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 text-base leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0"
+              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 text-base leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0"
               placeholder="Description"
             ></textarea>
 
@@ -262,19 +178,19 @@ import { Consultation } from 'src/app/types/collection';
             <input
               type="text"
               placeholder="comlab 3"
-              class="bg-base input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 px-3 py-2 text-[20px] text-base 
-text-base-content placeholder:text-[20px] placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+              class="bg-base input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 px-3 py-2 text-base 
+text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
             />
           </div>
-          <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 ">
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              done <i-feather name="trash"></i-feather>
+          <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 py-2">
+            <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+               <i-feather name="trash"></i-feather> schedule
             </li>
 
             <div class="h-full"></div>
 
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              close <i-feather name="trash"></i-feather>
+            <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+               <i-feather name="trash"></i-feather> cancel
             </li>
           </ul>
         </div>
@@ -351,28 +267,14 @@ text-base-content placeholder:text-[20px] placeholder:text-base-content placehol
                                   
           </div>
           <ul
-            class=" flex w-[223px]  flex-col bg-neutral/20 px-[24px] py-[16px] "
+            class=" flex w-[223px]  flex-col bg-neutral/20 py-2 "
           >
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              delete <i-feather name="trash"></i-feather>
-            </li>
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              move <i-feather name="trash"></i-feather>
-            </li>
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              edit <i-feather name="trash"></i-feather>
-            </li>
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              verify <i-feather name="trash"></i-feather>
-            </li>
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              save <i-feather name="trash"></i-feather>
-            </li>
+         
 
             <div class="h-full"></div>
 
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              close <i-feather name="trash"></i-feather>
+            <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+              <i-feather name="trash"></i-feather> close 
             </li>
           </ul>
         </div>

@@ -27,14 +27,13 @@ import {
   Heart,
   LogOut,
   User,
-  X
+  X,
+  LogIn,
 } from 'angular-feather/icons';
 import { TopAppBarComponent } from './components/topAppBar.component';
-import { ProjectCardComponent } from './components/projectCard.component';
 import { ModalComponent } from './components/modal.component';
 import { AccordionComponent } from './components/accordion.component';
 import { TaskCardComponent } from './components/taskCard.component';
-import { TasksComponent } from './components/tasks.component';
 import { ParticipantsComponent } from './components/participants.component';
 import { NgChartsModule } from 'ng2-charts';
 import { RedirectComponent } from './components/redirect.component';
@@ -57,7 +56,8 @@ const icons = {
   Heart,
   LogOut,
   User,
-  X
+  X,
+  LogIn
 };
 
 @NgModule({
@@ -67,11 +67,9 @@ const icons = {
     FormComponent,
     NotFoundComponent,
     TopAppBarComponent,
-    ProjectCardComponent,
     ModalComponent,
     AccordionComponent,
     TaskCardComponent,
-    TasksComponent,
     ParticipantsComponent,
     RedirectComponent,
     DashboardComponent
@@ -96,15 +94,14 @@ const icons = {
     TabsComponent,
     FeatherModule,
     TopAppBarComponent,
-    ProjectCardComponent,
     ModalComponent,
     AccordionComponent,
     TaskCardComponent,
-    TasksComponent,
     ParticipantsComponent,
     NgChartsModule,
     RedirectComponent,
     DashboardComponent,
+    DragDropModule,
   ],
 })
 export class SharedModule {}

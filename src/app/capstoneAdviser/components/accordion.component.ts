@@ -18,11 +18,11 @@ import { ProjectService } from 'src/app/services/project.service';
         <div
           class="flex flex-wrap justify-center gap-[24px] py-[1rem] sm1:justify-start"
         >
-          <app-project-card
+          <app-capstone-adviser-project-card
             *ngFor="let project of projects"
             [navigateTo]="navigateToProject(project.uid)"
           >
-          </app-project-card>
+          </app-capstone-adviser-project-card>
 
           <!-- <app-project-card
             (navigateToProject)="navigateToProject($event)"

@@ -9,18 +9,24 @@ import { Task } from 'src/app/types/collection';
   selector: 'app-task-card',
   template: `
   <label class="" for="app-modal">
-    <div class="rounded-[3px]  bg-base-100 border border-base-content/50 cursor-pointer"> 
+   
+    <div class="shadow-md rounded-[3px]  bg-base-100 border border-base-content/50 cursor-pointer"> 
       <div class="bg-secondary p-[16px] text-secondary-content">
         {{task.title}}
       </div>
       <div class="text-base text-base-content py-[8px] px-[16px] flex items-center justify-end gap-[8px]">
-        {{adviserName}}
-        <div class="avatar rounded-full bg-primary/50">
+        <span class="text-[12px] text-base-content/70">
+          BY
+        </span>
 
-          <i-feather name="user"></i-feather>
-        </div>
+        {{adviserName}}
+        
+
+          <img class="w-8 avatar rounded-full bg-primary/50" src="https://api.multiavatar.com/test.png" alt="assigner profile" srcset="">
+  
       </div>
     </div>
+
   </label>
   `,
 })

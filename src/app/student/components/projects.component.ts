@@ -25,11 +25,11 @@ import { ProjectService } from 'src/app/services/project.service';
         <div
           class="flex flex-wrap justify-center gap-[24px] py-[1rem] sm1:justify-start md:justify-center"
         >
-          <app-project-card
+          <app-student-project-card
             *ngFor="let project of projects"
             [navigateTo]="navigateToProject(project.uid)"
           >
-          </app-project-card>
+          </app-student-project-card>
         </div>
       </div>
     </div>
