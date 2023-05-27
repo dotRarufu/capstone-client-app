@@ -96,7 +96,7 @@ export class FormGeneratorComponent implements OnInit {
       },
     },
   ];
-  projectId: string = 'projectId';
+  projectId = -1;
 
   constructor(
     private router: Router,
@@ -109,6 +109,6 @@ export class FormGeneratorComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.projectId = this.projectService.activeProjectId;
+    this.projectId = this.projectService.activeProjectIdSignal();
   }
 }

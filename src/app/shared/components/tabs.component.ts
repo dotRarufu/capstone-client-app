@@ -44,7 +44,6 @@ export class TabsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const projectId = this.projectService.activeProjectId;
     // this.router.navigate(['c', 'project', projectId, 'forms', '1']);
     // todo: fix tab is not in active color when user initially go to 'home' and does not specify a child path
 

@@ -50,7 +50,7 @@ export class ProjectService {
     );
   }
 
-  activeProjectId: string = '';
+  // todo: rename this, remove "signal"
   activeProjectIdSignal = signal(-1);
 
   getProjects() {
@@ -85,7 +85,7 @@ export class ProjectService {
     const response = await this.supabase.functions.invoke('form-generator', {
       body: {
         formNumber: number,
-        projectId: Number(this.activeProjectId),
+        projectId: this.activeProjectIdSignal(),
         dateTime: 123,
         // todo: update the edge fn to accept dateTimeRange
         // why accept dateTimeRange? why not just output the form 4 without asking for range
