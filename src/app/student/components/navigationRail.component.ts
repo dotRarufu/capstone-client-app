@@ -25,6 +25,7 @@ import { ProjectService } from 'src/app/services/project.service';
           Tasks
         </button>
         <button
+        (click)="navigateTo('dashboard')"
           class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
         >
         <i-feather name="monitor" ></i-feather>

@@ -36,6 +36,7 @@ import { AccordionComponent } from './components/accordion.component';
 import { TaskCardComponent } from './components/taskCard.component';
 import { TasksComponent } from './components/tasks.component';
 import { ParticipantsComponent } from './components/participants.component';
+import { NgChartsModule } from 'ng2-charts';
 
 const icons = {
   ArrowLeft,
@@ -78,6 +79,7 @@ const icons = {
     PdfViewerModule,
     NgxDocViewerModule,
     DragDropModule,
+    NgChartsModule,
     FeatherModule.pick(icons),
   ],
   exports: [
@@ -95,7 +97,8 @@ const icons = {
     AccordionComponent,
     TaskCardComponent,
     TasksComponent,
-    ParticipantsComponent
+    ParticipantsComponent,
+    NgChartsModule,
   ],
 })
 export class SharedModule {}

@@ -10,9 +10,10 @@ import { SideBarComponent } from './components/sidebar.component';
 import { ProjectComponent } from './pages/project.component';
 import { NavigationRailComponent } from './components/navigationRail.component';
 import { ConsultationsComponent } from './components/consultations.component';
+import { DashboardComponent } from './components/dashboard.component';
 
 @NgModule({
-  declarations: [HomeComponent, ProjectsComponent, AccordionComponent, SideBarComponent, ProjectComponent, TitleAnalyzerComponent, ResultComponent, NavigationRailComponent, ConsultationsComponent],
+  declarations: [HomeComponent, ProjectsComponent, AccordionComponent, SideBarComponent, ProjectComponent, TitleAnalyzerComponent, ResultComponent, NavigationRailComponent, ConsultationsComponent, DashboardComponent],
   imports: [SharedModule],
   exports: [HomeComponent],
 })

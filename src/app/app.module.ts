@@ -16,7 +16,7 @@ import { CapstoneAdviserModule } from './capstoneAdviser/capstoneAdviser.module'
 import { roleGuard } from './guards/role.guard';
 import { NotFoundComponent } from './shared/components/notFound.component';
 import { FormComponent } from './shared/components/form.component';
-import { DashboardComponent } from './capstoneAdviser/components/dashboard.component';
+import { DashboardComponent as StudentDashboardComponent } from './student/components/dashboard.component';
 import { HomeComponent as StudentHome } from './student/pages/home.component';
 import { StudentModule } from './student/student.module';
 import { ProjectsComponent } from './capstoneAdviser/components/projects.component';
@@ -69,6 +69,10 @@ const routes: Routes = [
             path: ':projectId',
             component: StudentProject,
             children: [
+              {
+                path: 'dashboard',
+                component: StudentDashboardComponent,
+              },
               {
                 path: 'tasks',
                 component: TasksComponent,
@@ -130,7 +134,7 @@ const routes: Routes = [
           // todo: add role guard, use data property
           {
             path: 'dashboard',
-            component: DashboardComponent,
+            component: StudentDashboardComponent,
             // todo: this might be misplaced
           },
 
