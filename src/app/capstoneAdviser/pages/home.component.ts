@@ -43,11 +43,11 @@ import { Tab } from 'src/app/models/tab';
         <!-- desktop -->
         <div class="hidden w-full gap-[1rem]  md:flex lg:w-[1040px]">
           <!-- projects -->
-          <div class="flex flex-grow flex-col gap-[1rem] ">
+          <div class="flex flex-col gap-[1rem] ">
             <div
               class="flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
             >
-              <h2 class="text-2xl">Projects</h2>
+              <h2 class="text-[24px] sm1:text-[32px]">Projects</h2>
               <div
                 class="input-group rounded-[3px] border border-base-content/50 sm1:max-w-[371px]"
               >
@@ -75,6 +75,7 @@ import { Tab } from 'src/app/models/tab';
                 </button>
               </div>
             </div>
+            <div class="h-[20px] w-full bg-base-content/10"></div>
             <div class="flex w-full flex-shrink flex-col gap-[16px]">
               <app-accordion [projects]="projects"></app-accordion>
               <app-accordion [projects]="projects"></app-accordion>
@@ -82,8 +83,9 @@ import { Tab } from 'src/app/models/tab';
             </div>
           </div>
 
-          <div class=" w-[357px] flex-shrink-0  basis-[357px] ">
-            <app-dashboard></app-dashboard>
+          <div class=" w-[357px] flex-shrink-0  basis-[357px]">
+            <!-- todo: do this in other comps, to reduce repetition of tags -->
+            <app-dashboard [sideColumn]="true"></app-dashboard>
           </div>
         </div>
       </div>

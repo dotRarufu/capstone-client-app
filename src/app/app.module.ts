@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
+import { Component, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
-import { RouterModule, Routes } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule, Routes } from '@angular/router';
 
 import { authGuard } from './guards/auth.guard';
 import { ProjectComponent as CapstoneAdviserProject } from './capstoneAdviser/pages/project.component';
@@ -16,7 +16,6 @@ import { CapstoneAdviserModule } from './capstoneAdviser/capstoneAdviser.module'
 import { roleGuard } from './guards/role.guard';
 import { NotFoundComponent } from './shared/components/notFound.component';
 import { FormComponent } from './shared/components/form.component';
-import { DashboardComponent as StudentDashboardComponent } from './student/components/dashboard.component';
 import { HomeComponent as StudentHome } from './student/pages/home.component';
 import { StudentModule } from './student/student.module';
 import { ProjectsComponent } from './capstoneAdviser/components/projects.component';
@@ -24,6 +23,10 @@ import { TitleAnalyzerComponent } from './student/components/titleAnalyzer.compo
 import { ResultComponent as StudentTitleAnalyzerResult } from './student/pages/result.component';
 import { ParticipantsComponent } from './shared/components/participants.component';
 import { ConsultationsComponent as StudentConsultationsComponent } from './student/components/consultations.component';
+import { ProjectService } from './services/project.service';
+import { RedirectComponent } from './shared/components/redirect.component';
+import { ConsultationsComponent as CapstoneAdviserConsultationsComponent } from './capstoneAdviser/components/consultations.component';
+import { DashboardComponent } from './shared/components/dashboard.component';
 
 const routes: Routes = [
   {
@@ -71,7 +74,7 @@ const routes: Routes = [
             children: [
               {
                 path: 'dashboard',
-                component: StudentDashboardComponent,
+                component: DashboardComponent,
               },
               {
                 path: 'tasks',
@@ -109,6 +112,12 @@ const routes: Routes = [
                   },
                 ],
               },
+              {
+                path: '',
+                component: RedirectComponent,
+                // redirectTo: redirectToNewPath, pathMatch: 'full'
+                data: {path: ['s','project']}
+              },
             ],
           },
           { path: '', redirectTo: '/s/home/projects', pathMatch: 'full' },
@@ -134,7 +143,7 @@ const routes: Routes = [
           // todo: add role guard, use data property
           {
             path: 'dashboard',
-            component: StudentDashboardComponent,
+            component: DashboardComponent,
             // todo: this might be misplaced
           },
 
@@ -153,6 +162,18 @@ const routes: Routes = [
               {
                 path: 'tasks',
                 component: TasksComponent,
+              },
+              {
+                path: 'participants',
+                component: ParticipantsComponent
+              },
+                {
+                path: 'consultations',
+                component: CapstoneAdviserConsultationsComponent,
+              },
+              {
+                path: 'dashboard',
+                component: DashboardComponent,
               },
               {
                 path: 'forms',
@@ -176,6 +197,12 @@ const routes: Routes = [
                     component: FormComponent,
                   },
                 ],
+              },
+              {
+                path: '',
+                component: RedirectComponent,
+                // redirectTo: redirectToNewPath, pathMatch: 'full'
+                data: {path: ['c','project']}
               },
             ],
           },
@@ -206,3 +233,5 @@ const routes: Routes = [
   bootstrap: [AppComponent],
 })
 export class AppModule {}
+
+

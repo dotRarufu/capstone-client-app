@@ -10,7 +10,7 @@ import { ProjectService } from '../../services/project.service'
       <div
         class="flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
       >
-        <h2 class="text-2xl">Projects</h2>
+        <h2 class="text-[24px] sm1:text-[32px]">Projects</h2>
         <div
           class="input-group rounded-[3px] border border-base-content/50 sm1:max-w-[371px]"
         >
@@ -38,6 +38,7 @@ import { ProjectService } from '../../services/project.service'
           </button>
         </div>
       </div>
+      <div class="h-[2px] w-full bg-base-content/10"></div>
       <app-accordion [projects]="projects"></app-accordion>
       <app-accordion [projects]="projects"></app-accordion>
       <app-accordion [projects]="projects"></app-accordion>

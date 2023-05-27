@@ -37,6 +37,8 @@ import { TaskCardComponent } from './components/taskCard.component';
 import { TasksComponent } from './components/tasks.component';
 import { ParticipantsComponent } from './components/participants.component';
 import { NgChartsModule } from 'ng2-charts';
+import { RedirectComponent } from './components/redirect.component';
+import { DashboardComponent } from './components/dashboard.component';
 
 const icons = {
   ArrowLeft,
@@ -70,7 +72,9 @@ const icons = {
     AccordionComponent,
     TaskCardComponent,
     TasksComponent,
-    ParticipantsComponent
+    ParticipantsComponent,
+    RedirectComponent,
+    DashboardComponent
   ],
   imports: [
     CommonModule,
@@ -99,6 +103,8 @@ const icons = {
     TasksComponent,
     ParticipantsComponent,
     NgChartsModule,
+    RedirectComponent,
+    DashboardComponent,
   ],
 })
 export class SharedModule {}
