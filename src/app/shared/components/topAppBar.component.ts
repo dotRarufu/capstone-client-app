@@ -13,7 +13,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
       <div
         class=" flex  w-full flex-row  items-center justify-between text-primary-content   sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"
       >
-        <h1 class="text-2xl ">{{ activePath || 'Home' }}</h1>
+        <h1 class="text-2xl ">{{ activePath }}</h1>
 
         <div class="dropdown-end dropdown">
           <label tabindex="0"
@@ -45,7 +45,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 export class TopAppBarComponent implements OnInit{
   profileUrl = '';
   name = '';
-  activePath = '';
+  @Input() activePath? = 'Home';
 
   // watch for changes in
   constructor(private topAppBarService: TopAppBarService, private authService: AuthService, private spinner: NgxSpinnerService) {

@@ -103,12 +103,12 @@ import { NgxSpinnerService } from 'ngx-spinner';
             >
               I already have a title
             </button>
-            <button
-              (click)="navigateTo('builder')"
+            <label for="title-analyzer"
+              (click)="toTitleBuilder()"
               class="btn-link btn w-fit text-base-content no-underline"
             >
               I don't have a title yet
-            </button>
+            </label>
           </div>
         </ng-container>
       </div>
@@ -208,6 +208,10 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['s', 'home', path], {
       // state: { titleAnalyzerResult },
     });
+  }
+
+  toTitleBuilder() {
+    this.router.navigate(['s', 'title-builder'])
   }
 }
 

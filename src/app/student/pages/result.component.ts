@@ -320,7 +320,7 @@ export class ResultComponent implements OnInit {
   ngOnInit(): void {
     this.projectService.analyzerResult$.subscribe(r => {
       if (r === undefined) {
-        this.router.navigate(['s','home','title-analyzer']);
+        // this.router.navigate(['s','home','title-analyzer']);
         console.warn('analyzer result is undefined');
       }
       

@@ -33,6 +33,7 @@ import { ParticipantsComponent as TechnicalAdviserParticipantsComponent } from '
 import { ConsultationsComponent as StudentConsultationsComponent } from './student/components/consultations.component';
 import { TitleAnalyzerComponent as StudentTitleAnalyzerComponent } from './student/components/titleAnalyzer.component';
 import { ProjectsComponent as StudentProjectsComponent } from './student/components/projects.component';
+import { TitleBuilderComponent as StudentTitleBuilder } from './student/components/titleBuilder.component';
 import { ProjectService } from './services/project.service';
 import { RedirectComponent } from './shared/components/redirect.component';
 import { ConsultationsComponent as CapstoneAdviserConsultationsComponent } from './capstoneAdviser/components/consultations.component';
@@ -66,10 +67,15 @@ const routes: Routes = [
             path: 'title-analyzer-result',
             component: StudentTitleAnalyzerResult,
           },
+         
 
           { path: '', redirectTo: '/s/home/title-analyzer', pathMatch: 'full' },
         ],
       },
+       {
+            path: 'title-builder',
+            component: StudentTitleBuilder,
+          },
       {
         path: 'project',
         children: [
