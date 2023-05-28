@@ -6,6 +6,7 @@ import { TitleAnalyzerResult } from 'src/app/models/titleAnalyzerResult';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { DatabaseService } from 'src/app/services/database.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 
 interface AnalysesDataItem {
   heading: string;
@@ -203,7 +204,7 @@ export class ResultComponent implements OnInit {
   async prepareAnalysesData(data: TitleAnalyzerResult) {
     try {
     this.spinner.show();
-    console.log('start preparing data')
+    console.log('start preparing data:', data);
     const substantiveWordCount: AnalysesDataItem = {
       heading: 'Substantive Word Count',
       value: data.substantive_words.count,
@@ -314,18 +315,31 @@ export class ResultComponent implements OnInit {
     private projectService: ProjectService,
     private supabaseService: SupabaseService,
     private databaseService: DatabaseService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
-    this.projectService.analyzerResult$.subscribe(r => {
-      if (r === undefined) {
-        // this.router.navigate(['s','home','title-analyzer']);
-        console.warn('analyzer result is undefined');
+    this.projectService.analyzerResult$.subscribe(
+      {
+        next: (v) => {
+          this.prepareAnalysesData(v)
+        },
+        error: (err) => {
+          this.toastr.error('Error occured while analyzing title')
+        },
       }
+    )
+    
+    // (r => {
+    //   if (r === undefined) {
+    //     // this.router.navigate(['s','home','title-analyzer']);
+    //     console.warn('analyzer result is undefined');
+    //     throw new Error('title analyzer returned unedfined')
+    //   }
       
-      if (r !== undefined) this.prepareAnalysesData(r);
-    })
+    //   if (r !== undefined) this.prepareAnalysesData(r);
+    // })
     // const state = history.state;
     // const titleAnalyzerResultState = state?.['titleAnalyzerResult'];
 

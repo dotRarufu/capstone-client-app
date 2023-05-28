@@ -4,11 +4,14 @@ import {
   SupabaseClient,
   AuthResponse,
 } from '@supabase/supabase-js';
-import { BehaviorSubject, from, map, switchMap } from 'rxjs';
+import { BehaviorSubject, filter, from, map, switchMap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment.dev';
 import { CapstoolUser } from '../models/capstool-user';
 import { SupabaseService } from './supabase.service';
 import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
+import { ToastrService } from 'ngx-toastr';
+
+type AnalyzerResultError = string;
 
 @Injectable({
   providedIn: 'root',
@@ -54,10 +57,10 @@ export class ProjectService {
   supabase: SupabaseClient;
   private _formUrl$: BehaviorSubject<string> = new BehaviorSubject('');
   formUrl$ = this._formUrl$.asObservable();
-  private _analyzerResult$ = new BehaviorSubject<TitleAnalyzerResult | undefined>(undefined);
-  analyzerResult$ = this._analyzerResult$.asObservable();
+  private _analyzerResult$ = new BehaviorSubject<TitleAnalyzerResult | AnalyzerResultError | undefined | null>(undefined);
+  analyzerResult$ = this._analyzerResult$.asObservable().pipe(filter(v => v !== undefined), map(this.checkError));
 
-  constructor(private supabaseService: SupabaseService) {
+  constructor(private supabaseService: SupabaseService, private toastr: ToastrService) {
     this.supabase = createClient(
       environment.supabase_url,
       environment.supabase_key
@@ -91,10 +94,22 @@ export class ProjectService {
         name: 'Functions',
       },
     });
-    const data = response.data as TitleAnalyzerResult;
+    const data = response.data as TitleAnalyzerResult | null;
     this._analyzerResult$.next(data);
 
     return data;
+  }
+
+  checkError(a: TitleAnalyzerResult | undefined | null | AnalyzerResultError)  {
+    if (a === undefined || a === null) {
+      console.log('should show error toast');
+      this.toastr.error('error occured while analyzing title');
+      throw new Error('undefined result')
+    }
+
+    if (typeof a === 'string') throw new Error(a);
+
+    return a;
   }
 
   async generateForm(

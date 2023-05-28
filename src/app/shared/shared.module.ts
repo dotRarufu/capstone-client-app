@@ -3,7 +3,6 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FormGeneratorComponent } from './components/formGenerator.component';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { TabsComponent } from './components/tabs.component';
 import { NotFoundComponent } from './components/notFound.component';
 import { FormComponent } from './components/form.component';
@@ -86,7 +85,6 @@ const icons = {
     CommonModule,
     FormsModule,
     RouterModule,
-    PdfViewerModule,
     NgxDocViewerModule,
     DragDropModule,
     NgChartsModule,

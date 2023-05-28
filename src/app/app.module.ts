@@ -43,6 +43,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { ProfileComponent } from './shared/components/profile.component';
 import { ProfileViewComponent } from './shared/components/profileView.component';
+import { ToastrModule } from 'ngx-toastr';
 
 const routes: Routes = [
   {
@@ -347,6 +348,7 @@ const routes: Routes = [
     TechnicalAdviserModule,
     StudentModule,
     SharedModule,
+    ToastrModule.forRoot({preventDuplicates: true, progressBar: true}),
     RouterModule.forRoot(routes),
   ],
   providers: [],

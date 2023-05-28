@@ -378,7 +378,7 @@ export class TitleBuilderComponent {
     actions[action](params[0]);
   }
 
-  analyzeTitle() {
+  async analyzeTitle() {
     this.spinner.show();
     const prefix = this.title.prefix;
     const name = this.title.name;
@@ -388,7 +388,8 @@ export class TitleBuilderComponent {
     const title = `${prefix} of ${name ? `${name}:`  : description} ${description} for ${client} `
 
     console.log('title:', title);
-    this.projectService.analyzeTitle(title);
+    await this.projectService.analyzeTitle(title);
+    this.spinner.hide();
     this.router.navigate(['s', 'home', 'title-analyzer-result']);
   }
 

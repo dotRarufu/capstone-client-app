@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { Tab } from 'src/app/models/tab';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   template: `
@@ -164,7 +165,8 @@ export class HomeComponent implements OnInit {
   constructor(
     private router: Router,
     private projectService: ProjectService,
-    private route: ActivatedRoute, private spinner: NgxSpinnerService
+    private route: ActivatedRoute, private spinner: NgxSpinnerService,
+    private toastr: ToastrService,
   ) {}
   path: string = '';
 
@@ -176,10 +178,22 @@ export class HomeComponent implements OnInit {
       // console.log('path:', this.path);
     });
 
-    this.projectService.analyzerResult$.subscribe(r => {
-      this.hasResult = !!r;
-      console.log('hasResult:', this.hasResult);
+    this.projectService.analyzerResult$.subscribe({
+      next: (v) => {
+        this.hasResult = !!v;
+        console.log('hasResult:', this.hasResult);
+      },
+      error: (err) => {
+        this.toastr.error('Error occured while analyzing title')
+      },
     });
+
+    // window.addEventListener('keydown', () => this.showSuccess());
+  }
+
+  showSuccess() {
+    console.log('show success');
+    this.toastr.success('Hello world!', 'Toastr fun!');
   }
 
   checkPath(path: string) {
