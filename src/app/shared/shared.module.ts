@@ -28,6 +28,18 @@ import {
   User,
   X,
   LogIn,
+  Search,
+  Home,
+  UserCheck,
+  CheckSquare,
+  Move,
+  Edit,
+  XCircle,
+  Calendar,
+  Check,
+  Slash,
+  ChevronRight,
+  ChevronLeft
 } from 'angular-feather/icons';
 import { TopAppBarComponent } from './components/topAppBar.component';
 import { ModalComponent } from './components/modal.component';
@@ -61,7 +73,19 @@ const icons = {
   LogOut,
   User,
   X,
-  LogIn
+  LogIn,
+  Search,
+  Slash,
+  Home,
+  UserCheck,
+  CheckSquare,
+  Move,
+  Edit,
+  XCircle,
+  Check,
+  Calendar,
+  ChevronRight,
+  ChevronLeft
 };
 
 @NgModule({

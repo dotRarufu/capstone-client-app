@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/services/auth.service';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { User } from 'src/app/types/collection';
@@ -49,43 +50,11 @@ import { User } from 'src/app/types/collection';
       <div class="flex flex-col gap-2">
         <div class="flex flex-row items-center gap-2 opacity-75">
           <div class="flex h-full flex-grow items-center">
-            <!-- TODO: move this svg in its own component -->
-            <svg
-              class="fill-current"
-              width="144"
-              height="2"
-              viewBox="0 0 144 2"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <line
-                y1="1"
-                x2="143.5"
-                y2="1"
-                stroke="currentColor"
-                stroke-opacity="0.5"
-              />
-            </svg>
+            <div class="h-[2px] w-full bg-base-content/10"></div>
           </div>
           OR
           <div class="flex h-full flex-grow items-center">
-            <!-- TODO: move this svg in its own component -->
-            <svg
-              class="fill-current"
-              width="144"
-              height="2"
-              viewBox="0 0 144 2"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <line
-                y1="1"
-                x2="143.5"
-                y2="1"
-                stroke="currentColor"
-                stroke-opacity="0.5"
-              />
-            </svg>
+            <div class="h-[2px] w-full bg-base-content/10"></div>
           </div>
         </div>
         <button
@@ -117,7 +86,8 @@ export class LoginComponent {
     private supabaseService: SupabaseService,
     private authService: AuthService,
     private router: Router,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService
   ) {
   }
 
@@ -131,7 +101,7 @@ export class LoginComponent {
       this.spinner.hide();
       this.router.navigate([role]);
     },
-    error: () =>  this.spinner.hide()
+    error: () =>  {this.spinner.hide();this.toastr.error('Login failed')}
   });
   }
 

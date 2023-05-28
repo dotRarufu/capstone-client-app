@@ -14,7 +14,7 @@ import { ProjectService } from 'src/app/services/project.service';
             (click)="analyzeTitle()"
             class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
-            <i-feather name="zap"></i-feather>
+            <i-feather class="text-base-content/70" name="zap"></i-feather>
             Analyze
           </label>
         </div>
@@ -31,7 +31,7 @@ import { ProjectService } from 'src/app/services/project.service';
         </app-student-accordion>
       </div>
     </div>
-    
+
   `,
 })
 export class TitleAnalyzerComponent implements OnInit {
@@ -112,6 +112,6 @@ export class TitleAnalyzerComponent implements OnInit {
   ngOnInit(): void {
     this.projects = this.projectService.getProjects();
 
-   
+
   }
 }

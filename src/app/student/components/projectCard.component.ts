@@ -23,13 +23,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         </p>
         <p>Markova Tanya, Gardo Versoza, Padilla Zsa Zsa | Technical Adviser</p>
         <div class="card-actions justify-end">
-         
-         
+
+
           <button
           (click)="handleCardClick()"
             class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
           >
-            <i-feather name="log-in"></i-feather>
+            <i-feather class="text-base-content/70"name="log-in"></i-feather>
           </button>
         </div>
       </div>

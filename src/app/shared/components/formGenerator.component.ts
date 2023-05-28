@@ -16,19 +16,9 @@ import { ProjectService } from 'src/app/services/project.service';
           (click)="downloadFile(anchor)"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 12 12"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M5.1665 11.8332V6.83317H0.166504V5.1665H5.1665V0.166504H6.83317V5.1665H11.8332V6.83317H6.83317V11.8332H5.1665Z"
-              fill="currentColor"
-            />
-          </svg>
-         
+         <i-feather class="text-base-content/70"name="download">
+</i-feather>
+
           Download
         </button>
       </div>
@@ -44,7 +34,7 @@ import { ProjectService } from 'src/app/services/project.service';
       </div>
     </div>
 
-    
+
   `,
 })
 export class FormGeneratorComponent implements OnInit {
@@ -53,7 +43,7 @@ export class FormGeneratorComponent implements OnInit {
     {
       name: 'Form 1',
       id: '1',
-      
+
       handler: () => {
         // todo: create wrapper for this
         // this.spinner.show();
@@ -156,7 +146,7 @@ const getFileName = (text: string) => {
     const extractedText = text.substring(lastIndex + 1);
     return extractedText;
   }
-  
+
   throw new Error('wip, unnamed file');
 }
 const getRolePath = (roleId: number) => {

@@ -33,13 +33,13 @@ interface InformationalDataItem {
           <h1 class="text-[24px] text-base-content">
             {{ title }}
           </h1>
-          
+
           <button
             class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
-            <i-feather name="zap"></i-feather>
+            <i-feather class="text-base-content/70"name="zap"></i-feather>
 
-            Save 
+            Save
           </button>
         </div>
 
@@ -83,13 +83,13 @@ interface InformationalDataItem {
       >
         <div class="flex w-[48px] flex-grow flex-col gap-[1rem] ">
           <div class="flex justify-end gap-4 ">
-          
+
             <button
               class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
             >
-              <i-feather name="heart"></i-feather>
+              <i-feather class="text-base-content/70"name="heart"></i-feather>
 
-              Save 
+              Save
             </button>
           </div>
 
@@ -143,16 +143,16 @@ interface InformationalDataItem {
               (click)="handleBackButtonClick()"
               class="btn-ghost btn hidden gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30 md:flex"
             >
-              <i-feather name="arrow-left"></i-feather>
+              <i-feather class="text-base-content/70"name="arrow-left"></i-feather>
 
               Back
             </button>
           <button
             class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
-            <i-feather name="zap"></i-feather>
+            <i-feather class="text-base-content/70"name="zap"></i-feather>
 
-            Save 
+            Save
           </button>
         </div>
 
@@ -187,7 +187,7 @@ interface InformationalDataItem {
             </div>
           </app-student-accordion>
         </div>
-      </div>  
+      </div>
     </ng-container>
 
 
@@ -330,14 +330,14 @@ export class ResultComponent implements OnInit {
         },
       }
     )
-    
+
     // (r => {
     //   if (r === undefined) {
     //     // this.router.navigate(['s','home','title-analyzer']);
     //     console.warn('analyzer result is undefined');
     //     throw new Error('title analyzer returned unedfined')
     //   }
-      
+
     //   if (r !== undefined) this.prepareAnalysesData(r);
     // })
     // const state = history.state;
@@ -348,7 +348,7 @@ export class ResultComponent implements OnInit {
     //   console.warn('wip, result state is undefined');
     //   this.spinner.hide()
     // }
-   
+
     // this.prepareAnalysesData(titleAnalyzerResultState);
   }
 

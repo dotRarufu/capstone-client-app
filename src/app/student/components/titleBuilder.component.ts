@@ -51,20 +51,20 @@ type Action = "defaultPrefix" | "customPrefix" | "noAppName" | "appName" | "setA
                   (click)="navigateToHome()"
                     class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather name="trash"></i-feather> cancel
+                    <i-feather class="text-base-content/70"name="x-circle"></i-feather> cancel
                   </button>
                   <button
                   (click)="nextStep(2)"
                     class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather name="trash"></i-feather> no
+                    <i-feather class="text-base-content/70"name="slash"></i-feather> no
                   </button>
                   <div class="w-full h-full"></div>
                   <button
                   (click)="nextStep(3, 'defaultPrefix')"
                     class="btn-primary btn flex h-fit w-full flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather name="trash"></i-feather> yes
+                    <i-feather class="text-primary-content/70"name="check"></i-feather> yes
                   </button>
                 </div>
               </div>
@@ -111,13 +111,13 @@ type Action = "defaultPrefix" | "customPrefix" | "noAppName" | "appName" | "setA
                   (click)="nextStep(1)"
                     class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather name="trash"></i-feather> back
+                    <i-feather class="text-base-content/70"name="chevron-left"></i-feather> back
                   </button>
                   <button
                   (click)="nextStep(3, 'customPrefix', customPrefix.value)"
                     class="btn-primary btn flex h-fit w-full flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather name="trash"></i-feather> next
+                    <i-feather class="text-primary-content/70"name="chevron-right"></i-feather> next
                   </button>
                 </div>
               </div>
@@ -163,20 +163,20 @@ type Action = "defaultPrefix" | "customPrefix" | "noAppName" | "appName" | "setA
                   (click)="nextStep(2)"
                     class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather name="trash"></i-feather> back
+                    <i-feather class="text-base-content/70"name="chevron-left"></i-feather> back
                   </button>
                   <button
                   (click)="nextStep(4, 'noAppName')"
                     class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather name="trash"></i-feather> no
+                    <i-feather class="text-base-content/70"name="slash"></i-feather> no
                   </button>
                   <div class="grow-1 h-full w-full"></div>
                   <button
                   (click)="nextStep(4, 'appName', appName.value)"
                     class="btn-primary btn flex h-fit w-full flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather name="trash"></i-feather> yes
+                    <i-feather class="text-primary-content/70"name="check"></i-feather> yes
                   </button>
                 </div>
               </div>
@@ -222,7 +222,7 @@ type Action = "defaultPrefix" | "customPrefix" | "noAppName" | "appName" | "setA
                   (click)="nextStep(3)"
                     class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather name="trash"></i-feather> back
+                    <i-feather class="text-base-content/70"name="chevron-left"></i-feather> back
                   </button>
 
                   <div class="grow-1 h-full w-full"></div>
@@ -230,7 +230,7 @@ type Action = "defaultPrefix" | "customPrefix" | "noAppName" | "appName" | "setA
                   (click)="nextStep(5, 'setApart', setApart.value)"
                     class="btn-primary btn flex h-fit w-full flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather name="trash"></i-feather> next
+                    <i-feather class="text-primary-content/70"name="chevron-right"></i-feather> next
                   </button>
                 </div>
               </div>
@@ -263,7 +263,7 @@ type Action = "defaultPrefix" | "customPrefix" | "noAppName" | "appName" | "setA
                     occaec.
                   </p>
                   <input
-                    #clientName 
+                    #clientName
                     type="text"
                     placeholder="Maysan National Highschool"
                     class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
@@ -276,7 +276,7 @@ type Action = "defaultPrefix" | "customPrefix" | "noAppName" | "appName" | "setA
                   (click)="nextStep(4)"
                     class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather name="trash"></i-feather> back
+                    <i-feather class="text-base-content/70"name="chevron-left"></i-feather> back
                   </button>
 
                   <div class="grow-1 h-full w-full"></div>
@@ -284,13 +284,13 @@ type Action = "defaultPrefix" | "customPrefix" | "noAppName" | "appName" | "setA
                   (click)="nextStep(6, 'clientName', clientName.value)"
                     class="btn-primary btn flex h-fit w-full flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather name="trash"></i-feather> next
+                    <i-feather class="text-primary-content/70"name="chevron-right"></i-feather> next
                   </button>
                 </div>
               </div>
             </div>
           </ng-container>
-         
+
         </div>
 
         <!-- desktop -->
@@ -325,12 +325,12 @@ type Action = "defaultPrefix" | "customPrefix" | "noAppName" | "appName" | "setA
                     <li
                       class="btn-ghost btn flex justify-end gap-2 rounded-[3px] sm1:justify-start"
                     >
-                      <i-feather name="trash"></i-feather> yes
+                      <i-feather class="text-base-content/70"name="trash"></i-feather> yes
                     </li>
                     <li
                       class="btn-ghost btn flex justify-end gap-2 rounded-[3px] sm1:justify-start"
                     >
-                      <i-feather name="trash"></i-feather> no
+                      <i-feather class="text-base-content/70"name="trash"></i-feather> no
                     </li>
                   </div>
                 </div>
@@ -364,7 +364,7 @@ export class TitleBuilderComponent {
   }
 
   editTitle(action: Action, ...params: string[]) {
-    
+
     // todo: capitalize string
     const actions = {
       "defaultPrefix": () => this.title.prefix = "Development and Evaluation",
@@ -384,7 +384,7 @@ export class TitleBuilderComponent {
     const name = this.title.name;
     const description = this.title.description;
     const client = this.title.client;
-    
+
     const title = `${prefix} of ${name ? `${name}:`  : description} ${description} for ${client} `
 
     console.log('title:', title);

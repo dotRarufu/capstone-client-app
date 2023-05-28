@@ -14,7 +14,7 @@ import { Consultation } from 'src/app/types/collection';
           for="schedule-consultation"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
-          <i-feather name="plus"></i-feather>
+          <i-feather class="text-base-content/70"name="plus"></i-feather>
 
           Schedule
         </label>
@@ -48,9 +48,9 @@ import { Consultation } from 'src/app/types/collection';
                 <label for="consultation-modal"
                   class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
                 >
-                  <i-feather name="log-in"></i-feather>
+                  <i-feather class="text-base-content/70"name="log-in"></i-feather>
                 </label>
-               
+
               </div>
             </div>
           </div>
@@ -82,9 +82,9 @@ import { Consultation } from 'src/app/types/collection';
                 <label for="consultation-modal"
                   class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
                 >
-                  <i-feather name="log-in"></i-feather>
+                  <i-feather class="text-base-content/70"name="log-in"></i-feather>
                 </label>
-               
+
               </div>
             </div>
           </div>
@@ -116,9 +116,9 @@ import { Consultation } from 'src/app/types/collection';
                 <label for="consultation-modal"
                   class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
                 >
-                  <i-feather name="log-in"></i-feather>
+                  <i-feather class="text-base-content/70"name="log-in"></i-feather>
                 </label>
-               
+
               </div>
             </div>
           </div>
@@ -141,7 +141,7 @@ import { Consultation } from 'src/app/types/collection';
           <label
             for="schedule-consultation"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather name="x"></i-feather
+            ><i-feather class="text-base-content/70"name="x"></i-feather
           ></label>
         </div>
         <div class="flex bg-base-100">
@@ -178,19 +178,19 @@ import { Consultation } from 'src/app/types/collection';
             <input
               type="text"
               placeholder="comlab 3"
-              class="bg-base input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 px-3 py-2 text-base 
+              class="bg-base input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 px-3 py-2 text-base
 text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
             />
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 py-2">
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-               <i-feather name="trash"></i-feather> schedule
+               <i-feather class="text-base-content/70"name="calendar"></i-feather> schedule
             </li>
 
             <div class="h-full"></div>
 
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-               <i-feather name="trash"></i-feather> cancel
+               <i-feather class="text-base-content/70"name="x"></i-feather> cancel
             </li>
           </ul>
         </div>
@@ -212,7 +212,7 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
           <label
             for="consultation-modal"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather name="x"></i-feather
+            ><i-feather class="text-base-content/70"name="x"></i-feather
           ></label>
         </div>
         <div class="flex bg-base-100">
@@ -221,7 +221,7 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
 
             <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
-      
+
             </div>
 
             <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -239,7 +239,7 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
 
             <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Date and Time</h1>
-      
+
             </div>
 
             <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -254,7 +254,7 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
 
             <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Location</h1>
-      
+
             </div>
 
             <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -264,17 +264,17 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
             </div>
 
             </div>
-                                  
+
           </div>
           <ul
             class=" flex w-[223px]  flex-col bg-neutral/20 py-2 "
           >
-         
+
 
             <div class="h-full"></div>
 
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather name="trash"></i-feather> close 
+              <i-feather class="text-base-content/70"name="x-circle"></i-feather> close
             </li>
           </ul>
         </div>

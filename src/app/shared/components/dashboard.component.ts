@@ -18,7 +18,7 @@ import DataLabelsPlugin from 'chartjs-plugin-datalabels';
           for="schedule-consultation"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
-          <i-feather name="plus"></i-feather>
+          <i-feather class="text-base-content/70"name="plus"></i-feather>
 
           button
         </label> -->
@@ -34,7 +34,7 @@ import DataLabelsPlugin from 'chartjs-plugin-datalabels';
           class=" min-w-[229px] min-h-[329px] h-full w-full max-w-[429px] rounded-[3px] border border-base-content/50"
         >
           <div class="bg-primary p-4 text-primary-content">
-            <h1 class="text-[20px] ">Tasks by Status asd</h1>
+            <h1 class="text-[20px] ">Tasks by Status</h1>
           </div>
           <div class="flex justify-center p-4 h-full w-full">
             <canvas
@@ -52,7 +52,7 @@ import DataLabelsPlugin from 'chartjs-plugin-datalabels';
           class="min-w-[229px] min-h-[329px] h-full row-span-2 flex w-full max-w-[429px] flex-col justify-center rounded-[3px] border border-base-content/50"
         >
           <div class="bg-primary p-4 text-primary-content">
-            <h1 class="text-[20px] ">Accomplished Milestones asd</h1>
+            <h1 class="text-[20px] ">Accomplished Milestones</h1>
           </div>
           <div class="w-full h-full flex justify-center p-4">
             <canvas
@@ -120,7 +120,7 @@ import DataLabelsPlugin from 'chartjs-plugin-datalabels';
           for="schedule-consultation"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
-          <i-feather name="plus"></i-feather>
+          <i-feather class="text-base-content/70"name="plus"></i-feather>
 
           button
         </label> -->

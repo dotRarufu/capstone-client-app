@@ -34,7 +34,7 @@ import { ActivatedRoute } from '@angular/router';
 
           <div class="dropdown-end dropdown text-base-content">
             <label tabindex="0" class="btn-ghost btn-sm btn">
-              <i-feather name="menu"></i-feather>
+              <i-feather class="text-base-content/70"name="menu"></i-feather>
             </label>
             <ul
               tabindex="0"
@@ -69,7 +69,7 @@ import { ActivatedRoute } from '@angular/router';
 
           <div class="dropdown-end dropdown text-base-content">
             <label tabindex="0" class="btn-ghost btn-sm btn">
-              <i-feather name="menu"></i-feather>
+              <i-feather class="text-base-content/70"name="menu"></i-feather>
             </label>
             <ul
               tabindex="0"
@@ -104,7 +104,7 @@ import { ActivatedRoute } from '@angular/router';
 
           <div class="dropdown-end dropdown text-base-content">
             <label tabindex="0" class="btn-ghost btn-sm btn">
-              <i-feather name="menu"></i-feather>
+              <i-feather class="text-base-content/70"name="menu"></i-feather>
             </label>
             <ul
               tabindex="0"
@@ -119,7 +119,7 @@ import { ActivatedRoute } from '@angular/router';
             </ul>
           </div>
         </div>
-       
+
       </div>
     </div>
   `,

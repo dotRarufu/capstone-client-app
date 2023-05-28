@@ -51,7 +51,7 @@ import {
               ></app-nav-rail>
             </div>
           </div>
-        
+
 
           <div
             class="w-full px-[16px] sm1:px-[32px] sm2:px-0 md:px-[200px] lg:px-0"
@@ -79,7 +79,7 @@ import {
   `,
 })
 export class ProjectComponent {
-  
+
 
   isDrawerOpen: boolean = false;
 

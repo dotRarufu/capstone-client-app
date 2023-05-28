@@ -50,43 +50,11 @@ import { SupabaseService } from 'src/app/services/supabase.service';
         <div class="flex flex-col gap-2">
           <div class="flex flex-row items-center gap-2 opacity-75">
             <div class="flex h-full flex-grow items-center">
-              <!-- TODO: move this svg in its own component -->
-              <svg
-                class="fill-current"
-                width="144"
-                height="2"
-                viewBox="0 0 144 2"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <line
-                  y1="1"
-                  x2="143.5"
-                  y2="1"
-                  stroke="currentColor"
-                  stroke-opacity="0.5"
-                />
-              </svg>
+            <div class="h-[2px] w-full bg-base-content/10"></div>
             </div>
             OR
             <div class="flex h-full flex-grow items-center">
-              <!-- TODO: move this svg in its own component -->
-              <svg
-                class="fill-current"
-                width="144"
-                height="2"
-                viewBox="0 0 144 2"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <line
-                  y1="1"
-                  x2="143.5"
-                  y2="1"
-                  stroke="currentColor"
-                  stroke-opacity="0.5"
-                />
-              </svg>
+            <div class="h-[2px] w-full bg-base-content/10"></div>
             </div>
           </div>
           <button
@@ -113,9 +81,9 @@ import { SupabaseService } from 'src/app/services/supabase.service';
         <div class="flex flex-col gap-2 py-4">
           <div class="w-full flex justify-between">
           <h1 class="text-[2rem]">Sign Up</h1>
-            <button (click)="isInLastStep = false" class="w-fit btn-ghost btn">Back<i-feather name="arrow-left"></i-feather></button>
+            <button (click)="isInLastStep = false" class="w-fit btn-ghost btn">Back<i-feather class="text-base-content/70"name="arrow-left"></i-feather></button>
           </div>
-            
+
           <p class="text-xs opacity-80">
             You're almost done! Your email and password will be used to identify you every time you log in.
           </p>
@@ -141,9 +109,9 @@ import { SupabaseService } from 'src/app/services/supabase.service';
         >
           SIGN UP
         </button>
-        
+
         <div class="flex-grow"></div>
-       
+
       </div>
     </ng-container>
 
@@ -171,7 +139,7 @@ export class SignupComponent {
     this.spinner.show();
     if (this.fullName.length === 0) throw Error('wip: name is empty');
 
-    const user = { name: this.fullName, roleId: this.roleId };  
+    const user = { name: this.fullName, roleId: this.roleId };
     // todo: separate the fields in different screens to prevent resizing of container
     this.authService.signUp(this.email, this.password, user).subscribe((v) => {
       this.spinner.hide();

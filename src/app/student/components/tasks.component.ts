@@ -20,7 +20,7 @@ import { Task } from 'src/app/types/collection';
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
         <h1 class="text-[32px] text-base-content">Tasks</h1>
-        
+
       </div>
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -121,14 +121,14 @@ import { Task } from 'src/app/types/collection';
           <label
             for="app-modal"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather name="x"></i-feather
+            ><i-feather class="text-base-content/70"name="x"></i-feather
           ></label>
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
             <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
-             
+
             </div>
 
             <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -148,7 +148,7 @@ import { Task } from 'src/app/types/collection';
             <div class="h-full"></div>
 
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-               <i-feather name="trash"></i-feather> close
+               <i-feather class="text-base-content/70"name="x-circle"></i-feather> close
             </li>
           </ul>
         </div>
@@ -170,7 +170,7 @@ import { Task } from 'src/app/types/collection';
           <label
             for="add-task"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather name="x"></i-feather
+            ><i-feather class="text-base-content/70"name="x"></i-feather
           ></label>
         </div>
         <div class="flex bg-base-100">
@@ -188,13 +188,13 @@ import { Task } from 'src/app/types/collection';
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 ">
             <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              done <i-feather name="trash"></i-feather>
+              done <i-feather class="text-base-content/70"name="check-square"></i-feather>
             </li>
 
             <div class="h-full"></div>
 
             <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              close <i-feather name="trash"></i-feather>
+              close <i-feather class="text-base-content/70"name="x-square"></i-feather>
             </li>
           </ul>
         </div>

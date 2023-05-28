@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router';
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between items-center">
         <h1 class="text-[24px] sm1:text-[32px] text-base-content">Participants</h1>
-        
+
       </div>
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -33,7 +33,7 @@ import { ActivatedRoute } from '@angular/router';
 
           <div class="dropdown-end dropdown text-base-content">
             <label tabindex="0" class="btn-ghost btn-sm btn">
-              <i-feather name="menu"></i-feather>
+              <i-feather class="text-base-content/70"name="menu"></i-feather>
             </label>
             <ul
               tabindex="0"
@@ -68,7 +68,7 @@ import { ActivatedRoute } from '@angular/router';
 
           <div class="dropdown-end dropdown text-base-content">
             <label tabindex="0" class="btn-ghost btn-sm btn">
-              <i-feather name="menu"></i-feather>
+              <i-feather class="text-base-content/70"name="menu"></i-feather>
             </label>
             <ul
               tabindex="0"
@@ -103,7 +103,7 @@ import { ActivatedRoute } from '@angular/router';
 
           <div class="dropdown-end dropdown text-base-content">
             <label tabindex="0" class="btn-ghost btn-sm btn">
-              <i-feather name="menu"></i-feather>
+              <i-feather class="text-base-content/70"name="menu"></i-feather>
             </label>
             <ul
               tabindex="0"

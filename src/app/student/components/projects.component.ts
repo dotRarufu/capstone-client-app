@@ -15,7 +15,7 @@ import { ProjectService } from 'src/app/services/project.service';
             for="add-project"
             class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
-            <i-feather name="plus"></i-feather>
+            <i-feather class="text-base-content/70"name="plus"></i-feather>
 
             Add
           </label>
@@ -45,7 +45,7 @@ import { ProjectService } from 'src/app/services/project.service';
             for="add-project"
             class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
-            <i-feather name="plus"></i-feather>
+            <i-feather class="text-base-content/70"name="plus"></i-feather>
 
             Add
           </label>
@@ -79,7 +79,7 @@ import { ProjectService } from 'src/app/services/project.service';
           <label
             for="add-project"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather name="x"></i-feather
+            ><i-feather class="text-base-content/70"name="x"></i-feather
           ></label>
         </div>
         <div class="flex bg-base-100">
@@ -96,13 +96,13 @@ import { ProjectService } from 'src/app/services/project.service';
             class=" flex w-[223px]  flex-col bg-neutral/20 p-0 "
           >
             <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              done <i-feather name="trash"></i-feather>
+              done <i-feather class="text-base-content/70"name="check-square"></i-feather>
             </li>
 
             <div class="h-full"></div>
 
             <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
-              close <i-feather name="trash"></i-feather>
+              close <i-feather class="text-base-content/70"name="x-circle"></i-feather>
             </li>
           </ul>
         </div>

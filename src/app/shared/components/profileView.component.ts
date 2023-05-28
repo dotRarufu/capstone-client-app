@@ -29,7 +29,7 @@ import { ProjectService } from '../../services/project.service';
           </div>
 
           <ul>
-           
+
             <li class="form-control w-full">
               <label class="label cursor-pointer flex items-center">
                 <span class="label-text text-[20px]">Notifications</span>
@@ -59,7 +59,7 @@ import { ProjectService } from '../../services/project.service';
         <div
           class="flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
         >
-          <h2 class="text-[24px] sm1:text-[32px]">Projects asd side</h2>
+          <h2 class="text-[24px] sm1:text-[32px]">Projects</h2>
           <div
             class="input-group rounded-[3px] border border-base-content/50 sm1:max-w-[371px]"
           ></div>
@@ -95,7 +95,7 @@ export class ProfileViewComponent {
   changeTheme() {
     console.log('runs')
     this.theme = this.theme === 'dark' ? 'original' : 'dark';
-    
+
     document.querySelector('html')?.setAttribute('data-theme', this.theme);
   }
 }

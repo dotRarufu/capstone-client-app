@@ -38,7 +38,7 @@ import {
         />
         <div class="drawer-content p-4">
           <!-- Page content here -->
-          
+
           <div class="dropdown dropdown-top dropdown-end absolute bottom-4 right-4 sm2:hidden">
             <label tabindex="0" class="btn btn-primary  rounded-[3px]"><i-feather name="menu"></i-feather></label>
             <div
@@ -51,7 +51,7 @@ import {
               ></app-nav-rail>
             </div>
           </div>
-        
+
 
           <div
             class="w-full px-[16px] sm1:px-[32px] sm2:px-0 md:px-[200px] lg:px-0"
@@ -79,7 +79,7 @@ import {
   `,
 })
 export class ProjectComponent {
-  
+
 
   isDrawerOpen: boolean = false;
 

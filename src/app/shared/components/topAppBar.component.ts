@@ -31,13 +31,13 @@ import { NgxSpinnerService } from 'ngx-spinner';
             class="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
           >
             <!-- <li><a class="">Profile</a></li> -->
-            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="navigateHome()">Home <i-feather name="log-out"></i-feather></a></li>
-            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="navigateProfile()">Profile <i-feather name="log-out"></i-feather></a></li>
-            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="signOut()">Sign Out <i-feather name="log-out"></i-feather></a></li>
+            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="navigateHome()"><i-feather class="text-base-content/70"name="home"></i-feather>home</a></li>
+            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="navigateProfile()"> <i-feather class="text-base-content/70"name="user"></i-feather>profile</a></li>
+            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="signOut()"><i-feather class="text-base-content/70"name="log-out"></i-feather>sign out</a></li>
           </ul>
         </div>
 
-        
+
       </div>
     </div>
     <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
