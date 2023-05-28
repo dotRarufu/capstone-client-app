@@ -30,6 +30,7 @@ export class AuthService {
     const unsubscribe = client.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
         console.log('User signed out');
+        this._user$.next(null);
         this.router.navigate(['']);
       }
     });
@@ -93,6 +94,7 @@ export class AuthService {
   signOut() {
     const signOut = this.supabaseService.client.auth.signOut();
     const signOut$ = from(signOut);
+    // this._user$.next
 
     return signOut$;
   }

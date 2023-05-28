@@ -59,6 +59,7 @@ type Action = "defaultPrefix" | "customPrefix" | "noAppName" | "appName" | "setA
                   >
                     <i-feather name="trash"></i-feather> no
                   </button>
+                  <div class="w-full h-full"></div>
                   <button
                   (click)="nextStep(3, 'defaultPrefix')"
                     class="btn-primary btn flex h-fit w-full flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"

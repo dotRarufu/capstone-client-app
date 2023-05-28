@@ -40,6 +40,8 @@ import { RedirectComponent } from './components/redirect.component';
 import { DashboardComponent } from './components/dashboard.component';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { ProfileComponent } from './components/profile.component';
+import { ProfileViewComponent } from './components/profileView.component';
 
 const icons = {
   ArrowLeft,
@@ -74,7 +76,9 @@ const icons = {
     TaskCardComponent,
     ParticipantsComponent,
     RedirectComponent,
-    DashboardComponent
+    DashboardComponent,
+    ProfileComponent,
+    ProfileViewComponent,
   ],
   imports: [
     CommonModule,
@@ -108,6 +112,8 @@ const icons = {
     DragDropModule,
     NgxSpinnerModule,
     BrowserAnimationsModule,
+    ProfileComponent,
+    ProfileViewComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

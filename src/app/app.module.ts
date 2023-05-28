@@ -41,6 +41,8 @@ import { ConsultationsComponent as TechnicalAdviserConsultationsComponent } from
 import { DashboardComponent } from './shared/components/dashboard.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { ProfileComponent } from './shared/components/profile.component';
+import { ProfileViewComponent } from './shared/components/profileView.component';
 
 const routes: Routes = [
   {
@@ -48,8 +50,28 @@ const routes: Routes = [
     component: LandingComponent,
   },
   {
+    path: 'profile',
+    component: ProfileComponent,
+    children: [
+      {
+        path: 'dashboard',
+        component: DashboardComponent
+      },
+      {
+        path: 'view',
+        component: ProfileViewComponent
+      },
+      {
+        path: '',
+        redirectTo: '/profile/dashboard',
+        pathMatch: 'full'
+      }
+      
+    ]
+  },
+  {
     path: 's',
-    // canActivate: [authGuard, roleGuard],
+    canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',
@@ -140,7 +162,7 @@ const routes: Routes = [
   },
   {
     path: 'c',
-    // canActivate: [AuthGuard, RoleGuard],
+    canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',
@@ -226,7 +248,7 @@ const routes: Routes = [
   },
   {
     path: 't',
-    // canActivate: [AuthGuard, RoleGuard],
+    canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',

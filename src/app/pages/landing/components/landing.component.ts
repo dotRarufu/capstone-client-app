@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-landing',
   template: `
-    <div
-      class="h-screen relative grid w-full place-content-center py-16"
-    >
+    <div class="relative grid h-screen w-full place-content-center py-16">
       <img
         src="assets/plv-100.jpg"
         alt=""
@@ -31,15 +31,25 @@ import { Component } from '@angular/core';
         />
       </div>
     </div>
-
   `,
 })
-export class LandingComponent {
+export class LandingComponent implements OnInit {
   isLogin = true;
- 
 
-  constructor() {
-    // window.addEventListener('keydown', () => {this.isLoading = !this.isLoading; console.log('keypress')})
+  constructor(private authService: AuthService, private router: Router) {
+    const user = this.authService.getCurrentUser();
+    if (user != null) {
+      if (user.role_id === null) throw new Error('user has no role id');
+      const rolePath = getRolePath(user.role_id);
+      this.router.navigate([rolePath, 'home'])
+    }
+  }
+
+  ngOnInit(): void {
+    // console.log('login landing page:', this.authService.getCurrentUser());
+    // window.addEventListener('keydown', () => {
+    //   console.log('keypress:', this.authService.getCurrentUser());
+    // });
   }
 
   toSignUp() {
@@ -50,3 +60,23 @@ export class LandingComponent {
     this.isLogin = true;
   }
 }
+
+const getRolePath = (roleId: number) => {
+  let role = 'a';
+
+  switch (roleId) {
+    case 0:
+      role = 's';
+      break;
+    case 1:
+      role = 'c';
+      break;
+    case 2:
+      role = 't';
+      break;
+    default:
+      throw new Error('user role error');
+  }
+
+  return role;
+};

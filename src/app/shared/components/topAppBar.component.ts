@@ -31,7 +31,9 @@ import { NgxSpinnerService } from 'ngx-spinner';
             class="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
           >
             <!-- <li><a class="">Profile</a></li> -->
-            <li><a class="flex justify-between text-base-content" (click)="signOut()">Sign Out <i-feather name="log-out"></i-feather></a></li>
+            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="navigateHome()">Home <i-feather name="log-out"></i-feather></a></li>
+            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="navigateProfile()">Profile <i-feather name="log-out"></i-feather></a></li>
+            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="signOut()">Sign Out <i-feather name="log-out"></i-feather></a></li>
           </ul>
         </div>
 
@@ -48,7 +50,7 @@ export class TopAppBarComponent implements OnInit{
   @Input() activePath? = 'Home';
 
   // watch for changes in
-  constructor(private topAppBarService: TopAppBarService, private authService: AuthService, private spinner: NgxSpinnerService) {
+  constructor(private topAppBarService: TopAppBarService, private authService: AuthService, private spinner: NgxSpinnerService, private router: Router) {
     // todo: add unsubscribe or convert to signal
     this.topAppBarService.activePath$
       .subscribe
@@ -58,12 +60,22 @@ export class TopAppBarComponent implements OnInit{
 
   signOut() {
     this.spinner.show();
-    this.authService.signOut().subscribe(v => this.spinner.hide())
+    this.authService.signOut().subscribe(v => {
+      // console.log('sign out:', v);
+      this.spinner.hide();
+    })
   }
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
     this.name = user?.name || 'unnamed'
     this.profileUrl = `https://api.multiavatar.com/${user?.uid || 'unnamed'}.png`
+  }
+
+  navigateProfile() {
+    this.router.navigate(['profile', 'view']);
+  }
+  navigateHome() {
+    this.router.navigate(['']);
   }
 }

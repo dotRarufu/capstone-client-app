@@ -2,6 +2,7 @@ import { Component, OnInit, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Tab } from 'src/app/models/tab';
+import { AuthService } from 'src/app/services/auth.service';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
@@ -116,11 +117,20 @@ export class FormGeneratorComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
+    private authService: AuthService,
     private projectService: ProjectService, private spinner: NgxSpinnerService
   ) {}
 
   navigateTo(id: string) {
-    this.router.navigate(['c', 'project', this.projectId, 'forms', id]);
+    const user = this.authService.getCurrentUser();
+    if (user != null) {
+      // move this inside a pipe
+      if (user.role_id === null) throw new Error('user has no role id');
+
+      const rolePath = getRolePath(user.role_id);
+      this.router.navigate([rolePath, 'project', this.projectId, 'forms', id]);
+    }
+
   }
 
   ngOnInit(): void {
@@ -149,3 +159,22 @@ const getFileName = (text: string) => {
   
   throw new Error('wip, unnamed file');
 }
+const getRolePath = (roleId: number) => {
+  let role = 'a';
+
+  switch (roleId) {
+    case 0:
+      role = 's';
+      break;
+    case 1:
+      role = 'c';
+      break;
+    case 2:
+      role = 't';
+      break;
+    default:
+      throw new Error('user role error');
+  }
+
+  return role;
+};
