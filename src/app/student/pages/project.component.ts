@@ -25,7 +25,10 @@ import {
       </div>
     </div> -->
     <div class="flex">
+      <div class="hidden sm2:block">
       <app-nav-rail (toggleDrawer)="toggleDrawer(myDrawer)"></app-nav-rail>
+      </div>
+
       <div class="drawer lg:drawer-mobile">
         <input
           type="checkbox"
@@ -36,8 +39,18 @@ import {
         />
         <div class="drawer-content p-4">
           <!-- Page content here -->
-
-        
+          <div class="dropdown dropdown-top dropdown-end absolute bottom-4 right-4 sm2:hidden">
+            <label tabindex="0" class="btn btn-primary  rounded-[3px]"><i-feather name="menu"></i-feather></label>
+            <div
+              tabindex="0"
+              class="dropdown-content  menu rounded-box w-fit"
+            >
+              <app-nav-rail
+                [isFab]="true"
+                (toggleDrawer)="toggleDrawer(myDrawer)"
+              ></app-nav-rail>
+            </div>
+          </div>
 
           <div
             class="w-full px-[16px] sm1:px-[32px] sm2:px-0 md:px-[200px] lg:px-0"
@@ -62,11 +75,44 @@ import {
         </div>
       </div>
     </div>
+
+    <!-- scrapped bottom bar -->
+    <!-- <div class=" btm-nav bg-primary text-primary-content flex">
+     
+     <button class="btn-ghost btn flex-1 rounded-[3px] bg-base-100 text-base-content">
+       <div class="h-5 w-5">
+         <i-feather name="trello"></i-feather>
+       </div>
+       <span class="btm-nav-label text-[10px]">Tasks</span>
+     </button>
+     <button class="btn-ghost btn flex-1 rounded-[3px]">
+       <div class="h-5 w-5">
+         <i-feather name="monitor"></i-feather>
+       </div>
+       <span class="btm-nav-label text-[10px]">Dashboard</span>
+     </button>
+     <button class="btn-ghost btn flex-1 rounded-[3px]">
+       <div class="h-5 w-5">
+         <i-feather name="clipboard"></i-feather>
+       </div>
+       <span class="btm-nav-label text-[10px]">Consult</span>
+     </button>
+     <button class="btn-ghost btn flex-1 rounded-[3px]">
+       <div class="h-5 w-5">
+         <i-feather name="users"></i-feather>
+       </div>
+       <span class="btm-nav-label text-[10px]">Participants</span>
+     </button>
+     <button class="btn-ghost btn flex-1 rounded-[3px]">
+       <div class="h-5 w-5">
+         <i-feather name="file-text"></i-feather>
+       </div>
+       <span class="btm-nav-label text-[10px]">Forms</span>
+     </button>
+   </div> -->
   `,
 })
 export class ProjectComponent {
-  
-
   isDrawerOpen: boolean = false;
 
   toggleDrawer(inputRef: HTMLInputElement) {

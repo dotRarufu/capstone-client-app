@@ -25,7 +25,9 @@ import {
       </div>
     </div> -->
     <div class="flex">
+    <div class="hidden sm2:block">
       <app-nav-rail (toggleDrawer)="toggleDrawer(myDrawer)"></app-nav-rail>
+      </div>
       <div class="drawer lg:drawer-mobile">
         <input
           type="checkbox"
@@ -37,6 +39,18 @@ import {
         <div class="drawer-content p-4">
           <!-- Page content here -->
 
+          <div class="dropdown dropdown-top dropdown-end absolute bottom-4 right-4 sm2:hidden">
+            <label tabindex="0" class="btn btn-primary  rounded-[3px]"><i-feather name="menu"></i-feather></label>
+            <div
+              tabindex="0"
+              class="dropdown-content  menu rounded-box w-fit"
+            >
+              <app-nav-rail
+                [isFab]="true"
+                (toggleDrawer)="toggleDrawer(myDrawer)"
+              ></app-nav-rail>
+            </div>
+          </div>
         
 
           <div

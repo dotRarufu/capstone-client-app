@@ -9,7 +9,7 @@ import { SideBarComponent } from './components/sidebar.component';
 import { ProjectsComponent } from './components/projects.component';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { NavigationRailComponent } from './components/navigationRail.component';
+// import { NavigationRailComponent } from './components/navigationRail.component';
 import { ConsultationsComponent } from './components/consultations.component';
 import { ProjectCardComponent } from './components/projectCard.component';
 import { TasksComponent } from './components/tasks.component';
@@ -21,7 +21,7 @@ import { ParticipantsComponent } from './components/participants.component';
     ConsultationsComponent,
     AccordionComponent,
     ProjectCardComponent,
-    NavigationRailComponent,
+    // NavigationRailComponent,
     ProjectComponent,
     SideBarComponent,
     ProjectsComponent,

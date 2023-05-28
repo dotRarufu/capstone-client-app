@@ -47,6 +47,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
           </div>
         </div>
       </div>
+      
+      
     </div>
 
     <app-modal inputId="title-analyzer" (checkboxChanged)="alreadyHaveTitle = !$event">

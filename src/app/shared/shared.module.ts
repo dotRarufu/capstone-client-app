@@ -42,6 +42,7 @@ import { NgxSpinnerModule } from "ngx-spinner";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { ProfileComponent } from './components/profile.component';
 import { ProfileViewComponent } from './components/profileView.component';
+import { NavigationRailComponent } from './components/navigationRail.component';
 
 const icons = {
   ArrowLeft,
@@ -79,6 +80,7 @@ const icons = {
     DashboardComponent,
     ProfileComponent,
     ProfileViewComponent,
+    NavigationRailComponent,
   ],
   imports: [
     CommonModule,
@@ -114,6 +116,7 @@ const icons = {
     BrowserAnimationsModule,
     ProfileComponent,
     ProfileViewComponent,
+    NavigationRailComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

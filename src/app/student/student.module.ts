@@ -8,14 +8,14 @@ import { TitleAnalyzerComponent } from './components/titleAnalyzer.component';
 import { ResultComponent } from './pages/result.component';
 import { SideBarComponent } from './components/sidebar.component';
 import { ProjectComponent } from './pages/project.component';
-import { NavigationRailComponent } from './components/navigationRail.component';
+// import { NavigationRailComponent } from './components/navigationRail.component';
 import { ConsultationsComponent } from './components/consultations.component';
 import { ProjectCardComponent } from './components/projectCard.component';
 import { TasksComponent } from './components/tasks.component';
 import { TitleBuilderComponent } from './components/titleBuilder.component';
 
 @NgModule({
-  declarations: [HomeComponent, ProjectsComponent, AccordionComponent, SideBarComponent, ProjectComponent, TitleAnalyzerComponent, ResultComponent, NavigationRailComponent, ConsultationsComponent, ProjectCardComponent, TasksComponent, TitleBuilderComponent],
+  declarations: [HomeComponent, ProjectsComponent, AccordionComponent, SideBarComponent, ProjectComponent, TitleAnalyzerComponent, ResultComponent,  ConsultationsComponent, ProjectCardComponent, TasksComponent, TitleBuilderComponent],
   imports: [SharedModule],
   exports: [HomeComponent],
 })
