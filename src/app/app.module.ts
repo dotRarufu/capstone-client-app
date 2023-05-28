@@ -31,6 +31,8 @@ import { ParticipantsComponent } from './shared/components/participants.componen
 import { ParticipantsComponent as CapstoneAdviserParticipantsComponent } from './capstoneAdviser/components/participants.component';
 import { ParticipantsComponent as TechnicalAdviserParticipantsComponent } from './technicalAdviser/components/participants.component';
 import { ConsultationsComponent as StudentConsultationsComponent } from './student/components/consultations.component';
+import { TitleAnalyzerComponent as StudentTitleAnalyzerComponent } from './student/components/titleAnalyzer.component';
+import { ProjectsComponent as StudentProjectsComponent } from './student/components/projects.component';
 import { ProjectService } from './services/project.service';
 import { RedirectComponent } from './shared/components/redirect.component';
 import { ConsultationsComponent as CapstoneAdviserConsultationsComponent } from './capstoneAdviser/components/consultations.component';
@@ -50,27 +52,19 @@ const routes: Routes = [
     children: [
       {
         path: 'home',
+        component: StudentHome,
         children: [
           {
             path: 'title-analyzer',
-            children: [
-              {
-                // todo: create 'unathorized' page
-                path: 'result',
-                component: StudentTitleAnalyzerResult,
-              },
-              {
-                path: '',
-                component: StudentHome,
-                pathMatch: 'full',
-                data: { path: 'title-analyzer' },
-              },
-            ],
+            component: StudentTitleAnalyzerComponent,
           },
           {
             path: 'projects',
-            component: StudentHome,
-            data: { path: 'projects' },
+            component: StudentProjectsComponent,
+          },
+          {
+            path: 'title-analyzer-result',
+            component: StudentTitleAnalyzerResult,
           },
 
           { path: '', redirectTo: '/s/home/title-analyzer', pathMatch: 'full' },

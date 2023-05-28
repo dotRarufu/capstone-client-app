@@ -17,20 +17,30 @@ import { NgxSpinnerService } from 'ngx-spinner';
         class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
       >
         <div class="md:hidden w-full">
-          <app-student-title-analyzer
+          <!-- <app-student-title-analyzer
             *ngIf="checkPath('title-analyzer')"
             (analyzeClicked)="this.alreadyHaveTitle = true"
           ></app-student-title-analyzer>
           <app-student-projects
             *ngIf="checkPath('projects')"
-          ></app-student-projects>
+          ></app-student-projects> -->
+          <router-outlet></router-outlet>
         </div>
 
         <!-- desktop -->
         <div class=" hidden w-full gap-[1rem]  md:flex lg:w-[1040px]">
+          <div class="flex flex-col gap-4">
+          <ng-container *ngIf="!hasResult">
           <app-student-title-analyzer
             (analyzeClicked)="this.alreadyHaveTitle = true"
           ></app-student-title-analyzer>
+          </ng-container>
+          <!-- check if there's a result, if there is, then hide title analyzer, else hide analyzer result -->
+          <ng-container *ngIf="hasResult">
+          <app-student-title-analyzer-result [sideColumn]="true"></app-student-title-analyzer-result>
+          </ng-container>
+          </div>
+
 
           <div class=" w-[294px] flex-shrink-0  basis-[294px] ">
             <app-student-projects [sideColumn]="true"></app-student-projects>
@@ -65,12 +75,12 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <label class="btn-ghost btn grow rounded-[3px]" for="title-analyzer"
               >Cancel</label
             >
-            <button
-              (click)="navigateTo('result')"
+            <label for="title-analyzer"
+              (click)="navigateTo('title-analyzer-result')"
               class="btn-primary btn grow rounded-[3px]"
             >
               Next
-            </button>
+            </label>
           </div>
         </ng-container>
 
@@ -102,7 +112,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
           </div>
         </ng-container>
       </div>
-    </app-modal>
+    </app-modal>    
+
 
     <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
   `,
@@ -146,6 +157,7 @@ export class HomeComponent implements OnInit {
   }[] = [];
   alreadyHaveTitle = false;
   titleFromAlreadyHaveTitle = '';
+  hasResult = false;
 
   constructor(
     private router: Router,
@@ -161,6 +173,11 @@ export class HomeComponent implements OnInit {
       this.path = data['path'];
       // console.log('path:', this.path);
     });
+
+    this.projectService.analyzerResult$.subscribe(r => {
+      this.hasResult = !!r;
+      console.log('hasResult:', this.hasResult);
+    });
   }
 
   checkPath(path: string) {
@@ -175,18 +192,21 @@ export class HomeComponent implements OnInit {
   async navigateTo(path: string) {
     // todo: make the builder page under title analyzer route
     this.spinner.show();
-    if (path !== 'result') {
-      this.router.navigate(['s', 'home', 'title-analyzer', path]);
-      return;
-    }
+    // if (path !== 'result') {
+    //   this.router.navigate(['s', 'home', path]);
+    //   return;
+    // }
+  
 
+    console.log('analyze title');
     const titleAnalyzerResult = await this.projectService.analyzeTitle(
       this.titleFromAlreadyHaveTitle
     );
     console.log("passed state:", titleAnalyzerResult);
     this.spinner.hide();
-    this.router.navigate(['s', 'home', 'title-analyzer', 'result'], {
-      state: { titleAnalyzerResult },
+    console.log('navigate');
+    this.router.navigate(['s', 'home', path], {
+      // state: { titleAnalyzerResult },
     });
   }
 }
@@ -197,3 +217,5 @@ export class HomeComponent implements OnInit {
 //     ? 'outline-primary/50 outline outline-offset-8 outline-2 rounded-[3px]'
 //     : ''
 // }}"
+
+

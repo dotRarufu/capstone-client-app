@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { Tab } from 'src/app/models/tab';
@@ -20,33 +20,81 @@ interface InformationalDataItem {
 @Component({
   selector: 'app-student-title-analyzer-result',
   template: `
-    <div class="flex flex-col gap-[1rem]">
-      <div>
-        <app-top-app-bar></app-top-app-bar>
-        <app-tabs [tabs]="tabs"></app-tabs>
+    <ng-container *ngIf="!sideColumn">
+    <div
+      class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
+    >
+      <!-- mobile -->
+      <div
+        class="flex w-full flex-col  gap-[16px] sm2:hidden sm2:w-[840px] md:w-full lg:w-[1040px]"
+      >
+        <div class="flex justify-between gap-2">
+          <h1 class="text-[24px] text-base-content">
+            {{ title }}
+          </h1>
+          
+          <button
+            class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+          >
+            <i-feather name="zap"></i-feather>
+
+            Save 
+          </button>
+        </div>
+
+        <div class="h-[2px] w-full bg-base-content/10"></div>
+
+        <app-student-accordion
+          *ngFor="let data of analysesData"
+          [isResult]="true"
+          [score]="data.value"
+          [heading]="data.heading"
+        >
+          <div class="p-4 pt-[32px] text-base-content">
+            {{ data.content }}
+          </div>
+        </app-student-accordion>
+
+        <div
+          class="flex w-full flex-shrink-0  basis-[294px] flex-col gap-[16px]"
+        >
+          <app-student-accordion
+            *ngFor="let data of informationalData"
+            [withArrow]="true"
+            [forcedOpen]="false"
+            [heading]="data.heading"
+          >
+            <div class="max-h-[340px] overflow-y-scroll pt-[16px]">
+              <ul class="menu">
+                <li *ngFor="let title of data.content" class=" ">
+                  <a class="">{{ title }}</a>
+                </li>
+              </ul>
+            </div>
+          </app-student-accordion>
+        </div>
       </div>
 
+      <!-- todo: fix the one in capstone adviser, that is structured like this -->
+      <!-- desktop -->
       <div
-        class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
+        class=" hidden w-[840px] gap-[1rem] sm2:flex md:w-full lg:w-[1040px]"
       >
-        <!-- mobile -->
-        <div
-          class="flex w-full flex-col  gap-[16px] sm2:hidden sm2:w-[840px] md:w-full lg:w-[1040px]"
-        >
-          <div class="flex justify-between gap-2">
-            <h1 class="text-[24px] text-base-content">
-              {{ title }}
-            </h1>
+        <div class="flex w-[48px] flex-grow flex-col gap-[1rem] ">
+          <div class="flex justify-end gap-4 ">
+          
             <button
               class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
             >
-              <i-feather name="zap"></i-feather>
+              <i-feather name="heart"></i-feather>
 
-              Save
+              Save 
             </button>
           </div>
 
-          <div class="h-[2px] w-full bg-base-content/10"></div>
+          <h1 class="text-[24px] text-base-content">
+            {{ title }}
+          </h1>
 
           <app-student-accordion
             *ngFor="let data of analysesData"
@@ -54,92 +102,93 @@ interface InformationalDataItem {
             [score]="data.value"
             [heading]="data.heading"
           >
-            <div class="p-4 pt-[32px] text-base-content">
+            <!-- todo: change all px to rem -->
+            <!-- pt-[32px] is a fix -->
+            <div class="p-4 pt-[32px]  text-base-content">
               {{ data.content }}
             </div>
           </app-student-accordion>
-
-          <div
-            class="flex w-full flex-shrink-0  basis-[294px] flex-col gap-[16px]"
-          >
-            <app-student-accordion
-              *ngFor="let data of informationalData"
-              [withArrow]="true"
-              [forcedOpen]="false"
-              [heading]="data.heading"
-            >
-              <div class="max-h-[340px] overflow-y-scroll pt-[16px]">
-                <ul class="menu">
-                  <li *ngFor="let title of data.content" class=" ">
-                    <a class="">{{ title }}</a>
-                  </li>
-                </ul>
-              </div>
-            </app-student-accordion>
-          </div>
         </div>
 
-        <!-- todo: fix the one in capstone adviser, that is structured like this -->
-        <!-- desktop -->
-        <div
-          class=" hidden w-[840px] gap-[1rem] sm2:flex md:w-full lg:w-[1040px]"
-        >
-          <div class="flex w-[48px] flex-grow flex-col gap-[1rem] ">
-            <div class="flex justify-end gap-4 ">
-              <button
-                (click)="handleBackButtonClick()"
-                class="btn-ghost btn hidden gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30 md:flex"
-              >
-                <i-feather name="arrow-left"></i-feather>
-
-                Back
-              </button>
-              <button
-                class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
-              >
-                <i-feather name="heart"></i-feather>
-
-                Save
-              </button>
+        <div class="flex  flex-shrink-0 basis-[294px] flex-col gap-[16px]">
+          <app-student-accordion
+            *ngFor="let data of informationalData"
+            [withArrow]="true"
+            [forcedOpen]="false"
+            [heading]="data.heading"
+          >
+            <div class="max-h-[340px] overflow-y-scroll pt-[16px]">
+              <ul class="menu">
+                <li *ngFor="let title of data.content" class=" ">
+                  <a class="">{{ title }}</a>
+                </li>
+              </ul>
             </div>
-
-            <h1 class="text-[24px] text-base-content">
-              {{ title }}
-            </h1>
-
-            <app-student-accordion
-              *ngFor="let data of analysesData"
-              [isResult]="true"
-              [score]="data.value"
-              [heading]="data.heading"
-            >
-              <!-- todo: change all px to rem -->
-              <!-- pt-[32px] is a fix -->
-              <div class="p-4 pt-[32px]  text-base-content">
-                {{ data.content }}
-              </div>
-            </app-student-accordion>
-          </div>
-
-          <div class="flex  flex-shrink-0 basis-[294px] flex-col gap-[16px]">
-            <app-student-accordion
-              *ngFor="let data of informationalData"
-              [withArrow]="true"
-              [forcedOpen]="false"
-              [heading]="data.heading"
-            >
-              <div class="max-h-[340px] overflow-y-scroll pt-[16px]">
-                <ul class="menu">
-                  <li *ngFor="let title of data.content" class=" ">
-                    <a class="">{{ title }}</a>
-                  </li>
-                </ul>
-              </div>
-            </app-student-accordion>
-          </div>
+          </app-student-accordion>
         </div>
       </div>
     </div>
+    </ng-container>
+
+    <ng-container *ngIf="sideColumn">
+    <div
+        class="flex w-full flex-col  gap-[16px] "
+      >
+        <div class="flex justify-between gap-2">
+          <h1 class="text-[24px] text-base-content">
+            {{ title }}
+          </h1>
+          <button
+              (click)="handleBackButtonClick()"
+              class="btn-ghost btn hidden gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30 md:flex"
+            >
+              <i-feather name="arrow-left"></i-feather>
+
+              Back
+            </button>
+          <button
+            class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+          >
+            <i-feather name="zap"></i-feather>
+
+            Save 
+          </button>
+        </div>
+
+        <div class="h-[2px] w-full bg-base-content/10"></div>
+
+        <app-student-accordion
+          *ngFor="let data of analysesData"
+          [isResult]="true"
+          [score]="data.value"
+          [heading]="data.heading"
+        >
+          <div class="p-4 pt-[32px] text-base-content">
+            {{ data.content }}
+          </div>
+        </app-student-accordion>
+
+        <div
+          class="flex w-full flex-shrink-0  basis-[294px] flex-col gap-[16px]"
+        >
+          <app-student-accordion
+            *ngFor="let data of informationalData"
+            [withArrow]="true"
+            [forcedOpen]="false"
+            [heading]="data.heading"
+          >
+            <div class="max-h-[340px] overflow-y-scroll pt-[16px]">
+              <ul class="menu">
+                <li *ngFor="let title of data.content" class=" ">
+                  <a class="">{{ title }}</a>
+                </li>
+              </ul>
+            </div>
+          </app-student-accordion>
+        </div>
+      </div>  
+    </ng-container>
+
 
     <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
   `,
@@ -149,9 +198,12 @@ export class ResultComponent implements OnInit {
   title = '';
   analysesData: AnalysesDataItem[] = [];
   informationalData: { heading: string; content: string[] }[] = [];
+  @Input() sideColumn? = false;
 
   async prepareAnalysesData(data: TitleAnalyzerResult) {
+    try {
     this.spinner.show();
+    console.log('start preparing data')
     const substantiveWordCount: AnalysesDataItem = {
       heading: 'Substantive Word Count',
       value: data.substantive_words.count,
@@ -184,8 +236,10 @@ export class ResultComponent implements OnInit {
           // concatenate the category name to the title
           async (id) => {
             const category = await this.databaseService.getCategoryName(id);
-            const titles = await this.databaseService.getProjectsFromCategory(id);
-            const newTitles = titles.map(t => `${t} - ${category}`)  
+            const titles = await this.databaseService.getProjectsFromCategory(
+              id
+            );
+            const newTitles = titles.map((t) => `${t} - ${category}`);
 
             return newTitles;
           }
@@ -198,15 +252,17 @@ export class ResultComponent implements OnInit {
       content: titles,
     };
 
-    const wordSuggestions = data.words_suggestions.suggestions.map(
-      ({ original_word, suggested_word }) =>
-        `${original_word} -> ${suggested_word}`
-    );
-    const grammarSuggestions =
-      data.grammar_spelling_suggestions.suggestions.map(
-        ({ original_word, suggested_word }) =>
-          `${original_word} -> ${suggested_word}`
-      );
+    // const wordSuggestions = data.words_suggestions.suggestions.map(
+    //   ({ original_word, suggested_word }) =>
+    //     `${original_word} -> ${suggested_word}`
+    // );
+    const wordSuggestions = ['debug', 'mode'];
+    // const grammarSuggestions =
+    //   data.grammar_spelling_suggestions.suggestions.map(
+    //     ({ original_word, suggested_word }) =>
+    //       `${original_word} -> ${suggested_word}`
+    //   );
+    const grammarSuggestions = ['debug', 'mode'];
 
     const suggestions: InformationalDataItem = {
       heading: 'Suggestions',
@@ -216,7 +272,9 @@ export class ResultComponent implements OnInit {
     this.informationalData = [similarProjects, suggestions];
     this.title = data.title;
     this.analysesData = [substantiveWordCount, titleUniqueness, readability];
-
+  } catch(err) {
+    console.error('error occured:', err)
+  }
     this.spinner.hide();
   }
 
@@ -260,14 +318,24 @@ export class ResultComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // const state = this.router.getCurrentNavigation()?.extras.state;
-    const state = history.state;
-    const titleAnalyzerResultState = state?.['titleAnalyzerResult'];
+    this.projectService.analyzerResult$.subscribe(r => {
+      if (r === undefined) {
+        this.router.navigate(['s','home','title-analyzer']);
+        console.warn('analyzer result is undefined');
+      }
+      
+      if (r !== undefined) this.prepareAnalysesData(r);
+    })
+    // const state = history.state;
+    // const titleAnalyzerResultState = state?.['titleAnalyzerResult'];
 
-    if (!titleAnalyzerResultState)
-      throw Error('wip, result state is undefined');
-
-    this.prepareAnalysesData(titleAnalyzerResultState);
+    // if (!titleAnalyzerResultState) {
+    //   // throw Error('wip, result state is undefined');
+    //   console.warn('wip, result state is undefined');
+    //   this.spinner.hide()
+    // }
+   
+    // this.prepareAnalysesData(titleAnalyzerResultState);
   }
 
   similarProjects: string[] = [
@@ -277,6 +345,7 @@ export class ResultComponent implements OnInit {
   ];
 
   handleBackButtonClick() {
+    this.projectService.clearAnalyzerResult();
     this.router.navigate(['s', 'home', 'title-analyzer']);
   }
 }

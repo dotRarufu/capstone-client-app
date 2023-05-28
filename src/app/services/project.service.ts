@@ -54,6 +54,8 @@ export class ProjectService {
   supabase: SupabaseClient;
   private _formUrl$: BehaviorSubject<string> = new BehaviorSubject('');
   formUrl$ = this._formUrl$.asObservable();
+  private _analyzerResult$ = new BehaviorSubject<TitleAnalyzerResult | undefined>(undefined);
+  analyzerResult$ = this._analyzerResult$.asObservable();
 
   constructor(private supabaseService: SupabaseService) {
     this.supabase = createClient(
@@ -71,6 +73,11 @@ export class ProjectService {
 
   // todo: make the backend services automatically restart when something fails
 
+  clearAnalyzerResult() {
+    this._analyzerResult$.next(undefined);
+    console.log('clear result')
+  }
+
   // maybe rename this to backendService
   async analyzeTitle(title: string) {
     console.log('analyzing title:', title);
@@ -85,6 +92,7 @@ export class ProjectService {
       },
     });
     const data = response.data as TitleAnalyzerResult;
+    this._analyzerResult$.next(data);
 
     return data;
   }
