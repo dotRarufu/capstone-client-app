@@ -199,12 +199,12 @@ import { Task } from 'src/app/types/collection';
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 py-2">
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather class="text-base-content/70"name="trash"></i-feather> done
+              <i-feather class="text-base-content/70"name="check-square"></i-feather> done
             </li>
 
             <div class="h-full"></div>
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather class="text-base-content/70"name="trash"></i-feather> close
+              <i-feather class="text-base-content/70"name="x-circle"></i-feather> close
             </li>
           </ul>
         </div>

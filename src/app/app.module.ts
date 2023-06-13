@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, Component, NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { ActivatedRoute, Router, RouterModule, Routes } from '@angular/router';
@@ -44,6 +44,8 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { ProfileComponent } from './shared/components/profile.component';
 import { ProfileViewComponent } from './shared/components/profileView.component';
 import { ToastrModule } from 'ngx-toastr';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { NgChartsModule } from 'ng2-charts';
 
 const routes: Routes = [
   {
@@ -350,6 +352,13 @@ const routes: Routes = [
     SharedModule,
     ToastrModule.forRoot({preventDuplicates: true, progressBar: true}),
     RouterModule.forRoot(routes),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
+    NgChartsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

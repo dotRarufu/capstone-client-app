@@ -1,14 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ProjectService } from '../../services/project.service';
 import { Tab } from 'src/app/models/tab';
-import { TitleAnalyzerResult } from 'src/app/models/titleAnalyzerResult';
-import { SupabaseService } from 'src/app/services/supabase.service';
-import { DatabaseService } from 'src/app/services/database.service';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
-import { ConsultationService } from 'src/app/services/consultation.service';
-import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'app-student-title-analyzer-result',

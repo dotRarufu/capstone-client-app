@@ -1,11 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
+import { BaseChartDirective, } from 'ng2-charts';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { Consultation } from 'src/app/types/collection';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
+import { ChartConfiguration, ChartData, } from 'chart.js';
 
 @Component({
   selector: 'app-dashboard',
@@ -249,12 +249,6 @@ export class DashboardComponent {
 
   barChartOptions: ChartConfiguration['options'] = {
     responsive: true,
-    scales: {
-      x: {},
-      y: {
-        min: 0,
-      },
-    },
     plugins: {
       legend: {
         display: true,
@@ -274,12 +268,6 @@ export class DashboardComponent {
       },
       datalabels: {
         color: '#C9C5FF',
-
-        formatter: (value, ctx) => {
-          if (ctx.chart.data.labels) {
-            return ctx.chart.data.labels[ctx.dataIndex];
-          }
-        },
       },
     },
   };

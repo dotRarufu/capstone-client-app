@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
 
 @Component({
@@ -42,11 +42,11 @@ import { ProjectService } from '../../services/project.service';
                 <input (change)="changeTheme()" type="checkbox" class="toggle-primary toggle" checked />
               </label>
             </li>
-            <li class="form-control w-full">
-              <label class="label cursor-pointer flex items-center">
-                <span class="label-text text-[20px]">Notifications</span>
-                <input type="checkbox" class="toggle-primary toggle" checked />
-              </label>
+            <li class="w-full flex justify-between items-center px-1 py-2">
+             
+                <span class="label-text text-[20px]">Add to Home Screen</span>
+                <button (click)="installPWA()" class="btn btn-sm btn-primary">Install</button>
+              
             </li>
           </ul>
         </div>
@@ -74,7 +74,7 @@ import { ProjectService } from '../../services/project.service';
     </ng-container>
   `,
 })
-export class ProfileViewComponent {
+export class ProfileViewComponent implements OnInit{
   search: string = '';
   projects: {
     name: string;
@@ -88,6 +88,12 @@ export class ProfileViewComponent {
 
   ngOnInit() {
     this.projects = this.projectService.getProjects();
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault(); // Prevent the default behavior
+     console.log('runs:', event);
+      this.deferredPrompt = event;
+    });
   }
 
   theme: string = 'original';
@@ -97,5 +103,16 @@ export class ProfileViewComponent {
     this.theme = this.theme === 'dark' ? 'original' : 'dark';
 
     document.querySelector('html')?.setAttribute('data-theme', this.theme);
+  }
+
+  deferredPrompt: any;
+
+  installPWA() {
+    console.log('this.deferredPrompt:', this.deferredPrompt);
+    if (this.deferredPrompt) {
+      this.deferredPrompt.prompt(); // Prompt the user to install the PWA
+      console.log('should have prompted');
+      this.deferredPrompt = null; // Reset the deferredPrompt
+    }
   }
 }

@@ -4,6 +4,8 @@ import {
   Component,
   ViewChild,
   AfterViewInit,
+  HostListener,
+  OnInit,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -68,7 +70,7 @@ import { User } from 'src/app/types/collection';
       <div class="flex w-full flex-row items-center justify-center gap-2">
         <div class="opacity-75">Don't have an account?</div>
         <a class="btn-link btn no-underline " (click)="navigateToSignUp()"
-          >SIGN UP</a
+        >SIGN UP</a
         >
       </div>
     </div>
@@ -108,6 +110,7 @@ export class LoginComponent {
   navigateToSignUp() {
     this.toSignUp.emit();
   }
+
 }
 
 const getRolePath = (user: User) => {

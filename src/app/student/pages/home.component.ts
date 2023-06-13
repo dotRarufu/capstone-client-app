@@ -17,7 +17,7 @@ import { ToastrService } from 'ngx-toastr';
       <div
         class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
       >
-        <div class="md:hidden w-full">
+        <div class="w-full md:hidden">
           <!-- <app-student-title-analyzer
             *ngIf="checkPath('title-analyzer')"
             (analyzeClicked)="this.alreadyHaveTitle = true"
@@ -31,29 +31,31 @@ import { ToastrService } from 'ngx-toastr';
         <!-- desktop -->
         <div class=" hidden w-full gap-[1rem]  md:flex lg:w-[1040px]">
           <div class="flex flex-col gap-4">
-          <ng-container *ngIf="!hasResult">
-          <app-student-title-analyzer
-            (analyzeClicked)="this.alreadyHaveTitle = true"
-          ></app-student-title-analyzer>
-          </ng-container>
-          <!-- check if there's a result, if there is, then hide title analyzer, else hide analyzer result -->
-          <ng-container *ngIf="hasResult">
-          <app-student-title-analyzer-result [sideColumn]="true"></app-student-title-analyzer-result>
-          </ng-container>
+            <ng-container *ngIf="!hasResult">
+              <app-student-title-analyzer
+                (analyzeClicked)="this.alreadyHaveTitle = true"
+              ></app-student-title-analyzer>
+            </ng-container>
+            <!-- check if there's a result, if there is, then hide title analyzer, else hide analyzer result -->
+            <ng-container *ngIf="hasResult">
+              <app-student-title-analyzer-result
+                [sideColumn]="true"
+              ></app-student-title-analyzer-result>
+            </ng-container>
           </div>
-
 
           <div class=" w-[294px] flex-shrink-0  basis-[294px] ">
             <app-student-projects [sideColumn]="true"></app-student-projects>
           </div>
         </div>
       </div>
-      
-      
     </div>
 
-    <app-modal inputId="title-analyzer" (checkboxChanged)="alreadyHaveTitle = !$event">
-      <div class="flex flex-col gap-[16px] p-6 bg-base-100 w-[712px]">
+    <app-modal
+      inputId="title-analyzer"
+      (checkboxChanged)="handleCheckboxChange($event)"
+    >
+      <div class="flex w-[712px] flex-col gap-[16px] bg-base-100 p-6">
         <ng-container *ngIf="alreadyHaveTitle">
           <h1
             class="text-center text-[24px] text-base-content min-[444px]:text-left"
@@ -69,7 +71,7 @@ import { ToastrService } from 'ngx-toastr';
 
           <textarea
             [(ngModel)]="titleFromAlreadyHaveTitle"
-            class="rounded-[3px] textarea-bordered textarea h-[136px] border-base-content/50 text-base  text-base-content placeholder:text-base-content/70"
+            class="textarea-bordered textarea h-[136px] rounded-[3px] border-base-content/50 text-base  text-base-content placeholder:text-base-content/70"
             placeholder="Development and Evaluation of ..."
           ></textarea>
 
@@ -78,7 +80,8 @@ import { ToastrService } from 'ngx-toastr';
             <label class="btn-ghost btn grow rounded-[3px]" for="title-analyzer"
               >Cancel</label
             >
-            <label for="title-analyzer"
+            <label
+              for="title-analyzer"
               (click)="navigateTo('title-analyzer-result')"
               class="btn-primary btn grow rounded-[3px]"
             >
@@ -100,13 +103,11 @@ import { ToastrService } from 'ngx-toastr';
             aliquip ex ea.
           </p>
           <div class="flex flex-col items-center gap-4 min-[444px]:items-end">
-            <button
-              (click)="alreadyHaveTitle = true"
-              class="btn-link btn w-fit"
-            >
+            <button (click)="nextBlock()" class="btn-link btn w-fit">
               I already have a title
             </button>
-            <label for="title-analyzer"
+            <label
+              for="title-analyzer"
               (click)="toTitleBuilder()"
               class="btn-link btn w-fit text-base-content no-underline"
             >
@@ -115,10 +116,16 @@ import { ToastrService } from 'ngx-toastr';
           </div>
         </ng-container>
       </div>
-    </app-modal>    
+    </app-modal>
 
-
-    <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
+    <ngx-spinner
+      bdColor="rgba(0, 0, 0, 0.8)"
+      size="default"
+      color="#fff"
+      type="square-loader"
+      [fullScreen]="true"
+      ><p style="color: white">Loading...</p></ngx-spinner
+    >
   `,
 })
 export class HomeComponent implements OnInit {
@@ -162,11 +169,23 @@ export class HomeComponent implements OnInit {
   titleFromAlreadyHaveTitle = '';
   hasResult = false;
 
+  nextBlock() {
+    this.alreadyHaveTitle = true;
+
+    console.log('next block | new alreadyhavetitle:', this.alreadyHaveTitle);
+  }
+
+  handleCheckboxChange(e: boolean) {
+    console.log('handleCheckboxChange runs:', !e);
+    this.alreadyHaveTitle = !e;
+  }
+
   constructor(
     private router: Router,
     private projectService: ProjectService,
-    private route: ActivatedRoute, private spinner: NgxSpinnerService,
-    private toastr: ToastrService,
+    private route: ActivatedRoute,
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService
   ) {}
   path: string = '';
 
@@ -184,7 +203,7 @@ export class HomeComponent implements OnInit {
         console.log('hasResult:', this.hasResult);
       },
       error: (err) => {
-        this.toastr.error('Error occured while analyzing title')
+        this.toastr.error('Error occured while analyzing title');
       },
     });
 
@@ -199,7 +218,7 @@ export class HomeComponent implements OnInit {
   checkPath(path: string) {
     const a = this.path === path;
     // console.log('this.path:', this.path, 'path:', path);
-    console.log('alreadyHaveTitle:', this.alreadyHaveTitle)
+    console.log('alreadyHaveTitle:', this.alreadyHaveTitle);
 
     return a;
   }
@@ -212,13 +231,12 @@ export class HomeComponent implements OnInit {
     //   this.router.navigate(['s', 'home', path]);
     //   return;
     // }
-  
 
     console.log('analyze title');
     const titleAnalyzerResult = await this.projectService.analyzeTitle(
       this.titleFromAlreadyHaveTitle
     );
-    console.log("passed state:", titleAnalyzerResult);
+    console.log('passed state:', titleAnalyzerResult);
     this.spinner.hide();
     console.log('navigate');
     this.router.navigate(['s', 'home', path], {
@@ -227,7 +245,7 @@ export class HomeComponent implements OnInit {
   }
 
   toTitleBuilder() {
-    this.router.navigate(['s', 'title-builder'])
+    this.router.navigate(['s', 'title-builder']);
   }
 }
 
@@ -237,5 +255,3 @@ export class HomeComponent implements OnInit {
 //     ? 'outline-primary/50 outline outline-offset-8 outline-2 rounded-[3px]'
 //     : ''
 // }}"
-
-
