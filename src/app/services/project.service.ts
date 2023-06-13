@@ -1,15 +1,11 @@
 import { Injectable, signal } from '@angular/core';
-import {
-  createClient,
-  SupabaseClient,
-  AuthResponse,
-} from '@supabase/supabase-js';
-import { BehaviorSubject, filter, from, map, switchMap, throwError } from 'rxjs';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { BehaviorSubject, filter, map } from 'rxjs';
 import { environment } from 'src/environments/environment.dev';
-import { CapstoolUser } from '../models/capstool-user';
 import { SupabaseService } from './supabase.service';
 import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
 import { ToastrService } from 'ngx-toastr';
+import { Project } from '../models/project';
 
 type AnalyzerResultError = string;
 
@@ -17,12 +13,7 @@ type AnalyzerResultError = string;
   providedIn: 'root',
 })
 export class ProjectService {
-  projects: {
-    name: string;
-    uid: number;
-    description: string;
-    members: string[];
-  }[] = [
+  projects: Project[] = [
     {
       name: 'Capstool',
       uid: 0,
@@ -57,10 +48,18 @@ export class ProjectService {
   supabase: SupabaseClient;
   private _formUrl$: BehaviorSubject<string> = new BehaviorSubject('');
   formUrl$ = this._formUrl$.asObservable();
-  private _analyzerResult$ = new BehaviorSubject<TitleAnalyzerResult | AnalyzerResultError | undefined | null>(undefined);
-  analyzerResult$ = this._analyzerResult$.asObservable().pipe(filter(v => v !== undefined), map(this.checkError));
+  private _analyzerResult$ = new BehaviorSubject<
+    TitleAnalyzerResult | AnalyzerResultError | undefined | null
+  >(undefined);
+  analyzerResult$ = this._analyzerResult$.asObservable().pipe(
+    filter((v) => v !== undefined),
+    map(this.checkError)
+  );
 
-  constructor(private supabaseService: SupabaseService, private toastr: ToastrService) {
+  constructor(
+    private supabaseService: SupabaseService,
+    private toastr: ToastrService
+  ) {
     this.supabase = createClient(
       environment.supabase_url,
       environment.supabase_key
@@ -78,7 +77,7 @@ export class ProjectService {
 
   clearAnalyzerResult() {
     this._analyzerResult$.next(undefined);
-    console.log('clear result')
+    console.log('clear result');
   }
 
   // maybe rename this to backendService
@@ -100,11 +99,11 @@ export class ProjectService {
     return data;
   }
 
-  checkError(a: TitleAnalyzerResult | undefined | null | AnalyzerResultError)  {
+  checkError(a: TitleAnalyzerResult | undefined | null | AnalyzerResultError) {
     if (a === undefined || a === null) {
       console.log('should show error toast');
       this.toastr.error('error occured while analyzing title');
-      throw new Error('undefined result')
+      throw new Error('undefined result');
     }
 
     if (typeof a === 'string') throw new Error(a);
@@ -128,24 +127,34 @@ export class ProjectService {
         name: 'Functions',
       },
     });
-    
+
     let url = '';
     switch (number) {
       case 1:
-        url = response.data || 'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_1_project_0.docx'
+        url =
+          response.data ||
+          'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_1_project_0.docx';
         break;
       case 2:
-        url = response.data || 'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_2_project_0.docx?t=2023-05-18T14%3A11%3A02.027Z'
+        url =
+          response.data ||
+          'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_2_project_0.docx?t=2023-05-18T14%3A11%3A02.027Z';
         break;
       case 3:
-        url = response.data || 'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_3_project_0.docx'
+        url =
+          response.data ||
+          'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_3_project_0.docx';
         break;
       case 4:
-        url = response.data || 'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_4_project_0.docx'
+        url =
+          response.data ||
+          'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_4_project_0.docx';
         break;
-        
-        default:
-        url = response.data || 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf'
+
+      default:
+        url =
+          response.data ||
+          'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
         break;
     }
 

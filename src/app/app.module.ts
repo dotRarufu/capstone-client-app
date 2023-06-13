@@ -165,7 +165,7 @@ const routes: Routes = [
   },
   {
     path: 'c',
-    canActivate: [authGuard, roleGuard],
+    // canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',

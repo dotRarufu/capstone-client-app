@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-capstone-adviser-project-card',
@@ -10,13 +10,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         <h2  (click)="handleCardClick()" class="link-hover link card-title  w-full px-4 text-left text-secondary-content">
           Capstool
         </h2>
-        <!-- <img
-          src="/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg"
-          alt="Shoes"
-        /> -->
+    
       </figure>
       <div class="card-body">
-        <!-- <h2 class="card-title">Shoes!</h2> -->
         <p class="text-sm">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed Lorem
           ipsum dolor sit amet, consectetur adipiscing elit, sed
@@ -28,20 +24,19 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
             (click)="removeProjectCard()"
             class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
           >
-            <i-feather class="text-base-content/70"name="trash"></i-feather>
+            <i-feather class="text-base-content/70"name="trash"/>
           </button>
           <button
           (click)="handleCardClick()"
             class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
           >
-            <i-feather class="text-base-content/70"name="log-in"></i-feather>
+            <i-feather class="text-base-content/70"name="log-in"/>
           </button>
         </div>
       </div>
     </div>
   `,
 })
-// todo: fix the background of login at laptop breakpoint
 export class ProjectCardComponent {
   @Input() navigateTo?: Function;
 

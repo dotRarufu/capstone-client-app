@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { Tab } from 'src/app/models/tab';
+import { Project } from 'src/app/models/project';
 
 @Component({
   selector: 'app-home',
@@ -15,32 +16,13 @@ import { Tab } from 'src/app/models/tab';
       <div
         class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
       >
-        <!-- projects -->
-        <!-- <ng-container *ngIf="active === 'projects'"> -->
-        <!-- <app-projects></app-projects> -->
-        <!-- <div class="w-full bg-secondary block">test</div> -->
-        <!-- <router-outlet></router-outlet> -->
-        <!-- </ng-container> -->
-        <!-- <div class="w-full bg-secondary">test</div> -->
+        <!-- mobile -->
         <div class="w-full sm2:flex sm2:justify-center md:hidden">
           <router-outlet></router-outlet>
         </div>
-        <!-- dashboard -->
-        <!-- <ng-container *ngIf="active === 'dashboard'">
-          <div
-            class="flex w-full flex-col gap-[1rem] sm2:w-[840px] md:hidden md:w-full lg:w-[1040px]"
-          >
-            <div
-              class="gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
-            >
-              <app-dashboard></app-dashboard>
-            </div>
-          </div>
-        </ng-container> -->
 
         <!-- desktop -->
         <div class="hidden w-full gap-[1rem]  md:flex lg:w-[1040px]">
-          <!-- projects -->
           <div class="w-full">
             <app-capstone-adviser-projects
               [sideColumn]="true"
@@ -59,6 +41,7 @@ import { Tab } from 'src/app/models/tab';
 export class HomeComponent implements OnInit {
   active: string = 'projects';
   search: string = '';
+  // todo: improve tabs
   tabs: Tab[] = [
     {
       name: 'projects',
@@ -87,18 +70,9 @@ export class HomeComponent implements OnInit {
       },
     },
   ];
-  projects: {
-    name: string;
-    uid: number;
-    description: string;
-    members: string[];
-  }[] = [];
+  projects: Project[] = [];
 
-  constructor(
-    private router: Router,
-    private projectService: ProjectService,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private router: Router, private projectService: ProjectService) {}
 
   ngOnInit() {
     this.projects = this.projectService.getProjects();

@@ -1,9 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { Project } from 'src/app/models/project';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
-  selector: 'app-capstone-adviser-accordion',
+  selector: 'Accordion',
   template: `
     <ng-container *ngIf="!sideColumn">
       <div class="collapse-arrow collapse w-full">
@@ -22,12 +23,12 @@ import { ProjectService } from 'src/app/services/project.service';
             <app-capstone-adviser-project-card
               *ngFor="let project of projects"
               [navigateTo]="navigateToProject(project.uid)"
-            >
-            </app-capstone-adviser-project-card>
+            />
           </div>
         </div>
       </div>
     </ng-container>
+
     <ng-container *ngIf="sideColumn">
       <div class="collapse-arrow collapse w-full">
         <input type="checkbox" class="peer " />
@@ -45,8 +46,7 @@ import { ProjectService } from 'src/app/services/project.service';
             <app-capstone-adviser-project-card
               *ngFor="let project of projects"
               [navigateTo]="navigateToProject(project.uid)"
-            >
-            </app-capstone-adviser-project-card>
+            />
           </div>
         </div>
       </div>
@@ -54,23 +54,15 @@ import { ProjectService } from 'src/app/services/project.service';
   `,
 })
 export class AccordionComponent {
-  constructor(private router: Router, private projectService: ProjectService) {}
-
-  @Input() projects: {
-    name: string;
-    uid: number;
-    description: string;
-    members: string[];
-  }[] = [];
-
+  @Input() projects: Project[] = [];
   @Input() sideColumn? = false;
+
+  constructor(private router: Router, private projectService: ProjectService) {}
 
   navigateToProject(uid: number) {
     return () => {
-      console.log('navigate | t | ', uid);
       this.router.navigate(['c', 'project', uid]);
       this.projectService.activeProjectIdSignal.set(uid);
     };
   }
 }
-
