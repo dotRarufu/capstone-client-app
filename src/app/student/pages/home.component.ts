@@ -1,51 +1,42 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { Tab } from 'src/app/models/tab';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { Project } from 'src/app/models/project';
 
 @Component({
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
-        <app-top-app-bar></app-top-app-bar>
+        <app-top-app-bar />
         <!-- TODO: use service instead of passing tabs data -->
-        <app-tabs [tabs]="tabs"></app-tabs>
+        <app-tabs [tabs]="tabs" />
       </div>
 
       <div
         class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
       >
+        <!-- mobile -->
         <div class="w-full md:hidden">
-          <!-- <app-student-title-analyzer
-            *ngIf="checkPath('title-analyzer')"
-            (analyzeClicked)="this.alreadyHaveTitle = true"
-          ></app-student-title-analyzer>
-          <app-student-projects
-            *ngIf="checkPath('projects')"
-          ></app-student-projects> -->
-          <router-outlet></router-outlet>
+          <router-outlet />
         </div>
 
         <!-- desktop -->
         <div class=" hidden w-full gap-[1rem]  md:flex lg:w-[1040px]">
           <div class="flex flex-col gap-4">
             <ng-container *ngIf="!hasResult">
-              <app-student-title-analyzer
-                (analyzeClicked)="this.alreadyHaveTitle = true"
-              ></app-student-title-analyzer>
+              <TitleAnalyzer (analyzeClicked)="this.alreadyHaveTitle = true" />
             </ng-container>
-            <!-- check if there's a result, if there is, then hide title analyzer, else hide analyzer result -->
+
             <ng-container *ngIf="hasResult">
-              <app-student-title-analyzer-result
-                [sideColumn]="true"
-              ></app-student-title-analyzer-result>
+              <TitleAnalyzerResult [sideColumn]="true" />
             </ng-container>
           </div>
 
           <div class=" w-[294px] flex-shrink-0  basis-[294px] ">
-            <app-student-projects [sideColumn]="true"></app-student-projects>
+            <Projects [sideColumn]="true" />
           </div>
         </div>
       </div>
@@ -130,6 +121,10 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class HomeComponent implements OnInit {
   active = 'projects';
+  alreadyHaveTitle = false;
+  hasResult = false;
+  projects: Project[] = [];
+  path: string = '';
   search = '';
   tabs: Tab[] = [
     {
@@ -159,26 +154,7 @@ export class HomeComponent implements OnInit {
       },
     },
   ];
-  projects: {
-    name: string;
-    uid: number;
-    description: string;
-    members: string[];
-  }[] = [];
-  alreadyHaveTitle = false;
   titleFromAlreadyHaveTitle = '';
-  hasResult = false;
-
-  nextBlock() {
-    this.alreadyHaveTitle = true;
-
-    console.log('next block | new alreadyhavetitle:', this.alreadyHaveTitle);
-  }
-
-  handleCheckboxChange(e: boolean) {
-    console.log('handleCheckboxChange runs:', !e);
-    this.alreadyHaveTitle = !e;
-  }
 
   constructor(
     private router: Router,
@@ -187,61 +163,43 @@ export class HomeComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private toastr: ToastrService
   ) {}
-  path: string = '';
 
   ngOnInit() {
     this.projects = this.projectService.getProjects();
 
     this.route.data.subscribe((data) => {
       this.path = data['path'];
-      // console.log('path:', this.path);
     });
 
     this.projectService.analyzerResult$.subscribe({
       next: (v) => {
         this.hasResult = !!v;
-        console.log('hasResult:', this.hasResult);
       },
       error: (err) => {
         this.toastr.error('Error occured while analyzing title');
       },
     });
-
-    // window.addEventListener('keydown', () => this.showSuccess());
-  }
-
-  showSuccess() {
-    console.log('show success');
-    this.toastr.success('Hello world!', 'Toastr fun!');
   }
 
   checkPath(path: string) {
-    const a = this.path === path;
-    // console.log('this.path:', this.path, 'path:', path);
-    console.log('alreadyHaveTitle:', this.alreadyHaveTitle);
+    return this.path === path;
+  }
 
-    return a;
+  nextBlock() {
+    this.alreadyHaveTitle = true;
+  }
+
+  handleCheckboxChange(e: boolean) {
+    this.alreadyHaveTitle = !e;
   }
 
   // todo maybe move in a service or not
   async navigateTo(path: string) {
-    // todo: make the builder page under title analyzer route
     this.spinner.show();
-    // if (path !== 'result') {
-    //   this.router.navigate(['s', 'home', path]);
-    //   return;
-    // }
 
-    console.log('analyze title');
-    const titleAnalyzerResult = await this.projectService.analyzeTitle(
-      this.titleFromAlreadyHaveTitle
-    );
-    console.log('passed state:', titleAnalyzerResult);
+    await this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle);
     this.spinner.hide();
-    console.log('navigate');
-    this.router.navigate(['s', 'home', path], {
-      // state: { titleAnalyzerResult },
-    });
+    this.router.navigate(['s', 'home', path], {});
   }
 
   toTitleBuilder() {

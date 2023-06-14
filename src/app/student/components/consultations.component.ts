@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
+import { convertUnixEpochToDateString } from 'src/app/capstoneAdviser/utils/convertUnixEpochToDateString';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { Consultation } from 'src/app/types/collection';
@@ -14,7 +14,7 @@ import { Consultation } from 'src/app/types/collection';
           for="schedule-consultation"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
-          <i-feather class="text-base-content/70"name="plus"></i-feather>
+          <i-feather class="text-base-content/70" name="plus" />
 
           Schedule
         </label>
@@ -31,8 +31,9 @@ import { Consultation } from 'src/app/types/collection';
             class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
-              <label for="consultation-modal"
-                class="link link-hover card-title  w-full px-4 text-left text-secondary-content"
+              <label
+                for="consultation-modal"
+                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
               >
                 {{ 'Untitled' }}
               </label>
@@ -41,16 +42,16 @@ import { Consultation } from 'src/app/types/collection';
               <p class="text-sm">Location: {{ consultation.location }}</p>
               <p class="text-sm">
                 Time and Date:
-                {{ convertUnixEpochToDateString(consultation.date_time) }}
+                {{ epochToDateString(consultation.date_time) }}
               </p>
 
               <div class="card-actions justify-end">
-                <label for="consultation-modal"
+                <label
+                  for="consultation-modal"
                   class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
                 >
-                  <i-feather class="text-base-content/70"name="log-in"></i-feather>
+                  <i-feather class="text-base-content/70" name="log-in" />
                 </label>
-
               </div>
             </div>
           </div>
@@ -65,8 +66,9 @@ import { Consultation } from 'src/app/types/collection';
             class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
-              <label for="consultation-modal"
-                class="link link-hover card-title  w-full px-4 text-left text-secondary-content"
+              <label
+                for="consultation-modal"
+                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
               >
                 {{ 'Untitled' }}
               </label>
@@ -75,16 +77,16 @@ import { Consultation } from 'src/app/types/collection';
               <p class="text-sm">Location: {{ consultation.location }}</p>
               <p class="text-sm">
                 Time and Date:
-                {{ convertUnixEpochToDateString(consultation.date_time) }}
+                {{ epochToDateString(consultation.date_time) }}
               </p>
 
               <div class="card-actions justify-end">
-                <label for="consultation-modal"
+                <label
+                  for="consultation-modal"
                   class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
                 >
-                  <i-feather class="text-base-content/70"name="log-in"></i-feather>
+                  <i-feather class="text-base-content/70" name="log-in" />
                 </label>
-
               </div>
             </div>
           </div>
@@ -99,8 +101,9 @@ import { Consultation } from 'src/app/types/collection';
             class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
-              <label for="consultation-modal"
-                class="link link-hover card-title  w-full px-4 text-left text-secondary-content"
+              <label
+                for="consultation-modal"
+                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
               >
                 {{ 'Untitled' }}
               </label>
@@ -109,16 +112,16 @@ import { Consultation } from 'src/app/types/collection';
               <p class="text-sm">Location: {{ consultation.location }}</p>
               <p class="text-sm">
                 Time and Date:
-                {{ convertUnixEpochToDateString(consultation.date_time) }}
+                {{ epochToDateString(consultation.date_time) }}
               </p>
 
               <div class="card-actions justify-end">
-                <label for="consultation-modal"
+                <label
+                  for="consultation-modal"
                   class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
                 >
-                  <i-feather class="text-base-content/70"name="log-in"></i-feather>
+                  <i-feather class="text-base-content/70" name="log-in" />
                 </label>
-
               </div>
             </div>
           </div>
@@ -141,8 +144,8 @@ import { Consultation } from 'src/app/types/collection';
           <label
             for="schedule-consultation"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather class="text-base-content/70"name="x"></i-feather
-          ></label>
+            ><i-feather class="text-base-content/70" name="x"
+          /></label>
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
@@ -184,13 +187,14 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 py-2">
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-               <i-feather class="text-base-content/70"name="calendar"></i-feather> schedule
+              <i-feather class="text-base-content/70" name="calendar" />
+              schedule
             </li>
 
             <div class="h-full"></div>
 
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-               <i-feather class="text-base-content/70"name="x"></i-feather> cancel
+              <i-feather class="text-base-content/70" name="x" /> cancel
             </li>
           </ul>
         </div>
@@ -198,7 +202,9 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
     </app-modal>
 
     <app-modal inputId="consultation-modal">
-    <div class="flex flex-col rounded-[3px] border border-base-content/10 w-[712px]">
+      <div
+        class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
+      >
         <div class="flex justify-between bg-primary p-[24px]">
           <div class="flex flex-col justify-between">
             <h1 class="text-[24px] text-primary-content">
@@ -212,69 +218,53 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
           <label
             for="consultation-modal"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather class="text-base-content/70"name="x"></i-feather
-          ></label>
+            ><i-feather class="text-base-content/70" name="x"
+          /></label>
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
             <div>
+              <div class="flex items-center justify-between ">
+                <h1 class="text-[20px] text-base-content">Description</h1>
+              </div>
 
-            <div class="flex items-center justify-between ">
-              <h1 class="text-[20px] text-base-content">Description</h1>
+              <div class="h-[2px] w-full bg-base-content/10"></div>
 
-            </div>
-
-            <div class="h-[2px] w-full bg-base-content/10"></div>
-
-            <div class="text-base text-base-content">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem
-              ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-              tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum
-              dolor sit
-            </div>
-
+              <div class="text-base text-base-content">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem
+                ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem
+                ipsum dolor sit
+              </div>
             </div>
             <div>
+              <div class="flex items-center justify-between ">
+                <h1 class="text-[20px] text-base-content">Date and Time</h1>
+              </div>
 
-            <div class="flex items-center justify-between ">
-              <h1 class="text-[20px] text-base-content">Date and Time</h1>
+              <div class="h-[2px] w-full bg-base-content/10"></div>
 
-            </div>
-
-            <div class="h-[2px] w-full bg-base-content/10"></div>
-
-            <div class="text-base text-base-content">
-             May 1, 2023 - 10:00 PM
-            </div>
-
+              <div class="text-base text-base-content">
+                May 1, 2023 - 10:00 PM
+              </div>
             </div>
 
             <div>
+              <div class="flex items-center justify-between ">
+                <h1 class="text-[20px] text-base-content">Location</h1>
+              </div>
 
-            <div class="flex items-center justify-between ">
-              <h1 class="text-[20px] text-base-content">Location</h1>
+              <div class="h-[2px] w-full bg-base-content/10"></div>
 
+              <div class="text-base text-base-content">comlab 3</div>
             </div>
-
-            <div class="h-[2px] w-full bg-base-content/10"></div>
-
-            <div class="text-base text-base-content">
-              comlab 3
-            </div>
-
-            </div>
-
           </div>
-          <ul
-            class=" flex w-[223px]  flex-col bg-neutral/20 py-2 "
-          >
-
-
+          <ul class=" flex w-[223px]  flex-col bg-neutral/20 py-2 ">
             <div class="h-full"></div>
 
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather class="text-base-content/70"name="x-circle"></i-feather> close
+              <i-feather class="text-base-content/70" name="x-circle" /> close
             </li>
           </ul>
         </div>
@@ -303,13 +293,7 @@ export class ConsultationsComponent {
     });
   }
 
-  convertUnixEpochToDateString(unixEpoch: number) {
-    const date = new Date(unixEpoch * 1000);
-    const monthName = date.toLocaleString('en-us', { month: 'long' });
-    const day = date.getDate();
-    const year = date.getFullYear();
-    const res = `${monthName} ${day} ${year}`;
-
-    return res;
+  epochToDateString(unixEpoch: number) {
+    return convertUnixEpochToDateString(unixEpoch);
   }
 }

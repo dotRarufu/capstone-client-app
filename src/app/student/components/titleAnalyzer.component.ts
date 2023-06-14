@@ -1,46 +1,44 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { Project } from 'src/app/models/project';
 import { Tab } from 'src/app/models/tab';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
-  selector: 'app-student-title-analyzer',
+  selector: 'TitleAnalyzer',
   template: `
     <div class="w-full sm2:flex sm2:justify-center">
       <div class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full ">
         <div class="flex justify-between ">
           <h1 class="text-[32px] text-base-content">Title Analysis</h1>
-          <label for="title-analyzer"
+          <label
+            for="title-analyzer"
             (click)="analyzeTitle()"
             class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
-            <i-feather class="text-base-content/70" name="zap"></i-feather>
+            <i-feather class="text-base-content/70" name="zap" />
             Analyze
           </label>
         </div>
 
         <div class="h-[2px] w-full bg-base-content/10"></div>
 
-        <app-student-accordion
+        <app-shared-accordion
           *ngFor="let content of contents"
           [heading]="content.heading"
         >
           <div class="px-[16px] pt-[16px] text-base-content">
             {{ content.content }}
           </div>
-        </app-student-accordion>
+        </app-shared-accordion>
       </div>
     </div>
-
   `,
 })
+//   todo: create a constant file, or fetch data from database. Maybe we can create an interface to edit the constants
+// todo: add ability to change renderer in docx viewer (form generator)
 export class TitleAnalyzerComponent implements OnInit {
-  projects: {
-    name: string;
-    uid: number;
-    description: string;
-    members: string[];
-  }[] = [];
+  projects: Project[] = [];
   tabs: Tab[] = [
     {
       name: 'Title Analyzer',
@@ -89,12 +87,11 @@ export class TitleAnalyzerComponent implements OnInit {
   ];
   @Output() analyzeClicked = new EventEmitter<void>();
 
-  //   todo: create a constant file, or fetch data from database. Maybe we can create an interface to edit the constants
-  // does ng module accept script files, and not only modules, services etc..?
-  // todo: add loader
-  // todo: add ability to change renderer in docx viewer (form generator)
-
   constructor(private router: Router, private projectService: ProjectService) {}
+
+  ngOnInit(): void {
+    this.projects = this.projectService.getProjects();
+  }
 
   navigateToProject(uid: number) {
     return () => {
@@ -105,13 +102,5 @@ export class TitleAnalyzerComponent implements OnInit {
 
   analyzeTitle() {
     this.analyzeClicked.emit();
-
-    console.log('analyzeTitle emits')
-  }
-
-  ngOnInit(): void {
-    this.projects = this.projectService.getProjects();
-
-
   }
 }
