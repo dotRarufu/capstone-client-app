@@ -13,10 +13,7 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <app-shared-accordion
-        *ngFor="let category of categories"
-        [heading]="category"
-      >
+      <Accordion *ngFor="let category of categories" [heading]="category">
         <div
           class="flex flex-wrap justify-center gap-[24px] p-[1rem] sm1:justify-start"
         >
@@ -50,7 +47,7 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
             </div>
           </div>
         </div>
-      </app-shared-accordion>
+      </Accordion>
     </div>
 
     <app-modal inputId="consultation-modal">
@@ -146,7 +143,6 @@ export class ConsultationsComponent {
 
     getConsultations$.subscribe((consultations) => {
       this.scheduled = consultations;
-      
     });
   }
 

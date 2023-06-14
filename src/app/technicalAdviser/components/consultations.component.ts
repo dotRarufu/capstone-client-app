@@ -13,10 +13,7 @@ import { Consultation } from 'src/app/types/collection';
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <app-shared-accordion
-        *ngFor="let category of categories"
-        [heading]="category"
-      >
+      <Accordion *ngFor="let category of categories" [heading]="category">
         <div
           class="flex flex-wrap justify-center gap-[24px] p-[1rem] sm1:justify-start"
         >
@@ -50,7 +47,7 @@ import { Consultation } from 'src/app/types/collection';
             </div>
           </div>
         </div>
-      </app-shared-accordion>
+      </Accordion>
     </div>
 
     <app-modal inputId="consultation-modal">

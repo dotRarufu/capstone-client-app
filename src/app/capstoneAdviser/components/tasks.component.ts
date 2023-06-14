@@ -32,7 +32,7 @@ import { Task } from 'src/app/types/collection';
         class="flex h-full gap-[32px] overflow-x-scroll lg:justify-center "
       >
         <div *ngFor="let category of categories" class="w-[294px] shrink-0">
-          <app-shared-accordion
+          <Accordion
             [withArrow]="false"
             [forcedOpen]="true"
             [heading]="category.title"
@@ -51,7 +51,7 @@ import { Task } from 'src/app/types/collection';
                 [task]="item"
               />
             </div>
-          </app-shared-accordion>
+          </Accordion>
         </div>
       </div>
     </div>

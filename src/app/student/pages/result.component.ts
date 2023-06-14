@@ -47,7 +47,7 @@ interface InformationalDataItem {
 
           <div class="h-[2px] w-full bg-base-content/10"></div>
 
-          <app-shared-accordion
+          <Accordion
             *ngFor="let data of analysesData"
             [isResult]="true"
             [score]="data.value"
@@ -56,12 +56,12 @@ interface InformationalDataItem {
             <div class="p-4 pt-[32px] text-base-content">
               {{ data.content }}
             </div>
-          </app-shared-accordion>
+          </Accordion>
 
           <div
             class="flex w-full flex-shrink-0  basis-[294px] flex-col gap-[16px]"
           >
-            <app-shared-accordion
+            <Accordion
               *ngFor="let data of informationalData"
               [withArrow]="true"
               [forcedOpen]="false"
@@ -74,7 +74,7 @@ interface InformationalDataItem {
                   </li>
                 </ul>
               </div>
-            </app-shared-accordion>
+            </Accordion>
           </div>
         </div>
 
@@ -98,7 +98,7 @@ interface InformationalDataItem {
               {{ title }}
             </h1>
 
-            <app-shared-accordion
+            <Accordion
               *ngFor="let data of analysesData"
               [isResult]="true"
               [score]="data.value"
@@ -109,11 +109,11 @@ interface InformationalDataItem {
               <div class="p-4 pt-[32px]  text-base-content">
                 {{ data.content }}
               </div>
-            </app-shared-accordion>
+            </Accordion>
           </div>
 
           <div class="flex  flex-shrink-0 basis-[294px] flex-col gap-[16px]">
-            <app-shared-accordion
+            <Accordion
               *ngFor="let data of informationalData"
               [withArrow]="true"
               [forcedOpen]="false"
@@ -126,7 +126,7 @@ interface InformationalDataItem {
                   </li>
                 </ul>
               </div>
-            </app-shared-accordion>
+            </Accordion>
           </div>
         </div>
       </div>
@@ -157,7 +157,7 @@ interface InformationalDataItem {
 
         <div class="h-[2px] w-full bg-base-content/10"></div>
 
-        <app-shared-accordion
+        <Accordion
           *ngFor="let data of analysesData"
           [isResult]="true"
           [score]="data.value"
@@ -166,12 +166,12 @@ interface InformationalDataItem {
           <div class="p-4 pt-[32px] text-base-content">
             {{ data.content }}
           </div>
-        </app-shared-accordion>
+        </Accordion>
 
         <div
           class="flex w-full flex-shrink-0  basis-[294px] flex-col gap-[16px]"
         >
-          <app-shared-accordion
+          <Accordion
             *ngFor="let data of informationalData"
             [withArrow]="true"
             [forcedOpen]="false"
@@ -184,7 +184,7 @@ interface InformationalDataItem {
                 </li>
               </ul>
             </div>
-          </app-shared-accordion>
+          </Accordion>
         </div>
       </div>
     </ng-container>

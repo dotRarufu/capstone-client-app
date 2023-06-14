@@ -23,14 +23,11 @@ import { ProjectService } from 'src/app/services/project.service';
 
         <div class="h-[2px] w-full bg-base-content/10"></div>
 
-        <app-shared-accordion
-          *ngFor="let content of contents"
-          [heading]="content.heading"
-        >
+        <Accordion *ngFor="let content of contents" [heading]="content.heading">
           <div class="px-[16px] pt-[16px] text-base-content">
             {{ content.content }}
           </div>
-        </app-shared-accordion>
+        </Accordion>
       </div>
     </div>
   `,

@@ -22,16 +22,13 @@ import { Consultation } from 'src/app/types/collection';
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <app-shared-accordion
-        *ngFor="let category of categories"
-        [heading]="category"
-      >
+      <Accordion *ngFor="let category of categories" [heading]="category">
         <div
           class="flex flex-wrap justify-center gap-[24px] p-[1rem] sm1:justify-start"
         >
           <div
             *ngFor="let consultation of scheduled"
-            class="card card-compact h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
               <label
@@ -59,7 +56,7 @@ import { Consultation } from 'src/app/types/collection';
             </div>
           </div>
         </div>
-      </app-shared-accordion>
+      </Accordion>
     </div>
 
     <app-modal inputId="schedule-consultation">

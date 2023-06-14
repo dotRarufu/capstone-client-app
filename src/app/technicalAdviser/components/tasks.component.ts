@@ -19,7 +19,7 @@ import { Task } from 'src/app/types/collection';
           for="add-task"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
-          <i-feather class="text-base-content/70"name="plus" />
+          <i-feather class="text-base-content/70" name="plus" />
 
           Add
         </label>
@@ -32,7 +32,7 @@ import { Task } from 'src/app/types/collection';
         class="flex h-full gap-[32px] overflow-x-scroll lg:justify-center "
       >
         <div *ngFor="let category of categories" class="w-[294px] shrink-0">
-          <app-shared-accordion
+          <Accordion
             [withArrow]="false"
             [forcedOpen]="true"
             [heading]="category.title"
@@ -51,7 +51,7 @@ import { Task } from 'src/app/types/collection';
                 [task]="item"
               />
             </div>
-          </app-shared-accordion>
+          </Accordion>
         </div>
       </div>
     </div>
@@ -73,7 +73,8 @@ import { Task } from 'src/app/types/collection';
           <label
             for="app-modal"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather class="text-base-content/70"name="x" /></label>
+            ><i-feather class="text-base-content/70" name="x"
+          /></label>
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
@@ -93,16 +94,17 @@ import { Task } from 'src/app/types/collection';
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 py-2">
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather class="text-base-content/70"name="edit" /> edit
+              <i-feather class="text-base-content/70" name="edit" /> edit
             </li>
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather class="text-base-content/70"name="user-check" /> verify
+              <i-feather class="text-base-content/70" name="user-check" />
+              verify
             </li>
 
             <div class="h-full"></div>
 
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather class="text-base-content/70"name="x-circle" /> close
+              <i-feather class="text-base-content/70" name="x-circle" /> close
             </li>
           </ul>
         </div>
@@ -124,7 +126,8 @@ import { Task } from 'src/app/types/collection';
           <label
             for="add-task"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather class="text-base-content/70"name="x" /></label>
+            ><i-feather class="text-base-content/70" name="x"
+          /></label>
         </div>
 
         <div class="flex bg-base-100">
@@ -142,12 +145,13 @@ import { Task } from 'src/app/types/collection';
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 py-2">
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather class="text-base-content/70"name="check-square" /> done
+              <i-feather class="text-base-content/70" name="check-square" />
+              done
             </li>
 
             <div class="h-full"></div>
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather class="text-base-content/70"name="x-circle" /> close
+              <i-feather class="text-base-content/70" name="x-circle" /> close
             </li>
           </ul>
         </div>
@@ -158,8 +162,6 @@ import { Task } from 'src/app/types/collection';
 export class TasksComponent implements OnInit {
   categories: { title: string; tasks: Task[] }[] = [];
   isDraggingDisabled: boolean;
-
- 
 
   ngOnInit(): void {
     const projectId = this.projectService.activeProjectIdSignal();
@@ -183,7 +185,6 @@ export class TasksComponent implements OnInit {
   ) {
     const isStudent = this.authService.getCurrentUser()?.role_id === 0;
     this.isDraggingDisabled = !isStudent;
-
   }
 
   drop(event: CdkDragDrop<Task[]>) {

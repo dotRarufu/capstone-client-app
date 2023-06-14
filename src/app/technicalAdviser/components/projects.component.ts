@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'Projects',
@@ -28,9 +29,27 @@ import { Project } from 'src/app/models/project';
           </div>
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-        <Accordion [projects]="projects" />
-        <Accordion [projects]="projects" />
-        <Accordion [projects]="projects" />
+        <Accordion heading="BSIT 3-1">
+          <ProjectCard
+            body
+            *ngFor="let project of projects"
+            [navigateTo]="navigateToProject(project.uid)"
+          />
+        </Accordion>
+        <Accordion heading="BSIT 3-1">
+          <ProjectCard
+            body
+            *ngFor="let project of projects"
+            [navigateTo]="navigateToProject(project.uid)"
+          />
+        </Accordion>
+        <Accordion heading="BSIT 3-1">
+          <ProjectCard
+            body
+            *ngFor="let project of projects"
+            [navigateTo]="navigateToProject(project.uid)"
+          />
+        </Accordion>
       </div>
     </ng-container>
 
@@ -60,18 +79,27 @@ import { Project } from 'src/app/models/project';
         <div
           class="flex w-full flex-col justify-items-center gap-[24px] py-[1rem]"
         >
-          <Accordion
-            [sideColumn]="true"
-            [projects]="projects"
-          />
-          <Accordion
-            [sideColumn]="true"
-            [projects]="projects"
-          />
-          <Accordion
-            [sideColumn]="true"
-            [projects]="projects"
-          />
+          <Accordion heading="BSIT 3-1">
+            <ProjectCard
+              body
+              *ngFor="let project of projects"
+              [navigateTo]="navigateToProject(project.uid)"
+            />
+          </Accordion>
+          <Accordion heading="BSIT 3-1">
+            <ProjectCard
+              body
+              *ngFor="let project of projects"
+              [navigateTo]="navigateToProject(project.uid)"
+            />
+          </Accordion>
+          <Accordion heading="BSIT 3-1">
+            <ProjectCard
+              body
+              *ngFor="let project of projects"
+              [navigateTo]="navigateToProject(project.uid)"
+            />
+          </Accordion>
         </div>
       </div>
     </ng-container>
@@ -82,9 +110,16 @@ export class ProjectsComponent {
   projects: Project[] = [];
   @Input() sideColumn? = false;
 
-  constructor(private projectService: ProjectService) {}
+  constructor(private projectService: ProjectService, private router: Router) {}
 
   ngOnInit() {
     this.projects = this.projectService.getProjects();
+  }
+
+  navigateToProject(uid: number) {
+    return () => {
+      this.router.navigate(['t', 'project', uid]);
+      this.projectService.activeProjectIdSignal.set(uid);
+    };
   }
 }

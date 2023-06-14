@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { HomeComponent } from './pages/home.component';
-import { AccordionComponent } from './components/accordion.component';
 import { ProjectComponent } from './pages/project.component';
 import { SideBarComponent } from './components/sidebar.component';
 import { ProjectsComponent } from './components/projects.component';
@@ -17,7 +16,6 @@ import { ParticipantCardComponent } from './components/participantCard.component
   declarations: [
     HomeComponent,
     ConsultationsComponent,
-    AccordionComponent,
     ProjectCardComponent,
     ProjectComponent,
     SideBarComponent,

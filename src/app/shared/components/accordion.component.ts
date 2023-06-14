@@ -1,38 +1,56 @@
 import { Component, Input } from '@angular/core';
-import { Router } from '@angular/router';
-import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
-  selector: 'app-shared-accordion',
+  selector: 'Accordion',
   template: `
-    <div [class.collapse-arrow]="withArrow"
-      [class.collapse-open]="forcedOpen"
-    class=" collapse w-full ">
-      <input type="checkbox" class="peer " />
-      <div
-      [class.text-center]="isHeadingCentered"
-        class="collapse-title border border-base-content/50 bg-primary/10 p-[1rem] text-[20px] "
-      >
-        <span *ngIf="isResult" class="text-base-content font-bold px-1" >{{score}}</span>
-        {{heading}}
+    <ng-container *ngIf="!sideColumn">
+      <div class="collapse-arrow collapse w-full">
+        <input type="checkbox" class="peer " />
+        <div
+          class="collapse-title border border-base-content/50 bg-primary/10 p-[1rem] text-[20px] "
+        >
+          {{ heading }}
+        </div>
+        <div
+          class="collapse-content  border border-base-content/50 text-base-content"
+        >
+          <div
+            class="grid grid-flow-row grid-cols-1 items-center justify-items-center gap-[24px]  py-[1rem] sm1:grid-cols-2 sm1:justify-start sm2:grid-cols-3 md:justify-center"
+          >
+            <ng-content select="[body]"> </ng-content>
+          </div>
+        </div>
       </div>
-      <div
-        class="collapse-content  border border-base-content/50 px-0"
-      >
-        <ng-content></ng-content>
+    </ng-container>
+
+    <ng-container *ngIf="sideColumn">
+      <div class="collapse-arrow collapse w-full">
+        <input type="checkbox" class="peer " />
+        <div
+          class="collapse-title border border-base-content/50 bg-primary/10 p-[1rem] text-[20px] "
+        >
+          {{ heading }}
+        </div>
+        <div
+          class="collapse-content  border border-base-content/50 text-base-content"
+        >
+          <div
+            class="grid grid-flow-row grid-cols-2 items-center justify-items-center gap-[24px]  py-[1rem] "
+          >
+            <ng-content select="[body]"> </ng-content>
+          </div>
+        </div>
       </div>
-    </div>
+    </ng-container>
   `,
 })
 // todo: make a one dynamic accordion component under shared module
 export class AccordionComponent {
-  constructor(private router: Router, private projectService: ProjectService) {}
-
-  @Input() heading: string =''
+  @Input() sideColumn? = false;
+  @Input() heading: string = '';
   @Input() score?: number = 0;
   @Input() isResult?: boolean = false;
   @Input() withArrow?: boolean = true;
   @Input() forcedOpen?: boolean = false;
   @Input() isHeadingCentered?: boolean = false;
- 
 }

@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-capstone-adviser-projects',
@@ -23,14 +24,33 @@ import { Project } from 'src/app/models/project';
               class="input w-full rounded-[3px] px-3  py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:outline-0"
             />
             <button class="btn-ghost btn hover:rounded-[3px]">
-              <i-feather class="text-base-content/70" name="search"/>
+              <i-feather class="text-base-content/70" name="search" />
             </button>
           </div>
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-        <Accordion [projects]="projects" />
-        <Accordion [projects]="projects" />
-        <Accordion [projects]="projects" />
+        <Accordion heading="BSIT 3-1">
+          <app-capstone-adviser-project-card
+            body
+            *ngFor="let project of projects"
+            [navigateTo]="navigateToProject(project.uid)"
+          />
+        </Accordion>
+        <Accordion heading="BSIT 3-1">
+          <div class="w-[32px] bg-primary">test</div>
+          <app-capstone-adviser-project-card
+            body
+            *ngFor="let project of projects"
+            [navigateTo]="navigateToProject(project.uid)"
+          />
+        </Accordion>
+        <Accordion heading="BSIT 3-1">
+          <app-capstone-adviser-project-card
+            body
+            *ngFor="let project of projects"
+            [navigateTo]="navigateToProject(project.uid)"
+          />
+        </Accordion>
       </div>
     </ng-container>
 
@@ -52,7 +72,7 @@ import { Project } from 'src/app/models/project';
               class="input w-full rounded-[3px] px-3  py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:outline-0"
             />
             <button class="btn-ghost btn hover:rounded-[3px]">
-              <i-feather class="text-base-content/70" name="search"/>
+              <i-feather class="text-base-content/70" name="search" />
             </button>
           </div>
         </div>
@@ -60,9 +80,27 @@ import { Project } from 'src/app/models/project';
         <div
           class="flex w-full flex-col justify-items-center gap-[24px] py-[1rem]"
         >
-          <Accordion [sideColumn]="true" [projects]="projects"/>
-          <Accordion [sideColumn]="true" [projects]="projects"/>
-          <Accordion [sideColumn]="true" [projects]="projects"/>
+          <Accordion heading="BSIT 3-1">
+            <app-capstone-adviser-project-card
+              body
+              *ngFor="let project of projects"
+              [navigateTo]="navigateToProject(project.uid)"
+            />
+          </Accordion>
+          <Accordion heading="BSIT 3-1">
+            <app-capstone-adviser-project-card
+              body
+              *ngFor="let project of projects"
+              [navigateTo]="navigateToProject(project.uid)"
+            />
+          </Accordion>
+          <Accordion heading="BSIT 3-1">
+            <app-capstone-adviser-project-card
+              body
+              *ngFor="let project of projects"
+              [navigateTo]="navigateToProject(project.uid)"
+            />
+          </Accordion>
         </div>
       </div>
     </ng-container>
@@ -73,9 +111,16 @@ export class ProjectsComponent {
   projects: Project[] = [];
   @Input() sideColumn? = false;
 
-  constructor(private projectService: ProjectService) {}
+  constructor(private projectService: ProjectService, private router: Router) {}
 
   ngOnInit() {
     this.projects = this.projectService.getProjects();
+  }
+
+  navigateToProject(uid: number) {
+    return () => {
+      this.router.navigate(['c', 'project', uid]);
+      this.projectService.activeProjectIdSignal.set(uid);
+    };
   }
 }
