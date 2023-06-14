@@ -22,83 +22,16 @@ import { Consultation } from 'src/app/types/collection';
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <app-shared-accordion heading="Scheduled">
+      <app-shared-accordion
+        *ngFor="let category of categories"
+        [heading]="category"
+      >
         <div
           class="flex flex-wrap justify-center gap-[24px] p-[1rem] sm1:justify-start"
         >
           <div
             *ngFor="let consultation of scheduled"
-            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
-          >
-            <figure class="h-[92px] bg-secondary">
-              <label
-                for="consultation-modal"
-                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
-              >
-                {{ 'Untitled' }}
-              </label>
-            </figure>
-            <div class="card-body">
-              <p class="text-sm">Location: {{ consultation.location }}</p>
-              <p class="text-sm">
-                Time and Date:
-                {{ epochToDateString(consultation.date_time) }}
-              </p>
-
-              <div class="card-actions justify-end">
-                <label
-                  for="consultation-modal"
-                  class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
-                >
-                  <i-feather class="text-base-content/70" name="log-in" />
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </app-shared-accordion>
-      <app-shared-accordion heading="Completed">
-        <div
-          class="flex flex-wrap justify-center gap-[24px] p-[1rem] sm1:justify-start"
-        >
-          <div
-            *ngFor="let consultation of scheduled"
-            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
-          >
-            <figure class="h-[92px] bg-secondary">
-              <label
-                for="consultation-modal"
-                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
-              >
-                {{ 'Untitled' }}
-              </label>
-            </figure>
-            <div class="card-body">
-              <p class="text-sm">Location: {{ consultation.location }}</p>
-              <p class="text-sm">
-                Time and Date:
-                {{ epochToDateString(consultation.date_time) }}
-              </p>
-
-              <div class="card-actions justify-end">
-                <label
-                  for="consultation-modal"
-                  class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
-                >
-                  <i-feather class="text-base-content/70" name="log-in" />
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </app-shared-accordion>
-      <app-shared-accordion heading="Rejected">
-        <div
-          class="flex flex-wrap justify-center gap-[24px] p-[1rem] sm1:justify-start"
-        >
-          <div
-            *ngFor="let consultation of scheduled"
-            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+            class="card card-compact h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
               <label
@@ -274,6 +207,7 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
 })
 // todo: make a one dynamic accordion component under shared module
 export class ConsultationsComponent {
+  categories = ['Scheduled', 'Completed', 'Done'];
   scheduled: Consultation[] = [];
 
   constructor(

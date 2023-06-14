@@ -1,8 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-capstone-adviser-side-bar',
+  selector: 'SideBar',
   template: `
     <div
       class="flex h-full w-[311px] flex-col gap-[16px] bg-base-100 px-[24px] py-[32px]"
@@ -12,7 +11,9 @@ import { ActivatedRoute } from '@angular/router';
         Development Progress Tracker with Title Analyzer for Pamantasan ng
         Lungsod ng Valenzuela - Information Technology Department
       </div>
+
       <div class="h-[1px] w-full bg-base-content/20"></div>
+
       <div class="flex flex-col overflow-y-scroll">
         <div class="flex h-full gap-[1rem]">
           <div
@@ -39,6 +40,7 @@ import { ActivatedRoute } from '@angular/router';
             </div>
           </div>
         </div>
+
         <div class="flex h-full gap-[1rem]">
           <div class="flex  h-full w-[12px] flex-col items-center px-2">
             <!-- line -->
@@ -66,6 +68,7 @@ import { ActivatedRoute } from '@angular/router';
             </div>
           </div>
         </div>
+
         <div class="flex h-full gap-[1rem]">
           <div class="flex  h-full w-[12px] flex-col items-center px-2">
             <!-- line -->
