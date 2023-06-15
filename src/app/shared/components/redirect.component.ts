@@ -12,5 +12,4 @@ export class RedirectComponent {
       this.router.navigate([...path, projectId, 'tasks'])
     });
   }
-
 }

@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProjectService } from 'src/app/services/project.service';
+import { getRolePath } from 'src/app/utils/getRolePath';
 
 @Component({
-  selector: 'app-nav-rail',
+  selector: 'NavigationRail',
   template: `
     <ng-container *ngIf="!isFab">
       <div
@@ -15,7 +16,7 @@ import { ProjectService } from 'src/app/services/project.service';
           (click)="handleMenuClick()"
           class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] lg:hidden"
         >
-          <i-feather name="sidebar"></i-feather>
+          <i-feather name="sidebar" />
         </button>
 
         <div class="flex h-fit  flex-col items-center gap-[12px]">
@@ -23,35 +24,35 @@ import { ProjectService } from 'src/app/services/project.service';
             (click)="navigateTo('tasks')"
             class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] "
           >
-            <i-feather name="trello"></i-feather>
+            <i-feather name="trello" />
             Tasks
           </button>
           <button
             (click)="navigateTo('dashboard')"
             class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
           >
-            <i-feather name="monitor"></i-feather>
+            <i-feather name="monitor" />
             Dashboard
           </button>
           <button
             (click)="navigateTo('consultations')"
             class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
           >
-            <i-feather name="clipboard"></i-feather>
+            <i-feather name="clipboard" />
             Consult
           </button>
           <button
             (click)="navigateTo('participants')"
             class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
           >
-            <i-feather name="users"></i-feather>
+            <i-feather name="users" />
             Participants
           </button>
           <button
             (click)="navigateTo('forms')"
             class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
           >
-            <i-feather name="file-text"></i-feather>
+            <i-feather name="file-text" />
             Forms
           </button>
         </div>
@@ -60,7 +61,7 @@ import { ProjectService } from 'src/app/services/project.service';
           (click)="navigateToHome()"
           class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
         >
-          <i-feather name="arrow-left"></i-feather>
+          <i-feather name="arrow-left" />
         </button>
       </div>
     </ng-container>
@@ -74,7 +75,7 @@ import { ProjectService } from 'src/app/services/project.service';
           (click)="handleMenuClick()"
           class="btn-ghost bg-base-100/70 text-base-content border-0 rounded-[3px] btn flex h-fit w-full flex-col items-center gap-[4px] px-[4px] py-[8px] text-[10px] lg:hidden"
         >
-          <i-feather name="sidebar"></i-feather>
+          <i-feather name="sidebar" />
         </button>
 
         <div class="flex h-fit  flex-col items-center gap-[12px]">
@@ -82,35 +83,35 @@ import { ProjectService } from 'src/app/services/project.service';
             (click)="navigateTo('tasks')"
             class="btn-ghost bg-base-100/70 text-base-content border-0  btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] "
           >
-            <i-feather name="trello"></i-feather>
+            <i-feather name="trello" />
             Tasks
           </button>
           <button
             (click)="navigateTo('dashboard')"
             class="btn-ghost border-0 bg-base-100/70 text-base-content btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
           >
-            <i-feather name="monitor"></i-feather>
+            <i-feather name="monitor" />
             Dashboard
           </button>
           <button
             (click)="navigateTo('consultations')"
             class="btn-ghost border-0 bg-base-100/70 text-base-content btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
           >
-            <i-feather name="clipboard"></i-feather>
+            <i-feather name="clipboard" />
             Consult
           </button>
           <button
             (click)="navigateTo('participants')"
             class="btn-ghost border-0 bg-base-100/70 text-base-content btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
           >
-            <i-feather name="users"></i-feather>
+            <i-feather name="users" />
             Participants
           </button>
           <button
             (click)="navigateTo('forms')"
             class="btn-ghost border-0 bg-base-100/70 text-base-content btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
           >
-            <i-feather name="file-text"></i-feather>
+            <i-feather name="file-text" />
             Forms
           </button>
         </div>
@@ -119,7 +120,7 @@ import { ProjectService } from 'src/app/services/project.service';
           (click)="navigateToHome()"
           class="btn-ghost border-0 bg-base-100/70 text-base-content btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
         >
-          <i-feather name="arrow-left"></i-feather>
+          <i-feather name="arrow-left" />
         </button>
       </div>
     </ng-container>
@@ -127,13 +128,12 @@ import { ProjectService } from 'src/app/services/project.service';
 })
 export class NavigationRailComponent implements OnInit {
   search: string = '';
-  @Output() toggleDrawer: EventEmitter<string> = new EventEmitter();
   projectId = -1;
+  @Output() toggleDrawer: EventEmitter<string> = new EventEmitter();
   @Input() isFab = false;
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
     private projectService: ProjectService,
     private authService: AuthService
   ) {}
@@ -150,9 +150,9 @@ export class NavigationRailComponent implements OnInit {
 
       const rolePath = getRolePath(user.role_id);
 
-      console.log('path:', path);
+      // console.log('path:', path);
       // todo: make the "c" dynamic
-      console.log('navigate with:', this.projectId);
+      // console.log('navigate with:', this.projectId);
       this.router.navigate([rolePath, 'project', this.projectId, path]);
     }
 
@@ -175,23 +175,3 @@ export class NavigationRailComponent implements OnInit {
     this.toggleDrawer.emit();
   }
 }
-
-const getRolePath = (roleId: number) => {
-  let role = 'a';
-
-  switch (roleId) {
-    case 0:
-      role = 's';
-      break;
-    case 1:
-      role = 'c';
-      break;
-    case 2:
-      role = 't';
-      break;
-    default:
-      throw new Error('user role error');
-  }
-
-  return role;
-};

@@ -67,7 +67,8 @@ export class ProjectService {
   }
 
   // todo: rename this, remove "signal"
-  activeProjectIdSignal = signal(-1);
+  // make this default to -1
+  activeProjectIdSignal = signal(0);
 
   getProjects() {
     return this.projects;

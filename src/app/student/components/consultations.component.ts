@@ -5,7 +5,6 @@ import { ProjectService } from 'src/app/services/project.service';
 import { Consultation } from 'src/app/types/collection';
 
 @Component({
-  selector: 'app-student-consultations',
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
@@ -59,7 +58,7 @@ import { Consultation } from 'src/app/types/collection';
       </Accordion>
     </div>
 
-    <app-modal inputId="schedule-consultation">
+    <Modal inputId="schedule-consultation">
       <div
         class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
       >
@@ -129,9 +128,9 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
           </ul>
         </div>
       </div>
-    </app-modal>
+    </Modal>
 
-    <app-modal inputId="consultation-modal">
+    <Modal inputId="consultation-modal">
       <div
         class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
       >
@@ -199,7 +198,7 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
           </ul>
         </div>
       </div>
-    </app-modal>
+    </Modal>
   `,
 })
 // todo: make a one dynamic accordion component under shared module

@@ -1,14 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { Router } from '@angular/router';
-import { BaseChartDirective, } from 'ng2-charts';
-import { ConsultationService } from 'src/app/services/consultation.service';
-import { ProjectService } from 'src/app/services/project.service';
-import { Consultation } from 'src/app/types/collection';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { ChartConfiguration, ChartData, } from 'chart.js';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'Dashboard',
   template: `
     <ng-container *ngIf="!sideColumn">
     <div class="flex h-full flex-col gap-[16px]">
@@ -36,6 +31,7 @@ import { ChartConfiguration, ChartData, } from 'chart.js';
           <div class="bg-primary p-4 text-primary-content">
             <h1 class="text-[20px] ">Tasks by Status</h1>
           </div>
+
           <div class="flex justify-center p-4 h-full w-full">
             <canvas
               baseChart
@@ -48,6 +44,7 @@ import { ChartConfiguration, ChartData, } from 'chart.js';
             </canvas>
           </div>
         </div>
+
         <div
           class="min-w-[229px] min-h-[329px] h-full row-span-2 flex w-full max-w-[429px] flex-col justify-center rounded-[3px] border border-base-content/50"
         >
@@ -66,6 +63,7 @@ import { ChartConfiguration, ChartData, } from 'chart.js';
             </canvas>
           </div>
         </div>
+
         <div
           class="row-span-2 flex h-full w-full max-w-[429px] flex-col justify-start rounded-[3px] border border-base-content/50"
         >
@@ -90,6 +88,7 @@ import { ChartConfiguration, ChartData, } from 'chart.js';
             </p>
           </div>
         </div>
+
         <div
           class="min-w-[229px] min-h-[329px] h-full w-full max-w-[429px] rounded-[3px] border border-base-content/50"
         >
@@ -149,6 +148,7 @@ import { ChartConfiguration, ChartData, } from 'chart.js';
             </canvas>
           </div>
         </div>
+
         <div
           class="row-span-2 flex w-full max-w-[429px] flex-col justify-center rounded-[3px] border border-base-content/50"
         >
@@ -167,6 +167,7 @@ import { ChartConfiguration, ChartData, } from 'chart.js';
             </canvas>
           </div>
         </div>
+
         <div
           class=" row-span-2 flex h-full w-full max-w-[429px] flex-col justify-start rounded-[3px] border border-base-content/50"
         >
@@ -191,6 +192,7 @@ import { ChartConfiguration, ChartData, } from 'chart.js';
             </p>
           </div>
         </div>
+
         <div
           class=" h-fit w-full max-w-[429px] rounded-[3px] border border-base-content/50"
         >
@@ -214,7 +216,6 @@ import { ChartConfiguration, ChartData, } from 'chart.js';
     </ng-container>
   `,
 })
-// todo: make a one dynamic accordion component under shared module
 export class DashboardComponent {
   taskByStatus: ChartConfiguration<'bar'>['data'] = {
     labels: ['To Do', 'Done', 'Doing'],
@@ -274,10 +275,4 @@ export class DashboardComponent {
   pieChartPlugins = [DataLabelsPlugin];
   @Input() sideColumn = false;
 
-  constructor(
-    private consultationService: ConsultationService,
-    private projectService: ProjectService
-  ) {}
-
-  ngOnInit() {}
 }

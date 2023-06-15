@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA  } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -39,21 +39,23 @@ import {
   Check,
   Slash,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
 } from 'angular-feather/icons';
 import { TopAppBarComponent } from './components/topAppBar.component';
 import { ModalComponent } from './components/modal.component';
-import { AccordionComponent } from './components/accordion.component';
+import { AccordionComponent } from './components/accordion/accordion.component';
 import { TaskCardComponent } from './components/taskCard.component';
-import { ParticipantsComponent } from './components/participants.component';
 import { NgChartsModule } from 'ng2-charts';
 import { RedirectComponent } from './components/redirect.component';
 import { DashboardComponent } from './components/dashboard.component';
-import { NgxSpinnerModule } from "ngx-spinner";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ProfileComponent } from './components/profile.component';
 import { ProfileViewComponent } from './components/profileView.component';
 import { NavigationRailComponent } from './components/navigationRail.component';
+import { ParticipantCardComponent } from './components/participantCard.component';
+import { ProjectsAccordionComponent } from './components/accordion/projects.component';
+import { TodoAccordionComponent } from './components/accordion/todo.component';
 
 const icons = {
   ArrowLeft,
@@ -85,7 +87,7 @@ const icons = {
   Check,
   Calendar,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
 };
 
 @NgModule({
@@ -97,13 +99,15 @@ const icons = {
     TopAppBarComponent,
     ModalComponent,
     AccordionComponent,
+    ProjectsAccordionComponent,
+    TodoAccordionComponent,
     TaskCardComponent,
-    ParticipantsComponent,
     RedirectComponent,
     DashboardComponent,
     ProfileComponent,
     ProfileViewComponent,
     NavigationRailComponent,
+    ParticipantCardComponent,
   ],
   imports: [
     CommonModule,
@@ -129,7 +133,6 @@ const icons = {
     ModalComponent,
     AccordionComponent,
     TaskCardComponent,
-    ParticipantsComponent,
     NgChartsModule,
     RedirectComponent,
     DashboardComponent,
@@ -139,6 +142,9 @@ const icons = {
     ProfileComponent,
     ProfileViewComponent,
     NavigationRailComponent,
+    ParticipantCardComponent,
+    ProjectsAccordionComponent,
+    TodoAccordionComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

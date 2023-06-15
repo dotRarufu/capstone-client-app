@@ -10,7 +10,6 @@ import { TaskService } from 'src/app/services/task.service';
 import { Task } from 'src/app/types/collection';
 
 @Component({
-  selector: 'app-capstone-adviser-tasks',
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
@@ -32,31 +31,32 @@ import { Task } from 'src/app/types/collection';
         class="flex h-full gap-[32px] overflow-x-scroll lg:justify-center "
       >
         <div *ngFor="let category of categories" class="w-[294px] shrink-0">
-          <Accordion
+          <TodoAccordion
             [withArrow]="false"
             [forcedOpen]="true"
             [heading]="category.title"
             [isHeadingCentered]="true"
           >
             <div
-              class="flex flex-col gap-[16px] p-[16px]"
+              
+              class="flex flex-col gap-[16px] pt-[16px]"
               cdkDropList
               [cdkDropListData]="category.tasks"
               (cdkDropListDropped)="drop($event)"
             >
-              <app-task-card
+              <TaskCard
                 *ngFor="let item of category.tasks"
                 cdkDrag
                 [cdkDragDisabled]="isDraggingDisabled"
                 [task]="item"
               />
             </div>
-          </Accordion>
+          </TodoAccordion>
         </div>
       </div>
     </div>
 
-    <app-modal>
+    <Modal>
       <div
         class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
       >
@@ -71,7 +71,7 @@ import { Task } from 'src/app/types/collection';
             </div>
           </div>
           <label
-            for="app-modal"
+            for="Modal"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
             ><i-feather class="text-base-content/70" name="x"
           /></label>
@@ -109,9 +109,9 @@ import { Task } from 'src/app/types/collection';
           </ul>
         </div>
       </div>
-    </app-modal>
+    </Modal>
 
-    <app-modal inputId="add-task">
+    <Modal inputId="add-task">
       <div
         class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
       >
@@ -156,11 +156,11 @@ import { Task } from 'src/app/types/collection';
           </ul>
         </div>
       </div>
-    </app-modal>
+    </Modal>
   `,
 })
 export class TasksComponent implements OnInit {
-  categories: { title: string; tasks: Task[] }[] = [];
+  categories: { title: string; tasks: Task[] }[] = [{title: "Todo", tasks: []}, {title: "Doing", tasks: []}, {title: "Done", tasks: []}];
   isDraggingDisabled: boolean;
 
   ngOnInit(): void {
@@ -169,13 +169,13 @@ export class TasksComponent implements OnInit {
     // todo: improve these
     this.taskService
       .getTasks(0, projectId)
-      .subscribe((tasks) => this.categories.push({ title: 'Todo', tasks }));
+      .subscribe((tasks) => this.categories[0].tasks = tasks);
     this.taskService
       .getTasks(1, projectId)
-      .subscribe((tasks) => this.categories.push({ title: 'Doing', tasks }));
+      .subscribe((tasks) => this.categories[1].tasks = tasks);
     this.taskService
       .getTasks(2, projectId)
-      .subscribe((tasks) => this.categories.push({ title: 'Done', tasks }));
+      .subscribe((tasks) => this.categories[2].tasks =  tasks );
   }
 
   constructor(

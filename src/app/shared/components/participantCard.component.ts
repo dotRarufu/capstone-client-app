@@ -37,4 +37,6 @@ import { Component } from '@angular/core';
     </div>
   </div>`,
 })
+// todo: this should be separated for every roles
+// every users have different capabilities on this
 export class ParticipantCardComponent {}

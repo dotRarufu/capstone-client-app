@@ -1,21 +1,12 @@
-import {
-  EventEmitter,
-  Output,
-  Component,
-  ViewChild,
-  AfterViewInit,
-  HostListener,
-  OnInit,
-} from '@angular/core';
+import { EventEmitter, Output, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/services/auth.service';
-import { SupabaseService } from 'src/app/services/supabase.service';
-import { User } from 'src/app/types/collection';
+import { getRolePath } from 'src/app/utils/getRolePath';
 
 @Component({
-  selector: 'app-login',
+  selector: 'Login',
   template: `
     <div
       class="flex h-fit max-h-[568px] w-full max-w-[387px] flex-col gap-4 rounded-[3px] bg-base-100 px-[2rem] py-8"
@@ -42,13 +33,12 @@ import { User } from 'src/app/types/collection';
       />
 
       <button
-        
         (click)="handleButtonClick()"
         class="btn-primary btn w-full  rounded-[3px]  text-center text-base "
       >
         LOGIN
       </button>
-      
+
       <div class="flex flex-col gap-2">
         <div class="flex flex-row items-center gap-2 opacity-75">
           <div class="flex h-full flex-grow items-center">
@@ -70,13 +60,19 @@ import { User } from 'src/app/types/collection';
       <div class="flex w-full flex-row items-center justify-center gap-2">
         <div class="opacity-75">Don't have an account?</div>
         <a class="btn-link btn no-underline " (click)="navigateToSignUp()"
-        >SIGN UP</a
+          >SIGN UP</a
         >
       </div>
     </div>
 
-    <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
-  
+    <ngx-spinner
+      bdColor="rgba(0, 0, 0, 0.8)"
+      size="default"
+      color="#fff"
+      type="square-loader"
+      [fullScreen]="true"
+      ><p style="color: white">Loading...</p></ngx-spinner
+    >
   `,
 })
 export class LoginComponent {
@@ -85,50 +81,31 @@ export class LoginComponent {
   password: string = '';
 
   constructor(
-    private supabaseService: SupabaseService,
     private authService: AuthService,
     private router: Router,
     private spinner: NgxSpinnerService,
     private toastr: ToastrService
-  ) {
-  }
+  ) {}
 
   handleButtonClick() {
     this.spinner.show();
     const signIn$ = this.authService.login(this.email, this.password);
-    signIn$.subscribe({next: (user) => {
-      // todo: refactor
-      const role = getRolePath(user);
-      console.log('role:', role, 'role id:', user.role_id);
-      this.spinner.hide();
-      this.router.navigate([role]);
-    },
-    error: () =>  {this.spinner.hide();this.toastr.error('Login failed')}
-  });
+    signIn$.subscribe({
+      next: (user) => {
+        // todo: refactor
+        if (user.role_id === null) throw Error('user does not have a role');
+        const role = getRolePath(user.role_id);
+        this.spinner.hide();
+        this.router.navigate([role]);
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Login failed');
+      },
+    });
   }
 
   navigateToSignUp() {
     this.toSignUp.emit();
   }
-
 }
-
-const getRolePath = (user: User) => {
-  let role = 'a';
-
-  switch (user.role_id) {
-    case 0:
-      role = 's';
-      break;
-    case 1:
-      role = 'c';
-      break;
-    case 2:
-      role = 't';
-      break;
-    default:
-      throw new Error('user role error');
-  }
-
-  return role;
-};

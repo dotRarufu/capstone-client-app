@@ -5,7 +5,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
-  selector: 'app-top-app-bar',
+  selector: 'TopAppBar',
   template: `
     <div
       class=" w-full bg-primary  px-[1rem]  py-[1rem]  sm1:px-[32px] sm2:px-0 md:px-[200px]"
@@ -31,9 +31,9 @@ import { NgxSpinnerService } from 'ngx-spinner';
             class="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
           >
             <!-- <li><a class="">Profile</a></li> -->
-            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="navigateHome()"><i-feather class="text-base-content/70"name="home"></i-feather>home</a></li>
-            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="navigateProfile()"> <i-feather class="text-base-content/70"name="user"></i-feather>profile</a></li>
-            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="signOut()"><i-feather class="text-base-content/70"name="log-out"></i-feather>sign out</a></li>
+            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="navigateHome()"><i-feather class="text-base-content/70"name="home" />home</a></li>
+            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="navigateProfile()"> <i-feather class="text-base-content/70"name="user" />profile</a></li>
+            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="signOut()"><i-feather class="text-base-content/70"name="log-out" />sign out</a></li>
           </ul>
         </div>
 
@@ -58,23 +58,23 @@ export class TopAppBarComponent implements OnInit{
       ();
   }
 
-  signOut() {
-    this.spinner.show();
-    this.authService.signOut().subscribe(v => {
-      // console.log('sign out:', v);
-      this.spinner.hide();
-    })
-  }
-
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
     this.name = user?.name || 'unnamed'
     this.profileUrl = `https://api.multiavatar.com/${user?.uid || 'unnamed'}.png`
   }
 
+  signOut() {
+    this.spinner.show();
+    this.authService.signOut().subscribe(v =>
+      this.spinner.hide()
+    )
+  }
+
   navigateProfile() {
     this.router.navigate(['profile', 'view']);
   }
+  
   navigateHome() {
     this.router.navigate(['']);
   }

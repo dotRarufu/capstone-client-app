@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'ProjectCard',
+  selector: 'TechnicalAdviserProjectCard',
   template: `
     <div
       class="card card-compact h-fit max-w-[262px] rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"

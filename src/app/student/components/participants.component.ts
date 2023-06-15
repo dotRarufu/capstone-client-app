@@ -1,8 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component} from '@angular/core';
 
 @Component({
-  selector: 'app-participants',
+  selector: 'StudentParticipants',
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex items-center justify-between">
@@ -13,7 +12,7 @@ import { ActivatedRoute } from '@angular/router';
           for="add-participant"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
-          <i-feather class="text-base-content/70"name="plus"></i-feather>
+          <i-feather class="text-base-content/70" name="plus"></i-feather>
 
           Add
         </label>
@@ -22,7 +21,7 @@ import { ActivatedRoute } from '@angular/router';
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
       <div class="flex w-full flex-col justify-center gap-2">
-      <div
+        <div
           class="flex items-center gap-2 rounded-[3px] border border-base-content/30 bg-base-100 p-3 sm1:p-4 "
         >
           <div class="placeholder avatar">
@@ -42,7 +41,7 @@ import { ActivatedRoute } from '@angular/router';
 
           <div class="dropdown-end dropdown text-base-content">
             <label tabindex="0" class="btn-ghost btn-sm btn">
-              <i-feather class="text-base-content/70"name="menu"></i-feather>
+              <i-feather class="text-base-content/70" name="menu"></i-feather>
             </label>
             <ul
               tabindex="0"
@@ -77,7 +76,7 @@ import { ActivatedRoute } from '@angular/router';
 
           <div class="dropdown-end dropdown text-base-content">
             <label tabindex="0" class="btn-ghost btn-sm btn">
-              <i-feather class="text-base-content/70"name="menu"></i-feather>
+              <i-feather class="text-base-content/70" name="menu"></i-feather>
             </label>
             <ul
               tabindex="0"
@@ -112,7 +111,7 @@ import { ActivatedRoute } from '@angular/router';
 
           <div class="dropdown-end dropdown text-base-content">
             <label tabindex="0" class="btn-ghost btn-sm btn">
-              <i-feather class="text-base-content/70"name="menu"></i-feather>
+              <i-feather class="text-base-content/70" name="menu"></i-feather>
             </label>
             <ul
               tabindex="0"
@@ -130,7 +129,7 @@ import { ActivatedRoute } from '@angular/router';
       </div>
     </div>
 
-    <app-modal inputId="add-participant">
+    <Modal inputId="add-participant">
       <div
         class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
       >
@@ -146,7 +145,7 @@ import { ActivatedRoute } from '@angular/router';
           <label
             for="add-participant"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather class="text-base-content/70"name="x"></i-feather
+            ><i-feather class="text-base-content/70" name="x"></i-feather
           ></label>
         </div>
 
@@ -159,40 +158,45 @@ import { ActivatedRoute } from '@angular/router';
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <div
-            class="form-control rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50"
-          >
-            <div
-              class="input-group rounded-[3px] border border-base-content/50"
+              class="form-control rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50"
             >
-              <select
-                class="select-bordered select w-full rounded-[3px] border-none text-base font-normal  outline-0  focus:rounded-[3px] "
+              <div
+                class="input-group rounded-[3px] border border-base-content/50"
               >
-                <!-- todo: make this dynamic -->
-                <option disabled selected>Select a role</option>
-                <!-- todo: rename roles table to role -->
-                <option (click)="selectRole(0)">Student</option>
-                <option (click)="selectRole(1)">Subject Adviser</option>
-                <option (click)="selectRole(2)">Technical Adviser</option>
-              </select>
+                <select
+                  class="select-bordered select w-full rounded-[3px] border-none text-base font-normal  outline-0  focus:rounded-[3px] "
+                >
+                  <!-- todo: make this dynamic -->
+                  <option disabled selected>Select a role</option>
+                  <!-- todo: rename roles table to role -->
+                  <option (click)="selectRole(0)">Student</option>
+                  <option (click)="selectRole(1)">Subject Adviser</option>
+                  <option (click)="selectRole(2)">Technical Adviser</option>
+                </select>
+              </div>
             </div>
-          </div>
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 py-2">
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather class="text-base-content/70"name="check-square"></i-feather> done
+              <i-feather
+                class="text-base-content/70"
+                name="check-square"
+              ></i-feather>
+              done
             </li>
 
             <div class="h-full"></div>
             <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather class="text-base-content/70"name="x-circle"></i-feather> close
+              <i-feather
+                class="text-base-content/70"
+                name="x-circle"
+              ></i-feather>
+              close
             </li>
           </ul>
         </div>
-
-
-
       </div>
-    </app-modal>
+    </Modal>
   `,
 })
 export class ParticipantsComponent {

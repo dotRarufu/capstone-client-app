@@ -29,7 +29,7 @@ import { ProjectService } from 'src/app/services/project.service';
           <div
             class="grid grid-flow-row grid-cols-1 items-center justify-items-center gap-[24px]  py-[1rem] sm1:grid-cols-2 sm1:justify-start sm2:grid-cols-3 md:justify-center"
           >
-            <ProjectCard
+            <StudentProjectCard
               *ngFor="let project of projects"
               [navigateTo]="navigateToProject(project.uid)"
             />
@@ -60,7 +60,7 @@ import { ProjectService } from 'src/app/services/project.service';
           <div
             class="grid grid-cols-1  justify-items-center gap-[24px] py-[1rem] "
           >
-            <ProjectCard
+            <StudentProjectCard
               *ngFor="let project of projects"
               [navigateTo]="navigateToProject(project.uid)"
             />
@@ -69,7 +69,7 @@ import { ProjectService } from 'src/app/services/project.service';
       </div>
     </ng-container>
 
-    <app-modal inputId="add-project">
+    <Modal inputId="add-project">
       <div
         class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
       >
@@ -115,7 +115,7 @@ import { ProjectService } from 'src/app/services/project.service';
           </ul>
         </div>
       </div>
-    </app-modal>
+    </Modal>
   `,
 })
 export class ProjectsComponent implements OnInit {

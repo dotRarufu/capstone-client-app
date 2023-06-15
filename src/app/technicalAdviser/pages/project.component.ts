@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 
 @Component({
+  selector: 'TechnicalAdviserProject',
   template: `
     <div class="flex">
       <div class="hidden sm2:block">
         <!-- desktop navrail -->
-        <app-nav-rail (toggleDrawer)="toggleDrawer(myDrawer)" />
+        <NavigationRail (toggleDrawer)="toggleDrawer(myDrawer)" />
       </div>
 
       <div class="drawer lg:drawer-mobile">
@@ -20,12 +21,12 @@ import { Component } from '@angular/core';
           <div
             class="dropdown-top dropdown-end dropdown absolute bottom-4 right-4 sm2:hidden"
           >
-          <!-- mobile navrail -->
+            <!-- mobile navrail -->
             <label tabindex="0" class="btn-primary btn  rounded-[3px]"
               ><i-feather name="menu"
             /></label>
             <div tabindex="0" class="dropdown-content  menu rounded-box w-fit">
-              <app-nav-rail
+              <NavigationRail
                 [isFab]="true"
                 (toggleDrawer)="toggleDrawer(myDrawer)"
               />
@@ -48,14 +49,14 @@ import { Component } from '@angular/core';
         <div class="drawer-side">
           <label for="my-drawer" class="drawer-overlay"></label>
           <ul class="menu w-fit bg-base-100 text-base-content">
-            <SideBar />
+            <TechnicalAdviserSideBar />
           </ul>
         </div>
       </div>
     </div>
   `,
 })
-export class ProjectComponent {
+export class TechnicalAdviserProjectComponent {
   isDrawerOpen: boolean = false;
 
   changeDrawerState(e: Event) {

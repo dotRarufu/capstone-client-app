@@ -1,12 +1,17 @@
-import { CUSTOM_ELEMENTS_SCHEMA, Component, NgModule, isDevMode } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  Component,
+  NgModule,
+  isDevMode,
+} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { ActivatedRoute, Router, RouterModule, Routes } from '@angular/router';
 
 import { authGuard } from './guards/auth.guard';
-import { ProjectComponent as CapstoneAdviserProject } from './capstoneAdviser/pages/project.component';
-import { ProjectComponent as TechnicalAdviserProject } from './technicalAdviser/pages/project.component';
-import { ProjectComponent as StudentProject } from './student/pages/project.component';
+import { CapstoneAdviserProjectComponent as CapstoneAdviserProject } from './capstoneAdviser/pages/project.component';
+import { TechnicalAdviserProjectComponent as TechnicalAdviserProject } from './technicalAdviser/pages/project.component';
+import { StudentProjectComponent as StudentProject } from './student/pages/project.component';
 import { SharedModule } from './shared/shared.module';
 import { FormGeneratorComponent } from './shared/components/formGenerator.component';
 import { TasksComponent } from './student/components/tasks.component';
@@ -23,11 +28,11 @@ import { NotFoundComponent } from './shared/components/notFound.component';
 import { FormComponent } from './shared/components/form.component';
 import { HomeComponent as StudentHome } from './student/pages/home.component';
 import { StudentModule } from './student/student.module';
-import { ProjectsComponent } from './capstoneAdviser/components/projects.component';
-import { ProjectsComponent as TechnicalAdviserProjectsComponent } from './technicalAdviser/components/projects.component';
+import { CapstoneAdviserProjectsComponent } from './capstoneAdviser/components/projects.component';
+import { TechnicalAdviserProjectsComponent as TechnicalAdviserProjectsComponent } from './technicalAdviser/components/projects.component';
 import { TitleAnalyzerComponent } from './student/components/titleAnalyzer.component';
 import { ResultComponent as StudentTitleAnalyzerResult } from './student/pages/result.component';
-import { ParticipantsComponent } from './shared/components/participants.component';
+import { ParticipantsComponent } from './student/components/participants.component';
 import { ParticipantsComponent as CapstoneAdviserParticipantsComponent } from './capstoneAdviser/components/participants.component';
 import { ParticipantsComponent as TechnicalAdviserParticipantsComponent } from './technicalAdviser/components/participants.component';
 import { ConsultationsComponent as StudentConsultationsComponent } from './student/components/consultations.component';
@@ -58,19 +63,18 @@ const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        component: DashboardComponent
+        component: DashboardComponent,
       },
       {
         path: 'view',
-        component: ProfileViewComponent
+        component: ProfileViewComponent,
       },
       {
         path: '',
         redirectTo: '/profile/dashboard',
-        pathMatch: 'full'
-      }
-      
-    ]
+        pathMatch: 'full',
+      },
+    ],
   },
   {
     path: 's',
@@ -92,15 +96,14 @@ const routes: Routes = [
             path: 'title-analyzer-result',
             component: StudentTitleAnalyzerResult,
           },
-         
 
           { path: '', redirectTo: '/s/home/title-analyzer', pathMatch: 'full' },
         ],
       },
-       {
-            path: 'title-builder',
-            component: StudentTitleBuilder,
-          },
+      {
+        path: 'title-builder',
+        component: StudentTitleBuilder,
+      },
       {
         path: 'project',
         children: [
@@ -174,7 +177,7 @@ const routes: Routes = [
         children: [
           {
             path: 'projects',
-            component: ProjectsComponent,
+            component: CapstoneAdviserProjectsComponent,
           },
           // todo: add role guard, use data property
           {
@@ -251,7 +254,7 @@ const routes: Routes = [
   },
   {
     path: 't',
-    canActivate: [authGuard, roleGuard],
+    // canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',
@@ -350,15 +353,15 @@ const routes: Routes = [
     TechnicalAdviserModule,
     StudentModule,
     SharedModule,
-    ToastrModule.forRoot({preventDuplicates: true, progressBar: true}),
-    RouterModule.forRoot(routes),
+    ToastrModule.forRoot({ preventDuplicates: true, progressBar: true }),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
+      registrationStrategy: 'registerWhenStable:30000',
     }),
     NgChartsModule,
+    RouterModule.forRoot(routes),
   ],
   providers: [],
   bootstrap: [AppComponent],

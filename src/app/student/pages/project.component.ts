@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 
 @Component({
+  selector: 'StudentProject',
   template: `
-   <div class="flex">
+    <div class="flex">
       <div class="hidden sm2:block">
-        <app-nav-rail (toggleDrawer)="toggleDrawer(myDrawer)" />
+        <NavigationRail (toggleDrawer)="toggleDrawer(myDrawer)" />
       </div>
 
       <div class="drawer lg:drawer-mobile">
@@ -24,7 +25,7 @@ import { Component } from '@angular/core';
               ><i-feather name="menu" />
             </label>
             <div tabindex="0" class="dropdown-content  menu rounded-box w-fit">
-              <app-nav-rail
+              <NavigationRail
                 [isFab]="true"
                 (toggleDrawer)="toggleDrawer(myDrawer)"
               />
@@ -47,14 +48,14 @@ import { Component } from '@angular/core';
         <div class="drawer-side">
           <label for="my-drawer" class="drawer-overlay"></label>
           <ul class="menu w-fit bg-base-100 text-base-content">
-            <SideBar />
+            <StudentSideBar />
           </ul>
         </div>
       </div>
     </div>
   `,
 })
-export class ProjectComponent {
+export class StudentProjectComponent {
   isDrawerOpen: boolean = false;
 
   toggleDrawer(inputRef: HTMLInputElement) {

@@ -50,7 +50,7 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
       </Accordion>
     </div>
 
-    <app-modal inputId="consultation-modal">
+    <Modal inputId="consultation-modal">
       <div
         class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
       >
@@ -121,7 +121,7 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
           </ul>
         </div>
       </div>
-    </app-modal>
+    </Modal>
   `,
 })
 // todo: make a one dynamic accordion component under shared module

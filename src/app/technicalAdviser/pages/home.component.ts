@@ -8,8 +8,8 @@ import { Project } from 'src/app/models/project';
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
-        <app-top-app-bar />
-        <app-tabs [tabs]="tabs" />
+        <TopAppBar />
+        <Tabs [tabs]="tabs" />
       </div>
 
       <div
@@ -23,12 +23,12 @@ import { Project } from 'src/app/models/project';
         <!-- desktop -->
         <div class="hidden w-full gap-[1rem]  md:flex lg:flex lg:w-[1040px] ">
           <div class="w-full">
-            <Projects [sideColumn]="true" />
+            <TechnicalAdviserProjects [sideColumn]="true" />
           </div>
 
           <div class=" w-[357px] shrink-0  basis-[357px]">
             <!-- todo: do this in other comps, to reduce repetition of tags -->
-            <app-dashboard [sideColumn]="true" />
+            <Dashboard [sideColumn]="true" />
           </div>
         </div>
       </div>

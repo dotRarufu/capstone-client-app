@@ -15,7 +15,7 @@ type Action =
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
-        <app-top-app-bar activePath="Title Builder" />
+        <TopAppBar activePath="Title Builder" />
       </div>
 
       <div

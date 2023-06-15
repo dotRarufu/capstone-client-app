@@ -67,6 +67,8 @@ export class TaskService {
       map(response => {
         if (response.error) throw new Error(`error while fetching tasks: ${response.error}`)
 
+        console.log("statusId:", statusId, "projectId:", projectId, "res:", response);
+
         return response.data
       })
     );

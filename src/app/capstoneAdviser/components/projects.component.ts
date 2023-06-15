@@ -4,7 +4,7 @@ import { Project } from 'src/app/models/project';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-capstone-adviser-projects',
+  selector: 'Projects',
   template: `
     <ng-container *ngIf="!sideColumn">
       <div
@@ -29,28 +29,24 @@ import { Router } from '@angular/router';
           </div>
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-        <Accordion heading="BSIT 3-1">
-          <app-capstone-adviser-project-card
-            body
+        <ProjectsAccordion heading="BSIT 3-1" >
+          <CapstoneAdviserProjectCard 
             *ngFor="let project of projects"
             [navigateTo]="navigateToProject(project.uid)"
           />
-        </Accordion>
-        <Accordion heading="BSIT 3-1">
-          <div class="w-[32px] bg-primary">test</div>
-          <app-capstone-adviser-project-card
-            body
+        </ProjectsAccordion>
+        <ProjectsAccordion heading="BSIT 3-1">
+          <CapstoneAdviserProjectCard 
             *ngFor="let project of projects"
             [navigateTo]="navigateToProject(project.uid)"
           />
-        </Accordion>
-        <Accordion heading="BSIT 3-1">
-          <app-capstone-adviser-project-card
-            body
+        </ProjectsAccordion>
+        <ProjectsAccordion heading="BSIT 3-1" >
+          <CapstoneAdviserProjectCard 
             *ngFor="let project of projects"
             [navigateTo]="navigateToProject(project.uid)"
           />
-        </Accordion>
+        </ProjectsAccordion>
       </div>
     </ng-container>
 
@@ -80,23 +76,23 @@ import { Router } from '@angular/router';
         <div
           class="flex w-full flex-col justify-items-center gap-[24px] py-[1rem]"
         >
-          <Accordion heading="BSIT 3-1">
-            <app-capstone-adviser-project-card
-              body
+          <Accordion heading="BSIT 3-1a" [sideColumn]="true">
+            <CapstoneAdviserProjectCard 
+              sideColumn
               *ngFor="let project of projects"
               [navigateTo]="navigateToProject(project.uid)"
             />
           </Accordion>
-          <Accordion heading="BSIT 3-1">
-            <app-capstone-adviser-project-card
-              body
+          <Accordion heading="BSIT 3-1a" [sideColumn]="true">
+            <CapstoneAdviserProjectCard 
+              sideColumn
               *ngFor="let project of projects"
               [navigateTo]="navigateToProject(project.uid)"
             />
           </Accordion>
-          <Accordion heading="BSIT 3-1">
-            <app-capstone-adviser-project-card
-              body
+          <Accordion heading="BSIT 3-1a" [sideColumn]="true">
+            <CapstoneAdviserProjectCard 
+              sideColumn
               *ngFor="let project of projects"
               [navigateTo]="navigateToProject(project.uid)"
             />
@@ -106,7 +102,7 @@ import { Router } from '@angular/router';
     </ng-container>
   `,
 })
-export class ProjectsComponent {
+export class CapstoneAdviserProjectsComponent {
   search: string = '';
   projects: Project[] = [];
   @Input() sideColumn? = false;

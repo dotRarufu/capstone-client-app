@@ -5,12 +5,11 @@ import { Tab } from 'src/app/models/tab';
 import { Project } from 'src/app/models/project';
 
 @Component({
-  selector: 'app-home',
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
-        <app-top-app-bar></app-top-app-bar>
-        <app-tabs [tabs]="tabs"></app-tabs>
+        <TopAppBar />
+        <Tabs [tabs]="tabs" />
       </div>
 
       <div
@@ -18,20 +17,18 @@ import { Project } from 'src/app/models/project';
       >
         <!-- mobile -->
         <div class="w-full sm2:flex sm2:justify-center md:hidden">
-          <router-outlet></router-outlet>
+          <router-outlet />
         </div>
 
         <!-- desktop -->
         <div class="hidden w-full gap-[1rem]  md:flex lg:w-[1040px]">
           <div class="w-full">
-            <app-capstone-adviser-projects
-              [sideColumn]="true"
-            ></app-capstone-adviser-projects>
+            <Projects [sideColumn]="true" />
           </div>
 
           <div class=" w-[357px] flex-shrink-0  basis-[357px]">
             <!-- todo: do this in other comps, to reduce repetition of tags -->
-            <app-dashboard [sideColumn]="true"></app-dashboard>
+            <Dashboard [sideColumn]="true" />
           </div>
         </div>
       </div>

@@ -1,11 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AuthService } from 'src/app/services/auth.service';
-import { SupabaseService } from 'src/app/services/supabase.service';
 
 @Component({
-  selector: 'app-signup',
+  selector: 'SignUp',
   template: `
     <ng-container *ngIf="!isInLastStep">
       <div
@@ -129,9 +127,7 @@ export class SignupComponent {
   isInLastStep = false;
 
   constructor(
-    private supabaseService: SupabaseService,
     private authService: AuthService,
-    private router: Router,
     private spinner: NgxSpinnerService
   ) {}
 

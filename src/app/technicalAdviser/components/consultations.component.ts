@@ -19,7 +19,7 @@ import { Consultation } from 'src/app/types/collection';
         >
           <div
             *ngFor="let consultation of scheduled"
-            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+            class="card card-compact h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
               <label
@@ -50,7 +50,7 @@ import { Consultation } from 'src/app/types/collection';
       </Accordion>
     </div>
 
-    <app-modal inputId="consultation-modal">
+    <Modal inputId="consultation-modal">
       <div
         class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
       >
@@ -127,7 +127,7 @@ import { Consultation } from 'src/app/types/collection';
           </ul>
         </div>
       </div>
-    </app-modal>
+    </Modal>
   `,
 })
 // todo: make a one dynamic accordion component under shared module

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-capstone-adviser-participants',
+  selector: 'CapstoneAdviserParticipants',
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex items-center justify-between">

@@ -10,9 +10,9 @@ import { Project } from 'src/app/models/project';
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
-        <app-top-app-bar />
+        <TopAppBar />
         <!-- TODO: use service instead of passing tabs data -->
-        <app-tabs [tabs]="tabs" />
+        <Tabs [tabs]="tabs" />
       </div>
 
       <div
@@ -42,7 +42,7 @@ import { Project } from 'src/app/models/project';
       </div>
     </div>
 
-    <app-modal
+    <Modal
       inputId="title-analyzer"
       (checkboxChanged)="handleCheckboxChange($event)"
     >
@@ -107,7 +107,7 @@ import { Project } from 'src/app/models/project';
           </div>
         </ng-container>
       </div>
-    </app-modal>
+    </Modal>
 
     <ngx-spinner
       bdColor="rgba(0, 0, 0, 0.8)"
