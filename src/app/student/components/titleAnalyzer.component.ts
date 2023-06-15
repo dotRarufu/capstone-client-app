@@ -36,34 +36,6 @@ import { ProjectService } from 'src/app/services/project.service';
 // todo: add ability to change renderer in docx viewer (form generator)
 export class TitleAnalyzerComponent implements OnInit {
   projects: Project[] = [];
-  tabs: Tab[] = [
-    {
-      name: 'Title Analyzer',
-      id: 'title-analyzer',
-      handler: () => {
-        this.router.navigate(['s', 'home', 'title-analyzer']);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === 'title-analyzer'
-            ? { ...tab, active: true }
-            : { ...tab, active: false }
-        );
-      },
-    },
-    {
-      name: 'Projects',
-      id: 'projects',
-      handler: () => {
-        this.router.navigate(['s', 'home', 'projects']);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === 'projects'
-            ? { ...tab, active: true }
-            : { ...tab, active: false }
-        );
-      },
-    },
-  ];
   contents: { heading: string; content: string }[] = [
     {
       heading: 'Substantive Word Count',

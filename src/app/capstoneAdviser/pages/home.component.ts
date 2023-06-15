@@ -38,10 +38,10 @@ import { Project } from 'src/app/models/project';
 export class HomeComponent implements OnInit {
   active: string = 'projects';
   search: string = '';
-  // todo: improve tabs
   tabs: Tab[] = [
     {
       name: 'projects',
+      active: true,
       id: 'projects',
       handler: () => {
         this.router.navigate(['c', 'home', 'projects']);

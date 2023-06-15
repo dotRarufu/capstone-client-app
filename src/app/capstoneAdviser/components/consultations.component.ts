@@ -15,7 +15,7 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
 
       <Accordion *ngFor="let category of categories" [heading]="category">
         <div
-          class="flex flex-wrap justify-center gap-[24px] p-[1rem] sm1:justify-start"
+          class="flex flex-wrap justify-center gap-[24px]  sm1:justify-start"
         >
           <div
             *ngFor="let consultation of scheduled"

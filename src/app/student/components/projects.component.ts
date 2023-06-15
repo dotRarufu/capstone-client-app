@@ -120,34 +120,6 @@ import { ProjectService } from 'src/app/services/project.service';
 })
 export class ProjectsComponent implements OnInit {
   projects: Project[] = [];
-  tabs: Tab[] = [
-    {
-      name: 'Title Analyzer',
-      id: 'title-analyzer',
-      handler: () => {
-        this.router.navigate(['s', 'home', 'title-analyzer']);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === 'title-analyzer'
-            ? { ...tab, active: true }
-            : { ...tab, active: false }
-        );
-      },
-    },
-    {
-      name: 'Projects',
-      id: 'projects',
-      handler: () => {
-        this.router.navigate(['s', 'home', 'projects']);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === 'projects'
-            ? { ...tab, active: true }
-            : { ...tab, active: false }
-        );
-      },
-    },
-  ];
   @Input() sideColumn? = false;
 
   constructor(private router: Router, private projectService: ProjectService) {}

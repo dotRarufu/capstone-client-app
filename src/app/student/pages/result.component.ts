@@ -203,34 +203,7 @@ export class ResultComponent implements OnInit {
   analysesData: AnalysesDataItem[] = [];
   informationalData: { heading: string; content: string[] }[] = [];
   title = '';
-  tabs: Tab[] = [
-    {
-      name: 'Title Analyzer',
-      id: 'title-analyzer',
-      handler: () => {
-        this.router.navigate(['s', 'home', 'title-analyzer']);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === 'title-analyzer'
-            ? { ...tab, active: true }
-            : { ...tab, active: false }
-        );
-      },
-    },
-    {
-      name: 'Projects',
-      id: 'projects',
-      handler: () => {
-        this.router.navigate(['s', 'home', 'projects']);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === 'projects'
-            ? { ...tab, active: true }
-            : { ...tab, active: false }
-        );
-      },
-    },
-  ];
+ 
   result?: TitleAnalyzerResult;
   similarProjects: string[] = [
     'Development and evaluation of Record Management System',

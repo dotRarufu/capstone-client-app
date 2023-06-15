@@ -42,7 +42,7 @@ export class FormGeneratorComponent implements OnInit {
     {
       name: 'Form 1',
       id: '1',
-
+  
       handler: () => {
         // todo: create wrapper for this
         // this.spinner.show();

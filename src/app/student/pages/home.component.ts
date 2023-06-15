@@ -129,6 +129,7 @@ export class HomeComponent implements OnInit {
   tabs: Tab[] = [
     {
       name: 'Title Analyzer',
+      active: true,
       id: 'title-analyzer',
       handler: () => {
         this.router.navigate(['s', 'home', 'title-analyzer']);

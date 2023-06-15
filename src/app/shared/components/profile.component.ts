@@ -36,6 +36,7 @@ export class ProfileComponent {
   tabs: Tab[] = [
     {
       name: 'Profile',
+      active: true,
       id: 'view',
       handler: () => {
         this.router.navigate(['profile', 'view']);
