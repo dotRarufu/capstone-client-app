@@ -70,11 +70,11 @@ import { Consultation } from 'src/app/types/collection';
               class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
             />
           </div>
-          <label
+          <!-- <label
             for="schedule-consultation"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
             ><i-feather class="text-base-content/70" name="x"
-          /></label>
+          /></label> -->
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
@@ -122,9 +122,10 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
 
             <div class="h-full"></div>
 
-            <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+            <label
+            for="schedule-consultation" class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
               <i-feather class="text-base-content/70" name="x" /> cancel
-            </li>
+            </label>
           </ul>
         </div>
       </div>
@@ -144,11 +145,11 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
               Created at 5/1/23 by Student Name
             </div>
           </div>
-          <label
+          <!-- <label
             for="consultation-modal"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
             ><i-feather class="text-base-content/70" name="x"
-          /></label>
+          /></label> -->
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
@@ -192,9 +193,10 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 py-2 ">
             <div class="h-full"></div>
 
-            <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+            <label
+            for="consultation-modal" class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
               <i-feather class="text-base-content/70" name="x-circle" /> close
-            </li>
+            </label>
           </ul>
         </div>
       </div>

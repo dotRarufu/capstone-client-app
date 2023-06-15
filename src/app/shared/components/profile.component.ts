@@ -20,11 +20,11 @@ import { Tab } from 'src/app/models/tab';
 
         <!-- desktop -->
         <div class="hidden w-full gap-[1rem]  md:flex lg:flex lg:w-[1040px] ">
-          <div class="w-full">
-            <app-profile-view />
+          <div class="w-full  ">
+            <ProfileView />
           </div>
 
-          <div class=" w-[357px] shrink-0  basis-[357px]">
+          <div class=" w-[357px] shrink-0  basis-[357px] ">
             <Dashboard [sideColumn]="true" />
           </div>
         </div>

@@ -62,11 +62,11 @@ import { Consultation } from 'src/app/types/collection';
               Created at 5/1/23 by Student Name
             </div>
           </div>
-          <label
+          <!-- <label
             for="consultation-modal"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
             ><i-feather class="text-base-content/70" name="x"
-          /></label>
+          /></label> -->
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
@@ -118,10 +118,11 @@ import { Consultation } from 'src/app/types/collection';
             </li>
 
             <div class="h-full"></div>
-            <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+            <label
+            for="consultation-modal" class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
               <i-feather class="text-base-content/70" name="x-circle" />
               close
-            </li>
+            </label>
           </ul>
         </div>
       </div>

@@ -46,8 +46,8 @@ import { Component } from '@angular/core';
         </div>
 
         <!-- side bar -->
-        <!-- md:-z-[1] fixes the bug on drawer size when loader is active -->
-        <div class="drawer-side md:-z-[1]">
+        <!-- lg:-z-[1] fixes the bug on drawer size when loader is active -->
+        <div class="drawer-side lg:-z-[1]">
           <label for="my-drawer" class="drawer-overlay"></label>
           <ul class="menu w-fit bg-base-100 text-base-content">
             <TechnicalAdviserSideBar />

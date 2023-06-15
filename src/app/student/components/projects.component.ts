@@ -58,7 +58,7 @@ import { ProjectService } from 'src/app/services/project.service';
           <div class="h-[2px] w-full bg-base-content/10"></div>
 
           <div
-            class="grid grid-cols-1  justify-items-center gap-[24px] py-[1rem] "
+            class="grid grid-cols-1  justify-items-center gap-[24px]  "
           >
             <StudentProjectCard
               *ngFor="let project of projects"
@@ -81,11 +81,11 @@ import { ProjectService } from 'src/app/services/project.service';
               class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
             />
           </div>
-          <label
+          <!-- <label
             for="add-project"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
             ><i-feather class="text-base-content/70" name="x"
-          /></label>
+          /></label> -->
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
@@ -108,10 +108,11 @@ import { ProjectService } from 'src/app/services/project.service';
 
             <div class="h-full"></div>
 
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
+            <label
+            for="add-project" class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
               close
               <i-feather class="text-base-content/70" name="x-circle" />
-            </li>
+            </label>
           </ul>
         </div>
       </div>

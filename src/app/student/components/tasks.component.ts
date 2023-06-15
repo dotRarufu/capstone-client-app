@@ -61,11 +61,11 @@ import { Task } from 'src/app/types/collection';
                 Created at 5/1/23 by Adviser Name | Currently in Doing
               </div>
             </div>
-            <label
+            <!-- <label
               for="Modal"
               class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
               ><i-feather class="text-base-content/70" name="x"></i-feather
-            ></label>
+            ></label> -->
           </div>
           <div class="flex bg-base-100">
             <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
@@ -86,9 +86,10 @@ import { Task } from 'src/app/types/collection';
             <ul class=" flex w-[223px]  flex-col bg-neutral/20 py-2 ">
               <div class="h-full"></div>
 
-              <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+              <label
+              for="Modal" class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
                 <i-feather class="text-base-content/70" name="x-circle" /> close
-              </li>
+              </label>
             </ul>
           </div>
         </div>
@@ -106,11 +107,11 @@ import { Task } from 'src/app/types/collection';
                 class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
               />
             </div>
-            <label
+            <!-- <label
               for="add-task"
               class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
               ><i-feather class="text-base-content/70" name="x"></i-feather
-            ></label>
+            ></label> -->
           </div>
           <div class="flex bg-base-100">
             <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
@@ -133,9 +134,10 @@ import { Task } from 'src/app/types/collection';
 
               <div class="h-full"></div>
 
-              <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
+              <label
+              for="add-task" class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
                 close <i-feather class="text-base-content/70" name="x-square" />
-              </li>
+              </label>
             </ul>
           </div>
         </div>

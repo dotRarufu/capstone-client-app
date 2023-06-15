@@ -3,6 +3,7 @@ import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
 
 @Component({
+  selector: 'ProfileView',
   template: `
     <ng-container *ngIf="!sideColumn">
       <div

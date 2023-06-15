@@ -75,7 +75,7 @@ import { Router } from '@angular/router';
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <div
-          class="flex w-full flex-col justify-items-center gap-[24px] py-[1rem]"
+          class="flex w-full flex-col justify-items-center gap-[24px] "
         >
           <ProjectsAccordion heading="BSIT 3-1">
             <TechnicalAdviserProjectCard

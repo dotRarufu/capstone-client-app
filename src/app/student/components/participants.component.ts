@@ -142,11 +142,11 @@ import { Component} from '@angular/core';
             />
           </div>
 
-          <label
+          <!-- <label
             for="add-participant"
             class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
             ><i-feather class="text-base-content/70" name="x"></i-feather
-          ></label>
+          ></label> -->
         </div>
 
         <div class="flex bg-base-100">
@@ -186,13 +186,14 @@ import { Component} from '@angular/core';
             </li>
 
             <div class="h-full"></div>
-            <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+            <label
+            for="add-participant" class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
               <i-feather
                 class="text-base-content/70"
                 name="x-circle"
               ></i-feather>
               close
-            </li>
+            </label>
           </ul>
         </div>
       </div>
