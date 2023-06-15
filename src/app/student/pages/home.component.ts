@@ -11,7 +11,6 @@ import { Project } from 'src/app/models/project';
     <div class="flex flex-col gap-[1rem]">
       <div>
         <TopAppBar />
-        <!-- TODO: use service instead of passing tabs data -->
         <Tabs [tabs]="tabs" />
       </div>
 
@@ -131,28 +130,12 @@ export class HomeComponent implements OnInit {
       name: 'Title Analyzer',
       active: true,
       id: 'title-analyzer',
-      handler: () => {
-        this.router.navigate(['s', 'home', 'title-analyzer']);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === 'title-analyzer'
-            ? { ...tab, active: true }
-            : { ...tab, active: false }
-        );
-      },
+      handler: this.handlerFactory('title-analyzer'),
     },
     {
       name: 'Projects',
       id: 'projects',
-      handler: () => {
-        this.router.navigate(['s', 'home', 'projects']);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === 'projects'
-            ? { ...tab, active: true }
-            : { ...tab, active: false }
-        );
-      },
+      handler: this.handlerFactory('projects'),
     },
   ];
   titleFromAlreadyHaveTitle = '';
@@ -182,6 +165,16 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  handlerFactory(path: string) {
+    return () => {
+      this.router.navigate(['s', 'home', path]);
+
+      this.tabs = this.tabs.map((tab) =>
+        tab.id === path ? { ...tab, active: true } : { ...tab, active: false }
+      );
+    };
+  }
+
   checkPath(path: string) {
     return this.path === path;
   }
@@ -194,7 +187,6 @@ export class HomeComponent implements OnInit {
     this.alreadyHaveTitle = !e;
   }
 
-  // todo maybe move in a service or not
   async navigateTo(path: string) {
     this.spinner.show();
 

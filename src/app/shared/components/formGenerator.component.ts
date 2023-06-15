@@ -42,60 +42,23 @@ export class FormGeneratorComponent implements OnInit {
     {
       name: 'Form 1',
       id: '1',
-  
-      handler: () => {
-        // todo: create wrapper for this
-        // this.spinner.show();
-        console.log('start loading');
-        this.navigateTo('1');
-        this.projectService.generateForm(1);
 
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === '1' ? { ...tab, active: true } : { ...tab, active: false }
-        );
-      },
+      handler: this.handlerFactory(1),
     },
     {
       name: 'Form 2',
       id: '2',
-      handler: () => {
-        // this.spinner.show();
-        console.log('start loading');
-        this.navigateTo('2');
-        this.projectService.generateForm(2);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === '2' ? { ...tab, active: true } : { ...tab, active: false }
-        );
-      },
+      handler: this.handlerFactory(2),
     },
     {
       name: 'Form 3',
       id: '3',
-      handler: () => {
-        this.spinner.show();
-        console.log('start loading');
-        this.navigateTo('3');
-        this.projectService.generateForm(3);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === '3' ? { ...tab, active: true } : { ...tab, active: false }
-        );
-      },
+      handler: this.handlerFactory(3),
     },
     {
       name: 'Form 4',
       id: '4',
-      handler: () => {
-        this.spinner.show();
-        this.navigateTo('4');
-        this.projectService.generateForm(4);
-        // todo: add modal, loader
-        // todo: form does not work, the api still requires time range
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === '4' ? { ...tab, active: true } : { ...tab, active: false }
-        );
-      },
+      handler: this.handlerFactory(4),
     },
   ];
   projectId = -1;
@@ -115,6 +78,21 @@ export class FormGeneratorComponent implements OnInit {
       this.downloadUrl = a;
       this.filename = getFileName(a);
     });
+  }
+
+  handlerFactory(formNumber: number) {
+    return () => {
+      this.spinner.show();
+      this.navigateTo(formNumber.toString());
+      this.projectService.generateForm(formNumber);
+
+      // todo: form does not work, the api still requires time range
+      this.tabs = this.tabs.map((tab) =>
+        tab.id === formNumber.toString()
+          ? { ...tab, active: true }
+          : { ...tab, active: false }
+      );
+    };
   }
 
   navigateTo(id: string) {

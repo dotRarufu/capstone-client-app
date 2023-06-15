@@ -149,10 +149,6 @@ export class NavigationRailComponent implements OnInit {
       if (user.role_id === null) throw new Error('user has no role id');
 
       const rolePath = getRolePath(user.role_id);
-
-      // console.log('path:', path);
-      // todo: make the "c" dynamic
-      // console.log('navigate with:', this.projectId);
       this.router.navigate([rolePath, 'project', this.projectId, path]);
     }
 

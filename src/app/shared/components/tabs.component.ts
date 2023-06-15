@@ -35,7 +35,6 @@ export class TabsComponent implements OnInit {
   @Input() isResponsive?: boolean = true;
 
   ngOnInit(): void {
-    // todo: fix tab is not in active color when user initially go to 'home' and does not specify a child path
 
 
   }

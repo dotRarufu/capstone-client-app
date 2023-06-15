@@ -12,9 +12,8 @@ import { Database } from '../types/supabase';
 @Injectable({
   providedIn: 'root',
 })
-// todo: might have to separate auth from database service
 export class SupabaseService {
-  // todo: rename to auth service
+  
   readonly client: SupabaseClient<Database>;
   private capstoolUserSubject = new BehaviorSubject<CapstoolUser | null>(null);
   capstoolUser$ = this.capstoolUserSubject.asObservable();

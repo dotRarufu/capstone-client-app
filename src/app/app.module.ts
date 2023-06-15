@@ -121,7 +121,6 @@ const routes: Routes = [
               },
               {
                 path: 'participants',
-                //todo: this comp should not be placed in shared, fix it later
                 component: ParticipantsComponent,
               },
               {
@@ -179,11 +178,9 @@ const routes: Routes = [
             path: 'projects',
             component: CapstoneAdviserProjectsComponent,
           },
-          // todo: add role guard, use data property
           {
             path: 'dashboard',
             component: DashboardComponent,
-            // todo: this might be misplaced
           },
 
           { path: '', redirectTo: '/c/home/projects', pathMatch: 'full' },
@@ -265,11 +262,9 @@ const routes: Routes = [
             path: 'projects',
             component: TechnicalAdviserProjectsComponent,
           },
-          // todo: add role guard, use data property
           {
             path: 'dashboard',
             component: DashboardComponent,
-            // todo: this might be misplaced
           },
 
           { path: '', redirectTo: '/t/home/projects', pathMatch: 'full' },

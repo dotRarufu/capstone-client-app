@@ -38,31 +38,25 @@ export class ProfileComponent {
       name: 'Profile',
       active: true,
       id: 'view',
-      handler: () => {
-        this.router.navigate(['profile', 'view']);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === 'view'
-            ? { ...tab, active: true }
-            : { ...tab, active: false }
-        );
-      },
+      handler: this.handlerFactory('view'),
     },
     {
       name: 'dashboard',
       id: 'dashboard',
-      handler: () => {
-        this.router.navigate(['profile', 'dashboard']);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === 'dashboard'
-            ? { ...tab, active: true }
-            : { ...tab, active: false }
-        );
-      },
+      handler: this.handlerFactory('dashboard'),
     },
   ];
   projects: Project[] = [];
 
   constructor(private router: Router) {}
+
+  handlerFactory(path: string) {
+    return () => {
+      this.router.navigate(['profile', path]);
+
+      this.tabs = this.tabs.map((tab) =>
+        tab.id === path ? { ...tab, active: true } : { ...tab, active: false }
+      );
+    };
+  }
 }

@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import {
-  AuthResponse, AuthUser,
-} from '@supabase/supabase-js';
+import { AuthResponse, AuthUser } from '@supabase/supabase-js';
 import { BehaviorSubject, from, map, switchMap, tap } from 'rxjs';
 import { SupabaseService } from './supabase.service';
 import { User } from '../types/collection';
+import { isNotNull } from '../student/utils/isNotNull';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +11,7 @@ import { User } from '../types/collection';
 export class DatabaseService {
   readonly client;
   constructor(private supabaseService: SupabaseService) {
-    this.client = this.supabaseService.client
+    this.client = this.supabaseService.client;
   }
 
   updateUserData(
@@ -34,7 +33,7 @@ export class DatabaseService {
 
     return query$;
   }
-  
+
   async getUserData(userId: string) {
     if (userId == null) throw new Error('user is null');
 
@@ -49,7 +48,7 @@ export class DatabaseService {
       throw new Error(
         `no found row for user id ${userUid} even though user was able to log in`
       );
-    console.log('user data:', userRow.data)
+    console.log('user data:', userRow.data);
     const { name, role_id } = userRow.data;
 
     if (!name) throw new Error('wip, name is undefined');
@@ -60,8 +59,8 @@ export class DatabaseService {
     return res;
   }
 
-      // todo: do this in backend instead
-      // todo: move in projectService, just like in task.service
+  // todo: do this in backend instead
+  // todo: move in projectService, just like in task.service
   async getProjectsFromCategory(categoryId: number) {
     const projectIds = (
       await this.supabaseService.client
@@ -94,7 +93,9 @@ export class DatabaseService {
   }
 
   async getProjectCount() {
-    const response = await this.supabaseService.client.from('capstone_projects').select('project_id', );
+    const response = await this.supabaseService.client
+      .from('capstone_projects')
+      .select('project_id');
     const count = response.data?.length;
     if (!count)
       throw new Error(
@@ -105,19 +106,14 @@ export class DatabaseService {
   }
 
   async getCategoryName(categoryId: number) {
-    const response = await this.client.from('categories').select('name').eq('category_id', categoryId);
+    const response = await this.client
+      .from('categories')
+      .select('name')
+      .eq('category_id', categoryId);
 
-    if (response.error) throw new Error(`error getting category name for ${categoryId}`)
+    if (response.error)
+      throw new Error(`error getting category name for ${categoryId}`);
 
     return response.data[0].name;
   }
-
 }
-
-// todo move in utils
-const isDefined = <T>(value: T | undefined): value is T => {
-  return value !== undefined;
-};
-const isNotNull = <T>(value: T | null): value is T => {
-  return value !== null;
-};

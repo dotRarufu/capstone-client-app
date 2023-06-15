@@ -27,7 +27,6 @@ import { Project } from 'src/app/models/project';
           </div>
 
           <div class=" w-[357px] flex-shrink-0  basis-[357px]">
-            <!-- todo: do this in other comps, to reduce repetition of tags -->
             <Dashboard [sideColumn]="true" />
           </div>
         </div>
@@ -43,28 +42,12 @@ export class HomeComponent implements OnInit {
       name: 'projects',
       active: true,
       id: 'projects',
-      handler: () => {
-        this.router.navigate(['c', 'home', 'projects']);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === 'projects'
-            ? { ...tab, active: true }
-            : { ...tab, active: false }
-        );
-      },
+      handler: this.handlerFactory('projects'),
     },
     {
       name: 'dashboard',
       id: 'dashboard',
-      handler: () => {
-        this.router.navigate(['c', 'home', 'dashboard']);
-
-        this.tabs = this.tabs.map((tab) =>
-          tab.id === 'dashboard'
-            ? { ...tab, active: true }
-            : { ...tab, active: false }
-        );
-      },
+      handler: this.handlerFactory('dashboard'),
     },
   ];
   projects: Project[] = [];
@@ -73,6 +56,16 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.projects = this.projectService.getProjects();
+  }
+
+  handlerFactory(path: string) {
+    return () => {
+      this.router.navigate(['c', 'home', path]);
+
+      this.tabs = this.tabs.map((tab) =>
+        tab.id === path ? { ...tab, active: true } : { ...tab, active: false }
+      );
+    };
   }
 }
 

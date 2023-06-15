@@ -14,9 +14,7 @@ import { Consultation } from 'src/app/types/collection';
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
       <Accordion *ngFor="let category of categories" [heading]="category">
-        <div
-          class="flex flex-wrap justify-center gap-[24px] sm1:justify-start"
-        >
+        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
           <div
             *ngFor="let consultation of scheduled"
             class="card card-compact h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
@@ -130,7 +128,6 @@ import { Consultation } from 'src/app/types/collection';
     </Modal>
   `,
 })
-// todo: make a one dynamic accordion component under shared module
 export class ConsultationsComponent {
   categories = ['Scheduled', 'Completed', 'Done'];
   scheduled: Consultation[] = [];

@@ -78,7 +78,6 @@ interface InformationalDataItem {
           </div>
         </div>
 
-        <!-- todo: fix the one in capstone adviser, that is structured like this -->
         <!-- desktop -->
         <div
           class=" hidden w-[840px] gap-[1rem] sm2:flex md:w-full lg:w-[1040px]"
@@ -203,7 +202,7 @@ export class ResultComponent implements OnInit {
   analysesData: AnalysesDataItem[] = [];
   informationalData: { heading: string; content: string[] }[] = [];
   title = '';
- 
+
   result?: TitleAnalyzerResult;
   similarProjects: string[] = [
     'Development and evaluation of Record Management System',

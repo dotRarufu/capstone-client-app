@@ -48,11 +48,11 @@ import { AuthService } from 'src/app/services/auth.service';
         <div class="flex flex-col gap-2">
           <div class="flex flex-row items-center gap-2 opacity-75">
             <div class="flex h-full flex-grow items-center">
-            <div class="h-[2px] w-full bg-base-content/10"></div>
+              <div class="h-[2px] w-full bg-base-content/10"></div>
             </div>
             OR
             <div class="flex h-full flex-grow items-center">
-            <div class="h-[2px] w-full bg-base-content/10"></div>
+              <div class="h-[2px] w-full bg-base-content/10"></div>
             </div>
           </div>
           <button
@@ -77,13 +77,19 @@ import { AuthService } from 'src/app/services/auth.service';
         class="flex h-[568px] w-full max-w-[387px] flex-col gap-4 rounded-[3px] bg-base-100 px-[2rem] py-8"
       >
         <div class="flex flex-col gap-2 py-4">
-          <div class="w-full flex justify-between">
-          <h1 class="text-[2rem]">Sign Up</h1>
-            <button (click)="isInLastStep = false" class="w-fit btn-ghost btn">Back<i-feather class="text-base-content/70"name="arrow-left"></i-feather></button>
+          <div class="flex w-full justify-between">
+            <h1 class="text-[2rem]">Sign Up</h1>
+            <button (click)="isInLastStep = false" class="btn-ghost btn w-fit">
+              Back<i-feather
+                class="text-base-content/70"
+                name="arrow-left"
+              ></i-feather>
+            </button>
           </div>
 
           <p class="text-xs opacity-80">
-            You're almost done! Your email and password will be used to identify you every time you log in.
+            You're almost done! Your email and password will be used to identify
+            you every time you log in.
           </p>
         </div>
 
@@ -109,11 +115,17 @@ import { AuthService } from 'src/app/services/auth.service';
         </button>
 
         <div class="flex-grow"></div>
-
       </div>
     </ng-container>
 
-    <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
+    <ngx-spinner
+      bdColor="rgba(0, 0, 0, 0.8)"
+      size="default"
+      color="#fff"
+      type="square-loader"
+      [fullScreen]="true"
+      ><p style="color: white">Loading...</p></ngx-spinner
+    >
   `,
 })
 export class SignupComponent {
@@ -136,7 +148,6 @@ export class SignupComponent {
     if (this.fullName.length === 0) throw Error('wip: name is empty');
 
     const user = { name: this.fullName, roleId: this.roleId };
-    // todo: separate the fields in different screens to prevent resizing of container
     this.authService.signUp(this.email, this.password, user).subscribe((v) => {
       this.spinner.hide();
       this.navigateToLogin();

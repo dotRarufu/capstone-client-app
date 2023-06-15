@@ -43,7 +43,6 @@ import { NgxSpinnerService } from 'ngx-spinner';
     <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
   `,
 })
-// todo: fix the background of login at laptop breakpoint
 export class TopAppBarComponent implements OnInit{
   profileUrl = '';
   name = '';
@@ -74,7 +73,7 @@ export class TopAppBarComponent implements OnInit{
   navigateProfile() {
     this.router.navigate(['profile', 'view']);
   }
-  
+
   navigateHome() {
     this.router.navigate(['']);
   }

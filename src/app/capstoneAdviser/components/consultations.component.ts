@@ -124,7 +124,6 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
     </Modal>
   `,
 })
-// todo: make a one dynamic accordion component under shared module
 export class ConsultationsComponent {
   scheduled: Consultation[] = [];
   categories = ['Scheduled', 'Completed', 'Done'];
