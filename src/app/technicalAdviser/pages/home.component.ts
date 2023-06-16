@@ -50,12 +50,12 @@ export class HomeComponent implements OnInit {
       handler: this.handlerFactory('dashboard'),
     },
   ];
-  projects: Project[] = [];
+  // projects: Project[] = [];
 
   constructor(private router: Router, private projectService: ProjectService) {}
 
   ngOnInit() {
-    this.projects = this.projectService.getProjects();
+    // this.projects = this.projectService.getProjects();
   }
 
   handlerFactory(path: string) {

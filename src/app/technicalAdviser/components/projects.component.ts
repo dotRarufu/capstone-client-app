@@ -36,7 +36,6 @@ import { Router } from '@angular/router';
           />
         </ProjectsAccordion>
         <ProjectsAccordion heading="BSIT 3-1">
-          
           <TechnicalAdviserProjectCard
             *ngFor="let project of projects"
             [navigateTo]="navigateToProject(project.uid)"
@@ -74,9 +73,7 @@ import { Router } from '@angular/router';
           </div>
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-        <div
-          class="flex w-full flex-col justify-items-center gap-[24px] "
-        >
+        <div class="flex w-full flex-col justify-items-center gap-[24px] ">
           <ProjectsAccordion heading="BSIT 3-1">
             <TechnicalAdviserProjectCard
               *ngFor="let project of projects"
@@ -84,12 +81,10 @@ import { Router } from '@angular/router';
             />
           </ProjectsAccordion>
           <ProjectsAccordion heading="BSIT 3-1">
-            
             <TechnicalAdviserProjectCard
               *ngFor="let project of projects"
               [navigateTo]="navigateToProject(project.uid)"
             />
-
           </ProjectsAccordion>
           <ProjectsAccordion heading="BSIT 3-1">
             <TechnicalAdviserProjectCard
@@ -110,7 +105,13 @@ export class TechnicalAdviserProjectsComponent {
   constructor(private projectService: ProjectService, private router: Router) {}
 
   ngOnInit() {
-    this.projects = this.projectService.getProjects();
+    // const projects$ = this.projectService.getProjects();
+
+    // projects$.subscribe({
+    //   next: (projects) => {
+    //     this.projects = projects;
+    //   },
+    // });
   }
 
   navigateToProject(uid: number) {

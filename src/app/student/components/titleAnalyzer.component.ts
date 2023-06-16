@@ -59,7 +59,7 @@ export class TitleAnalyzerComponent implements OnInit {
   constructor(private router: Router, private projectService: ProjectService) {}
 
   ngOnInit(): void {
-    this.projects = this.projectService.getProjects();
+    // this.projects = this.projectService.getProjects();
   }
 
   navigateToProject(uid: number) {

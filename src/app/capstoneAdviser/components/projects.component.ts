@@ -110,7 +110,7 @@ export class CapstoneAdviserProjectsComponent {
   constructor(private projectService: ProjectService, private router: Router) {}
 
   ngOnInit() {
-    this.projects = this.projectService.getProjects();
+    // this.projects = this.projectService.getProjects();
   }
 
   navigateToProject(uid: number) {

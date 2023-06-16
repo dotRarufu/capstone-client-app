@@ -1,10 +1,25 @@
 import { Injectable, signal } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { BehaviorSubject, filter, map } from 'rxjs';
+import {
+  createClient,
+  PostgrestSingleResponse,
+  SupabaseClient,
+} from '@supabase/supabase-js';
+import {
+  BehaviorSubject,
+  filter,
+  from,
+  map,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 import { environment } from 'src/environments/environment.dev';
 import { SupabaseService } from './supabase.service';
 import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from './auth.service';
+import { DatabaseService } from './database.service';
+import { ProjectRow } from '../types/collection';
 import { Project } from '../models/project';
 
 type AnalyzerResultError = string;
@@ -13,38 +28,38 @@ type AnalyzerResultError = string;
   providedIn: 'root',
 })
 export class ProjectService {
-  projects: Project[] = [
-    {
-      name: 'Capstool',
-      uid: 0,
-      description: 'project description example',
-      members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
-    },
-    {
-      name: 'Capstool 2',
-      uid: 1,
-      description: 'project description example',
-      members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
-    },
-    {
-      name: 'Capstool 3',
-      uid: 1,
-      description: 'project description example',
-      members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
-    },
-    {
-      name: 'Capstool 3',
-      uid: 1,
-      description: 'project description example',
-      members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
-    },
-    {
-      name: 'Capstool 3',
-      uid: 1,
-      description: 'project description example',
-      members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
-    },
-  ];
+  // projects: Project[] = [
+  //   {
+  //     name: 'Capstool',
+  //     uid: 0,
+  //     description: 'project description example',
+  //     members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
+  //   },
+  //   {
+  //     name: 'Capstool 2',
+  //     uid: 1,
+  //     description: 'project description example',
+  //     members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
+  //   },
+  //   {
+  //     name: 'Capstool 3',
+  //     uid: 1,
+  //     description: 'project description example',
+  //     members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
+  //   },
+  //   {
+  //     name: 'Capstool 3',
+  //     uid: 1,
+  //     description: 'project description example',
+  //     members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
+  //   },
+  //   {
+  //     name: 'Capstool 3',
+  //     uid: 1,
+  //     description: 'project description example',
+  //     members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
+  //   },
+  // ];
   supabase: SupabaseClient;
   private _formUrl$: BehaviorSubject<string> = new BehaviorSubject('');
   formUrl$ = this._formUrl$.asObservable();
@@ -58,7 +73,9 @@ export class ProjectService {
 
   constructor(
     private supabaseService: SupabaseService,
-    private toastr: ToastrService
+    private databaseService: DatabaseService,
+    private toastr: ToastrService,
+    private authService: AuthService
   ) {
     this.supabase = createClient(
       environment.supabase_url,
@@ -70,11 +87,120 @@ export class ProjectService {
   // make this default to -1
   activeProjectIdSignal = signal(0);
 
-  getProjects() {
-    return this.projects;
+  getStudentProjects() {
+    const user = this.authService.getCurrentUser();
+
+    if (user === null)
+      throw new Error('cant get student projects no user is signed in');
+
+    // todo: create constant file or something for this
+    if (user.role_id !== 0) {
+      throw new Error(
+        'the signed in user is not a student but is using getStudentProjects'
+      );
+    }
+
+    const client = this.databaseService.client;
+    const request = client
+      .from('member')
+      .select('project_id')
+      .eq('uid', user.uid);
+    const projects$ = from(request).pipe(
+      map((res) => {
+        if (res.error !== null) {
+          throw new Error('An error occurred while fetching projects');
+        }
+
+        return res.data.map((d) => d.project_id);
+      }),
+      switchMap(async (projectIds) => await this.getProjectRows(projectIds)),
+      switchMap(async (projectRows) => await this.getProject(projectRows)),
+    );
+
+    return projects$;
+  }
+
+  private async getProjectRows(projectIds: number[]) {
+    const client = this.databaseService.client;
+    const projectRows: ProjectRow[] = await Promise.all(
+      projectIds.map(async (id) => {
+        const res = await client.from('project').select('*').eq('id', id);
+        // todo: handle error
+        if (res.error !== null) throw new Error('error while fetching project');
+
+        return res.data[0];
+      })
+    );
+
+    return projectRows;
+  }
+
+  private async getProject(projectRows: ProjectRow[]) {
+    const projects: Project[] = await Promise.all(
+      projectRows.map(async (p) => {
+        const projectMembers = await this.getProjectMembers(p.id);
+
+        if (projectMembers === 'this project has no members')
+          return {
+            name: p.name,
+            uid: p.id,
+            members: [projectMembers],
+            description: p.full_title,
+          };
+
+        const userIds = projectMembers.map((d) => d.uid);
+        const members = await Promise.all(
+          userIds.map(async (id) => await this.getUser(id))
+        );
+        const memberNames = members.map((m) => m.name);
+
+        // description -> full title
+        // name -> 'Capstool'
+        return {
+          name: p.name,
+          uid: p.id,
+          members: memberNames,
+          description: p.full_title,
+        };
+      })
+    );
+
+    return projects;
+  }
+  private async getProjectMembers(projectId: number) {
+    const client = this.databaseService.client;
+    const res = await client
+      .from('member')
+      .select('*')
+      .eq('project_id', projectId);
+
+    if (res.error !== null) {
+      console.error('error while fetching member of a project');
+      return 'this project has no members';
+    }
+
+    return res.data;
   }
 
   // todo: make the backend services automatically restart when something fails
+
+  // move this in user service
+  private async getUser(uid: string) {
+    const client = this.databaseService.client;
+    const res = await client.from('user').select('*').eq('uid', uid);
+
+    if (res.error !== null) {
+      console.error('error while fetching user');
+
+      return {
+        name: 'unregistered user',
+        role_id: -1,
+        uid: -1,
+      };
+    }
+
+    return res.data[0];
+  }
 
   clearAnalyzerResult() {
     this._analyzerResult$.next(undefined);

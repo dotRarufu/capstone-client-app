@@ -24,9 +24,9 @@ export class AuthService {
   constructor(
     private supabaseService: SupabaseService,
     private databaseService: DatabaseService,
-    private router: Router,
+    private router: Router
   ) {
-    const client = this.supabaseService.client
+    const client = this.supabaseService.client;
     const unsubscribe = client.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
         console.log('User signed out');
@@ -38,8 +38,15 @@ export class AuthService {
 
   getCurrentUser() {
     // todo: improve this so that, on reload, user is still authenticated
-    return this._user$.getValue();
+    const user = this._user$.getValue();
 
+    // if (user == null) {throw new Error("no user is signed in");
+    if (user == null) {
+      console.log('no user is signed in');
+      return null;
+    }
+
+    return user;
   }
 
   login(email: string, password: string) {
@@ -50,11 +57,10 @@ export class AuthService {
     });
     const login$ = from(login).pipe(
       switchMap((authRes) => {
-        if (!authRes.data.user) throw Error("wip, auth res user is undefined")
-        
-        return this.databaseService.getUserData(authRes.data.user.id)
-      }
-        ),
+        if (!authRes.data.user) throw Error('wip, auth res user is undefined');
+
+        return this.databaseService.getUserData(authRes.data.user.id);
+      }),
       tap((user) => this._user$.next(user))
     );
 

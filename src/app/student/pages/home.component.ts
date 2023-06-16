@@ -122,7 +122,7 @@ export class HomeComponent implements OnInit {
   active = 'projects';
   alreadyHaveTitle = false;
   hasResult = false;
-  projects: Project[] = [];
+  // projects: Project[] = [];
   path: string = '';
   search = '';
   tabs: Tab[] = [
@@ -149,7 +149,13 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.projects = this.projectService.getProjects();
+    // const projects$ = this.projectService.getProjects();
+
+    // projects$.subscribe({
+    //   next: (projects) => {
+    //     // this.projects = projects;
+    //   },
+    // });
 
     this.route.data.subscribe((data) => {
       this.path = data['path'];

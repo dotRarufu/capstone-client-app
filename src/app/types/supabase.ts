@@ -25,6 +25,14 @@ export interface Database {
           content?: string
           id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "actual_accomplishment_consultation_id_fkey"
+            columns: ["consultation_id"]
+            referencedRelation: "consultation"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       adviser_info: {
         Row: {
@@ -39,6 +47,20 @@ export interface Database {
           capstone_adviser_id?: string
           section_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "adviser_info_capstone_adviser_id_fkey"
+            columns: ["capstone_adviser_id"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "adviser_info_section_id_fkey"
+            columns: ["section_id"]
+            referencedRelation: "section"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       adviser_saved_milestone: {
         Row: {
@@ -53,6 +75,14 @@ export interface Database {
           adviser_id?: string
           id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "adviser_saved_milestone_adviser_id_fkey"
+            columns: ["adviser_id"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          }
+        ]
       }
       adviser_saved_milestone_data: {
         Row: {
@@ -76,6 +106,14 @@ export interface Database {
           step?: number
           title?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "adviser_saved_milestone_data_milestone_id_fkey"
+            columns: ["milestone_id"]
+            referencedRelation: "adviser_saved_milestone"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       advisers_specializations: {
         Row: {
@@ -93,6 +131,20 @@ export interface Database {
           category_id?: number
           id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "advisers_specializations_adviser_id_fkey"
+            columns: ["adviser_id"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "advisers_specializations_category_id_fkey"
+            columns: ["category_id"]
+            referencedRelation: "categories"
+            referencedColumns: ["category_id"]
+          }
+        ]
       }
       annual_cat_uniqueness_categories: {
         Row: {
@@ -110,6 +162,20 @@ export interface Database {
           id?: number
           title_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "annual_cat_uniqueness_categories_category_id_fkey"
+            columns: ["category_id"]
+            referencedRelation: "categories"
+            referencedColumns: ["category_id"]
+          },
+          {
+            foreignKeyName: "annual_cat_uniqueness_categories_title_id_fkey"
+            columns: ["title_id"]
+            referencedRelation: "quality_checked_titles"
+            referencedColumns: ["title_id"]
+          }
+        ]
       }
       annual_cat_uniqueness_titles: {
         Row: {
@@ -127,6 +193,20 @@ export interface Database {
           id?: number
           title_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "annual_cat_uniqueness_titles_category_id_fkey"
+            columns: ["category_id"]
+            referencedRelation: "categories"
+            referencedColumns: ["category_id"]
+          },
+          {
+            foreignKeyName: "annual_cat_uniqueness_titles_title_id_fkey"
+            columns: ["title_id"]
+            referencedRelation: "quality_checked_titles"
+            referencedColumns: ["title_id"]
+          }
+        ]
       }
       capstone_projects: {
         Row: {
@@ -174,6 +254,7 @@ export interface Database {
           "volume-number"?: number | null
           year_published?: number | null
         }
+        Relationships: []
       }
       categories: {
         Row: {
@@ -188,6 +269,7 @@ export interface Database {
           category_id?: number
           name?: string
         }
+        Relationships: []
       }
       category_projects: {
         Row: {
@@ -205,6 +287,14 @@ export interface Database {
           id?: number
           project_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "category_projects_category_id_fkey"
+            columns: ["category_id"]
+            referencedRelation: "categories"
+            referencedColumns: ["category_id"]
+          }
+        ]
       }
       category_rarity_scores: {
         Row: {
@@ -225,6 +315,20 @@ export interface Database {
           score?: number
           title_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "category_rarity_scores_category_id_fkey"
+            columns: ["category_id"]
+            referencedRelation: "categories"
+            referencedColumns: ["category_id"]
+          },
+          {
+            foreignKeyName: "category_rarity_scores_title_id_fkey"
+            columns: ["title_id"]
+            referencedRelation: "quality_checked_titles"
+            referencedColumns: ["title_id"]
+          }
+        ]
       }
       consultation: {
         Row: {
@@ -254,20 +358,48 @@ export interface Database {
           organizer_id?: string
           project_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "consultation_organizer_id_fkey"
+            columns: ["organizer_id"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "consultation_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "project"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       member: {
         Row: {
-          project_id: number | null
+          project_id: number
           uid: string
         }
         Insert: {
-          project_id?: number | null
+          project_id: number
           uid: string
         }
         Update: {
-          project_id?: number | null
+          project_id?: number
           uid?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "member_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "project"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_uid_fkey"
+            columns: ["uid"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          }
+        ]
       }
       milestone: {
         Row: {
@@ -282,6 +414,14 @@ export interface Database {
           id?: number
           project_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "milestone_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "project"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       milestone_data: {
         Row: {
@@ -308,6 +448,14 @@ export interface Database {
           step?: number
           title?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "milestone_data_milestone_id_fkey"
+            columns: ["milestone_id"]
+            referencedRelation: "milestone"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       next_deliverable: {
         Row: {
@@ -325,6 +473,14 @@ export interface Database {
           content?: string
           id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "next_deliverable_consultation_id_fkey"
+            columns: ["consultation_id"]
+            referencedRelation: "consultation"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       preferability_advisers: {
         Row: {
@@ -342,6 +498,20 @@ export interface Database {
           id?: number
           title_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "preferability_advisers_adviser_id_fkey"
+            columns: ["adviser_id"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "preferability_advisers_title_id_fkey"
+            columns: ["title_id"]
+            referencedRelation: "quality_checked_titles"
+            referencedColumns: ["title_id"]
+          }
+        ]
       }
       previous_deliverable: {
         Row: {
@@ -359,10 +529,19 @@ export interface Database {
           content?: string
           id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "previous_deliverable_consultation_id_fkey"
+            columns: ["consultation_id"]
+            referencedRelation: "consultation"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       project: {
         Row: {
           capstone_adviser_id: string
+          full_title: string
           id: number
           is_done: boolean
           name: string
@@ -371,6 +550,7 @@ export interface Database {
         }
         Insert: {
           capstone_adviser_id: string
+          full_title?: string
           id?: number
           is_done: boolean
           name: string
@@ -379,12 +559,33 @@ export interface Database {
         }
         Update: {
           capstone_adviser_id?: string
+          full_title?: string
           id?: number
           is_done?: boolean
           name?: string
           section_id?: number
           technical_adviser_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "project_capstone_adviser_id_fkey"
+            columns: ["capstone_adviser_id"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "project_section_id_fkey"
+            columns: ["section_id"]
+            referencedRelation: "section"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_technical_adviser_id_fkey"
+            columns: ["technical_adviser_id"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          }
+        ]
       }
       proposed_next_step: {
         Row: {
@@ -402,6 +603,14 @@ export interface Database {
           content?: string
           id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "proposed_next_step_consultation_id_fkey"
+            columns: ["consultation_id"]
+            referencedRelation: "consultation"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       quality_checked_titles: {
         Row: {
@@ -437,6 +646,14 @@ export interface Database {
           title_uniqueness?: number
           user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "quality_checked_titles_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          }
+        ]
       }
       quality_checked_titles_categories_years: {
         Row: {
@@ -457,6 +674,20 @@ export interface Database {
           title_id?: number
           year?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "quality_checked_titles_categories_years_category_id_fkey"
+            columns: ["category_id"]
+            referencedRelation: "categories"
+            referencedColumns: ["category_id"]
+          },
+          {
+            foreignKeyName: "quality_checked_titles_categories_years_title_id_fkey"
+            columns: ["title_id"]
+            referencedRelation: "quality_checked_titles"
+            referencedColumns: ["title_id"]
+          }
+        ]
       }
       quality_checked_titles_versions: {
         Row: {
@@ -474,6 +705,14 @@ export interface Database {
           title?: string
           title_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "quality_checked_titles_versions_title_id_fkey"
+            columns: ["title_id"]
+            referencedRelation: "quality_checked_titles"
+            referencedColumns: ["title_id"]
+          }
+        ]
       }
       roles: {
         Row: {
@@ -488,6 +727,7 @@ export interface Database {
           name?: string | null
           role_id?: number
         }
+        Relationships: []
       }
       secrets: {
         Row: {
@@ -505,6 +745,7 @@ export interface Database {
           name?: string | null
           value?: string
         }
+        Relationships: []
       }
       section: {
         Row: {
@@ -519,6 +760,7 @@ export interface Database {
           id?: number
           name?: string
         }
+        Relationships: []
       }
       student_info: {
         Row: {
@@ -536,6 +778,20 @@ export interface Database {
           section_id?: number
           uid?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "student_info_section_id_fkey"
+            columns: ["section_id"]
+            referencedRelation: "section"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_info_uid_fkey"
+            columns: ["uid"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          }
+        ]
       }
       task: {
         Row: {
@@ -565,6 +821,26 @@ export interface Database {
           status_id?: number
           title?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "task_assigner_id_fkey"
+            columns: ["assigner_id"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "task_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "project"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_status_id_fkey"
+            columns: ["status_id"]
+            referencedRelation: "task_status"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       task_status: {
         Row: {
@@ -579,6 +855,7 @@ export interface Database {
           id?: number
           name?: string
         }
+        Relationships: []
       }
       title_uniqueness_titles_count: {
         Row: {
@@ -596,23 +873,39 @@ export interface Database {
           id?: number
           title_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "title_uniqueness_titles_count_title_id_fkey"
+            columns: ["title_id"]
+            referencedRelation: "quality_checked_titles"
+            referencedColumns: ["title_id"]
+          }
+        ]
       }
       user: {
         Row: {
-          name: string | null
+          name: string
           role_id: number | null
           uid: string
         }
         Insert: {
-          name?: string | null
+          name: string
           role_id?: number | null
           uid: string
         }
         Update: {
-          name?: string | null
+          name?: string
           role_id?: number | null
           uid?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "user_role_id_fkey"
+            columns: ["role_id"]
+            referencedRelation: "roles"
+            referencedColumns: ["role_id"]
+          }
+        ]
       }
     }
     Views: {

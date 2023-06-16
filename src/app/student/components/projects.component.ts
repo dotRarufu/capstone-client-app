@@ -1,4 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  WritableSignal,
+  signal,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { Project } from 'src/app/models/project';
 import { Tab } from 'src/app/models/tab';
@@ -30,7 +36,8 @@ import { ProjectService } from 'src/app/services/project.service';
             class="grid grid-flow-row grid-cols-1 items-center justify-items-center gap-[24px]  py-[1rem] sm1:grid-cols-2 sm1:justify-start sm2:grid-cols-3 md:justify-center"
           >
             <StudentProjectCard
-              *ngFor="let project of projects"
+              *ngFor="let project of projects()"
+              [project]="project"
               [navigateTo]="navigateToProject(project.uid)"
             />
           </div>
@@ -57,11 +64,10 @@ import { ProjectService } from 'src/app/services/project.service';
 
           <div class="h-[2px] w-full bg-base-content/10"></div>
 
-          <div
-            class="grid grid-cols-1  justify-items-center gap-[24px]  "
-          >
+          <div class="grid grid-cols-1  justify-items-center gap-[24px]  ">
             <StudentProjectCard
-              *ngFor="let project of projects"
+              *ngFor="let project of projects()"
+              [project]="project"
               [navigateTo]="navigateToProject(project.uid)"
             />
           </div>
@@ -109,7 +115,9 @@ import { ProjectService } from 'src/app/services/project.service';
             <div class="h-full"></div>
 
             <label
-            for="add-project" class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
+              for="add-project"
+              class="btn-ghost btn flex justify-end gap-2 rounded-[3px]"
+            >
               close
               <i-feather class="text-base-content/70" name="x-circle" />
             </label>
@@ -120,13 +128,26 @@ import { ProjectService } from 'src/app/services/project.service';
   `,
 })
 export class ProjectsComponent implements OnInit {
-  projects: Project[] = [];
+  projects: WritableSignal<
+    {
+      name: string;
+      uid: number;
+      description: string;
+      members: string[];
+    }[]
+  > = signal([]);
   @Input() sideColumn? = false;
 
   constructor(private router: Router, private projectService: ProjectService) {}
 
   ngOnInit(): void {
-    this.projects = this.projectService.getProjects();
+    const projects$ = this.projectService.getStudentProjects();
+
+    projects$.subscribe({
+      next: (projects) => {
+        this.projects.set(projects);
+      },
+    });
   }
 
   navigateToProject(uid: number) {

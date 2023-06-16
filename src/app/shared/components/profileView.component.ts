@@ -89,7 +89,7 @@ export class ProfileViewComponent implements OnInit {
   constructor(private projectService: ProjectService) {}
 
   ngOnInit() {
-    this.projects = this.projectService.getProjects();
+    // this.projects = this.projectService.getProjects();
 
     window.addEventListener('beforeinstallprompt', (event) => {
       event.preventDefault(); // Prevent the default behavior
