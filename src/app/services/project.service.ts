@@ -87,35 +87,84 @@ export class ProjectService {
   // make this default to -1
   activeProjectIdSignal = signal(0);
 
-  getStudentProjects() {
+  getProjects() {
     const user = this.authService.getCurrentUser();
 
-    if (user === null)
-      throw new Error('cant get student projects no user is signed in');
-
-    // todo: create constant file or something for this
-    if (user.role_id !== 0) {
-      throw new Error(
-        'the signed in user is not a student but is using getStudentProjects'
-      );
-    }
+    if (user == null)
+      throw new Error('cant get student projects, no user is signed in');
 
     const client = this.databaseService.client;
-    const request = client
+
+    const studentRequest = client
       .from('member')
       .select('project_id')
       .eq('uid', user.uid);
-    const projects$ = from(request).pipe(
-      map((res) => {
-        if (res.error !== null) {
-          throw new Error('An error occurred while fetching projects');
-        }
 
-        return res.data.map((d) => d.project_id);
-      }),
-      switchMap(async (projectIds) => await this.getProjectRows(projectIds)),
-      switchMap(async (projectRows) => await this.getProject(projectRows)),
-    );
+    const capstoneAdviserRequest = client
+      .from('project')
+      .select('id')
+      .eq('capstone_adviser_id', user.uid);
+
+    const technicalAdviserRequest = client
+      .from('project')
+      .select('id')
+      .eq('technical_adviser_id', user.uid);
+
+    let projects$;
+    switch (user.role_id) {
+      case 0: {
+        projects$ = from(studentRequest).pipe(
+          map((res) => {
+            if (res.error !== null) {
+              throw new Error('An error occurred while fetching projects');
+            }
+
+            return res.data.map((d) => d.project_id);
+          }),
+          switchMap(
+            async (projectIds) => await this.getProjectRows(projectIds)
+          ),
+          switchMap(async (projectRows) => await this.getProject(projectRows))
+        );
+        break;
+      }
+
+      case 1: {
+        projects$ = from(capstoneAdviserRequest).pipe(
+          map((res) => {
+            if (res.error !== null) {
+              throw new Error('An error occurred while fetching projects');
+            }
+
+            return res.data.map((d) => d.id);
+          }),
+          switchMap(
+            async (projectIds) => await this.getProjectRows(projectIds)
+          ),
+          switchMap(async (projectRows) => await this.getProject(projectRows))
+        );
+        break;
+      }
+      case 2: {
+        projects$ = from(technicalAdviserRequest).pipe(
+          map((res) => {
+            if (res.error !== null) {
+              throw new Error('An error occurred while fetching projects');
+            }
+
+            return res.data.map((d) => d.id);
+          }),
+          switchMap(
+            async (projectIds) => await this.getProjectRows(projectIds)
+          ),
+          switchMap(async (projectRows) => await this.getProject(projectRows))
+        );
+        break;
+      }
+
+      default:
+        throw new Error('unknown user role');
+    }
 
     return projects$;
   }
@@ -145,7 +194,7 @@ export class ProjectService {
             name: p.name,
             uid: p.id,
             members: [projectMembers],
-            description: p.full_title,
+            title: p.full_title,
           };
 
         const userIds = projectMembers.map((d) => d.uid);
@@ -160,7 +209,7 @@ export class ProjectService {
           name: p.name,
           uid: p.id,
           members: memberNames,
-          description: p.full_title,
+          title: p.full_title,
         };
       })
     );

@@ -1,25 +1,25 @@
 import { Component, Input } from '@angular/core';
+import { Project } from 'src/app/models/project';
 
 @Component({
   selector: 'CapstoneAdviserProjectCard',
   template: `
     <div
-      class="card card-compact h-fit max-w-[262px] rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+      class="card-compact card h-fit max-w-[262px] rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
     >
       <figure class="h-[92px] bg-secondary">
         <h2
           (click)="handleCardClick()"
           class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
         >
-          Capstool
+          {{ project.name }}
         </h2>
       </figure>
       <div class="card-body">
         <p class="text-sm">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed Lorem
-          ipsum dolor sit amet, consectetur adipiscing elit, sed
+          {{ project.title }}
         </p>
-        <p>Markova Tanya, Gardo Versoza, Padilla Zsa Zsa | Technical Adviser</p>
+        <p>{{ project.members }} | Technical Adviser</p>
         <div class="card-actions justify-end">
           <button
             (click)="removeProjectCard()"
@@ -40,6 +40,12 @@ import { Component, Input } from '@angular/core';
 })
 export class ProjectCardComponent {
   @Input() navigateTo?: Function;
+  @Input() project: Project = {
+    title: '',
+    members: [],
+    name: 'default',
+    uid: -1,
+  };
 
   handleCardClick() {
     if (!this.navigateTo) throw Error('wip, navigateTo was not passed a value');

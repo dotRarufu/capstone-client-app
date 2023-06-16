@@ -38,7 +38,6 @@ import { ProjectService } from 'src/app/services/project.service';
             <StudentProjectCard
               *ngFor="let project of projects()"
               [project]="project"
-              [navigateTo]="navigateToProject(project.uid)"
             />
           </div>
         </div>
@@ -68,7 +67,6 @@ import { ProjectService } from 'src/app/services/project.service';
             <StudentProjectCard
               *ngFor="let project of projects()"
               [project]="project"
-              [navigateTo]="navigateToProject(project.uid)"
             />
           </div>
         </div>
@@ -128,32 +126,18 @@ import { ProjectService } from 'src/app/services/project.service';
   `,
 })
 export class ProjectsComponent implements OnInit {
-  projects: WritableSignal<
-    {
-      name: string;
-      uid: number;
-      description: string;
-      members: string[];
-    }[]
-  > = signal([]);
+  projects: WritableSignal<Project[]> = signal([]);
   @Input() sideColumn? = false;
 
-  constructor(private router: Router, private projectService: ProjectService) {}
+  constructor(private projectService: ProjectService) {}
 
   ngOnInit(): void {
-    const projects$ = this.projectService.getStudentProjects();
+    const projects$ = this.projectService.getProjects();
 
     projects$.subscribe({
       next: (projects) => {
         this.projects.set(projects);
       },
     });
-  }
-
-  navigateToProject(uid: number) {
-    return () => {
-      this.router.navigate(['s', 'project', uid]);
-      this.projectService.activeProjectIdSignal.set(uid);
-    };
   }
 }

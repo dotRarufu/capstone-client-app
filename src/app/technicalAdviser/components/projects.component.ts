@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, WritableSignal, signal } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
 import { Router } from '@angular/router';
@@ -31,19 +31,22 @@ import { Router } from '@angular/router';
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <ProjectsAccordion heading="BSIT 3-1">
           <TechnicalAdviserProjectCard
-            *ngFor="let project of projects"
+            *ngFor="let project of projects()"
+            [project]="project"
             [navigateTo]="navigateToProject(project.uid)"
           />
         </ProjectsAccordion>
         <ProjectsAccordion heading="BSIT 3-1">
           <TechnicalAdviserProjectCard
-            *ngFor="let project of projects"
+            [project]="project"
+            *ngFor="let project of projects()"
             [navigateTo]="navigateToProject(project.uid)"
           />
         </ProjectsAccordion>
         <ProjectsAccordion heading="BSIT 3-1">
           <TechnicalAdviserProjectCard
-            *ngFor="let project of projects"
+            [project]="project"
+            *ngFor="let project of projects()"
             [navigateTo]="navigateToProject(project.uid)"
           />
         </ProjectsAccordion>
@@ -76,19 +79,23 @@ import { Router } from '@angular/router';
         <div class="flex w-full flex-col justify-items-center gap-[24px] ">
           <ProjectsAccordion heading="BSIT 3-1">
             <TechnicalAdviserProjectCard
-              *ngFor="let project of projects"
+              [project]="project"
+              *ngFor="let project of projects()"
+              [navigateTo]="navigateToProject(project.uid)"
+            />
+          </ProjectsAccordion>
+          <ProjectsAccordion heading="BSIT 3-1">
+            [project]="project"
+
+            <TechnicalAdviserProjectCard
+              *ngFor="let project of projects()"
               [navigateTo]="navigateToProject(project.uid)"
             />
           </ProjectsAccordion>
           <ProjectsAccordion heading="BSIT 3-1">
             <TechnicalAdviserProjectCard
-              *ngFor="let project of projects"
-              [navigateTo]="navigateToProject(project.uid)"
-            />
-          </ProjectsAccordion>
-          <ProjectsAccordion heading="BSIT 3-1">
-            <TechnicalAdviserProjectCard
-              *ngFor="let project of projects"
+              [project]="project"
+              *ngFor="let project of projects()"
               [navigateTo]="navigateToProject(project.uid)"
             />
           </ProjectsAccordion>
@@ -99,19 +106,21 @@ import { Router } from '@angular/router';
 })
 export class TechnicalAdviserProjectsComponent {
   search: string = '';
-  projects: Project[] = [];
+  projects: WritableSignal<
+    Project[]
+  > = signal([]);
   @Input() sideColumn? = false;
 
   constructor(private projectService: ProjectService, private router: Router) {}
 
   ngOnInit() {
-    // const projects$ = this.projectService.getProjects();
+    const projects$ = this.projectService.getProjects();
 
-    // projects$.subscribe({
-    //   next: (projects) => {
-    //     this.projects = projects;
-    //   },
-    // });
+    projects$.subscribe({
+      next: (projects) => {
+        this.projects.set(projects);
+      },
+    });
   }
 
   navigateToProject(uid: number) {

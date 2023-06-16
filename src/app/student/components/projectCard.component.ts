@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { Project } from 'src/app/models/project';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'StudentProjectCard',
@@ -17,7 +19,7 @@ import { Project } from 'src/app/models/project';
       </figure>
       <div class="card-body">
         <p class="text-sm">
-          {{ project.description }}
+          {{ project.title }}
         </p>
         <p>{{ project.members }} | Technical Adviser</p>
         <div class="card-actions justify-end">
@@ -34,22 +36,20 @@ import { Project } from 'src/app/models/project';
 })
 // roles differes in action buttons
 export class ProjectCardComponent {
-  @Input() navigateTo?: Function;
   @Input() project: Project = {
-    description: '',
+    title: '',
     members: [],
     name: 'default',
     uid: -1,
   };
 
-  constructor() {
+  constructor(private router: Router, private projectService: ProjectService) {
     console.info(this.project);
   }
 
   handleCardClick() {
-    if (!this.navigateTo) throw Error('wip, navigateTo was not passed a value');
-
-    this.navigateTo();
+    this.router.navigate(['s', 'project', this.project.uid]);
+    this.projectService.activeProjectIdSignal.set(this.project.uid);
   }
 
   removeProjectCard() {
