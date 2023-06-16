@@ -5,7 +5,7 @@ import { Project } from 'src/app/models/project';
   selector: 'TechnicalAdviserProjectCard',
   template: `
     <div
-      class="card-compact card h-fit max-w-[262px] rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+      class="card-compact card h-fit w-[262px] rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
     >
       <figure class="h-[92px] bg-secondary">
         <h2

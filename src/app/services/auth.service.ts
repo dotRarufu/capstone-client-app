@@ -77,6 +77,7 @@ export class AuthService {
       email,
       password,
     });
+    // todo: add record in student_info table
     const signUp$ = from(signUp).pipe(
       switchMap((authRes) => {
         // todo separate this block in another pipe

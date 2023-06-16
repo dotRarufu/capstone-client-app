@@ -375,16 +375,19 @@ export interface Database {
       }
       member: {
         Row: {
+          id: number
           project_id: number
-          uid: string
+          student_uid: string
         }
         Insert: {
+          id?: number
           project_id: number
-          uid: string
+          student_uid: string
         }
         Update: {
+          id?: number
           project_id?: number
-          uid?: string
+          student_uid?: string
         }
         Relationships: [
           {
@@ -394,8 +397,8 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "member_uid_fkey"
-            columns: ["uid"]
+            foreignKeyName: "member_student_uid_fkey"
+            columns: ["student_uid"]
             referencedRelation: "user"
             referencedColumns: ["uid"]
           }
@@ -540,31 +543,31 @@ export interface Database {
       }
       project: {
         Row: {
-          capstone_adviser_id: string
+          capstone_adviser_id: string | null
           full_title: string
           id: number
           is_done: boolean
           name: string
           section_id: number
-          technical_adviser_id: string
+          technical_adviser_id: string | null
         }
         Insert: {
-          capstone_adviser_id: string
+          capstone_adviser_id?: string | null
           full_title?: string
           id?: number
           is_done: boolean
           name: string
           section_id: number
-          technical_adviser_id: string
+          technical_adviser_id?: string | null
         }
         Update: {
-          capstone_adviser_id?: string
+          capstone_adviser_id?: string | null
           full_title?: string
           id?: number
           is_done?: boolean
           name?: string
           section_id?: number
-          technical_adviser_id?: string
+          technical_adviser_id?: string | null
         }
         Relationships: [
           {

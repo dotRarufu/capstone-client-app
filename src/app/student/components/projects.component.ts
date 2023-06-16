@@ -6,6 +6,8 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 import { Project } from 'src/app/models/project';
 import { Tab } from 'src/app/models/tab';
 import { ProjectService } from 'src/app/services/project.service';
@@ -64,10 +66,7 @@ import { ProjectService } from 'src/app/services/project.service';
           <div class="h-[2px] w-full bg-base-content/10"></div>
 
           <div class="grid grid-cols-1  justify-items-center gap-[24px]  ">
-            <StudentProjectCard
-              *ngFor="let project of projects()"
-              [project]="project"
-            />
+            <StudentProjectCard />
           </div>
         </div>
       </div>
@@ -81,15 +80,11 @@ import { ProjectService } from 'src/app/services/project.service';
           <div class="flex w-full flex-col justify-between">
             <input
               type="text"
-              placeholder="Capstone Project Title"
+              [(ngModel)]="name"
+              placeholder="Project Name"
               class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
             />
           </div>
-          <!-- <label
-            for="add-project"
-            class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather class="text-base-content/70" name="x"
-          /></label> -->
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
@@ -100,15 +95,20 @@ import { ProjectService } from 'src/app/services/project.service';
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <textarea
+              [(ngModel)]="fullTitle"
               class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
-              placeholder="Description"
+              placeholder="Full Title"
             ></textarea>
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 ">
-            <li class="btn-ghost btn flex justify-end gap-2 rounded-[3px]">
+            <label
+              for="add-project"
+              (click)="addProject()"
+              class="btn-ghost btn flex justify-end gap-2 rounded-[3px]"
+            >
               done
               <i-feather class="text-base-content/70" name="check-square" />
-            </li>
+            </label>
 
             <div class="h-full"></div>
 
@@ -128,8 +128,14 @@ import { ProjectService } from 'src/app/services/project.service';
 export class ProjectsComponent implements OnInit {
   projects: WritableSignal<Project[]> = signal([]);
   @Input() sideColumn? = false;
+  fullTitle = '';
+  name = '';
 
-  constructor(private projectService: ProjectService) {}
+  constructor(
+    private projectService: ProjectService,
+    private toastr: ToastrService,
+    private spinner: NgxSpinnerService
+  ) {}
 
   ngOnInit(): void {
     const projects$ = this.projectService.getProjects();
@@ -137,7 +143,17 @@ export class ProjectsComponent implements OnInit {
     projects$.subscribe({
       next: (projects) => {
         this.projects.set(projects);
+
+        this.spinner.hide();
+        this.toastr.show('Project successfully created');
       },
+    });
+  }
+
+  addProject() {
+    this.spinner.show();
+    this.projectService.createProject(this.name, this.fullTitle).subscribe({
+      next: (a) => {},
     });
   }
 }

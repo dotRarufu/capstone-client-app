@@ -6,30 +6,29 @@ import { ProjectService } from 'src/app/services/project.service';
 @Component({
   selector: 'StudentProjectCard',
   template: `
-    <div
-      class="card-compact card h-fit max-w-[262px] rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
-    >
-      <figure class="h-[92px] bg-secondary">
-        <h2
-          (click)="handleCardClick()"
-          class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
-        >
-          {{ project.name }}
-        </h2>
-      </figure>
-      <div class="card-body">
-        <p class="text-sm">
+    <div class="h-[300px] w-[262px] rounded-[4px] border border-neutral">
+      <h2 (click)="handleCardClick()"
+        class="link-hover link flex h-[92px] w-full flex-col justify-center bg-secondary p-[1rem] text-[20px] font-bold text-secondary-content"
+      >
+        {{ project.name }}
+</h2>
+      <div
+        class="h-[106px] w-full gap-[8px] bg-base-100 p-[1rem] text-base text-base-content"
+      >
+        <p class="line-clamp-3 h-full text-base">
           {{ project.title }}
         </p>
-        <p>{{ project.members }} | Technical Adviser</p>
-        <div class="card-actions justify-end">
-          <button
-            (click)="handleCardClick()"
-            class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
-          >
-            <i-feather class="text-base-content/70" name="log-in" />
-          </button>
-        </div>
+      </div>
+      <div class="h-[48px] w-full px-[1rem] text-base">
+        {{ project.members }} | Technical Adviser
+      </div>
+      <div class="flex w-full justify-end px-[1rem] text-base ">
+        <button
+          (click)="handleCardClick()"
+          class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
+        >
+          <i-feather class="text-base-content/70" name="log-in" />
+        </button>
       </div>
     </div>
   `,
