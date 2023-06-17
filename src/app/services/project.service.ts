@@ -6,12 +6,17 @@ import {
 } from '@supabase/supabase-js';
 import {
   BehaviorSubject,
+  Observable,
   filter,
   from,
   map,
+  merge,
+  of,
   switchMap,
+  takeWhile,
   tap,
   throwError,
+  zip,
 } from 'rxjs';
 import { environment } from 'src/environments/environment.dev';
 import { SupabaseService } from './supabase.service';
@@ -71,6 +76,7 @@ export class ProjectService {
     map(this.checkError)
   );
   private newProject$ = new BehaviorSubject<number>(0);
+  private newParticipant$ = new BehaviorSubject<number>(0);
 
   constructor(
     private supabaseService: SupabaseService,
@@ -210,19 +216,211 @@ export class ProjectService {
         return res.data[0].id;
       }),
       // add self to the new project
-      switchMap((projectId) => this.addProjectMember(projectId, user.uid)),
+      switchMap((projectId) => this.addStudentMember(projectId, user.uid)),
       tap((_) => this.signalNewProject())
     );
 
     return insertRequest$;
   }
 
+  getParticipants() {
+    // used observables so participants can be immediately updated when  new participant is added.
+    // only for student,fort he add participant button
+    // not intended for realtime sync with db
+
+    const client = this.databaseService.client;
+    const advisers = client
+      .from('project')
+      .select('capstone_adviser_id, technical_adviser_id')
+      .eq('id', this.activeProjectIdSignal());
+    const students = client
+      .from('member')
+      .select('student_uid')
+      .eq('project_id', this.activeProjectIdSignal());
+      
+    const advisers$ = from(advisers).pipe(
+      map((a) => {
+        if (a.error !== null)
+          throw new Error('error while fetching adviser participants');
+
+        return a.data[0];
+      }),
+      switchMap(async (advisers) => {
+        const ids = [];
+
+        if (advisers.capstone_adviser_id !== null)
+          ids.push(advisers.capstone_adviser_id);
+
+        if (advisers.technical_adviser_id !== null)
+          ids.push(advisers.technical_adviser_id);
+
+        return await Promise.all(ids.map((id) => this.getUser(id)));
+      })
+    );
+
+    const students$ = from(students).pipe(
+      map((a) => {
+        if (a.error !== null)
+          throw new Error('error while fetching student participants');
+
+        return a.data;
+      }),
+      switchMap(
+        async (ids) =>
+          await Promise.all(
+            ids.map(({ student_uid }) => this.getUser(student_uid))
+          )
+      )
+    );
+
+    return this.newParticipant$.pipe(
+      switchMap((_) =>
+        merge(of(null), zip(students$, advisers$).pipe(map((a) => a.flat())))
+      )
+    );
+  }
+
+  checkProjectParticipant(userUid: string) {
+    const client = this.databaseService.client;
+
+    const advisersCheck = client
+      .from('project')
+      .select('capstone_adviser_id, technical_adviser_id')
+      .eq('id', this.activeProjectIdSignal());
+    const advisersId$ = from(advisersCheck).pipe(
+      map((a) => {
+        if (a.error !== null) throw new Error('error fetching project');
+
+        return [a.data[0].capstone_adviser_id, a.data[0].technical_adviser_id];
+      })
+    );
+    const studentsCheck = client
+      .from('member')
+      .select('student_uid')
+      .eq('project_id', this.activeProjectIdSignal());
+    const studentIds$ = from(studentsCheck).pipe(
+      map((a) => {
+        if (a.error !== null) throw new Error('error fetching project');
+
+        return a.data.map((a) => a.student_uid);
+      })
+    );
+
+    const isUserParticipant$ = zip(studentIds$, advisersId$).pipe(
+      map((a) => a.flat()),
+      map((ids) => ids.includes(userUid))
+    );
+
+    return isUserParticipant$;
+  }
+
+  addParticipant(role: number, userUid: string, projectId: number) {
+    const client = this.databaseService.client;
+    let res: Observable<string>;
+    // todo: if the adviser already exist, notify user that they are replacing the adviser by adding new adviser
+
+    switch (role) {
+      case 0:
+        res = from(this.getUser(userUid)).pipe(
+          map((user) => {
+            if (user.role_id !== role)
+              throw new Error(
+                `${user.name} cannot be added to a project as role ${user.role_id}`
+              );
+
+            return user;
+          }),
+          switchMap((_) => this.addStudentMember(projectId, userUid)),
+          tap((_) => this.signalNewParticipant())
+        );
+        break;
+
+      case 1: {
+        // todo: add remove adviser
+        const data = {
+          capstone_adviser_id: userUid,
+        };
+        const update = client.from('project').update(data).eq('id', projectId);
+        const update$ = from(update).pipe(
+          map((r) => {
+            if (r.error !== null)
+              throw new Error('error while updating project');
+
+            return r.statusText;
+          })
+        );
+
+        res = from(this.getUser(userUid)).pipe(
+          map((user) => {
+            if (user.role_id !== role)
+              throw new Error(
+                `${user.name} cannot be added to a project as role ${user.role_id}`
+              );
+
+            return user;
+          }),
+          switchMap((_) => update$),
+          tap((_) => this.signalNewParticipant())
+        );
+        break;
+      }
+      case 2: {
+        const data = {
+          technical_adviser_id: userUid,
+        };
+        const update = client.from('project').update(data).eq('id', projectId);
+        const update$ = from(update).pipe(
+          map((r) => {
+            // todo: create funtion for this, and use it on others
+            if (r.error !== null)
+              throw new Error('error while updating project');
+
+            return r.statusText;
+          })
+        );
+
+        res = from(this.getUser(userUid)).pipe(
+          map((user) => {
+            if (user.role_id !== role)
+              throw new Error(
+                `${user.name} cannot be added to a project as role ${user.role_id}`
+              );
+
+            return user;
+          }),
+          switchMap((_) => update$),
+          tap((_) => this.signalNewParticipant())
+        );
+        break;
+      }
+      default:
+        throw new Error('unknown user role');
+    }
+
+    // should complete immediately
+    return of('').pipe(
+      switchMap((_) => this.checkProjectParticipant(userUid)),
+      map((isParticipant) => {
+        if (isParticipant) throw new Error('participant already exists');
+        console.log('isParticipant:', isParticipant);
+
+        return isParticipant;
+      }),
+      // takeWhile(shouldCheck => shouldCheck),
+      switchMap((_) => res)
+    );
+  }
+
   private signalNewProject() {
     const old = this.newProject$.getValue();
     this.newProject$.next(old + 1);
   }
+  private signalNewParticipant() {
+    const old = this.newParticipant$.getValue();
+    this.newParticipant$.next(old + 1);
+  }
 
-  addProjectMember(projectId: number, studentUid: string) {
+  private addStudentMember(projectId: number, studentUid: string) {
     const client = this.databaseService.client;
     const data = {
       project_id: projectId,
@@ -315,7 +513,7 @@ export class ProjectService {
       return {
         name: 'unregistered user',
         role_id: -1,
-        uid: -1,
+        uid: '',
       };
     }
 

@@ -11,9 +11,10 @@ import { ProjectCardComponent } from './components/projectCard.component';
 import { TasksComponent } from './components/tasks.component';
 import { TitleBuilderComponent } from './components/titleBuilder.component';
 import { ParticipantsComponent } from './components/participants.component';
+import { ParticipantCardComponent } from './components/participantCard.component';
 
 @NgModule({
-  declarations: [HomeComponent, ProjectsComponent, SideBarComponent, StudentProjectComponent, TitleAnalyzerComponent, ResultComponent,  ConsultationsComponent, ProjectCardComponent, TasksComponent, TitleBuilderComponent, ParticipantsComponent],
+  declarations: [HomeComponent, ProjectsComponent, SideBarComponent, StudentProjectComponent, TitleAnalyzerComponent, ResultComponent,  ConsultationsComponent, ProjectCardComponent, TasksComponent, TitleBuilderComponent, ParticipantsComponent, ParticipantCardComponent],
   imports: [SharedModule],
   exports: [HomeComponent],
 })

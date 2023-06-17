@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ProjectService } from 'src/app/services/project.service';
+import { User } from 'src/app/types/collection';
 
 @Component({
   selector: 'CapstoneAdviserParticipants',
@@ -13,11 +16,32 @@ import { Component } from '@angular/core';
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
       <div class="flex w-full flex-col justify-center gap-2">
-        <ParticipantCard />
-        <ParticipantCard />
-        <ParticipantCard />
+      <CapstoneAdviserParticipantCard *ngFor="let participant of participants" [user]="participant"/>
       </div>
     </div>
   `,
 })
-export class ParticipantsComponent {}
+export class ParticipantsComponent implements OnInit {
+  participants: User[] = []
+
+  constructor(private projectService: ProjectService, private spinner: NgxSpinnerService) {}
+
+  ngOnInit(): void {
+    const participants$ =this.projectService.getParticipants();
+    participants$.subscribe({
+      next: (p) => {
+        if (p === null) {
+          this.participants = [];
+          this.spinner.show();
+  
+          return;
+        }
+
+        this.spinner.hide();
+
+        this.participants = p;
+      }
+    })
+
+  }
+}

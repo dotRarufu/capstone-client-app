@@ -6,12 +6,15 @@ import { ProjectService } from 'src/app/services/project.service';
 @Component({
   selector: 'StudentProjectCard',
   template: `
-    <div class="h-[300px] w-[262px] rounded-[4px] border border-neutral">
-      <h2 (click)="handleCardClick()"
+    <div
+      class="h-[300px] w-[262px] rounded-[4px] border border-neutral/50 drop-shadow"
+    >
+      <h2
+        (click)="handleCardClick()"
         class="link-hover link flex h-[92px] w-full flex-col justify-center bg-secondary p-[1rem] text-[20px] font-bold text-secondary-content"
       >
         {{ project.name }}
-</h2>
+      </h2>
       <div
         class="h-[106px] w-full gap-[8px] bg-base-100 p-[1rem] text-base text-base-content"
       >
@@ -43,7 +46,7 @@ export class ProjectCardComponent {
   };
 
   constructor(private router: Router, private projectService: ProjectService) {
-    console.info(this.project);
+    // console.info(this.project);
   }
 
   handleCardClick() {

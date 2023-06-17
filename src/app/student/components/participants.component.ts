@@ -1,4 +1,8 @@
-import { Component} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
+import { ProjectService } from 'src/app/services/project.service';
+import { User } from 'src/app/types/collection';
 
 @Component({
   selector: 'StudentParticipants',
@@ -12,7 +16,7 @@ import { Component} from '@angular/core';
           for="add-participant"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
-          <i-feather class="text-base-content/70" name="plus"></i-feather>
+          <i-feather class="text-base-content/70" name="plus" />
 
           Add
         </label>
@@ -21,111 +25,10 @@ import { Component} from '@angular/core';
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
       <div class="flex w-full flex-col justify-center gap-2">
-        <div
-          class="flex items-center gap-2 rounded-[3px] border border-base-content/30 bg-base-100 p-3 sm1:p-4 "
-        >
-          <div class="placeholder avatar">
-            <div
-              class="w-[40px] rounded-full bg-neutral-focus text-neutral-content sm1:w-[48px]"
-            >
-              <span class="text-xl sm1:text-3xl">K</span>
-            </div>
-          </div>
-
-          <div class="flex w-full flex-col">
-            <h1 class="text-base text-base-content sm1:text-[20px] ">
-              Gardo Versoza
-            </h1>
-            <p class=" text-base text-base-content/70">Role</p>
-          </div>
-
-          <div class="dropdown-end dropdown text-base-content">
-            <label tabindex="0" class="btn-ghost btn-sm btn">
-              <i-feather class="text-base-content/70" name="menu"></i-feather>
-            </label>
-            <ul
-              tabindex="0"
-              class="dropdown-content menu w-52 border border-base-content/30 bg-base-100 shadow-md"
-            >
-              <li>
-                <a
-                  class="rounded-[3px] hover:rounded-[3px] focus:rounded-[3px] "
-                  >Remove</a
-                >
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div
-          class="flex items-center gap-2 rounded-[3px] border border-base-content/30 bg-base-100 p-3 sm1:p-4 "
-        >
-          <div class="placeholder avatar">
-            <div
-              class="w-[40px] rounded-full bg-neutral-focus text-neutral-content sm1:w-[48px]"
-            >
-              <span class="text-xl sm1:text-3xl">K</span>
-            </div>
-          </div>
-
-          <div class="flex w-full flex-col">
-            <h1 class="text-base text-base-content sm1:text-[20px] ">
-              Gardo Versoza
-            </h1>
-            <p class=" text-base text-base-content/70">Role</p>
-          </div>
-
-          <div class="dropdown-end dropdown text-base-content">
-            <label tabindex="0" class="btn-ghost btn-sm btn">
-              <i-feather class="text-base-content/70" name="menu"></i-feather>
-            </label>
-            <ul
-              tabindex="0"
-              class="dropdown-content menu w-52 border border-base-content/30 bg-base-100 shadow-md"
-            >
-              <li>
-                <a
-                  class="rounded-[3px] hover:rounded-[3px] focus:rounded-[3px] "
-                  >Remove</a
-                >
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div
-          class="flex items-center gap-2 rounded-[3px] border border-base-content/30 bg-base-100 p-3 sm1:p-4 "
-        >
-          <div class="placeholder avatar">
-            <div
-              class="w-[40px] rounded-full bg-neutral-focus text-neutral-content sm1:w-[48px]"
-            >
-              <span class="text-xl sm1:text-3xl">K</span>
-            </div>
-          </div>
-
-          <div class="flex w-full flex-col">
-            <h1 class="text-base text-base-content sm1:text-[20px] ">
-              Gardo Versoza
-            </h1>
-            <p class=" text-base text-base-content/70">Role</p>
-          </div>
-
-          <div class="dropdown-end dropdown text-base-content">
-            <label tabindex="0" class="btn-ghost btn-sm btn">
-              <i-feather class="text-base-content/70" name="menu"></i-feather>
-            </label>
-            <ul
-              tabindex="0"
-              class="dropdown-content menu w-52 border border-base-content/30 bg-base-100 shadow-md"
-            >
-              <li>
-                <a
-                  class="rounded-[3px] hover:rounded-[3px] focus:rounded-[3px] "
-                  >Remove</a
-                >
-              </li>
-            </ul>
-          </div>
-        </div>
+        <StudentParticipantCard
+          *ngFor="let participant of participants"
+          [user]="participant"
+        />
       </div>
     </div>
 
@@ -136,17 +39,12 @@ import { Component} from '@angular/core';
         <div class="flex justify-between bg-primary p-[24px]">
           <div class="flex w-full flex-col justify-between">
             <input
+              [(ngModel)]="userUid"
               type="text"
               placeholder="User ID"
               class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
             />
           </div>
-
-          <!-- <label
-            for="add-participant"
-            class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather class="text-base-content/70" name="x"></i-feather
-          ></label> -->
         </div>
 
         <div class="flex bg-base-100">
@@ -177,33 +75,91 @@ import { Component} from '@angular/core';
             </div>
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 py-2">
-            <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather
-                class="text-base-content/70"
-                name="check-square"
-              ></i-feather>
+            <label
+              for="add-participant"
+              (click)="addParticipant()"
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px]"
+            >
+              <i-feather class="text-base-content/70" r name="check-square" />
               done
-            </li>
+            </label>
 
             <div class="h-full"></div>
             <label
-            for="add-participant" class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-              <i-feather
-                class="text-base-content/70"
-                name="x-circle"
-              ></i-feather>
+              for="add-participant"
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px]"
+            >
+              <i-feather class="text-base-content/70" name="x-circle" />
               close
             </label>
           </ul>
         </div>
       </div>
     </Modal>
+
+    <ngx-spinner
+      bdColor="rgba(0, 0, 0, 0.8)"
+      size="default"
+      color="#fff"
+      type="square-loader"
+      [fullScreen]="true"
+      ><p style="color: white">Loading...</p></ngx-spinner
+    >
   `,
 })
-export class ParticipantsComponent {
+export class ParticipantsComponent implements OnInit {
   roleId = -1;
+  userUid = '';
+  participants: User[] = [];
+
+  constructor(
+    private projectService: ProjectService,
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService
+  ) {}
+
+  ngOnInit(): void {
+    const participants$ = this.projectService.getParticipants();
+
+    participants$.subscribe({
+      next: (p) => {
+        if (p === null) {
+          this.participants = [];
+          this.spinner.show()
+
+          return;
+        }
+        this.spinner.hide();
+
+        this.participants = p;
+        console.log('next  emit');
+      },
+      complete: () => console.log('getParticipants complete'),
+    });
+  }
 
   selectRole(id: number) {
     this.roleId = id;
+  }
+
+  addParticipant() {
+    this.spinner.show();
+    const projectId = this.projectService.activeProjectIdSignal();
+    const addParticipant$ = this.projectService.addParticipant(
+      this.roleId,
+      this.userUid,
+      projectId
+    );
+
+    addParticipant$.subscribe({
+      error: (e) => {
+        this.spinner.hide();
+        this.toastr.error(e);
+      },
+      complete: () => {
+        this.spinner.hide();
+        this.toastr.success('Participant added successfully');
+      },
+    });
   }
 }
