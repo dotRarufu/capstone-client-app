@@ -19,10 +19,8 @@ import { Component, Input } from '@angular/core';
         class="collapse-content  border border-base-content/50 text-base-content"
       >
         <div
-          class="grid grid-flow-row grid-cols-1 items-center justify-items-center gap-[24px]  py-[1rem] sm1:grid-cols-2 sm1:justify-start sm2:grid-cols-3 md:grid-cols-2 md:justify-center"
+          class="grid grid-flow-row grid-cols-1 items-center justify-items-center gap-[24px]  py-[1rem] sm1:grid-cols-2 sm1:justify-start sm2:grid-cols-3 md:grid-cols-1 md:justify-center min-[1340px]:grid-cols-2" 
         >
-          <!-- <div class="py-[1rem] border-2 border-red-500  w-full"> -->
-
           <ng-content />
         </div>
         <!-- </div> -->

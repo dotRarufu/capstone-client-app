@@ -2,6 +2,7 @@ import { Component, Input, WritableSignal, signal } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'Projects',
@@ -119,13 +120,21 @@ export class CapstoneAdviserProjectsComponent {
 > = signal([]);
   @Input() sideColumn? = false;
 
-  constructor(private projectService: ProjectService, private router: Router) {}
+  constructor(private projectService: ProjectService, private router: Router,     private spinner: NgxSpinnerService
+    ) {}
 
   ngOnInit() {
     const projects$ = this.projectService.getProjects();
 
     projects$.subscribe({
       next: (projects) => {
+        if (projects === null) {
+          this.projects.set([]);
+          this.spinner.show()
+
+          return;
+        }
+        this.spinner.hide();
         this.projects.set(projects);
       },
     });

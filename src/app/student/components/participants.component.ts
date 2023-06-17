@@ -132,7 +132,6 @@ export class ParticipantsComponent implements OnInit {
         this.spinner.hide();
 
         this.participants = p;
-        console.log('next  emit');
       },
       complete: () => console.log('getParticipants complete'),
     });

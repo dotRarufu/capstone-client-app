@@ -1,6 +1,7 @@
 import {
   Component,
   Input,
+  OnDestroy,
   OnInit,
   WritableSignal,
   signal,
@@ -8,6 +9,7 @@ import {
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 import { Project } from 'src/app/models/project';
 import { Tab } from 'src/app/models/tab';
 import { ProjectService } from 'src/app/services/project.service';
@@ -123,37 +125,61 @@ import { ProjectService } from 'src/app/services/project.service';
         </div>
       </div>
     </Modal>
+
+    <ngx-spinner
+      bdColor="rgba(0, 0, 0, 0.8)"
+      size="default"
+      color="#fff"
+      type="square-loader"
+      [fullScreen]="true"
+      ><p style="color: white">Loading...</p></ngx-spinner
+    >
   `,
 })
-export class ProjectsComponent implements OnInit {
+export class ProjectsComponent implements OnInit, OnDestroy {
   projects: WritableSignal<Project[]> = signal([]);
   @Input() sideColumn? = false;
   fullTitle = '';
   name = '';
+  projectsSubscription: Subscription;
 
   constructor(
     private projectService: ProjectService,
     private toastr: ToastrService,
     private spinner: NgxSpinnerService
-  ) {}
-
-  ngOnInit(): void {
+  ) {
     const projects$ = this.projectService.getProjects();
 
-    projects$.subscribe({
+    this.projectsSubscription = projects$.subscribe({
       next: (projects) => {
-        this.projects.set(projects);
+        if (projects === null) {
+          this.projects.set([]);
+          this.spinner.show();
+          console.warn('projects is null, is loading');
 
+          return;
+        }
         this.spinner.hide();
-        this.toastr.show('Project successfully created');
+        this.projects.set(projects);
+        console.log('next  emit');
+      },
+      complete: () => console.log('getproject complete'),
+    });
+  }
+
+  ngOnInit(): void {}
+
+  addProject() {
+    // this.spinner.show();
+    this.projectService.createProject(this.name, this.fullTitle).subscribe({
+      next: (a) => {
+        // this.spinner.hide();
+        this.toastr.success('Project added successfully');
       },
     });
   }
 
-  addProject() {
-    this.spinner.show();
-    this.projectService.createProject(this.name, this.fullTitle).subscribe({
-      next: (a) => {},
-    });
+  ngOnDestroy(): void {
+    this.projectsSubscription.unsubscribe();
   }
 }

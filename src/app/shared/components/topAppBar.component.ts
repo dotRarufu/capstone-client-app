@@ -17,9 +17,11 @@ import { NgxSpinnerService } from 'ngx-spinner';
 
         <div class="dropdown-end dropdown">
           <label tabindex="0"
-            ><div class="btn btn-ghost flex flex-row items-center gap-2 text-base">
+            ><div
+              class="btn-ghost btn flex flex-row items-center gap-2 text-base"
+            >
               <!-- todo: fetch data from user service -->
-              {{name}}
+              {{ name }}
               <div class="avatar">
                 <div class="w-[40px] rounded-full">
                   <img [src]="profileUrl" />
@@ -28,28 +30,52 @@ import { NgxSpinnerService } from 'ngx-spinner';
           ></label>
           <ul
             tabindex="0"
-            class="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow"
+            class="dropdown-content menu w-52 rounded-[3px] bg-base-100 p-2 shadow"
           >
             <!-- <li><a class="">Profile</a></li> -->
-            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="navigateHome()"><i-feather class="text-base-content/70"name="home" />home</a></li>
-            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="navigateProfile()"> <i-feather class="text-base-content/70"name="user" />profile</a></li>
-            <li><a class="flex justify-between text-base-content btn btn-ghost" (click)="signOut()"><i-feather class="text-base-content/70"name="log-out" />sign out</a></li>
+
+            <a
+              class="btn-ghost btn flex justify-start rounded-[3px] text-base-content" (click)="navigateHome()"
+              ><i-feather class="text-base-content/70" name="home" />home >
+            </a>
+            <a
+              class="btn-ghost btn flex justify-start rounded-[3px]
+              text-base-content" (click)="navigateProfile()" >
+              <i-feather class="text-base-content/70" name="user" />profile
+            </a>
+            <a
+              class="btn-ghost btn flex justify-start rounded-[3px]
+              text-base-content" (click)="signOut()" ><i-feather
+                class="text-base-content/70"
+                name="log-out"
+              />sign out
+            </a>
           </ul>
         </div>
-
-
       </div>
     </div>
-    <ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default" color = "#fff" type = "square-loader" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
+    <ngx-spinner
+      bdColor="rgba(0, 0, 0, 0.8)"
+      size="default"
+      color="#fff"
+      type="square-loader"
+      [fullScreen]="true"
+      ><p style="color: white">Loading...</p></ngx-spinner
+    >
   `,
 })
-export class TopAppBarComponent implements OnInit{
+export class TopAppBarComponent implements OnInit {
   profileUrl = '';
   name = '';
   @Input() activePath? = 'Home';
 
   // watch for changes in
-  constructor(private topAppBarService: TopAppBarService, private authService: AuthService, private spinner: NgxSpinnerService, private router: Router) {
+  constructor(
+    private topAppBarService: TopAppBarService,
+    private authService: AuthService,
+    private spinner: NgxSpinnerService,
+    private router: Router
+  ) {
     // todo: add unsubscribe or convert to signal
     this.topAppBarService.activePath$
       .subscribe
@@ -59,15 +85,15 @@ export class TopAppBarComponent implements OnInit{
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
-    this.name = user?.name || 'unnamed'
-    this.profileUrl = `https://api.multiavatar.com/${user?.uid || 'unnamed'}.png`
+    this.name = user?.name || 'unnamed';
+    this.profileUrl = `https://api.multiavatar.com/${
+      user?.uid || 'unnamed'
+    }.png`;
   }
 
   signOut() {
     this.spinner.show();
-    this.authService.signOut().subscribe(v =>
-      this.spinner.hide()
-    )
+    this.authService.signOut().subscribe((v) => this.spinner.hide());
   }
 
   navigateProfile() {

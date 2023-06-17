@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
+import { AuthService } from 'src/app/services/auth.service';
+import { User } from 'src/app/types/collection';
 
 @Component({
   selector: 'ProfileView',
@@ -24,8 +26,8 @@ import { Project } from 'src/app/models/project';
               </div>
             </div>
             <div class="flex flex-col justify-center gap-1">
-              <h1 class="text-[24px]">Roadie Fernandez</h1>
-              <p class="text-base text-base-content/70">Created at 1/2/34</p>
+              <h1 class="text-[24px]">{{user.name}}</h1>
+              <p class="text-base text-base-content/70">ID: {{user.uid}}</p>
             </div>
           </div>
 
@@ -85,11 +87,16 @@ export class ProfileViewComponent implements OnInit {
   projects: Project[] = [];
   theme: string = 'original';
   @Input() sideColumn? = false;
+  user: User = {name: 'Roadie Fernandez', role_id: -1, uid: '1231-232as-ddaf'};
 
-  constructor(private projectService: ProjectService) {}
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    // this.projects = this.projectService.getProjects();
+    const user = this.authService.getCurrentUser(); 
+
+    if (user !== null) {
+      this.user = user;
+    }
 
     window.addEventListener('beforeinstallprompt', (event) => {
       event.preventDefault(); // Prevent the default behavior

@@ -13,6 +13,7 @@ import {
   merge,
   of,
   switchMap,
+  take,
   takeWhile,
   tap,
   throwError,
@@ -117,11 +118,11 @@ export class ProjectService {
       .select('id')
       .eq('technical_adviser_id', user.uid);
 
-    let projects$;
+    let projects$: Observable<Project[]>;
     switch (user.role_id) {
       case 0: {
-        projects$ = this.newProject$.pipe(
-          switchMap(async (_) => await studentRequest),
+        projects$ = from(studentRequest).pipe(
+         
           map((res) => {
             if (res.error !== null) {
               throw new Error('An error occurred while fetching projects | 0');
@@ -130,16 +131,15 @@ export class ProjectService {
             return res.data.map((d) => d.project_id);
           }),
           switchMap(
-            async (projectIds) => await this.getProjectRows(projectIds)
+            (projectIds) => from(this.getProjectRows(projectIds))
           ),
-          switchMap(async (projectRows) => await this.getProject(projectRows))
+          switchMap((projectRows) => from(this.getProject(projectRows)))
         );
         break;
       }
 
       case 1: {
-        projects$ = this.newProject$.pipe(
-          switchMap(async (_) => await capstoneAdviserRequest),
+        projects$ = from(capstoneAdviserRequest).pipe(
           map((res) => {
             if (res.error !== null) {
               throw new Error('An error occurred while fetching projects');
@@ -155,8 +155,7 @@ export class ProjectService {
         break;
       }
       case 2: {
-        projects$ = this.newProject$.pipe(
-          switchMap(async (_) => await technicalAdviserRequest),
+        projects$ = from(technicalAdviserRequest).pipe(
           map((res) => {
             if (res.error !== null) {
               throw new Error('An error occurred while fetching projects');
@@ -176,7 +175,7 @@ export class ProjectService {
         throw new Error('unknown user role');
     }
 
-    return projects$;
+    return this.newProject$.pipe(switchMap((_) => merge(of(null), projects$)));
   }
 
   createProject(name: string, fullTitle: string) {
@@ -237,7 +236,7 @@ export class ProjectService {
       .from('member')
       .select('student_uid')
       .eq('project_id', this.activeProjectIdSignal());
-      
+
     const advisers$ = from(advisers).pipe(
       map((a) => {
         if (a.error !== null)
