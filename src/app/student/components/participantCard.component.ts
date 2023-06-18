@@ -5,25 +5,25 @@ import { User } from 'src/app/types/collection';
   selector: 'StudentParticipantCard',
   template: `
     <div
-      class="flex items-center gap-2 rounded-[3px] border border-base-content/30 bg-base-100 p-3 sm1:p-4 "
+      class="w-full sm1:w-[347px] flex items-center gap-2 rounded-[3px]  "
     >
-      <div class="placeholder avatar">
-        <div
-          class="w-[40px] rounded-full bg-neutral-focus text-neutral-content sm1:w-[48px]"
-        >
-          <span class="text-xl sm1:text-3xl">K</span>
-        </div>
+      <div class=" btn btn-square p-0">
+        <!-- <div
+          class="w-full rounded-square bg-neutral-focus text-neutral-content"
+        > -->
+          <span class="text-xl">K</span>
+        <!-- </div> -->
       </div>
 
       <div class="flex w-full flex-col">
-        <h1 class="text-base text-base-content sm1:text-[20px] ">
+        <a class="no-underline font-normal capitalize btn btn-link w-fit p-0 btn-sm text-base text-base-content sm1:text-[18px] ">
           {{ user.name }}
-        </h1>
-        <p class=" text-base text-base-content/70">{{ user.role_id }}</p>
-        <p class=" text-base text-base-content/70">{{ user.uid }}</p>
+        </a>
+        <p class=" text-base text-base-content/70">role {{ user.role_id }}</p>
+        <!-- <p class=" text-base text-base-content/70">{{ user.uid }}</p> -->
       </div>
 
-      <div class="dropdown-end dropdown text-base-content">
+      <!-- <div class="dropdown-end dropdown text-base-content">
         <label tabindex="0" class="btn-ghost btn-sm btn">
           <i-feather class="text-base-content/70" name="menu" />
         </label>
@@ -37,7 +37,7 @@ import { User } from 'src/app/types/collection';
             >
           </li>
         </ul>
-      </div>
+      </div> -->
     </div>
   `,
 })

@@ -149,14 +149,6 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // const projects$ = this.projectService.getProjects();
-
-    // projects$.subscribe({
-    //   next: (projects) => {
-    //     // this.projects = projects;
-    //   },
-    // });
-
     this.route.data.subscribe((data) => {
       this.path = data['path'];
     });

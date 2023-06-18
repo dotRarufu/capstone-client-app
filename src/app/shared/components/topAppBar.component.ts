@@ -35,16 +35,16 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <!-- <li><a class="">Profile</a></li> -->
 
             <a
-              class="btn-ghost btn flex justify-start rounded-[3px] text-base-content" (click)="navigateHome()"
+              class="btn-ghost btn flex justify-start rounded-[3px] gap-2 text-base-content" (click)="navigateHome()"
               ><i-feather class="text-base-content/70" name="home" />home >
             </a>
             <a
-              class="btn-ghost btn flex justify-start rounded-[3px]
+              class="btn-ghost btn flex justify-start rounded-[3px] gap-2
               text-base-content" (click)="navigateProfile()" >
               <i-feather class="text-base-content/70" name="user" />profile
             </a>
             <a
-              class="btn-ghost btn flex justify-start rounded-[3px]
+              class="btn-ghost btn flex justify-start rounded-[3px] gap-2
               text-base-content" (click)="signOut()" ><i-feather
                 class="text-base-content/70"
                 name="log-out"

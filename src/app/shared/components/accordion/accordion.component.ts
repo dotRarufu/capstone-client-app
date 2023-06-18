@@ -49,7 +49,7 @@ import { Component, Input } from '@angular/core';
           class="collapse-content  border border-base-content/50 text-base-content"
         >
           <div
-            class="grid grid-flow-row grid-cols-2 items-center justify-items-center gap-[24px]   border-2 py-[1rem] "
+            class="grid grid-flow-row grid-cols-2 items-center justify-items-center gap-[24px] py-[1rem] "
           >
             <ng-content select="[sideColumn]"> </ng-content>
           </div>

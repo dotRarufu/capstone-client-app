@@ -68,7 +68,10 @@ import { ProjectService } from 'src/app/services/project.service';
           <div class="h-[2px] w-full bg-base-content/10"></div>
 
           <div class="grid grid-cols-1  justify-items-center gap-[24px]  ">
-            <StudentProjectCard />
+          <StudentProjectCard
+              *ngFor="let project of projects()"
+              [project]="project"
+            />
           </div>
         </div>
       </div>
