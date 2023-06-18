@@ -24,10 +24,12 @@ export class DatabaseService {
       uid: userId,
       name: user.name,
       role_id: user.roleId,
-    });
+    }).select("*");
     const query$ = from(query).pipe(
       map((a) => {
         if (a.error) throw a.error;
+
+        return a.data[0]
       })
     );
 

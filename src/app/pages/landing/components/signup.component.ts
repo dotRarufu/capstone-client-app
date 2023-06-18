@@ -94,6 +94,20 @@ import { AuthService } from 'src/app/services/auth.service';
         </div>
 
         <!-- todo: error message for inputs -->
+        
+        <input
+          type="number"
+          placeholder="Section"
+          [(ngModel)]="section"
+          class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
+          min="1"
+        />
+        <input
+          type="text"
+          placeholder="Student Number"
+          [(ngModel)]="studentNumber"
+          class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
+        />
         <input
           type="email"
           placeholder="Email"
@@ -108,7 +122,7 @@ import { AuthService } from 'src/app/services/auth.service';
         />
 
         <button
-          (click)="handleButtonClick()"
+          (click)="signUp()"
           class="btn-primary btn w-full  rounded-[3px]  text-center text-base "
         >
           SIGN UP
@@ -132,6 +146,8 @@ export class SignupComponent {
   @Output() toLogin: EventEmitter<void> = new EventEmitter<void>();
   email = '';
   password = '';
+  section = 1;
+  studentNumber = '';
   fullName = '';
   emailMessage = 'test message email';
   passwordMessage = 'test message password';
@@ -143,12 +159,12 @@ export class SignupComponent {
     private spinner: NgxSpinnerService
   ) {}
 
-  handleButtonClick() {
+  signUp() {
     this.spinner.show();
     if (this.fullName.length === 0) throw Error('wip: name is empty');
 
     const user = { name: this.fullName, roleId: this.roleId };
-    this.authService.signUp(this.email, this.password, user).subscribe((v) => {
+    this.authService.signUp(this.email, this.password, user, this.studentNumber, this.section).subscribe((v) => {
       this.spinner.hide();
       this.navigateToLogin();
     });

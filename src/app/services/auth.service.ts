@@ -70,7 +70,9 @@ export class AuthService {
   signUp(
     email: string,
     password: string,
-    userInfo: { name: string; roleId: number }
+    userInfo: { name: string; roleId: number },
+    studentNumber: string,
+    sectionId: number
   ) {
     const client = this.supabaseService.client;
     const signUp = client.auth.signUp({
@@ -79,23 +81,38 @@ export class AuthService {
     });
     // todo: add record in student_info table
     const signUp$ = from(signUp).pipe(
-      switchMap((authRes) => {
+      map((authRes) => {
         // todo separate this block in another pipe
         if (authRes.error) throw authRes.error.message;
         if (authRes.data.user == null)
           // todo: on what case is user == null, even without error
           throw 'user is null, while data.error is null';
 
-        const userId = authRes.data.user.id;
-        const updateUserData$ = this.databaseService
-          .updateUserData(userId, userInfo)
-          .pipe(map(() => authRes));
-
-        return updateUserData$;
-      })
+        return authRes.data.user
+      }),
+      switchMap(user => this.databaseService.updateUserData(user.id, userInfo)),
+      switchMap(user => this.createStudentInfo(user.uid, studentNumber, sectionId))
     );
 
     return signUp$;
+  }
+
+  // todo: move in user service
+  createStudentInfo(uid: string, studentNumber: string, sectionId: number ) {
+    const client = this.databaseService.client;
+    const data = {
+      uid,
+      number: studentNumber,
+      section_id: sectionId
+    } 
+    const insert = client.from("student_info").insert(data);
+    const insert$ = from(insert).pipe(map(res => {
+      if (res.error !== null) throw new Error("error in creating student info");
+
+      return res.statusText;
+    }))
+
+    return insert$;
   }
 
   signOut() {
