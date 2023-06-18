@@ -3,6 +3,10 @@ import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { groupBySection } from '../../utils/groupBySection';
+import { SectionProject } from 'src/app/models/sectionProject';
+
+
 
 @Component({
   selector: 'Projects',
@@ -30,30 +34,17 @@ import { NgxSpinnerService } from 'ngx-spinner';
           </div>
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-        <ProjectsAccordion heading="BSIT 3-1" >
-          <CapstoneAdviserProjectCard 
-            *ngFor="let project of projects()"
-            [project]="project"
-
-            [navigateTo]="navigateToProject(project.uid)"
-          />
-        </ProjectsAccordion>
-        <ProjectsAccordion heading="BSIT 3-1">
-          <CapstoneAdviserProjectCard 
-            *ngFor="let project of projects()"
-            [project]="project"
-
-            [navigateTo]="navigateToProject(project.uid)"
-          />
-        </ProjectsAccordion>
-        <ProjectsAccordion heading="BSIT 3-1" >
-          <CapstoneAdviserProjectCard 
-            *ngFor="let project of projects()"
-            [project]="project"
-
-            [navigateTo]="navigateToProject(project.uid)"
-          />
-        </ProjectsAccordion>
+        <ProjectsAccordion
+            *ngFor="let section of sections()"
+            [heading]="section.section"
+          >
+            <CapstoneAdviserProjectCard
+              sideColumn
+              *ngFor="let project of section.projects"
+              [project]="project"
+              [navigateTo]="navigateToProject(project.id)"
+            />
+          </ProjectsAccordion>
       </div>
     </ng-container>
 
@@ -80,35 +71,19 @@ import { NgxSpinnerService } from 'ngx-spinner';
           </div>
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-        <div
-          class="flex w-full flex-col justify-items-center gap-[24px] "
-        >
-          <Accordion heading="BSIT 3-1a" [sideColumn]="true">
-            <CapstoneAdviserProjectCard 
+        <div class="flex w-full flex-col justify-items-center gap-[24px] ">
+          <ProjectsAccordion
+            *ngFor="let section of sections()"
+            [heading]="section.section"
+          >
+            <CapstoneAdviserProjectCard
               sideColumn
-              *ngFor="let project of projects()"
+              *ngFor="let project of section.projects"
               [project]="project"
-
-              [navigateTo]="navigateToProject(project.uid)"
+              [navigateTo]="navigateToProject(project.id)"
             />
-          </Accordion>
-          <Accordion heading="BSIT 3-1a" [sideColumn]="true">
-            <CapstoneAdviserProjectCard 
-              sideColumn
-              *ngFor="let project of projects()"
-              [project]="project"
-              [navigateTo]="navigateToProject(project.uid)"
-            />
-          </Accordion>
-          <Accordion heading="BSIT 3-1a" [sideColumn]="true">
-            <CapstoneAdviserProjectCard 
-              sideColumn
-              [project]="project"
-
-              *ngFor="let project of projects()"
-              [navigateTo]="navigateToProject(project.uid)"
-            />
-          </Accordion>
+          </ProjectsAccordion>
+         
         </div>
       </div>
     </ng-container>
@@ -116,12 +91,16 @@ import { NgxSpinnerService } from 'ngx-spinner';
 })
 export class CapstoneAdviserProjectsComponent {
   search: string = '';
-  projects: WritableSignal<Project[]
-> = signal([]);
+  // projects: WritableSignal<Project[]
+  // > = signal([]);
   @Input() sideColumn? = false;
+  sections: WritableSignal<SectionProject[]> = signal([]);
 
-  constructor(private projectService: ProjectService, private router: Router,     private spinner: NgxSpinnerService
-    ) {}
+  constructor(
+    private projectService: ProjectService,
+    private router: Router,
+    private spinner: NgxSpinnerService
+  ) {}
 
   ngOnInit() {
     const projects$ = this.projectService.getProjects();
@@ -129,13 +108,13 @@ export class CapstoneAdviserProjectsComponent {
     projects$.subscribe({
       next: (projects) => {
         if (projects === null) {
-          this.projects.set([]);
-          this.spinner.show()
+          this.sections.set([]);
+          this.spinner.show();
 
           return;
         }
         this.spinner.hide();
-        this.projects.set(projects);
+        this.sections.set(groupBySection(projects));
       },
     });
   }

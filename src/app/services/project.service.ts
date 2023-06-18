@@ -110,8 +110,9 @@ export class ProjectService {
 
     const capstoneAdviserRequest = client
       .from('project')
-      .select('id')
+      .select('*')
       .eq('capstone_adviser_id', user.uid);
+      
 
     const technicalAdviserRequest = client
       .from('project')
@@ -145,11 +146,9 @@ export class ProjectService {
               throw new Error('An error occurred while fetching projects');
             }
 
-            return res.data.map((d) => d.id);
+            // return res.data.map((d) => d.id);
+            return res.data;
           }),
-          switchMap(
-            async (projectIds) => await this.getProjectRows(projectIds)
-          ),
           switchMap(async (projectRows) => await this.getProject(projectRows))
         );
         break;
@@ -456,12 +455,14 @@ export class ProjectService {
     const projects: Project[] = await Promise.all(
       projectRows.map(async (p) => {
         const projectMembers = await this.getProjectMembers(p.id);
+        const section = await this.getSection(p.section_id);
 
         if (projectMembers === 'this project has no members')
           return {
             name: p.name,
-            uid: p.id,
+            id: p.id,
             members: [projectMembers],
+            sectionName: section,
             title: p.full_title,
           };
 
@@ -470,12 +471,14 @@ export class ProjectService {
           userIds.map(async (id) => await this.getUser(id))
         );
         const memberNames = members.map((m) => m.name);
+        
 
         // description -> full title
         // name -> 'Capstool'
         return {
           name: p.name,
-          uid: p.id,
+          id: p.id,
+          sectionName: section,
           members: memberNames,
           title: p.full_title,
         };
@@ -484,6 +487,16 @@ export class ProjectService {
 
     return projects;
   }
+
+  // todo: move in db service
+  private async getSection(id: number) {
+    const client = this.databaseService.client;
+    const res = await client.from("section").select("name").eq("id", id);
+    if (res.error !== null) throw new Error("error getting section");
+
+    return res.data[0].name;
+  }
+
   private async getProjectMembers(projectId: number) {
     const client = this.databaseService.client;
     const res = await client

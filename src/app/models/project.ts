@@ -1,6 +1,7 @@
 export interface Project {
   name: string;
-  uid: number;
+  id: number;
   title: string;
+  sectionName: string;
   members: string[];
 }

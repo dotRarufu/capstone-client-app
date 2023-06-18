@@ -3,6 +3,8 @@ import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { SectionProject } from 'src/app/models/sectionProject';
+import { groupBySection } from 'src/app/utils/groupBySection';
 
 @Component({
   selector: 'TechnicalAdviserProjects',
@@ -30,27 +32,17 @@ import { NgxSpinnerService } from 'ngx-spinner';
           </div>
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-        <ProjectsAccordion heading="BSIT 3-1">
-          <TechnicalAdviserProjectCard
-            *ngFor="let project of projects()"
-            [project]="project"
-            [navigateTo]="navigateToProject(project.uid)"
-          />
-        </ProjectsAccordion>
-        <ProjectsAccordion heading="BSIT 3-1">
-          <TechnicalAdviserProjectCard
-            [project]="project"
-            *ngFor="let project of projects()"
-            [navigateTo]="navigateToProject(project.uid)"
-          />
-        </ProjectsAccordion>
-        <ProjectsAccordion heading="BSIT 3-1">
-          <TechnicalAdviserProjectCard
-            [project]="project"
-            *ngFor="let project of projects()"
-            [navigateTo]="navigateToProject(project.uid)"
-          />
-        </ProjectsAccordion>
+        <ProjectsAccordion
+            *ngFor="let section of sections()"
+            [heading]="section.section"
+          >
+            <TechnicalAdviserProjectCard
+              sideColumn
+              *ngFor="let project of section.projects"
+              [project]="project"
+              [navigateTo]="navigateToProject(project.id)"
+            />
+          </ProjectsAccordion>
       </div>
     </ng-container>
 
@@ -78,26 +70,15 @@ import { NgxSpinnerService } from 'ngx-spinner';
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <div class="flex w-full flex-col justify-items-center gap-[24px] ">
-          <ProjectsAccordion heading="BSIT 3-1">
+        <ProjectsAccordion
+            *ngFor="let section of sections()"
+            [heading]="section.section"
+          >
             <TechnicalAdviserProjectCard
+              sideColumn
+              *ngFor="let project of section.projects"
               [project]="project"
-              *ngFor="let project of projects()"
-              [navigateTo]="navigateToProject(project.uid)"
-            />
-          </ProjectsAccordion>
-          <ProjectsAccordion heading="BSIT 3-1">
-            [project]="project"
-
-            <TechnicalAdviserProjectCard
-              *ngFor="let project of projects()"
-              [navigateTo]="navigateToProject(project.uid)"
-            />
-          </ProjectsAccordion>
-          <ProjectsAccordion heading="BSIT 3-1">
-            <TechnicalAdviserProjectCard
-              [project]="project"
-              *ngFor="let project of projects()"
-              [navigateTo]="navigateToProject(project.uid)"
+              [navigateTo]="navigateToProject(project.id)"
             />
           </ProjectsAccordion>
         </div>
@@ -111,6 +92,7 @@ export class TechnicalAdviserProjectsComponent {
     Project[]
   > = signal([]);
   @Input() sideColumn? = false;
+  sections: WritableSignal<SectionProject[]> = signal([]);
 
   constructor(private projectService: ProjectService, private router: Router,    private spinner: NgxSpinnerService
     ) {}
@@ -121,16 +103,17 @@ export class TechnicalAdviserProjectsComponent {
     projects$.subscribe({
       next: (projects) => {
         if (projects === null) {
-          this.projects.set([]);
-          this.spinner.show()
+          this.sections.set([]);
+          this.spinner.show();
 
           return;
         }
         this.spinner.hide();
-        this.projects.set(projects);
+        this.sections.set(groupBySection(projects));
       },
     });
   }
+  
 
   navigateToProject(uid: number) {
     return () => {

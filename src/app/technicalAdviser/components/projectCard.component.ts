@@ -46,7 +46,8 @@ export class ProjectCardComponent {
     title: '',
     members: [],
     name: 'default',
-    uid: -1,
+    id: -1,
+    sectionName: ''
   };
 
   handleCardClick() {

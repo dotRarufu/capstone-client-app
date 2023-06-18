@@ -42,7 +42,8 @@ export class ProjectCardComponent {
     title: '',
     members: [],
     name: 'default',
-    uid: -1,
+    id: -1,
+    sectionName: ''
   };
 
   constructor(private router: Router, private projectService: ProjectService) {
@@ -50,8 +51,8 @@ export class ProjectCardComponent {
   }
 
   handleCardClick() {
-    this.router.navigate(['s', 'project', this.project.uid]);
-    this.projectService.activeProjectIdSignal.set(this.project.uid);
+    this.router.navigate(['s', 'project', this.project.id]);
+    this.projectService.activeProjectIdSignal.set(this.project.id);
   }
 
   removeProjectCard() {
