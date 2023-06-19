@@ -30,13 +30,13 @@ import { Project } from 'src/app/models/project';
         >
           <i-feather class="text-base-content/70" name="log-in" />
         </button>
-        <label
+        <button
           (click)="removeProject()"
-          for="remove-project-modal"
+          onclick="removeProjectModal.showModal()"
           class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
         >
           <i-feather class="text-base-content/70" name="trash" />
-        </label>
+</button>
       </div>
     </div>
   `,

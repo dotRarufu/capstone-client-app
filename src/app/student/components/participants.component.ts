@@ -12,14 +12,14 @@ import { User } from 'src/app/types/collection';
         <h1 class="text-[24px] text-base-content sm1:text-[32px]">
           Participants
         </h1>
-        <label
-          for="add-participant"
+        <button
+          onclick="addParticipant.showModal()"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
           <i-feather class="text-base-content/70" name="plus" />
 
           Add
-        </label>
+</button>
       </div>
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -54,7 +54,7 @@ import { User } from 'src/app/types/collection';
         <!-- </div> -->
       </div>
 
-      <Modal inputId="add-participant">
+      <Modal inputId="addParticipant">
         <div
           class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
         >
@@ -97,23 +97,21 @@ import { User } from 'src/app/types/collection';
               </div>
             </div>
             <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 py-2">
-              <label
-                for="add-participant"
+              <button
                 (click)="addParticipant()"
-                class="btn-ghost btn flex justify-start gap-2 rounded-[3px]"
+                class="btn-ghost text-base-content btn flex justify-start gap-2 rounded-[3px]"
               >
                 <i-feather class="text-base-content/70" r name="check-square" />
                 done
-              </label>
+              </button>
 
               <div class="h-full"></div>
-              <label
-                for="add-participant"
-                class="btn-ghost btn flex justify-start gap-2 rounded-[3px]"
+              <button
+                class="btn-ghost btn text-base-content flex justify-start gap-2 rounded-[3px]"
               >
                 <i-feather class="text-base-content/70" name="x-circle" />
                 close
-              </label>
+              </button>
             </ul>
           </div>
         </div>

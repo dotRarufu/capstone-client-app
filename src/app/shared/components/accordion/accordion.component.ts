@@ -5,7 +5,7 @@ import { Component, Input } from '@angular/core';
   template: `
     <ng-container *ngIf="!sideColumn">
       <div
-        class=" collapse w-full"
+        class="rounded-[4px] collapse w-full"
         [class.collapse-arrow]="withArrow"
         [class.collapse-open]="forcedOpen"
       >

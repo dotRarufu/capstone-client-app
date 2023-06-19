@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { HomeComponent } from './pages/home.component';
+import { TechnicalAdviserHomeComponent } from './pages/home.component';
 import { TechnicalAdviserProjectComponent } from './pages/project.component';
 import { SideBarComponent } from './components/sidebar.component';
 import { TechnicalAdviserProjectsComponent } from './components/projects.component';
@@ -14,7 +14,7 @@ import { TechnicalAdviserDashboardComponent } from './components/dashboard.compo
 
 @NgModule({
   declarations: [
-    HomeComponent,
+    TechnicalAdviserHomeComponent,
     ConsultationsComponent,
     ProjectCardComponent,
     TechnicalAdviserProjectComponent,
@@ -26,6 +26,6 @@ import { TechnicalAdviserDashboardComponent } from './components/dashboard.compo
     TechnicalAdviserDashboardComponent
   ],
   imports: [SharedModule, DragDropModule],
-  exports: [HomeComponent, TechnicalAdviserProjectComponent],
+  exports: [TechnicalAdviserHomeComponent, TechnicalAdviserProjectComponent],
 })
 export class TechnicalAdviserModule {}

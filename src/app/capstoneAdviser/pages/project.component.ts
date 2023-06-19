@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 
 @Component({
-selector: 'CapstoneAdviserProject',
+  selector: 'CapstoneAdviserProject',
   template: `
     <div class="flex">
-      <div class="hidden sm2:block">
+      <!-- "min-[998px]" makes up for the space taken by navrail -->
+      <div class="hidden min-[998px]:block">
         <NavigationRail (toggleDrawer)="toggleDrawer(myDrawer)" />
       </div>
 
-      <div class="drawer lg:drawer-mobile">
+      <div class="drawer lg:drawer-open">
         <input
           type="checkbox"
           #myDrawer
@@ -16,10 +17,10 @@ selector: 'CapstoneAdviserProject',
           id="my-drawer"
           class="drawer-toggle"
         />
-        <div class="drawer-content p-4">
-          <!-- navrail -->
+        <div class="drawer-content ">
+          <!-- navrail fab-->
           <div
-            class="dropdown-top dropdown-end dropdown absolute bottom-4 right-4 sm2:hidden"
+            class="dropdown-top dropdown-end dropdown absolute bottom-4 right-4 min-[998px]:hidden"
           >
             <label tabindex="0" class="btn-primary btn  rounded-[3px]"
               ><i-feather name="menu" />
@@ -34,10 +35,10 @@ selector: 'CapstoneAdviserProject',
 
           <!-- page content -->
           <div
-            class="w-full px-[16px] sm1:px-[32px] sm2:px-0 md:px-[200px] lg:px-0"
+            class="h-screen w-screen overflow-y-scroll p-4 px-[16px] sm1:px-[32px] sm2:w-full sm2:px-0 md:px-[200px] lg:px-0"
           >
             <div
-              class="h-screen w-full sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"
+              class=" w-full sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"
             >
               <router-outlet />
             </div>
@@ -45,10 +46,10 @@ selector: 'CapstoneAdviserProject',
         </div>
 
         <!-- milestone sidebar -->
-        <!-- lg:-z-[1] fixes the bug on drawer size when loader is active -->
-        <div class="drawer-side lg:-z-[1]">
+        <!-- "absolute" fixes the problem of not attaching in navrail -->
+        <div class="drawer-side absolute">
           <label for="my-drawer" class="drawer-overlay"></label>
-          <ul class="  menu w-fit bg-base-100 text-base-content">
+          <ul class="menu w-fit bg-base-100 text-base-content">
             <CapstoneAdviserSideBar />
           </ul>
         </div>

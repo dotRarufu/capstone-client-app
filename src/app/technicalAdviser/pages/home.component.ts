@@ -8,6 +8,7 @@ import { SectionProject } from 'src/app/models/sectionProject';
 import { groupBySection } from 'src/app/utils/groupBySection';
 
 @Component({
+  selector: "TechnicalAdviserHome",
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
@@ -49,32 +50,30 @@ import { groupBySection } from 'src/app/utils/groupBySection';
         </div>
       </div>
     </div>
-    <Modal inputId="remove-project-modal">
+    <Modal inputId="removeProjectModal">
       <div
         class="w-sm flex flex-col gap-6 rounded-[3px] border border-base-content/10 bg-base-100 p-4"
       >
-        <h2 class="text-[18px]">
+        <h2 class="text-[18px] text-base-content">
           Are you sure you want to remove this project?
         </h2>
         <div class=" flex w-full">
-          <label
-            for="remove-project-modal"
+          <button
             class=" btn-ghost btn w-1/2 text-error"
-            >No</label
+            >No</button
           >
-          <label
+          <button
             (click)="removeProjectCard()"
-            for="remove-project-modal"
             class="btn-ghost btn w-1/2 text-success"
           >
             Yes
-          </label>
+          </button>
         </div>
       </div>
     </Modal>
   `,
 })
-export class HomeComponent implements OnInit {
+export class TechnicalAdviserHomeComponent implements OnInit {
   active: string = 'projects';
   search: string = '';
   tabs: Tab[] = [

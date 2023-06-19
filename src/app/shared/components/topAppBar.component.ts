@@ -15,7 +15,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
       >
         <h1 class="text-2xl ">{{ activePath }}</h1>
 
-        <div class="dropdown-end dropdown">
+        <div class="dropdown-end dropdown ">
           <label tabindex="0"
             ><div
               class="btn-ghost btn flex flex-row items-center gap-2 text-base"

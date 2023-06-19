@@ -4,7 +4,7 @@ import { Component, Input } from '@angular/core';
   selector: 'TodoAccordion',
   template: `
     <div
-      class=" collapse w-full"
+      class="rounded-[4px] collapse w-full"
       [class.collapse-arrow]="withArrow"
       [class.collapse-open]="forcedOpen"
     >

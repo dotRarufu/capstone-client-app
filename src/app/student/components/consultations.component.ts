@@ -9,14 +9,14 @@ import { Consultation } from 'src/app/types/collection';
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
         <h1 class="text-[32px] text-base-content">Consultation</h1>
-        <label
-          for="schedule-consultation"
+        <button
+          onclick="scheduleConsultation.showModal()"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
           <i-feather class="text-base-content/70" name="plus" />
 
           Schedule
-        </label>
+</button>
       </div>
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -30,12 +30,11 @@ import { Consultation } from 'src/app/types/collection';
             class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
-              <label
-                for="consultation-modal"
+              <button onclick="consultationModal.showModal()"
                 class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
               >
                 {{ 'Untitled' }}
-              </label>
+              </button>
             </figure>
             <div class="card-body">
               <p class="text-sm">Location: {{ consultation.location }}</p>
@@ -45,12 +44,11 @@ import { Consultation } from 'src/app/types/collection';
               </p>
 
               <div class="card-actions justify-end">
-                <label
-                  for="consultation-modal"
+                <button onclick="consultationModal.showModal()"
                   class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
                 >
                   <i-feather class="text-base-content/70" name="log-in" />
-                </label>
+                </button>
               </div>
             </div>
           </div>
@@ -58,7 +56,7 @@ import { Consultation } from 'src/app/types/collection';
       </Accordion>
     </div>
 
-    <Modal inputId="schedule-consultation">
+    <Modal inputId="scheduleConsultation">
       <div
         class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
       >
@@ -70,11 +68,7 @@ import { Consultation } from 'src/app/types/collection';
               class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
             />
           </div>
-          <!-- <label
-            for="schedule-consultation"
-            class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather class="text-base-content/70" name="x"
-          /></label> -->
+       
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
@@ -115,23 +109,22 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
             />
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 py-2">
-            <li class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+            <button class="btn-ghost btn text-base-content flex justify-start gap-2 rounded-[3px]">
               <i-feather class="text-base-content/70" name="calendar" />
               schedule
-            </li>
+            </button>
 
             <div class="h-full"></div>
 
-            <label
-            for="schedule-consultation" class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+            <button class="btn-ghost btn text-base-content flex justify-start gap-2 rounded-[3px]">
               <i-feather class="text-base-content/70" name="x" /> cancel
-            </label>
+</button>
           </ul>
         </div>
       </div>
     </Modal>
 
-    <Modal inputId="consultation-modal">
+    <Modal inputId="consultationModal">
       <div
         class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
       >
@@ -145,11 +138,7 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
               Created at 5/1/23 by Student Name
             </div>
           </div>
-          <!-- <label
-            for="consultation-modal"
-            class="btn-ghost btn-sm btn-circle btn text-primary-content/60"
-            ><i-feather class="text-base-content/70" name="x"
-          /></label> -->
+          
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
@@ -193,10 +182,9 @@ text-base-content placeholder:text-base placeholder:text-base-content placeholde
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 py-2 ">
             <div class="h-full"></div>
 
-            <label
-            for="consultation-modal" class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+            <button class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
               <i-feather class="text-base-content/70" name="x-circle" /> close
-            </label>
+            </button>
           </ul>
         </div>
       </div>

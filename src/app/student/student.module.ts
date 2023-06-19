@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
-import { HomeComponent } from './pages/home.component';
+import { StudentHomeComponent } from './pages/home.component';
 import { ProjectsComponent } from './components/projects.component';
 import { TitleAnalyzerComponent } from './components/titleAnalyzer.component';
 import { ResultComponent } from './pages/result.component';
@@ -14,8 +14,8 @@ import { ParticipantsComponent } from './components/participants.component';
 import { ParticipantCardComponent } from './components/participantCard.component';
 
 @NgModule({
-  declarations: [HomeComponent, ProjectsComponent, SideBarComponent, StudentProjectComponent, TitleAnalyzerComponent, ResultComponent,  ConsultationsComponent, ProjectCardComponent, TasksComponent, TitleBuilderComponent, ParticipantsComponent, ParticipantCardComponent],
+  declarations: [StudentHomeComponent, ProjectsComponent, SideBarComponent, StudentProjectComponent, TitleAnalyzerComponent, ResultComponent,  ConsultationsComponent, ProjectCardComponent, TasksComponent, TitleBuilderComponent, ParticipantsComponent, ParticipantCardComponent],
   imports: [SharedModule],
-  exports: [HomeComponent],
+  exports: [StudentHomeComponent],
 })
 export class StudentModule {}

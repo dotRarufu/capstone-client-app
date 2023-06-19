@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'StudentSideBar',
   template: `
-    <div
+   <div
       class="flex h-full w-[311px] flex-col gap-[16px] bg-base-100 px-[24px] py-[32px]"
     >
       <div class="w-full text-base text-base-content">
@@ -15,9 +15,9 @@ import { Component } from '@angular/core';
       <div class="h-[1px] w-full bg-base-content/20"></div>
 
       <div class="flex flex-col overflow-y-scroll">
-        <div class="flex h-full gap-[1rem]">
+        <div class="flex  gap-[1rem]">
           <div
-            class="flex  h-full w-[12px] flex-col items-center px-2 pt-[10px]"
+            class="flex justify-stretch w-[12px] flex-col items-center px-2 pt-[10px]"
           >
             <!-- circle -->
             <span
@@ -41,8 +41,8 @@ import { Component } from '@angular/core';
           </div>
         </div>
 
-        <div class="flex h-full gap-[1rem]">
-          <div class="flex  h-full w-[12px] flex-col items-center px-2">
+        <div class="flex gap-[1rem]">
+          <div class="flex justify-stretch w-[12px] flex-col items-center px-2">
             <!-- line -->
             <div
               class="w-[2px] flex-shrink-0 flex-grow basis-[10px] bg-primary"

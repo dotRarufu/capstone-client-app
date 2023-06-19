@@ -4,7 +4,7 @@ import { Component, Input } from '@angular/core';
   selector: 'ProjectsAccordion',
   template: `
     <div
-      class=" collapse w-full"
+      class=" collapse w-full rounded-[4px]"
       [class.collapse-arrow]="withArrow"
       [class.collapse-open]="forcedOpen"
     >

@@ -14,6 +14,8 @@ import { Project } from 'src/app/models/project';
 import { Subscription, filter, fromEvent, map } from 'rxjs';
 
 @Component({
+  selector: "StudentHome",
+
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
@@ -61,7 +63,7 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
       </div>
     </div>
 
-    <Modal inputId="add-project">
+    <Modal inputId="addProject">
       <div
         class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
       >
@@ -90,31 +92,29 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
             ></textarea>
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 ">
-            <label
-              for="add-project"
+            <button
               (click)="addProject()"
-              class="btn-ghost btn flex justify-end gap-2 rounded-[3px]"
+              class="btn-ghost text-base-content btn flex justify-end gap-2 rounded-[3px]"
             >
               done
               <i-feather class="text-base-content/70" name="check-square" />
-            </label>
+            </button>
 
             <div class="h-full"></div>
 
-            <label
-              for="add-project"
-              class="btn-ghost btn flex justify-end gap-2 rounded-[3px]"
+            <button
+              class="btn-ghost btn text-base-content flex justify-end gap-2 rounded-[3px]"
             >
               close
               <i-feather class="text-base-content/70" name="x-circle" />
-            </label>
+</button>
           </ul>
         </div>
       </div>
     </Modal>
 
     <Modal
-      inputId="title-analyzer"
+      inputId="titleAnalyzer"
       (checkboxChanged)="handleCheckboxChange($event)"
     >
       <div class="flex w-[712px] flex-col gap-[16px] bg-base-100 p-6">
@@ -139,16 +139,16 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
 
           <div class="flex">
             <!-- todo: maybe we can set the default border in daisy ui config -->
-            <label class="btn-ghost btn grow rounded-[3px]" for="title-analyzer"
-              >Cancel</label
+            <button class="btn-ghost text-base-content btn grow rounded-[3px]"
+              >Cancel</button
             >
-            <label
-              for="title-analyzer"
+            <button
+              onclick="titleAnalyzer.showModal()"
               (click)="navigateTo('title-analyzer-result')"
               class="btn-primary btn grow rounded-[3px]"
             >
               Next
-            </label>
+</button>
           </div>
         </ng-container>
 
@@ -168,13 +168,13 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
             <button (click)="nextBlock()" class="btn-link btn w-fit">
               I already have a title
             </button>
-            <label
-              for="title-analyzer"
+            <button
+              onclick="titleAnalyzer.showModal()"
               (click)="toTitleBuilder()"
               class="btn-link btn w-fit text-base-content no-underline"
             >
               I don't have a title yet
-            </label>
+</button>
           </div>
         </ng-container>
       </div>
@@ -190,7 +190,7 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
     >
   `,
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class StudentHomeComponent implements OnInit, OnDestroy {
   active = 'title-analyzer';
   alreadyHaveTitle = false;
   hasResult = false;

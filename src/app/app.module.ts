@@ -20,13 +20,13 @@ import { TasksComponent as TechnicalAdviserTasksComponent } from './technicalAdv
 import { LandingPageModule } from './pages/landing/landingPage.module';
 import { LandingComponent } from './pages/landing/components/landing.component';
 import { HomeComponent as CapstoneAdviserHome } from './capstoneAdviser/pages/home.component';
-import { HomeComponent as TechnicalAdviserHome } from './technicalAdviser/pages/home.component';
+import { TechnicalAdviserHomeComponent as TechnicalAdviserHome } from './technicalAdviser/pages/home.component';
 import { CapstoneAdviserModule } from './capstoneAdviser/capstoneAdviser.module';
 import { TechnicalAdviserModule } from './technicalAdviser/technicalAdviser.module';
 import { roleGuard } from './guards/role.guard';
 import { NotFoundComponent } from './shared/components/notFound.component';
 import { FormComponent } from './shared/components/form.component';
-import { HomeComponent as StudentHome } from './student/pages/home.component';
+import { StudentHomeComponent as StudentHome } from './student/pages/home.component';
 import { StudentModule } from './student/student.module';
 import { CapstoneAdviserProjectsComponent } from './capstoneAdviser/components/projects.component';
 import { TechnicalAdviserProjectsComponent as TechnicalAdviserProjectsComponent } from './technicalAdviser/components/projects.component';
