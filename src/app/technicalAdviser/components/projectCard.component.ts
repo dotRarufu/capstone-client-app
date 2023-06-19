@@ -1,11 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Project } from 'src/app/models/project';
 
 @Component({
   selector: 'TechnicalAdviserProjectCard',
   template: `
     <div
-      class="h-[300px] w-[262px] rounded-[4px] border border-neutral/50 drop-shadow"
+      class="h-[300px] w-[262px] rounded-[4px] border border-neutral/50 bg-base-100 drop-shadow"
     >
       <h2
         (click)="handleCardClick()"
@@ -14,14 +14,14 @@ import { Project } from 'src/app/models/project';
         {{ project.name }}
       </h2>
       <div
-        class="h-[106px] w-full gap-[8px] bg-base-100 p-[1rem] text-base text-base-content"
+        class="h-[106px] w-full gap-[8px] p-[1rem] text-base text-base-content"
       >
         <p class="line-clamp-3 h-full text-base">
           {{ project.title }}
         </p>
       </div>
-      <div class="h-[48px] w-full px-[1rem] text-base">
-        {{ project.members }} | Technical Adviser
+      <div class="line-clamp-2 h-[48px] w-full px-[1rem] text-base">
+        {{ project.members }}
       </div>
       <div class="flex w-full justify-end px-[1rem] text-base ">
         <button
@@ -30,25 +30,36 @@ import { Project } from 'src/app/models/project';
         >
           <i-feather class="text-base-content/70" name="log-in" />
         </button>
-        <button
-          (click)="removeProjectCard()"
+        <label
+          (click)="removeProject()"
+          for="remove-project-modal"
           class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
         >
           <i-feather class="text-base-content/70" name="trash" />
-        </button>
+        </label>
       </div>
     </div>
   `,
 })
-export class ProjectCardComponent {
+export class ProjectCardComponent implements OnInit {
   @Input() navigateTo?: Function;
   @Input() project: Project = {
     title: '',
     members: [],
     name: 'default',
     id: -1,
-    sectionName: ''
+    sectionName: '',
   };
+  @Output() removeProjectId: EventEmitter<number> = new EventEmitter<number>();
+
+  constructor() {}
+
+  ngOnInit(): void {
+    this.project = {
+      ...this.project,
+      members: this.project.members.map((s) => ' ' + s),
+    };
+  }
 
   handleCardClick() {
     if (!this.navigateTo) throw Error('wip, navigateTo was not passed a value');
@@ -56,7 +67,7 @@ export class ProjectCardComponent {
     this.navigateTo();
   }
 
-  removeProjectCard() {
-    console.log('delete capstone card');
+  removeProject() {
+    this.removeProjectId.emit(this.project.id);
   }
 }

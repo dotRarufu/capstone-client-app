@@ -7,7 +7,7 @@ import { ProjectService } from 'src/app/services/project.service';
 @Component({
   selector: 'TitleAnalyzer',
   template: `
-    <div class="w-full sm2:flex sm2:justify-center">
+    <div class="w-full ">
       <div class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full ">
         <div class="flex justify-between ">
           <h1 class="text-[32px] text-base-content">Title Analysis</h1>

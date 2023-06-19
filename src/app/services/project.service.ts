@@ -76,7 +76,7 @@ export class ProjectService {
     filter((v) => v !== undefined),
     map(this.checkError)
   );
-  private newProject$ = new BehaviorSubject<number>(0);
+  private projectUpdate$ = new BehaviorSubject<number>(0);
   private newParticipant$ = new BehaviorSubject<number>(0);
 
   constructor(
@@ -112,7 +112,6 @@ export class ProjectService {
       .from('project')
       .select('*')
       .eq('capstone_adviser_id', user.uid);
-      
 
     const technicalAdviserRequest = client
       .from('project')
@@ -123,7 +122,6 @@ export class ProjectService {
     switch (user.role_id) {
       case 0: {
         projects$ = from(studentRequest).pipe(
-         
           map((res) => {
             if (res.error !== null) {
               throw new Error('An error occurred while fetching projects | 0');
@@ -131,9 +129,7 @@ export class ProjectService {
 
             return res.data.map((d) => d.project_id);
           }),
-          switchMap(
-            (projectIds) => from(this.getProjectRows(projectIds))
-          ),
+          switchMap((projectIds) => from(this.getProjectRows(projectIds))),
           switchMap((projectRows) => from(this.getProject(projectRows)))
         );
         break;
@@ -174,7 +170,9 @@ export class ProjectService {
         throw new Error('unknown user role');
     }
 
-    return this.newProject$.pipe(switchMap((_) => merge(of(null), projects$)));
+    return this.projectUpdate$.pipe(
+      switchMap((_) => merge(of(null), projects$))
+    );
   }
 
   createProject(name: string, fullTitle: string) {
@@ -215,7 +213,7 @@ export class ProjectService {
       }),
       // add self to the new project
       switchMap((projectId) => this.addStudentMember(projectId, user.uid)),
-      tap((_) => this.signalNewProject())
+      tap((_) => this.signalProjectUpdate())
     );
 
     return insertRequest$;
@@ -409,9 +407,52 @@ export class ProjectService {
     );
   }
 
-  private signalNewProject() {
-    const old = this.newProject$.getValue();
-    this.newProject$.next(old + 1);
+  removeProjectParticipant(userUid: string, projectId: number) {
+    const client = this.databaseService.client;
+
+    return from(this.getUser(userUid)).pipe(
+      switchMap((user) => {
+        if (user.role_id === 0) {
+          return from(
+            client.from('member').delete().eq('student_uid', user.uid)
+          ).pipe(tap((_) => this.signalProjectUpdate()));
+        } else if (user.role_id === 1) {
+          const data = {
+            capstone_adviser_id: null,
+          };
+          return from(
+            client.from('project').update(data).eq('id', projectId)
+          ).pipe(tap((_) => this.signalProjectUpdate()));
+        } else if (user.role_id === 2) {
+          const data = {
+            technical_adviser_id: null,
+          };
+          return from(
+            client.from('project').update(data).eq('id', projectId)
+          ).pipe(tap((_) => this.signalProjectUpdate()));
+        }
+
+        throw new Error('unknown role');
+      }),
+      map((res) => {
+        if (res.error !== null) throw new Error('error updating project');
+
+        return res.statusText;
+      })
+    );
+  }
+
+  removeProject(projectId: number) {
+    const user = this.authService.getCurrentUser();
+
+    if (user === null) throw new Error('this should be impossible');
+
+    return this.removeProjectParticipant(user.uid, projectId);
+  }
+
+  private signalProjectUpdate() {
+    const old = this.projectUpdate$.getValue();
+    this.projectUpdate$.next(old + 1);
   }
   private signalNewParticipant() {
     const old = this.newParticipant$.getValue();
@@ -466,12 +507,20 @@ export class ProjectService {
             title: p.full_title,
           };
 
-        const userIds = projectMembers.map((d) => d.student_uid);
+        const adviserIds = [];
+        if (p.capstone_adviser_id !== null)
+          adviserIds.push(p.capstone_adviser_id);
+        if (p.technical_adviser_id !== null)
+          adviserIds.push(p.technical_adviser_id);
+
+        const userIds = [
+          ...projectMembers.map((d) => d.student_uid),
+          ...adviserIds,
+        ];
         const members = await Promise.all(
           userIds.map(async (id) => await this.getUser(id))
         );
         const memberNames = members.map((m) => m.name);
-        
 
         // description -> full title
         // name -> 'Capstool'
@@ -491,8 +540,8 @@ export class ProjectService {
   // todo: move in db service
   private async getSection(id: number) {
     const client = this.databaseService.client;
-    const res = await client.from("section").select("name").eq("id", id);
-    if (res.error !== null) throw new Error("error getting section");
+    const res = await client.from('section').select('name').eq('id', id);
+    if (res.error !== null) throw new Error('error getting section');
 
     return res.data[0].name;
   }

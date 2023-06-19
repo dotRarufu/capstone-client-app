@@ -1,10 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  WritableSignal,
+  signal,
+} from '@angular/core';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { Tab } from 'src/app/models/tab';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Project } from 'src/app/models/project';
+import { Subscription, filter, fromEvent, map } from 'rxjs';
 
 @Component({
   template: `
@@ -17,29 +24,94 @@ import { Project } from 'src/app/models/project';
       <div
         class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
       >
-        <!-- mobile -->
-        <div class="w-full md:hidden">
-          <router-outlet />
-        </div>
+        <div
+          class=" flex w-full  gap-[1rem] sm2:justify-center md:w-full lg:w-[1040px]"
+        >
+          <ng-container *ngIf="active === 'title-analyzer' || isDesktop">
+            <div class="flex flex-col gap-4 ">
+              <ng-container *ngIf="!hasResult">
+                <TitleAnalyzer
+                  (analyzeClicked)="this.alreadyHaveTitle = true"
+                />
+              </ng-container>
 
-        <!-- desktop -->
-        <div class=" hidden w-full gap-[1rem]  md:flex lg:w-[1040px]">
-          <div class="flex flex-col gap-4">
-            <ng-container *ngIf="!hasResult">
-              <TitleAnalyzer (analyzeClicked)="this.alreadyHaveTitle = true" />
-            </ng-container>
+              <ng-container *ngIf="hasResult">
+                <TitleAnalyzerResult [sideColumn]="true" />
+              </ng-container>
+            </div>
+          </ng-container>
 
-            <ng-container *ngIf="hasResult">
-              <TitleAnalyzerResult [sideColumn]="true" />
-            </ng-container>
-          </div>
-
-          <div class=" w-[294px] flex-shrink-0  basis-[294px] ">
-            <Projects [sideColumn]="true" />
-          </div>
+          <ng-container *ngIf="active === 'projects' || isDesktop">
+            <div
+              class="w-full sm2:w-[840px] md:w-[294px]  md:flex-shrink-0 md:basis-[294px] lg:w-[1040px]"
+            >
+              <Projects>
+                <div
+                  class="grid grid-flow-row grid-cols-1 items-center justify-items-center gap-[24px]  sm1:grid-cols-2 sm1:justify-start sm2:grid-cols-3 md:flex md:flex-col md:items-center md:justify-center"
+                >
+                  <StudentProjectCard
+                    *ngFor="let project of projects()"
+                    [project]="project"
+                  />
+                </div>
+              </Projects>
+            </div>
+          </ng-container>
         </div>
       </div>
     </div>
+
+    <Modal inputId="add-project">
+      <div
+        class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
+      >
+        <div class="flex justify-between bg-primary p-[24px]">
+          <div class="flex w-full flex-col justify-between">
+            <input
+              type="text"
+              [(ngModel)]="name"
+              placeholder="Project Name"
+              class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
+            />
+          </div>
+        </div>
+        <div class="flex bg-base-100">
+          <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Description</h1>
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+
+            <textarea
+              [(ngModel)]="fullTitle"
+              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
+              placeholder="Full Title"
+            ></textarea>
+          </div>
+          <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 ">
+            <label
+              for="add-project"
+              (click)="addProject()"
+              class="btn-ghost btn flex justify-end gap-2 rounded-[3px]"
+            >
+              done
+              <i-feather class="text-base-content/70" name="check-square" />
+            </label>
+
+            <div class="h-full"></div>
+
+            <label
+              for="add-project"
+              class="btn-ghost btn flex justify-end gap-2 rounded-[3px]"
+            >
+              close
+              <i-feather class="text-base-content/70" name="x-circle" />
+            </label>
+          </ul>
+        </div>
+      </div>
+    </Modal>
 
     <Modal
       inputId="title-analyzer"
@@ -118,11 +190,11 @@ import { Project } from 'src/app/models/project';
     >
   `,
 })
-export class HomeComponent implements OnInit {
-  active = 'projects';
+export class HomeComponent implements OnInit, OnDestroy {
+  active = 'title-analyzer';
   alreadyHaveTitle = false;
   hasResult = false;
-  // projects: Project[] = [];
+  isDesktop = false;
   path: string = '';
   search = '';
   tabs: Tab[] = [
@@ -138,7 +210,11 @@ export class HomeComponent implements OnInit {
       handler: this.handlerFactory('projects'),
     },
   ];
+  fullTitle = '';
+  name = '';
   titleFromAlreadyHaveTitle = '';
+  projectsSubscription: Subscription;
+  projects: WritableSignal<Project[]> = signal([]);
 
   constructor(
     private router: Router,
@@ -146,7 +222,25 @@ export class HomeComponent implements OnInit {
     private route: ActivatedRoute,
     private spinner: NgxSpinnerService,
     private toastr: ToastrService
-  ) {}
+  ) {
+    const projects$ = this.projectService.getProjects();
+
+    this.projectsSubscription = projects$.subscribe({
+      next: (projects) => {
+        if (projects === null) {
+          this.projects.set([]);
+          this.spinner.show();
+          console.warn('projects is null, is loading');
+
+          return;
+        }
+        this.spinner.hide();
+        this.projects.set(projects);
+        console.log('next  emit');
+      },
+      complete: () => console.log('getproject complete'),
+    });
+  }
 
   ngOnInit() {
     this.route.data.subscribe((data) => {
@@ -159,6 +253,37 @@ export class HomeComponent implements OnInit {
       },
       error: (err) => {
         this.toastr.error('Error occured while analyzing title');
+      },
+    });
+
+    const windowResize$ = fromEvent(window, 'resize');
+    this.isDesktop = window.innerWidth >= 1240;
+    windowResize$.pipe(map((_) => window.innerWidth)).subscribe({
+      next: (width) => {
+        this.isDesktop = width >= 1240;
+      },
+    });
+
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe({
+        next: (_) => {
+          const a = this.route.firstChild;
+
+          if (a === null) throw new Error('should be impossible');
+
+          this.active = a.snapshot.url[0].path;
+          console.log('student active path:', this.active);
+        },
+      });
+  }
+
+  addProject() {
+    // this.spinner.show();
+    this.projectService.createProject(this.name, this.fullTitle).subscribe({
+      next: (a) => {
+        // this.spinner.hide();
+        this.toastr.success('Project added successfully');
       },
     });
   }
@@ -195,6 +320,10 @@ export class HomeComponent implements OnInit {
 
   toTitleBuilder() {
     this.router.navigate(['s', 'title-builder']);
+  }
+
+  ngOnDestroy(): void {
+    this.projectsSubscription.unsubscribe();
   }
 }
 

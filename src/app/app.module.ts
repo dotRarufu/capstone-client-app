@@ -177,10 +177,12 @@ const routes: Routes = [
           {
             path: 'projects',
             component: CapstoneAdviserProjectsComponent,
+            // component: CapstoneAdviserHome,
           },
           {
             path: 'dashboard',
             component: DashboardComponent,
+            // component: CapstoneAdviserHome,
           },
 
           { path: '', redirectTo: '/c/home/projects', pathMatch: 'full' },

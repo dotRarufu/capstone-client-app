@@ -11,6 +11,7 @@ import { ProjectCardComponent } from './components/projectCard.component';
 import { TasksComponent } from './components/tasks.component';
 import { ParticipantsComponent } from './components/participants.component';
 import { ParticipantCardComponent } from './components/participantCard.component';
+import { CapstoneAdviserDashboardComponent } from './components/dashboard.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { ParticipantCardComponent } from './components/participantCard.component
     CapstoneAdviserProjectsComponent,
     TasksComponent,
     ParticipantsComponent,
-    ParticipantCardComponent
+    ParticipantCardComponent,
+    CapstoneAdviserDashboardComponent
   ],
   imports: [SharedModule, DragDropModule],
   exports: [HomeComponent,  CapstoneAdviserProjectComponent],
