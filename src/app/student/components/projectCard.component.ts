@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Project } from 'src/app/models/project';
 import { ProjectService } from 'src/app/services/project.service';
@@ -34,6 +34,13 @@ import { ProjectService } from 'src/app/services/project.service';
         >
           <i-feather class="text-base-content/70" name="log-in" />
         </button>
+        <button
+          (click)="removeProject()"
+          onclick="removeProjectModal.showModal()"
+          class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
+        >
+          <i-feather class="text-base-content/70" name="trash" />
+        </button>
       </div>
     </div>
   `,
@@ -47,6 +54,8 @@ export class ProjectCardComponent implements OnInit {
     id: -1,
     sectionName: '',
   };
+  @Output() removeProjectId = new EventEmitter<number>();
+
 
   constructor(private router: Router, private projectService: ProjectService) {
     // console.info(this.project);
@@ -64,7 +73,7 @@ export class ProjectCardComponent implements OnInit {
     this.projectService.activeProjectIdSignal.set(this.project.id);
   }
 
-  removeProjectCard() {
-    console.log('delete capstone card');
+  removeProject() {
+    this.removeProjectId.emit(this.project.id);
   }
 }

@@ -14,7 +14,7 @@ import { Project } from 'src/app/models/project';
 import { Subscription, filter, fromEvent, map } from 'rxjs';
 
 @Component({
-  selector: "StudentHome",
+  selector: 'StudentHome',
 
   template: `
     <div class="flex flex-col gap-[1rem]">
@@ -22,7 +22,6 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
         <TopAppBar />
         <Tabs [tabs]="tabs" />
       </div>
-
       <div
         class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
       >
@@ -52,6 +51,7 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
                   class="grid grid-flow-row grid-cols-1 items-center justify-items-center gap-[24px]  sm1:grid-cols-2 sm1:justify-start sm2:grid-cols-3 md:flex md:flex-col md:items-center md:justify-center"
                 >
                   <StudentProjectCard
+                    (removeProjectId)="removeProjectId($event)"
                     *ngFor="let project of projects()"
                     [project]="project"
                   />
@@ -94,7 +94,7 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 ">
             <button
               (click)="addProject()"
-              class="btn-ghost text-base-content btn flex justify-end gap-2 rounded-[3px]"
+              class="btn-ghost btn flex justify-end gap-2 rounded-[3px] text-base-content"
             >
               done
               <i-feather class="text-base-content/70" name="check-square" />
@@ -103,11 +103,11 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
             <div class="h-full"></div>
 
             <button
-              class="btn-ghost btn text-base-content flex justify-end gap-2 rounded-[3px]"
+              class="btn-ghost btn flex justify-end gap-2 rounded-[3px] text-base-content"
             >
               close
               <i-feather class="text-base-content/70" name="x-circle" />
-</button>
+            </button>
           </ul>
         </div>
       </div>
@@ -139,16 +139,16 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
 
           <div class="flex">
             <!-- todo: maybe we can set the default border in daisy ui config -->
-            <button class="btn-ghost text-base-content btn grow rounded-[3px]"
-              >Cancel</button
-            >
+            <button class="btn-ghost btn grow rounded-[3px] text-base-content">
+              Cancel
+            </button>
             <button
               onclick="titleAnalyzer.showModal()"
               (click)="navigateTo('title-analyzer-result')"
               class="btn-primary btn grow rounded-[3px]"
             >
               Next
-</button>
+            </button>
           </div>
         </ng-container>
 
@@ -174,12 +174,29 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
               class="btn-link btn w-fit text-base-content no-underline"
             >
               I don't have a title yet
-</button>
+            </button>
           </div>
         </ng-container>
       </div>
     </Modal>
-
+    <Modal inputId="removeProjectModal">
+      <div
+        class="w-sm flex flex-col gap-6 rounded-[3px] border border-base-content/10 bg-base-100 p-4"
+      >
+        <h2 class="text-[18px] text-base-content">
+          Are you sure you want to remove this project?
+        </h2>
+        <div class=" flex w-full">
+          <button class=" btn-ghost btn w-1/2 text-error">No</button>
+          <button
+            (click)="removeProjectCard()"
+            class="btn-ghost btn w-1/2 text-success"
+          >
+            Yes
+          </button>
+        </div>
+      </div>
+    </Modal>
     <ngx-spinner
       bdColor="rgba(0, 0, 0, 0.8)"
       size="default"
@@ -215,6 +232,7 @@ export class StudentHomeComponent implements OnInit, OnDestroy {
   titleFromAlreadyHaveTitle = '';
   projectsSubscription: Subscription;
   projects: WritableSignal<Project[]> = signal([]);
+  modalProjectId = -1;
 
   constructor(
     private router: Router,
@@ -236,7 +254,7 @@ export class StudentHomeComponent implements OnInit, OnDestroy {
         }
         this.spinner.hide();
         this.projects.set(projects);
-        console.log('next  emit');
+        console.log('getprojects emit:', projects);
       },
       complete: () => console.log('getproject complete'),
     });
@@ -276,6 +294,21 @@ export class StudentHomeComponent implements OnInit, OnDestroy {
           console.log('student active path:', this.active);
         },
       });
+  }
+
+  removeProjectId(id: number) {
+    this.modalProjectId = id;
+  }
+
+  removeProjectCard() {
+    const removeProject$ = this.projectService.removeProject(
+      this.modalProjectId
+    );
+    removeProject$.subscribe({
+      next: (res) => console.log('remove project:', res),
+      complete: () => console.log('remove project complete'),
+      error: (err) => console.log('removeProject error:', err),
+    });
   }
 
   addProject() {

@@ -34,38 +34,6 @@ type AnalyzerResultError = string;
   providedIn: 'root',
 })
 export class ProjectService {
-  // projects: Project[] = [
-  //   {
-  //     name: 'Capstool',
-  //     uid: 0,
-  //     description: 'project description example',
-  //     members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
-  //   },
-  //   {
-  //     name: 'Capstool 2',
-  //     uid: 1,
-  //     description: 'project description example',
-  //     members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
-  //   },
-  //   {
-  //     name: 'Capstool 3',
-  //     uid: 1,
-  //     description: 'project description example',
-  //     members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
-  //   },
-  //   {
-  //     name: 'Capstool 3',
-  //     uid: 1,
-  //     description: 'project description example',
-  //     members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
-  //   },
-  //   {
-  //     name: 'Capstool 3',
-  //     uid: 1,
-  //     description: 'project description example',
-  //     members: ['Tanya Markova', 'Gardo Versoza', 'Zsa Zsa Padilla'],
-  //   },
-  // ];
   supabase: SupabaseClient;
   private _formUrl$: BehaviorSubject<string> = new BehaviorSubject('');
   formUrl$ = this._formUrl$.asObservable();
@@ -407,6 +375,22 @@ export class ProjectService {
     );
   }
 
+  private deleteProject(id: number) {
+    const client = this.databaseService.client;
+    const members = client.from('member').select('*').eq('project_id', id);
+    const members$ = from(members).pipe(
+      map((res) => {
+        if (res.error !== null) throw new Error('error getting members');
+
+        return res.data;
+      }),
+      filter((members) => members.length === 0),
+      switchMap((_) => from(client.from('project').delete().eq('id', id)))
+    );
+
+    return members$;
+  }
+
   removeProjectParticipant(userUid: string, projectId: number) {
     const client = this.databaseService.client;
 
@@ -414,8 +398,15 @@ export class ProjectService {
       switchMap((user) => {
         if (user.role_id === 0) {
           return from(
-            client.from('member').delete().eq('student_uid', user.uid)
-          ).pipe(tap((_) => this.signalProjectUpdate()));
+            client
+              .from('member')
+              .delete()
+              .eq('student_uid', user.uid)
+              .eq('project_id', projectId)
+          ).pipe(
+            switchMap((_) => this.deleteProject(projectId)),
+            tap((_) => this.signalProjectUpdate())
+          );
         } else if (user.role_id === 1) {
           const data = {
             capstone_adviser_id: null,
