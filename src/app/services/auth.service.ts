@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, map, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, filter, from, map, switchMap, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { SupabaseService } from './supabase.service';
 import { DatabaseService } from './database.service';
 import { User } from '../types/collection';
 import { UserService } from './user.service';
+import { isNotNull } from '../student/utils/isNotNull';
+import { getRolePath } from '../utils/getRolePath';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +29,17 @@ export class AuthService {
         this.router.navigate(['']);
       }
     });
+
+    this.user$
+      .pipe(
+        filter(isNotNull),
+      )
+      .subscribe({
+        next: (user) => {
+          const role = getRolePath(user.role_id);
+          this.router.navigate([role]);
+        },
+      });
   }
 
   async getAuthenticatedUser() {
@@ -56,7 +69,7 @@ export class AuthService {
     const loggedInUser: User = {
       name: userDetails.name,
       role_id: userDetails.role_id,
-      uid: id
+      uid: id,
     };
 
     this.userSubject.next(loggedInUser);
@@ -100,28 +113,35 @@ export class AuthService {
           // todo: on what case is user == null, even without error
           throw 'user is null, while data.error is null';
 
-        return authRes.data.user
+        return authRes.data.user;
       }),
-      switchMap(user => this.databaseService.updateUserData(user.id, userInfo)),
-      switchMap(user => this.createStudentInfo(user.uid, studentNumber, sectionId))
+      switchMap((user) =>
+        this.databaseService.updateUserData(user.id, userInfo)
+      ),
+      switchMap((user) =>
+        this.createStudentInfo(user.uid, studentNumber, sectionId)
+      )
     );
 
     return signUp$;
   }
 
-  createStudentInfo(uid: string, studentNumber: string, sectionId: number ) {
+  createStudentInfo(uid: string, studentNumber: string, sectionId: number) {
     const client = this.databaseService.client;
     const data = {
       uid,
       number: studentNumber,
-      section_id: sectionId
-    } 
-    const insert = client.from("student_info").insert(data);
-    const insert$ = from(insert).pipe(map(res => {
-      if (res.error !== null) throw new Error("error in creating student info");
+      section_id: sectionId,
+    };
+    const insert = client.from('student_info').insert(data);
+    const insert$ = from(insert).pipe(
+      map((res) => {
+        if (res.error !== null)
+          throw new Error('error in creating student info');
 
-      return res.statusText;
-    }))
+        return res.statusText;
+      })
+    );
 
     return insert$;
   }

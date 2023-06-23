@@ -2,7 +2,10 @@ import { EventEmitter, Output, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { filter, from, switchMap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
+import { UserService } from 'src/app/services/user.service';
+import { isNotNull } from 'src/app/student/utils/isNotNull';
 import { getRolePath } from 'src/app/utils/getRolePath';
 
 @Component({
@@ -84,8 +87,24 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router,
     private spinner: NgxSpinnerService,
-    private toastr: ToastrService
-  ) {}
+    private toastr: ToastrService,
+    private userService: UserService
+  ) {
+    const authenticatedUser = this.authService.getAuthenticatedUser();
+    from(authenticatedUser)
+      .pipe(
+        filter(isNotNull),
+        switchMap((user) => this.userService.getUser(user.id))
+      )
+      .subscribe({
+        next: (user) => {
+         
+            const role = getRolePath(user.role_id);
+            this.router.navigate([role]);
+            this.toastr.success("Welcome back " + user.name);
+        },
+      });
+  }
 
   handleButtonClick() {
     this.spinner.show();
@@ -93,10 +112,9 @@ export class LoginComponent {
     signIn$.subscribe({
       next: (user) => {
         // todo: refactor
-        if (user.role_id === null) throw Error('user does not have a role');
-        const role = getRolePath(user.role_id);
+        // const role = getRolePath(user.role_id);
         this.spinner.hide();
-        this.router.navigate([role]);
+        // this.router.navigate([role]);
       },
       error: () => {
         this.spinner.hide();

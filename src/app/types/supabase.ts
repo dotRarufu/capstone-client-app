@@ -888,17 +888,17 @@ export interface Database {
       user: {
         Row: {
           name: string
-          role_id: number | null
+          role_id: number
           uid: string
         }
         Insert: {
           name: string
-          role_id?: number | null
+          role_id: number
           uid: string
         }
         Update: {
           name?: string
-          role_id?: number | null
+          role_id?: number
           uid?: string
         }
         Relationships: [
