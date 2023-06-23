@@ -23,7 +23,7 @@ import { ProjectService } from 'src/app/services/project.service';
           {{ project.title }}
         </p>
       </div>
-      <div class="h-[48px] w-full line-clamp-2 px-[1rem] text-base">
+      <div class="line-clamp-2 h-[48px] w-full px-[1rem] text-base">
         {{ project.members }}
       </div>
 
@@ -56,7 +56,6 @@ export class ProjectCardComponent implements OnInit {
   };
   @Output() removeProjectId = new EventEmitter<number>();
 
-
   constructor(private router: Router, private projectService: ProjectService) {
     // console.info(this.project);
   }
@@ -70,7 +69,7 @@ export class ProjectCardComponent implements OnInit {
 
   handleCardClick() {
     this.router.navigate(['s', 'project', this.project.id]);
-    this.projectService.activeProjectIdSignal.set(this.project.id);
+    this.projectService.activeProjectId.set(this.project.id);
   }
 
   removeProject() {

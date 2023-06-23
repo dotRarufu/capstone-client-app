@@ -22,7 +22,8 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
             class="card card-compact h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
-              <button onclick="consultationModal.showModal()"
+              <button
+                onclick="consultationModal.showModal()"
                 class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
               >
                 Untitled
@@ -36,7 +37,8 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
               </p>
 
               <div class="card-actions justify-end">
-                <button onclick="consultationModal.showModal()"
+                <button
+                  onclick="consultationModal.showModal()"
                   class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
                 >
                   <i-feather class="text-base-content/70" name="log-in" />
@@ -62,7 +64,6 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
               Created at 5/1/23 by Student Name
             </div>
           </div>
-       
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
@@ -105,14 +106,14 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 py-2 ">
             <div class="h-full"></div>
-            <button class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
-          
-                <i-feather
-                  class="text-base-content/70"
-                  name="x-circle"
-                ></i-feather>
-                close
-            
+            <button
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px]"
+            >
+              <i-feather
+                class="text-base-content/70"
+                name="x-circle"
+              ></i-feather>
+              close
             </button>
           </ul>
         </div>
@@ -130,7 +131,7 @@ export class ConsultationsComponent {
   ) {}
 
   ngOnInit() {
-    const projectId = this.projectService.activeProjectIdSignal();
+    const projectId = this.projectService.activeProjectId();
     const getConsultations$ = this.consultationService.getConsultations(
       true,
       projectId

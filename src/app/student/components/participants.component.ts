@@ -19,7 +19,7 @@ import { User } from 'src/app/types/collection';
           <i-feather class="text-base-content/70" name="plus" />
 
           Add
-</button>
+        </button>
       </div>
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -41,9 +41,9 @@ import { User } from 'src/app/types/collection';
         <!-- </a> -->
         <!-- </li> -->
         <!-- </> -->
-        <div class="hidden h-full w-full border-l border-neutrla sm2:block">
-        WIP name, uid, role, profile picture, dashboard
-        <!-- <div class="placeholder avatar">
+        <div class="border-neutrla hidden h-full w-full border-l sm2:block">
+          WIP name, uid, role, profile picture, dashboard
+          <!-- <div class="placeholder avatar">
             <div
               class="w-24 rounded-full bg-neutral-focus text-neutral-content"
             >
@@ -99,7 +99,7 @@ import { User } from 'src/app/types/collection';
             <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 py-2">
               <button
                 (click)="addParticipant()"
-                class="btn-ghost text-base-content btn flex justify-start gap-2 rounded-[3px]"
+                class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
               >
                 <i-feather class="text-base-content/70" r name="check-square" />
                 done
@@ -107,7 +107,7 @@ import { User } from 'src/app/types/collection';
 
               <div class="h-full"></div>
               <button
-                class="btn-ghost btn text-base-content flex justify-start gap-2 rounded-[3px]"
+                class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
               >
                 <i-feather class="text-base-content/70" name="x-circle" />
                 close
@@ -164,7 +164,7 @@ export class ParticipantsComponent implements OnInit {
 
   addParticipant() {
     this.spinner.show();
-    const projectId = this.projectService.activeProjectIdSignal();
+    const projectId = this.projectService.activeProjectId();
     const addParticipant$ = this.projectService.addParticipant(
       this.roleId,
       this.userUid,

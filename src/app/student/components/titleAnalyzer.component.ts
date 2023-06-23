@@ -12,19 +12,19 @@ import { ProjectService } from 'src/app/services/project.service';
         <div class="flex justify-between ">
           <h1 class="text-[32px] text-base-content">Title Analysis</h1>
           <button
-          onclick="titleAnalyzer.showModal()"
+            onclick="titleAnalyzer.showModal()"
             (click)="analyzeTitle()"
             class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
             <i-feather class="text-base-content/70" name="zap" />
             Analyze
-</button>
+          </button>
         </div>
 
         <div class="h-[2px] w-full bg-base-content/10"></div>
 
         <Accordion *ngFor="let content of contents" [heading]="content.heading">
-          <div class=" pt-[16px] w-full text-base-content">
+          <div class=" w-full pt-[16px] text-base-content">
             {{ content.content }}
           </div>
         </Accordion>
@@ -65,7 +65,7 @@ export class TitleAnalyzerComponent implements OnInit {
   navigateToProject(uid: number) {
     return () => {
       this.router.navigate(['s', 'project', uid]);
-      this.projectService.activeProjectIdSignal.set(uid);
+      this.projectService.activeProjectId.set(uid);
     };
   }
 

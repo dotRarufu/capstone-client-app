@@ -31,7 +31,7 @@ import { Task } from 'src/app/types/collection';
           >
             <div
               isTodo
-              class="flex flex-col gap-[16px] pt-[16px] w-full"
+              class="flex w-full flex-col gap-[16px] pt-[16px]"
               cdkDropList
               [cdkDropListData]="category.tasks"
               (cdkDropListDropped)="drop($event)"
@@ -61,7 +61,6 @@ import { Task } from 'src/app/types/collection';
                 Created at 5/1/23 by Adviser Name | Currently in Doing
               </div>
             </div>
-         
           </div>
           <div class="flex bg-base-100">
             <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
@@ -82,7 +81,9 @@ import { Task } from 'src/app/types/collection';
             <ul class=" flex w-[223px]  flex-col bg-neutral/20 py-2 ">
               <div class="h-full"></div>
 
-              <button class="btn-ghost btn text-base-content flex justify-start gap-2 rounded-[3px]">
+              <button
+                class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+              >
                 <i-feather class="text-base-content/70" name="x-circle" /> close
               </button>
             </ul>
@@ -102,7 +103,6 @@ import { Task } from 'src/app/types/collection';
                 class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
               />
             </div>
-         
           </div>
           <div class="flex bg-base-100">
             <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
@@ -118,14 +118,18 @@ import { Task } from 'src/app/types/collection';
               ></textarea>
             </div>
             <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 ">
-              <button class="btn-ghost text-base-content btn flex justify-end gap-2 rounded-[3px]">
+              <button
+                class="btn-ghost btn flex justify-end gap-2 rounded-[3px] text-base-content"
+              >
                 done
                 <i-feather class="text-base-content/70" name="check-square" />
               </button>
 
               <div class="h-full"></div>
 
-              <button class="btn-ghost btn text-base-content flex justify-end gap-2 rounded-[3px]">
+              <button
+                class="btn-ghost btn flex justify-end gap-2 rounded-[3px] text-base-content"
+              >
                 close <i-feather class="text-base-content/70" name="x-square" />
               </button>
             </ul>
@@ -149,7 +153,7 @@ export class TasksComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const projectId = this.projectService.activeProjectIdSignal();
+    const projectId = this.projectService.activeProjectId();
     // todo: make this observable complete
 
     this.taskService

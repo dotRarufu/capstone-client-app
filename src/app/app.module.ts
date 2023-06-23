@@ -24,6 +24,7 @@ import { TechnicalAdviserHomeComponent as TechnicalAdviserHome } from './technic
 import { CapstoneAdviserModule } from './capstoneAdviser/capstoneAdviser.module';
 import { TechnicalAdviserModule } from './technicalAdviser/technicalAdviser.module';
 import { roleGuard } from './guards/role.guard';
+import { participantGuard } from './guards/participant.guard';
 import { NotFoundComponent } from './shared/components/notFound.component';
 import { FormComponent } from './shared/components/form.component';
 import { StudentHomeComponent as StudentHome } from './student/pages/home.component';
@@ -78,7 +79,7 @@ const routes: Routes = [
   },
   {
     path: 's',
-    // canActivate: [authGuard, roleGuard],
+    canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',
@@ -106,6 +107,7 @@ const routes: Routes = [
       },
       {
         path: 'project',
+        canActivate: [participantGuard],
         children: [
           {
             path: ':projectId',
@@ -167,7 +169,7 @@ const routes: Routes = [
   },
   {
     path: 'c',
-    // canActivate: [authGuard, roleGuard],
+    canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',
@@ -190,7 +192,7 @@ const routes: Routes = [
       },
       {
         path: 'project',
-        // canActivate: [authGuard],
+        canActivate: [participantGuard],
         children: [
           {
             path: ':projectId',
@@ -253,7 +255,7 @@ const routes: Routes = [
   },
   {
     path: 't',
-    // canActivate: [authGuard, roleGuard],
+    canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',
@@ -274,7 +276,7 @@ const routes: Routes = [
       },
       {
         path: 'project',
-        // canActivate: [authGuard],
+        canActivate: [participantGuard],
         children: [
           {
             path: ':projectId',

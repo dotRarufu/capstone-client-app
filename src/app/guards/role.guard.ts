@@ -1,53 +1,51 @@
-import { Injectable, inject } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
-import { SupabaseService } from '../services/supabase.service';
+import { inject } from '@angular/core';
+import {
+  ActivatedRouteSnapshot,
+  CanActivateFn,
+  Router,
+  RouterStateSnapshot,
+} from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { UserService } from '../services/user.service';
+import { getRolePath } from '../utils/getRolePath';
 
-
-export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const roleGuard: CanActivateFn = async (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  // const state = inject(ActivatedRoute);
+  const userService = inject(UserService);
 
   const currentUser = authService.getCurrentUser();
 
-  if (!currentUser) throw new Error('wip, currentUser is not authenticated');
-  if (currentUser.role_id === null)
-    throw new Error('wip, currentUser has no role id');
+  let userRole: number | null = null;
 
-  const userRole = currentUser.role_id;
+  if (currentUser !== null) {
+    userRole = currentUser.role_id;
+  } else {
+    const authenticatedUser = await authService.getAuthenticatedUser();
+
+    if (authenticatedUser === null)
+      throw new Error('no current user and authenticated user');
+
+    const userDetails = await userService.getUser(authenticatedUser.id);
+    userRole = userDetails.role_id;
+  }
+
+  if (userRole === null) throw new Error('wip, currentUser has no role id');
+
   const firstChild = state.root.firstChild;
 
   if (!firstChild) throw new Error('first child is undefined');
 
   const root = firstChild.url.toString();
   const userRolePath = getRolePath(userRole);
- 
+
   if (root === userRolePath) return true;
 
   // todo: navigate to unauthorized
   router.navigate([userRolePath]);
 
   return false;
-};
-
-const getRolePath = (roleId: number) => {
-  let role = 'a';
-
-  switch (roleId) {
-    case 0:
-      role = 's';
-      break;
-    case 1:
-      role = 'c';
-      break;
-    case 2:
-      role = 't';
-      break;
-    default:
-      throw new Error('user role error');
-  }
-
-  return role;
 };

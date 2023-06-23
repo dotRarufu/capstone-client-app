@@ -8,7 +8,7 @@ import { SectionProject } from 'src/app/models/sectionProject';
 import { groupBySection } from 'src/app/utils/groupBySection';
 
 @Component({
-  selector: "CapstoneAdviserHome",
+  selector: 'CapstoneAdviserHome',
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
@@ -59,13 +59,9 @@ import { groupBySection } from 'src/app/utils/groupBySection';
           Are you sure you want to remove this project?
         </h2>
         <div class=" flex w-full">
-          <button
-            class=" btn-ghost btn w-1/2 text-error"
-            >No</button
-          >
+          <button class=" btn-ghost btn w-1/2 text-error">No</button>
           <button
             (click)="removeProjectCard()"
-            
             class="btn-ghost btn w-1/2 text-success"
           >
             Yes
@@ -103,8 +99,6 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.projects = this.projectService.getProjects();
-    // console.log('1st child:',this.route.firstChild );
     const windowResize$ = fromEvent(window, 'resize');
     this.isDesktop = window.innerWidth >= 1240;
     windowResize$.pipe(map((_) => window.innerWidth)).subscribe({
@@ -124,12 +118,6 @@ export class HomeComponent implements OnInit {
           this.active = a.snapshot.url[0].path;
         },
       });
-    // if (this.route.firstChild !== null) {
-    // this.route.children[0].subscribe({
-    //   next:(a) => {this.active = a[0].path; console.log("new path:", a)},
-    //   complete: () => console.log("completes"),
-    //   error: (err) => console.log("errored:", err)
-    // })}
 
     const projects$ = this.projectService.getProjects();
 
@@ -158,7 +146,9 @@ export class HomeComponent implements OnInit {
   }
 
   removeProjectCard() {
-    const removeProject$ = this.projectService.removeProject(this.modalProjectId);
+    const removeProject$ = this.projectService.removeProject(
+      this.modalProjectId
+    );
     removeProject$.subscribe({
       next: (res) => console.log('remove project:', res),
       complete: () => console.log('remove project complete'),
@@ -173,7 +163,7 @@ export class HomeComponent implements OnInit {
   navigateToProject(uid: number) {
     return () => {
       this.router.navigate(['c', 'project', uid]);
-      this.projectService.activeProjectIdSignal.set(uid);
+      this.projectService.activeProjectId.set(uid);
     };
   }
 }

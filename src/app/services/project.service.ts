@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import {
   createClient,
   PostgrestSingleResponse,
@@ -27,6 +27,9 @@ import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 import { ProjectRow } from '../types/collection';
 import { Project } from '../models/project';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { UserService } from './user.service';
+import { getObjectValues } from '../utils/getObjectValues';
 
 type AnalyzerResultError = string;
 
@@ -46,22 +49,43 @@ export class ProjectService {
   );
   private projectUpdate$ = new BehaviorSubject<number>(0);
   private newParticipant$ = new BehaviorSubject<number>(0);
+  activeProjectId: WritableSignal<number>;
 
   constructor(
     private supabaseService: SupabaseService,
     private databaseService: DatabaseService,
     private toastr: ToastrService,
-    private authService: AuthService
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private userService: UserService
   ) {
     this.supabase = createClient(
       environment.supabase_url,
       environment.supabase_key
     );
-  }
 
-  // todo: rename this, remove "signal"
-  // make this default to -1
-  activeProjectIdSignal = signal(0);
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe({
+        next: (_) => {
+          const child1 = this.route.firstChild;
+          if (child1 === null) return;
+          if (['s', 't', 'c'].includes(child1.snapshot.url[0].path)) {
+            const child2 = child1.children[0];
+            const child2Path = child2.snapshot.url[0].path;
+
+            if (child2Path === 'project') {
+              const id = child2.children[0].snapshot.url[0].path;
+
+              this.activeProjectId.set(Number(id));
+            }
+          }
+        },
+      });
+
+    this.activeProjectId = signal(-1);
+  }
 
   getProjects() {
     const user = this.authService.getCurrentUser();
@@ -191,16 +215,16 @@ export class ProjectService {
     // used observables so participants can be immediately updated when  new participant is added.
     // only for student,fort he add participant button
     // not intended for realtime sync with db
-
+    console.log('id signal', this.activeProjectId());
     const client = this.databaseService.client;
     const advisers = client
       .from('project')
       .select('capstone_adviser_id, technical_adviser_id')
-      .eq('id', this.activeProjectIdSignal());
+      .eq('id', this.activeProjectId());
     const students = client
       .from('member')
       .select('student_uid')
-      .eq('project_id', this.activeProjectIdSignal());
+      .eq('project_id', this.activeProjectId());
 
     const advisers$ = from(advisers).pipe(
       map((a) => {
@@ -218,7 +242,7 @@ export class ProjectService {
         if (advisers.technical_adviser_id !== null)
           ids.push(advisers.technical_adviser_id);
 
-        return await Promise.all(ids.map((id) => this.getUser(id)));
+        return await Promise.all(ids.map((id) => this.userService.getUser(id)));
       })
     );
 
@@ -232,7 +256,7 @@ export class ProjectService {
       switchMap(
         async (ids) =>
           await Promise.all(
-            ids.map(({ student_uid }) => this.getUser(student_uid))
+            ids.map(({ student_uid }) => this.userService.getUser(student_uid))
           )
       )
     );
@@ -244,24 +268,25 @@ export class ProjectService {
     );
   }
 
-  checkProjectParticipant(userUid: string) {
+  checkProjectParticipant(userUid: string, projectId?: number) {
     const client = this.databaseService.client;
-
     const advisersCheck = client
       .from('project')
       .select('capstone_adviser_id, technical_adviser_id')
-      .eq('id', this.activeProjectIdSignal());
+      .eq('id', projectId || this.activeProjectId());
     const advisersId$ = from(advisersCheck).pipe(
       map((a) => {
         if (a.error !== null) throw new Error('error fetching project');
 
-        return [a.data[0].capstone_adviser_id, a.data[0].technical_adviser_id];
+        const adviserIds = getObjectValues<string | null>(a.data[0]);
+
+        return adviserIds.filter(id => id !== null);
       })
     );
     const studentsCheck = client
       .from('member')
       .select('student_uid')
-      .eq('project_id', this.activeProjectIdSignal());
+      .eq('project_id', projectId || this.activeProjectId());
     const studentIds$ = from(studentsCheck).pipe(
       map((a) => {
         if (a.error !== null) throw new Error('error fetching project');
@@ -285,7 +310,7 @@ export class ProjectService {
 
     switch (role) {
       case 0:
-        res = from(this.getUser(userUid)).pipe(
+        res = from(this.userService.getUser(userUid)).pipe(
           map((user) => {
             if (user.role_id !== role)
               throw new Error(
@@ -314,7 +339,7 @@ export class ProjectService {
           })
         );
 
-        res = from(this.getUser(userUid)).pipe(
+        res = from(this.userService.getUser(userUid)).pipe(
           map((user) => {
             if (user.role_id !== role)
               throw new Error(
@@ -343,7 +368,7 @@ export class ProjectService {
           })
         );
 
-        res = from(this.getUser(userUid)).pipe(
+        res = from(this.userService.getUser(userUid)).pipe(
           map((user) => {
             if (user.role_id !== role)
               throw new Error(
@@ -370,7 +395,6 @@ export class ProjectService {
 
         return isParticipant;
       }),
-      // takeWhile(shouldCheck => shouldCheck),
       switchMap((_) => res)
     );
   }
@@ -394,7 +418,7 @@ export class ProjectService {
   removeProjectParticipant(userUid: string, projectId: number) {
     const client = this.databaseService.client;
 
-    return from(this.getUser(userUid)).pipe(
+    return from(this.userService.getUser(userUid)).pipe(
       switchMap((user) => {
         if (user.role_id === 0) {
           return from(
@@ -509,7 +533,7 @@ export class ProjectService {
           ...adviserIds,
         ];
         const members = await Promise.all(
-          userIds.map(async (id) => await this.getUser(id))
+          userIds.map(async (id) => await this.userService.getUser(id))
         );
         const memberNames = members.map((m) => m.name);
 
@@ -555,22 +579,7 @@ export class ProjectService {
   // todo: make the backend services automatically restart when something fails
 
   // move this in user service
-  private async getUser(uid: string) {
-    const client = this.databaseService.client;
-    const res = await client.from('user').select('*').eq('uid', uid);
-
-    if (res.error !== null) {
-      console.error('error while fetching user');
-
-      return {
-        name: 'unregistered user',
-        role_id: -1,
-        uid: '',
-      };
-    }
-
-    return res.data[0];
-  }
+  
 
   clearAnalyzerResult() {
     this._analyzerResult$.next(undefined);
@@ -616,7 +625,7 @@ export class ProjectService {
     const response = await this.supabase.functions.invoke('form-generator', {
       body: {
         formNumber: number,
-        projectId: this.activeProjectIdSignal(),
+        projectId: this.activeProjectId(),
         dateTime: 123,
         // todo: update the edge fn to accept dateTimeRange
         // why accept dateTimeRange? why not just output the form 4 without asking for range

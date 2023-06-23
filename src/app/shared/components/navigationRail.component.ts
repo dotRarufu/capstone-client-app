@@ -73,7 +73,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
         <div class="hidden h-[48px] lg:block"></div>
         <button
           (click)="handleMenuClick()"
-          class="btn-ghost bg-base-100/70 text-base-content border-0 rounded-[3px] btn flex h-fit w-full flex-col items-center gap-[4px] px-[4px] py-[8px] text-[10px] lg:hidden"
+          class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] border-0 bg-base-100/70 px-[4px] py-[8px] text-[10px] text-base-content lg:hidden"
         >
           <i-feather name="sidebar" />
         </button>
@@ -81,35 +81,35 @@ import { getRolePath } from 'src/app/utils/getRolePath';
         <div class="flex h-fit  flex-col items-center gap-[12px]">
           <button
             (click)="navigateTo('tasks')"
-            class="btn-ghost bg-base-100/70 text-base-content border-0  btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] "
+            class="btn-ghost btn flex h-fit  w-full flex-col items-center gap-[4px] rounded-[3px] border-0 bg-base-100/70 px-[4px] py-[8px] text-[10px] text-base-content "
           >
             <i-feather name="trello" />
             Tasks
           </button>
           <button
             (click)="navigateTo('dashboard')"
-            class="btn-ghost border-0 bg-base-100/70 text-base-content btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
+            class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] border-0 bg-base-100/70 px-[4px] py-[8px] text-[10px] text-base-content"
           >
             <i-feather name="monitor" />
             Dashboard
           </button>
           <button
             (click)="navigateTo('consultations')"
-            class="btn-ghost border-0 bg-base-100/70 text-base-content btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
+            class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] border-0 bg-base-100/70 px-[4px] py-[8px] text-[10px] text-base-content"
           >
             <i-feather name="clipboard" />
             Consult
           </button>
           <button
             (click)="navigateTo('participants')"
-            class="btn-ghost border-0 bg-base-100/70 text-base-content btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
+            class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] border-0 bg-base-100/70 px-[4px] py-[8px] text-[10px] text-base-content"
           >
             <i-feather name="users" />
             Participants
           </button>
           <button
             (click)="navigateTo('forms')"
-            class="btn-ghost border-0 bg-base-100/70 text-base-content btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
+            class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] border-0 bg-base-100/70 px-[4px] py-[8px] text-[10px] text-base-content"
           >
             <i-feather name="file-text" />
             Forms
@@ -118,7 +118,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
 
         <button
           (click)="navigateToHome()"
-          class="btn-ghost border-0 bg-base-100/70 text-base-content btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
+          class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] border-0 bg-base-100/70 px-[4px] py-[8px] text-[10px] text-base-content"
         >
           <i-feather name="arrow-left" />
         </button>
@@ -139,7 +139,7 @@ export class NavigationRailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.projectId = this.projectService.activeProjectIdSignal();
+    this.projectId = this.projectService.activeProjectId();
   }
 
   navigateTo(path: string) {
@@ -151,8 +151,6 @@ export class NavigationRailComponent implements OnInit {
       const rolePath = getRolePath(user.role_id);
       this.router.navigate([rolePath, 'project', this.projectId, path]);
     }
-
-
   }
 
   navigateToHome() {
@@ -164,7 +162,6 @@ export class NavigationRailComponent implements OnInit {
       const rolePath = getRolePath(user.role_id);
       this.router.navigate([rolePath, 'home']);
     }
-
   }
 
   handleMenuClick() {

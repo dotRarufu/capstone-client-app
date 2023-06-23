@@ -139,7 +139,7 @@ export class ConsultationsComponent {
   ) {}
 
   ngOnInit() {
-    const projectId = this.projectService.activeProjectIdSignal();
+    const projectId = this.projectService.activeProjectId();
     const getConsultations$ = this.consultationService.getConsultations(
       true,
       projectId

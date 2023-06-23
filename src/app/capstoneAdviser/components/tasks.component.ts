@@ -15,13 +15,14 @@ import { Task } from 'src/app/types/collection';
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
         <h1 class="text-[32px] text-base-content">Tasks</h1>
-        <button onclick="addTask.showModal()"
+        <button
+          onclick="addTask.showModal()"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
           <i-feather class="text-base-content/70" name="plus" />
 
           Add
-</button>
+        </button>
       </div>
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -70,7 +71,6 @@ import { Task } from 'src/app/types/collection';
               Created at 5/1/23 by Adviser Name | Currently in Doing
             </div>
           </div>
-       
         </div>
         <div class="flex bg-base-100">
           <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
@@ -89,18 +89,24 @@ import { Task } from 'src/app/types/collection';
             </div>
           </div>
           <ul class=" flex w-[223px]  flex-col bg-neutral/20 py-2">
-            <button class="btn-ghost text-base-content btn flex justify-start gap-2 rounded-[3px]">
+            <button
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+            >
               <i-feather class="text-base-content/70" name="edit" />
               edit
             </button>
-            <button class="btn-ghost text-base-content btn flex justify-start gap-2 rounded-[3px]">
+            <button
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+            >
               <i-feather class="text-base-content/70" name="user-check" />
               verify
             </button>
 
             <div class="h-full"></div>
 
-            <button class="btn-ghost btn text-base-content flex justify-start gap-2 rounded-[3px]">
+            <button
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+            >
               <i-feather class="text-base-content/70" name="x-circle" />
               close
             </button>
@@ -149,7 +155,9 @@ import { Task } from 'src/app/types/collection';
 
             <div class="h-full"></div>
             <label
-            for="add-task" class="btn-ghost btn flex justify-start gap-2 rounded-[3px]">
+              for="add-task"
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px]"
+            >
               <i-feather class="text-base-content/70" name="x-circle" />
               close
             </label>
@@ -190,7 +198,7 @@ export class TasksComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const projectId = this.projectService.activeProjectIdSignal();
+    const projectId = this.projectService.activeProjectId();
     // todo: make this observable complete
 
     this.taskService

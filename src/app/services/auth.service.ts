@@ -1,52 +1,65 @@
 import { Injectable } from '@angular/core';
-import {
-  createClient,
-  SupabaseClient,
-  AuthResponse,
-} from '@supabase/supabase-js';
 import { BehaviorSubject, from, map, switchMap, tap } from 'rxjs';
-import { environment } from 'src/environments/environment.dev';
-import { CapstoolUser } from '../models/capstool-user';
-import { Database } from '../types/supabase';
 import { Router } from '@angular/router';
 import { SupabaseService } from './supabase.service';
 import { DatabaseService } from './database.service';
 import { User } from '../types/collection';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  // todo: update types of rows in db
-  private _user$ = new BehaviorSubject<User | null>(null);
-  user$ = this._user$.asObservable();
+  private userSubject = new BehaviorSubject<User | null>(null);
+  user$ = this.userSubject.asObservable();
 
   constructor(
     private supabaseService: SupabaseService,
     private databaseService: DatabaseService,
+    private userService: UserService,
     private router: Router
   ) {
     const client = this.supabaseService.client;
     const unsubscribe = client.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
         console.log('User signed out');
-        this._user$.next(null);
+        this.userSubject.next(null);
         this.router.navigate(['']);
       }
     });
   }
 
-  getCurrentUser() {
-    // todo: improve this so that, on reload, user is still authenticated
-    const user = this._user$.getValue();
+  async getAuthenticatedUser() {
+    const client = this.supabaseService.client;
+    const res = await client.auth.getUser();
+    const user = res.data.user;
 
-    // if (user == null) {throw new Error("no user is signed in");
+    if (user !== null) this.updateCurrentUser(user.id);
+
+    return user;
+  }
+
+  getCurrentUser() {
+    const user = this.userSubject.getValue();
+
     if (user == null) {
       console.log('no user is signed in');
       return null;
     }
 
     return user;
+  }
+
+  async updateCurrentUser(id: string) {
+    const userDetails = await this.userService.getUser(id);
+
+    const loggedInUser: User = {
+      name: userDetails.name,
+      role_id: userDetails.role_id,
+      uid: id
+    };
+
+    this.userSubject.next(loggedInUser);
   }
 
   login(email: string, password: string) {
@@ -61,7 +74,7 @@ export class AuthService {
 
         return this.databaseService.getUserData(authRes.data.user.id);
       }),
-      tap((user) => this._user$.next(user))
+      tap((user) => this.userSubject.next(user))
     );
 
     return login$;
@@ -79,7 +92,6 @@ export class AuthService {
       email,
       password,
     });
-    // todo: add record in student_info table
     const signUp$ = from(signUp).pipe(
       map((authRes) => {
         // todo separate this block in another pipe
@@ -97,7 +109,6 @@ export class AuthService {
     return signUp$;
   }
 
-  // todo: move in user service
   createStudentInfo(uid: string, studentNumber: string, sectionId: number ) {
     const client = this.databaseService.client;
     const data = {

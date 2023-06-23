@@ -8,7 +8,7 @@ import { SectionProject } from 'src/app/models/sectionProject';
 import { groupBySection } from 'src/app/utils/groupBySection';
 
 @Component({
-  selector: "TechnicalAdviserHome",
+  selector: 'TechnicalAdviserHome',
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
@@ -58,10 +58,7 @@ import { groupBySection } from 'src/app/utils/groupBySection';
           Are you sure you want to remove this project?
         </h2>
         <div class=" flex w-full">
-          <button
-            class=" btn-ghost btn w-1/2 text-error"
-            >No</button
-          >
+          <button class=" btn-ghost btn w-1/2 text-error">No</button>
           <button
             (click)="removeProjectCard()"
             class="btn-ghost btn w-1/2 text-success"
@@ -156,7 +153,9 @@ export class TechnicalAdviserHomeComponent implements OnInit {
   }
 
   removeProjectCard() {
-    const removeProject$ = this.projectService.removeProject(this.modalProjectId);
+    const removeProject$ = this.projectService.removeProject(
+      this.modalProjectId
+    );
     removeProject$.subscribe({
       next: (res) => console.log('remove project:', res),
       complete: () => console.log('remove project complete'),
@@ -171,7 +170,7 @@ export class TechnicalAdviserHomeComponent implements OnInit {
   navigateToProject(uid: number) {
     return () => {
       this.router.navigate(['t', 'project', uid]);
-      this.projectService.activeProjectIdSignal.set(uid);
+      this.projectService.activeProjectId.set(uid);
     };
   }
 }
