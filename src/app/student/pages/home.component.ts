@@ -7,11 +7,12 @@ import {
 } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
-import { Tab } from 'src/app/models/tab';
+import { Tab, TabDefinition } from 'src/app/models/tab';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Project } from 'src/app/models/project';
 import { Subscription, filter, fromEvent, map } from 'rxjs';
+import { TabsService } from 'src/app/services/tabs.service';
 
 @Component({
   selector: 'StudentHome',
@@ -20,15 +21,17 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
     <div class="flex flex-col gap-[1rem]">
       <div>
         <TopAppBar />
-        <Tabs [tabs]="tabs" />
+        <Tabs />
       </div>
       <div
         class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
       >
+      <ng-container *ngIf="tabsService.activeId$ | async as activeId">
+      
         <div
           class=" flex w-full  gap-[1rem] sm2:justify-center md:w-full lg:w-[1040px]"
         >
-          <ng-container *ngIf="active === 'title-analyzer' || isDesktop">
+          <ng-container *ngIf="activeId === 'title-analyzer' || isDesktop">
             <div class="flex flex-col gap-4 ">
               <ng-container *ngIf="!hasResult">
                 <TitleAnalyzer
@@ -42,7 +45,7 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
             </div>
           </ng-container>
 
-          <ng-container *ngIf="active === 'projects' || isDesktop">
+          <ng-container *ngIf="activeId === 'projects' || isDesktop">
             <div
               class="w-full sm2:w-[840px] md:w-[294px]  md:flex-shrink-0 md:basis-[294px] lg:w-[1040px]"
             >
@@ -60,6 +63,7 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
             </div>
           </ng-container>
         </div>
+        </ng-container>
       </div>
     </div>
 
@@ -208,25 +212,11 @@ import { Subscription, filter, fromEvent, map } from 'rxjs';
   `,
 })
 export class StudentHomeComponent implements OnInit, OnDestroy {
-  active = 'title-analyzer';
   alreadyHaveTitle = false;
   hasResult = false;
   isDesktop = false;
   path: string = '';
   search = '';
-  tabs: Tab[] = [
-    {
-      name: 'Title Analyzer',
-      active: true,
-      id: 'title-analyzer',
-      handler: this.handlerFactory('title-analyzer'),
-    },
-    {
-      name: 'Projects',
-      id: 'projects',
-      handler: this.handlerFactory('projects'),
-    },
-  ];
   fullTitle = '';
   name = '';
   titleFromAlreadyHaveTitle = '';
@@ -239,7 +229,8 @@ export class StudentHomeComponent implements OnInit, OnDestroy {
     private projectService: ProjectService,
     private route: ActivatedRoute,
     private spinner: NgxSpinnerService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    public tabsService: TabsService
   ) {
     const projects$ = this.projectService.getProjects();
 
@@ -282,18 +273,23 @@ export class StudentHomeComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe({
-        next: (_) => {
-          const a = this.route.firstChild;
+    const tabs: TabDefinition[] = [
+      {
+        name: 'Title Analyzer',
+        id: 'title-analyzer',
+        // handler: this.handlerFactory('title-analyzer'),
+      },
+      {
+        name: 'Projects',
+        id: 'projects',
+        // handler: this.handlerFactory('projects'),
+      },
+    ];
+    const child1 = this.route.snapshot.firstChild;
+    if (child1 === null) throw new Error("impossible");
 
-          if (a === null) throw new Error('should be impossible');
-
-          this.active = a.snapshot.url[0].path;
-          console.log('student active path:', this.active);
-        },
-      });
+    const active = child1.url[0].path;
+    this.tabsService.setTabs(tabs, ['s', 'home'], active);
   }
 
   removeProjectId(id: number) {
@@ -319,16 +315,6 @@ export class StudentHomeComponent implements OnInit, OnDestroy {
         this.toastr.success('Project added successfully');
       },
     });
-  }
-
-  handlerFactory(path: string) {
-    return () => {
-      this.router.navigate(['s', 'home', path]);
-
-      this.tabs = this.tabs.map((tab) =>
-        tab.id === path ? { ...tab, active: true } : { ...tab, active: false }
-      );
-    };
   }
 
   checkPath(path: string) {

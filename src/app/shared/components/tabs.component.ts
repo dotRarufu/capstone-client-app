@@ -1,11 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Tab } from 'src/app/models/tab';
+import { TabsService } from 'src/app/services/tabs.service';
 
 @Component({
   selector: 'Tabs',
   template: `
     <div
-      class="border-b md:border-none border-base-content/20 px-[1rem] py-1 sm1:px-[32px] sm2:px-0 "
+      class="border-b border-base-content/20 px-[1rem] py-1 sm1:px-[32px] sm2:px-0 md:border-none "
     >
       <div
         [class.md:hidden]="isResponsive"
@@ -30,12 +31,15 @@ import { Tab } from 'src/app/models/tab';
   `,
 })
 export class TabsComponent implements OnInit {
-  @Input() tabs: Tab[] = [];
-  active: string = '';
   @Input() isResponsive?: boolean = true;
+  tabs: Tab[] = [];
+  constructor(private tabsService: TabsService) {}
 
   ngOnInit(): void {
-
-
+    this.tabsService.tabs$.subscribe({
+      next: (tabs) => {
+        if (tabs !== null) this.tabs = tabs;
+      },
+    });
   }
 }

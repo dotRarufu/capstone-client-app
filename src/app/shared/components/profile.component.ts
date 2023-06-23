@@ -8,7 +8,7 @@ import { Tab } from 'src/app/models/tab';
     <div class="flex flex-col gap-[1rem]">
       <div>
         <TopAppBar activePath="Profile" />
-        <Tabs [tabs]="tabs" />
+        <Tabs />
       </div>
 
       <div

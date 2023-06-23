@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { TopAppBarService } from 'src/app/services/top-app-bar.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 
@@ -71,17 +70,11 @@ export class TopAppBarComponent implements OnInit {
 
   // watch for changes in
   constructor(
-    private topAppBarService: TopAppBarService,
     private authService: AuthService,
     private spinner: NgxSpinnerService,
     private router: Router
   ) {
-    // todo: add unsubscribe or convert to signal
-    this.topAppBarService.activePath$
-      .subscribe
-      // (path) => (this.activePath = path)
-      ();
-  }
+    }
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();

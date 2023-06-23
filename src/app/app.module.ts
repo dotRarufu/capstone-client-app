@@ -132,10 +132,10 @@ const routes: Routes = [
               {
                 path: 'forms',
                 component: FormGeneratorComponent,
-
+                // redirectTo: '1',
                 children: [
                   {
-                    path: '1',
+                    path: ':formNumber',
                     component: FormComponent,
                   },
                   {

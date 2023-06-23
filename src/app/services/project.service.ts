@@ -38,8 +38,8 @@ type AnalyzerResultError = string;
 })
 export class ProjectService {
   supabase: SupabaseClient;
-  private _formUrl$: BehaviorSubject<string> = new BehaviorSubject('');
-  formUrl$ = this._formUrl$.asObservable();
+  private formUrlSubject: BehaviorSubject<string> = new BehaviorSubject('');
+  formUrl$ = this.formUrlSubject.asObservable();
   private _analyzerResult$ = new BehaviorSubject<
     TitleAnalyzerResult | AnalyzerResultError | undefined | null
   >(undefined);
@@ -280,7 +280,7 @@ export class ProjectService {
 
         const adviserIds = getObjectValues<string | null>(a.data[0]);
 
-        return adviserIds.filter(id => id !== null);
+        return adviserIds.filter((id) => id !== null);
       })
     );
     const studentsCheck = client
@@ -579,7 +579,6 @@ export class ProjectService {
   // todo: make the backend services automatically restart when something fails
 
   // move this in user service
-  
 
   clearAnalyzerResult() {
     this._analyzerResult$.next(undefined);
@@ -617,55 +616,51 @@ export class ProjectService {
     return a;
   }
 
-  async generateForm(
-    number: number,
-    dateTime?: number,
-    dateTimeRange?: number[]
-  ) {
-    const response = await this.supabase.functions.invoke('form-generator', {
-      body: {
-        formNumber: number,
-        projectId: this.activeProjectId(),
-        dateTime: 123,
-        // todo: update the edge fn to accept dateTimeRange
-        // why accept dateTimeRange? why not just output the form 4 without asking for range
-        // dateTimeRange,
-        name: 'Functions',
-      },
-    });
+  generateForm(number: number, dateTime?: number, dateTimeRange?: number[]) {
+    // const response = await this.supabase.functions.invoke('form-generator', {
+    //   body: {
+    //     formNumber: number,
+    //     projectId: this.activeProjectId(),
+    //     dateTime: 123,
+    //     // todo: update the edge fn to accept dateTimeRange
+    //     // why accept dateTimeRange? why not just output the form 4 without asking for range
+    //     // dateTimeRange,
+    //     name: 'Functions',
+    //   },
+    // });
 
     let url = '';
     switch (number) {
       case 1:
         url =
-          response.data ||
+          // response.data ||
           'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_1_project_0.docx';
         break;
       case 2:
         url =
-          response.data ||
+          // response.data ||
           'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_2_project_0.docx?t=2023-05-18T14%3A11%3A02.027Z';
         break;
       case 3:
         url =
-          response.data ||
+          // response.data ||
           'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_3_project_0.docx';
         break;
       case 4:
         url =
-          response.data ||
+          // response.data ||
           'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_4_project_0.docx';
         break;
 
       default:
         url =
-          response.data ||
+          // response.data ||
           'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
         break;
     }
 
-    console.log('url:', response.data);
+    // console.log('url:', response.data);
 
-    this._formUrl$.next(url);
+    return of(url).pipe(tap(url => this.formUrlSubject.next(url)));
   }
 }

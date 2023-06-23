@@ -13,7 +13,7 @@ import { groupBySection } from 'src/app/utils/groupBySection';
     <div class="flex flex-col gap-[1rem]">
       <div>
         <TopAppBar />
-        <Tabs [tabs]="tabs" />
+        <Tabs />
       </div>
 
       <div

@@ -4,3 +4,8 @@ export interface Tab {
   handler: Function;
   active?: boolean;
 }
+
+export interface TabDefinition {
+  name: string;
+  id: string;
+}
