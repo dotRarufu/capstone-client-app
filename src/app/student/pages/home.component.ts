@@ -26,50 +26,49 @@ import { TabsService } from 'src/app/services/tabs.service';
       <div
         class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
       >
-      <ng-container *ngIf="tabsService.activeId$ | async as activeId">
-      
-        <div
-          class=" flex w-full  gap-[1rem] sm2:justify-center md:w-full lg:w-[1040px]"
-        >
-          <ng-container *ngIf="activeId === 'title-analyzer' || isDesktop">
-            <div class="flex flex-col gap-4 ">
-              <ng-container *ngIf="!hasResult">
-                <TitleAnalyzer
-                  (analyzeClicked)="this.alreadyHaveTitle = true"
-                />
-              </ng-container>
-
-              <ng-container *ngIf="hasResult">
-                <TitleAnalyzerResult [sideColumn]="true" />
-              </ng-container>
-            </div>
-          </ng-container>
-
-          <ng-container *ngIf="activeId === 'projects' || isDesktop">
-            <div
-              class="w-full sm2:w-[840px] md:w-[294px]  md:flex-shrink-0 md:basis-[294px] lg:w-[1040px]"
-            >
-              <Projects>
-                <div
-                  class="grid grid-flow-row grid-cols-1 items-center justify-items-center gap-[24px]  sm1:grid-cols-2 sm1:justify-start sm2:grid-cols-3 md:flex md:flex-col md:items-center md:justify-center"
-                >
-                  <StudentProjectCard
-                    (removeProjectId)="removeProjectId($event)"
-                    *ngFor="let project of projects()"
-                    [project]="project"
+        <ng-container *ngIf="tabsService.activeId$ | async as activeId">
+          <div
+            class=" flex w-full  gap-[1rem] sm2:justify-center md:w-full lg:w-[1040px]"
+          >
+            <ng-container *ngIf="activeId === 'title-analyzer' || isDesktop">
+              <div class="flex flex-col gap-4 ">
+                <ng-container *ngIf="!hasResult">
+                  <TitleAnalyzer
+                    (analyzeClicked)="this.alreadyHaveTitle = true"
                   />
-                </div>
-              </Projects>
-            </div>
-          </ng-container>
-        </div>
+                </ng-container>
+
+                <ng-container *ngIf="hasResult">
+                  <TitleAnalyzerResult [sideColumn]="true" />
+                </ng-container>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="activeId === 'projects' || isDesktop">
+              <div
+                class="w-full sm2:w-[840px] md:w-[294px]  md:flex-shrink-0 md:basis-[294px] lg:w-[1040px]"
+              >
+                <Projects>
+                  <div
+                    class="grid grid-flow-row grid-cols-1 items-center justify-items-center gap-[24px]  sm1:grid-cols-2 sm1:justify-start sm2:grid-cols-3 md:flex md:flex-col md:items-center md:justify-center"
+                  >
+                    <StudentProjectCard
+                      (removeProjectId)="removeProjectId($event)"
+                      *ngFor="let project of projects()"
+                      [project]="project"
+                    />
+                  </div>
+                </Projects>
+              </div>
+            </ng-container>
+          </div>
         </ng-container>
       </div>
     </div>
 
     <Modal inputId="addProject">
       <div
-        class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
+        class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
         <div class="flex justify-between bg-primary p-[24px]">
           <div class="flex w-full flex-col justify-between">
@@ -121,7 +120,7 @@ import { TabsService } from 'src/app/services/tabs.service';
       inputId="titleAnalyzer"
       (checkboxChanged)="handleCheckboxChange($event)"
     >
-      <div class="flex w-[712px] flex-col gap-[16px] bg-base-100 p-6">
+      <div class="flex w-full flex-col gap-[16px] bg-base-100 p-6">
         <ng-container *ngIf="alreadyHaveTitle">
           <h1
             class="text-center text-[24px] text-base-content min-[444px]:text-left"
@@ -286,7 +285,7 @@ export class StudentHomeComponent implements OnInit, OnDestroy {
       },
     ];
     const child1 = this.route.snapshot.firstChild;
-    if (child1 === null) throw new Error("impossible");
+    if (child1 === null) throw new Error('impossible');
 
     const active = child1.url[0].path;
     this.tabsService.setTabs(tabs, ['s', 'home'], active);

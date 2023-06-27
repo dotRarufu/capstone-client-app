@@ -40,6 +40,8 @@ import {
   Slash,
   ChevronRight,
   ChevronLeft,
+  CheckCircle,
+  Minus
 } from 'angular-feather/icons';
 import { TopAppBarComponent } from './components/topAppBar.component';
 import { ModalComponent } from './components/modal.component';
@@ -88,6 +90,8 @@ const icons = {
   Calendar,
   ChevronRight,
   ChevronLeft,
+  CheckCircle,
+  Minus
 };
 
 @NgModule({

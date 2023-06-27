@@ -19,7 +19,7 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
         >
           <div
             *ngFor="let consultation of scheduled"
-            class="card card-compact h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
               <button
@@ -52,7 +52,7 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
 
     <Modal inputId="consultationModal">
       <div
-        class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
+        class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
         <div class="flex justify-between bg-primary p-[24px]">
           <div class="flex flex-col justify-between">

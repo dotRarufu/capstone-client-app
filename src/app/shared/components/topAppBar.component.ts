@@ -29,7 +29,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
           ></label>
           <ul
             tabindex="0"
-            class="dropdown-content menu w-52 rounded-[3px] bg-base-100 p-2 shadow"
+            class="z-[999] dropdown-content menu w-52 rounded-[3px] bg-base-100 p-2 shadow"
           >
             <!-- <li><a class="">Profile</a></li> -->
 

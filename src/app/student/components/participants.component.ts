@@ -56,7 +56,7 @@ import { User } from 'src/app/types/collection';
 
       <Modal inputId="addParticipant">
         <div
-          class="flex w-[712px] flex-col rounded-[3px] border border-base-content/10"
+          class="flex w-full flex-col rounded-[3px] border border-base-content/10"
         >
           <div class="flex justify-between bg-primary p-[24px]">
             <div class="flex w-full flex-col justify-between">
