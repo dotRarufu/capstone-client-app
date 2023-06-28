@@ -80,8 +80,12 @@ import { TabsService } from 'src/app/services/tabs.service';
             />
           </div>
         </div>
-        <div class="flex bg-base-100">
-          <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
+        <div
+          class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
+        >
+          <div
+            class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-scroll"
+          >
             <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
             </div>
@@ -94,23 +98,31 @@ import { TabsService } from 'src/app/services/tabs.service';
               placeholder="Full Title"
             ></textarea>
           </div>
-          <ul class=" flex w-[223px]  flex-col bg-neutral/20 p-0 ">
-            <button
+          <ul class=" flex w-full sm1:w-[223px]  flex-col bg-neutral/20 p-0 ">
+            <!-- <button
               (click)="addProject()"
-              class="btn-ghost btn flex justify-end gap-2 rounded-[3px] text-base-content"
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               done
               <i-feather class="text-base-content/70" name="check-square" />
-            </button>
+            </button> -->
+            <button
+            (click)="addProject()"
+                class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+              >
+              <i-feather class="text-base-content/70" name="check-square" />
+              done
+              </button>
 
             <div class="h-full"></div>
 
             <button
-              class="btn-ghost btn flex justify-end gap-2 rounded-[3px] text-base-content"
-            >
-              close
+       
+                class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+              >
               <i-feather class="text-base-content/70" name="x-circle" />
-            </button>
+              close
+              </button>
           </ul>
         </div>
       </div>
@@ -184,7 +196,7 @@ import { TabsService } from 'src/app/services/tabs.service';
     </Modal>
     <Modal inputId="removeProjectModal">
       <div
-        class="w-sm flex flex-col gap-6 rounded-[3px] border border-base-content/10 bg-base-100 p-4"
+        class="w-full sm1:w-sm flex flex-col gap-6 rounded-[3px] border border-base-content/10 bg-base-100 p-4 items-center"
       >
         <h2 class="text-[18px] text-base-content">
           Are you sure you want to remove this project?

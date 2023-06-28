@@ -62,7 +62,9 @@ import { Task } from 'src/app/types/collection';
               </div>
             </div>
           </div>
-          <div class="flex bg-base-100">
+          <div
+            class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
+          >
             <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
               <div class="flex items-center justify-between ">
                 <h1 class="text-[20px] text-base-content">Description</h1>
@@ -78,7 +80,7 @@ import { Task } from 'src/app/types/collection';
                 ipsum dolor sit
               </div>
             </div>
-            <ul class=" flex w-[223px]  flex-col bg-neutral/20 py-2 ">
+            <ul class=" flex w-full sm1:w-[223px]  flex-col bg-neutral/20 py-2 ">
               <div class="h-full"></div>
 
               <button
@@ -104,7 +106,9 @@ import { Task } from 'src/app/types/collection';
               />
             </div>
           </div>
-          <div class="flex bg-base-100">
+          <div
+            class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
+          >
             <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
               <div class="flex items-center justify-between ">
                 <h1 class="text-[20px] text-base-content">Description</h1>

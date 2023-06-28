@@ -17,7 +17,7 @@ import { Consultation } from 'src/app/types/collection';
         <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
           <div
             *ngFor="let consultation of scheduled"
-            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+            class="card card-compact h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
               <button
@@ -63,7 +63,9 @@ import { Consultation } from 'src/app/types/collection';
             </div>
           </div>
         </div>
-        <div class="flex bg-base-100">
+        <div
+          class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
+        >
           <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
             <div>
               <div class="flex items-center justify-between ">

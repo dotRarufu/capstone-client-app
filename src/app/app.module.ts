@@ -79,7 +79,7 @@ const routes: Routes = [
   },
   {
     path: 's',
-    canActivate: [authGuard, roleGuard],
+    // canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',
@@ -107,7 +107,7 @@ const routes: Routes = [
       },
       {
         path: 'project',
-        canActivate: [participantGuard],
+        // canActivate: [participantGuard],
         children: [
           {
             path: ':projectId',
@@ -169,7 +169,7 @@ const routes: Routes = [
   },
   {
     path: 'c',
-    canActivate: [authGuard, roleGuard],
+    // canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',
@@ -192,7 +192,7 @@ const routes: Routes = [
       },
       {
         path: 'project',
-        canActivate: [participantGuard],
+        // canActivate: [participantGuard],
         children: [
           {
             path: ':projectId',
@@ -255,7 +255,7 @@ const routes: Routes = [
   },
   {
     path: 't',
-    canActivate: [authGuard, roleGuard],
+    // canActivate: [authGuard, roleGuard],
     children: [
       {
         path: 'home',
@@ -276,7 +276,7 @@ const routes: Routes = [
       },
       {
         path: 'project',
-        canActivate: [participantGuard],
+        // canActivate: [participantGuard],
         children: [
           {
             path: ':projectId',

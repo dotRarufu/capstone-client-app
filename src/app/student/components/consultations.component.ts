@@ -69,9 +69,9 @@ import { Consultation } from 'src/app/types/collection';
             />
           </div>
         </div>
-        <div class="flex h-[calc(100%-96px)] bg-base-100">
+        <div class="flex flex-col sm1:flex-row sm1:h-[calc(100%-96px)] bg-base-100">
           <div
-            class="flex w-full flex-col gap-2 overflow-y-scroll bg-base-100 px-6 py-4"
+            class="flex w-full flex-col gap-2 sm1:overflow-y-scroll bg-base-100 px-6 py-4"
           >
             <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
@@ -200,7 +200,7 @@ import { Consultation } from 'src/app/types/collection';
               </li>
             </ul>
           </div>
-          <ul class="flex h-full w-[223px]  flex-col bg-neutral/20 p-0 py-2">
+          <ul class="flex h-full w-full sm1:w-[223px]  flex-col bg-neutral/20 p-0 py-2">
             <button
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
@@ -235,8 +235,10 @@ import { Consultation } from 'src/app/types/collection';
             </div>
           </div>
         </div>
-        <div class="flex bg-base-100 ">
-          <div class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4">
+        <div class="flex flex-col sm1:flex-row sm1:h-[calc(100%-96px)] bg-base-100">
+          <div
+            class="flex w-full flex-col gap-2 sm1:overflow-y-scroll bg-base-100 px-6 py-4"
+          >
             <div>
               <div class="flex items-center justify-between ">
                 <h1 class="text-[20px] text-base-content">Description</h1>
@@ -274,7 +276,7 @@ import { Consultation } from 'src/app/types/collection';
               <div class="text-base text-base-content">comlab 3</div>
             </div>
           </div>
-          <ul class=" flex w-[223px]  flex-col bg-neutral/20 py-2 ">
+          <ul class="flex h-full w-full sm1:w-[223px]  flex-col bg-neutral/20 p-0 py-2">
             <div class="h-full"></div>
 
             <button
