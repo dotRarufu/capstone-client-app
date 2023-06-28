@@ -3,8 +3,9 @@ import {
   createClient,
   SupabaseClient,
   AuthResponse,
+  PostgrestSingleResponse,
 } from '@supabase/supabase-js';
-import { BehaviorSubject, from, map, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, Observable, from, map, switchMap, tap } from 'rxjs';
 import { environment } from 'src/environments/environment.dev';
 import { CapstoolUser } from '../models/capstool-user';
 import { Database } from '../types/supabase';
@@ -12,6 +13,7 @@ import { Router } from '@angular/router';
 import { SupabaseService } from './supabase.service';
 import { DatabaseService } from './database.service';
 import { Consultation, Task, User } from '../types/collection';
+import { getCurrentEpochTime } from '../utils/getCurrentEpochTime';
 
 @Injectable({
   providedIn: 'root',
@@ -19,10 +21,8 @@ import { Consultation, Task, User } from '../types/collection';
 export class ConsultationService {
   private readonly client;
 
-  constructor(
-    private supabaseService: SupabaseService,
-  ) {
-   this.client = this.supabaseService.client
+  constructor(private supabaseService: SupabaseService) {
+    this.client = this.supabaseService.client;
   }
 
   // add(task: Task) {
@@ -61,17 +61,55 @@ export class ConsultationService {
   //   return request$;
   // }
 
-  getConsultations(isAccepted: boolean, projectId: number) { 
-    const request = this.client.from('consultation').select('*').eq('is_accepted', isAccepted).eq('project_id', projectId);
-    const request$ = from(request).pipe(
-      map(response => {
-        if (response.error) throw new Error(`error while fetching tasks: ${response.error}`)
+  getConsultations(
+    isScheduled: boolean,
+    projectId: number,
+    isCompleted: boolean
+  ) {
+    let request$: Observable<
+      PostgrestSingleResponse<
+        {
+          date_time: number;
+          description: string;
+          id: number;
+          is_accepted: boolean;
+          location: string;
+          organizer_id: string;
+          project_id: number;
+        }[]
+      >
+    >;
 
-        return response.data
+    if (isCompleted) {
+      const currentTime = getCurrentEpochTime();
+      request$ = from(
+        this.client
+          .from('consultation')
+          .select('*')
+          .eq('is_accepted', true)
+          .lt('date_time', currentTime)
+          .eq('project_id', projectId)
+      );
+    } else {
+      request$ = from(
+        this.client
+          .from('consultation')
+          .select('*')
+          .eq('is_accepted', isScheduled)
+          .eq('project_id', projectId)
+      );
+    }
+
+    const res = from(request$).pipe(
+      map((response) => {
+        if (response.error)
+          throw new Error(`error while fetching tasks: ${response.error}`);
+
+        return response.data;
       })
     );
 
-    return request$;
+    return res;
   }
 
   getConsultationDetails(consultation: Consultation) {

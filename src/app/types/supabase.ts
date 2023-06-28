@@ -9,6 +9,37 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      accomplished_task: {
+        Row: {
+          consultation_id: number
+          id: number
+          task_id: number
+        }
+        Insert: {
+          consultation_id: number
+          id?: number
+          task_id: number
+        }
+        Update: {
+          consultation_id?: number
+          id?: number
+          task_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accomplished_task_consultation_id_fkey"
+            columns: ["consultation_id"]
+            referencedRelation: "consultation"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "accomplished_task_task_id_fkey"
+            columns: ["task_id"]
+            referencedRelation: "task"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       actual_accomplishment: {
         Row: {
           consultation_id: number
@@ -333,7 +364,7 @@ export interface Database {
       consultation: {
         Row: {
           date_time: number
-          duration: number
+          description: string
           id: number
           is_accepted: boolean
           location: string
@@ -342,7 +373,7 @@ export interface Database {
         }
         Insert: {
           date_time: number
-          duration: number
+          description?: string
           id?: number
           is_accepted: boolean
           location: string
@@ -351,7 +382,7 @@ export interface Database {
         }
         Update: {
           date_time?: number
-          duration?: number
+          description?: string
           id?: number
           is_accepted?: boolean
           location?: string

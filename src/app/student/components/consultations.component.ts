@@ -21,37 +21,14 @@ import { Consultation } from 'src/app/types/collection';
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <Accordion *ngFor="let category of categories" [heading]="category">
+      <Accordion *ngFor="let consultation of consultations" [heading]="consultation.category">
         <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
-          <div
-            *ngFor="let consultation of scheduled"
-            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+          <ConsultationCard
+            *ngFor="let data of consultation.items"
+            [data]="data"
           >
-            <figure class="h-[92px] bg-secondary">
-              <button
-                onclick="consultationModal.showModal()"
-                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
-              >
-                {{ 'Untitled' }}
-              </button>
-            </figure>
-            <div class="card-body">
-              <p class="text-sm">Location: {{ consultation.location }}</p>
-              <p class="text-sm">
-                Time and Date:
-                {{ epochToDateString(consultation.date_time) }}
-              </p>
-
-              <div class="card-actions justify-end">
-                <button
-                  onclick="consultationModal.showModal()"
-                  class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
-                >
-                  <i-feather class="text-base-content/70" name="log-in" />
-                </button>
-              </div>
-            </div>
-          </div>
+            <!-- todo: add slot for controls -->
+          </ConsultationCard>
         </div>
       </Accordion>
     </div>
@@ -69,9 +46,11 @@ import { Consultation } from 'src/app/types/collection';
             />
           </div>
         </div>
-        <div class="flex flex-col sm1:flex-row sm1:h-[calc(100%-96px)] bg-base-100">
+        <div
+          class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
+        >
           <div
-            class="flex w-full flex-col gap-2 sm1:overflow-y-scroll bg-base-100 px-6 py-4"
+            class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-scroll"
           >
             <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
@@ -80,7 +59,7 @@ import { Consultation } from 'src/app/types/collection';
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <textarea
-              class="textarea shrink-0 h-[117px] w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 text-base text-base-content leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0"
+              class="textarea h-[117px] w-full shrink-0 rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 text-base leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0"
               placeholder="Description"
             ></textarea>
 
@@ -200,7 +179,9 @@ import { Consultation } from 'src/app/types/collection';
               </li>
             </ul>
           </div>
-          <ul class="flex h-full w-full sm1:w-[223px]  flex-col bg-neutral/20 p-0 py-2">
+          <ul
+            class="flex h-full w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
+          >
             <button
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
@@ -235,9 +216,11 @@ import { Consultation } from 'src/app/types/collection';
             </div>
           </div>
         </div>
-        <div class="flex flex-col sm1:flex-row sm1:h-[calc(100%-96px)] bg-base-100">
+        <div
+          class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
+        >
           <div
-            class="flex w-full flex-col gap-2 sm1:overflow-y-scroll bg-base-100 px-6 py-4"
+            class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-scroll"
           >
             <div>
               <div class="flex items-center justify-between ">
@@ -276,7 +259,9 @@ import { Consultation } from 'src/app/types/collection';
               <div class="text-base text-base-content">comlab 3</div>
             </div>
           </div>
-          <ul class="flex h-full w-full sm1:w-[223px]  flex-col bg-neutral/20 p-0 py-2">
+          <ul
+            class="flex h-full w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
+          >
             <div class="h-full"></div>
 
             <button
@@ -292,8 +277,11 @@ import { Consultation } from 'src/app/types/collection';
 })
 // todo: make a one dynamic accordion component under shared module
 export class ConsultationsComponent {
-  categories = ['Scheduled', 'Completed', 'Done'];
-  scheduled: Consultation[] = [];
+  consultations: { category: string; items: Consultation[] }[] = [
+    { category: 'Pending', items: [] },
+    { category: 'Scheduled', items: [] },
+    { category: 'Completed', items: [] },
+  ];
 
   constructor(
     private consultationService: ConsultationService,
@@ -302,14 +290,46 @@ export class ConsultationsComponent {
 
   ngOnInit() {
     const projectId = this.projectService.activeProjectId();
-    const getConsultations$ = this.consultationService.getConsultations(
+    // todo: refactor these
+    const scheduled$ = this.consultationService.getConsultations(
       true,
-      projectId
+      projectId,
+      false
     );
-    getConsultations$.subscribe((consultations) => {
-      this.scheduled = consultations;
-      console.log('consultations:', consultations);
+    const pending$ = this.consultationService.getConsultations(
+      false,
+      projectId,
+      false
+    );
+    const completed$ = this.consultationService.getConsultations(
+      true,
+      projectId,
+      true
+    );
+
+    scheduled$.subscribe({
+      next: (consultations) => {
+        const scheduled = this.consultations[1];
+        // maybe make this non mutated
+        scheduled.items = consultations;
+      },
     });
+    pending$.subscribe({
+      next: (consultations) => {
+        const pending = this.consultations[0];
+        // maybe make this non mutated
+        pending.items = consultations;
+      },
+    });
+    completed$.subscribe({
+      next: (consultations) => {
+        const completed = this.consultations[2];
+        // maybe make this non mutated
+        completed.items = consultations;
+      },
+    });
+
+
   }
 
   epochToDateString(unixEpoch: number) {

@@ -13,27 +13,24 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <Accordion *ngFor="let category of categories" [heading]="category">
-        <div
-          class="flex flex-wrap justify-center gap-[24px]  sm1:justify-start"
-        >
+      <Accordion *ngFor="let consultation of consultations" [heading]="consultation.category">
+        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
           <div
-            *ngFor="let consultation of scheduled"
-            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+            *ngFor="let item of consultation.items"
+            class="card card-compact h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
               <button
                 onclick="consultationModal.showModal()"
                 class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
               >
-                Untitled
+                {{ epochToDateString(item.date_time) }}
               </button>
             </figure>
             <div class="card-body">
-              <p class="text-sm">Location: {{ consultation.location }}</p>
+              <p class="text-sm">{{ item.location }}</p>
               <p class="text-sm">
-                Time and Date:
-                {{ epochToDateString(consultation.date_time) }}
+                {{ item.description }}
               </p>
 
               <div class="card-actions justify-end">
@@ -126,8 +123,11 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
   `,
 })
 export class ConsultationsComponent {
-  scheduled: Consultation[] = [];
-  categories = ['Scheduled', 'Completed', 'Done'];
+  consultations: { category: string; items: Consultation[] }[] = [
+    { category: 'Pending', items: [] },
+    { category: 'Scheduled', items: [] },
+    { category: 'Completed', items: [] },
+  ];
 
   constructor(
     private consultationService: ConsultationService,
@@ -136,14 +136,46 @@ export class ConsultationsComponent {
 
   ngOnInit() {
     const projectId = this.projectService.activeProjectId();
-    const getConsultations$ = this.consultationService.getConsultations(
+    // todo: refactor these
+    const scheduled$ = this.consultationService.getConsultations(
       true,
-      projectId
+      projectId,
+      false
+    );
+    const pending$ = this.consultationService.getConsultations(
+      false,
+      projectId,
+      false
+    );
+    const completed$ = this.consultationService.getConsultations(
+      true,
+      projectId,
+      true
     );
 
-    getConsultations$.subscribe((consultations) => {
-      this.scheduled = consultations;
+    scheduled$.subscribe({
+      next: (consultations) => {
+        const scheduled = this.consultations[1];
+        // maybe make this non mutated
+        scheduled.items = consultations;
+      },
     });
+    pending$.subscribe({
+      next: (consultations) => {
+        const pending = this.consultations[0];
+        // maybe make this non mutated
+        pending.items = consultations;
+      },
+    });
+    completed$.subscribe({
+      next: (consultations) => {
+        const completed = this.consultations[2];
+        // maybe make this non mutated
+        completed.items = consultations;
+      },
+    });
+
+
   }
 
   epochToDateString(unixEpoch: number) {
