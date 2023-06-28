@@ -31,8 +31,7 @@ export const participantGuard = (route: ActivatedRouteSnapshot) => {
             console.log(
               'user is not a participant, and repelled by the guard:'
             );
-            //   todo: navigate to unauthorized
-            router.navigate(['/']);
+            router.navigate(['/', 'unauthorized']);
           }
 
           return dec;
@@ -62,8 +61,7 @@ export const participantGuard = (route: ActivatedRouteSnapshot) => {
     map((dec) => {
       if (!dec) {
         console.log('user is not a participant, and repelled by the guard:');
-        //   todo: navigate to unauthorized
-        router.navigate(['/']);
+        router.navigate(['/', 'unauthorized']);
       }
 
       return dec;

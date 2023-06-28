@@ -41,7 +41,7 @@ import {
   ChevronRight,
   ChevronLeft,
   CheckCircle,
-  Minus
+  Minus,
 } from 'angular-feather/icons';
 import { TopAppBarComponent } from './components/topAppBar.component';
 import { ModalComponent } from './components/modal.component';
@@ -58,6 +58,7 @@ import { ParticipantCardComponent } from './components/participantCard.component
 import { ProjectsAccordionComponent } from './components/accordion/projects.component';
 import { TodoAccordionComponent } from './components/accordion/todo.component';
 import { ConsultationCardComponent } from './components/consultationCard.component';
+import { UnauthorizedComponent } from './components/unauthorized.component';
 
 const icons = {
   ArrowLeft,
@@ -91,7 +92,7 @@ const icons = {
   ChevronRight,
   ChevronLeft,
   CheckCircle,
-  Minus
+  Minus,
 };
 
 @NgModule({
@@ -112,7 +113,8 @@ const icons = {
     ProfileViewComponent,
     NavigationRailComponent,
     ParticipantCardComponent,
-    ConsultationCardComponent
+    ConsultationCardComponent,
+    UnauthorizedComponent,
   ],
   imports: [
     CommonModule,
@@ -148,7 +150,8 @@ const icons = {
     ParticipantCardComponent,
     ProjectsAccordionComponent,
     TodoAccordionComponent,
-    ConsultationCardComponent
+    ConsultationCardComponent,
+    UnauthorizedComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

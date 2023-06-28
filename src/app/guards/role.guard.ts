@@ -44,8 +44,7 @@ export const roleGuard: CanActivateFn = async (
   if (root === userRolePath) return true;
 
   console.log("repelled by role guard:", userRolePath,userRole);
-  // todo: navigate to unauthorized
-  router.navigate([userRolePath]);
+  router.navigate(['/', 'unauthorized']);
 
   return false;
 };

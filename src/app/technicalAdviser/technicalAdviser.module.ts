@@ -17,6 +17,7 @@ import { FormGeneratorComponent } from '../shared/components/formGenerator.compo
 import { FormComponent } from '../shared/components/form.component';
 import { RedirectComponent } from '../shared/components/redirect.component';
 import { NotFoundComponent } from '../shared/components/notFound.component';
+import { participantGuard } from '../guards/participant.guard';
 
 const routes: Routes = [
   {
@@ -38,7 +39,7 @@ const routes: Routes = [
   },
   {
     path: 'project',
-    // canActivate: [participantGuard],
+    canActivate: [participantGuard],
     children: [
       {
         path: ':projectId',
