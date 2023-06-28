@@ -36,6 +36,7 @@ export class TabsComponent implements OnInit {
   constructor(private tabsService: TabsService) {}
 
   ngOnInit(): void {
+    console.log("tabs runs");
     this.tabsService.tabs$.subscribe({
       next: (tabs) => {
         if (tabs !== null) this.tabs = tabs;

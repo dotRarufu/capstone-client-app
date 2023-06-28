@@ -1,11 +1,12 @@
 import { Component, OnInit, WritableSignal, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
-import { Tab } from 'src/app/models/tab';
+import { Tab, TabDefinition } from 'src/app/models/tab';
 import { filter, fromEvent, map } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { SectionProject } from 'src/app/models/sectionProject';
 import { groupBySection } from 'src/app/utils/groupBySection';
+import { TabsService } from 'src/app/services/tabs.service';
 
 @Component({
   selector: 'TechnicalAdviserHome',
@@ -94,12 +95,11 @@ export class TechnicalAdviserHomeComponent implements OnInit {
     private router: Router,
     private projectService: ProjectService,
     private route: ActivatedRoute,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private tabsService: TabsService
   ) {}
 
   ngOnInit() {
-    // this.projects = this.projectService.getProjects();
-    // console.log('1st child:',this.route.firstChild );
     const windowResize$ = fromEvent(window, 'resize');
     this.isDesktop = window.innerWidth >= 1240;
     windowResize$.pipe(map((_) => window.innerWidth)).subscribe({
@@ -119,12 +119,6 @@ export class TechnicalAdviserHomeComponent implements OnInit {
           this.active = a.snapshot.url[0].path;
         },
       });
-    // if (this.route.firstChild !== null) {
-    // this.route.children[0].subscribe({
-    //   next:(a) => {this.active = a[0].path; console.log("new path:", a)},
-    //   complete: () => console.log("completes"),
-    //   error: (err) => console.log("errored:", err)
-    // })}
 
     const projects$ = this.projectService.getProjects();
 
@@ -140,6 +134,25 @@ export class TechnicalAdviserHomeComponent implements OnInit {
         this.sections.set(groupBySection(projects));
       },
     });
+
+    const tabs: TabDefinition[] = [
+      {
+        name: 'Dashboard',
+        id: 'dashboard',
+        // handler: this.handlerFactory('title-analyzer'),
+      },
+      {
+        name: 'Projects',
+        id: 'projects',
+        // handler: this.handlerFactory('projects'),
+      },
+    ];
+    const child1 = this.route.snapshot.firstChild;
+    if (child1 === null) throw new Error('impossible');
+
+    const active = child1.url[0].path;
+    this.active = active;
+    this.tabsService.setTabs(tabs, ['t', 'home'], active);
   }
 
   handlerFactory(path: string) {

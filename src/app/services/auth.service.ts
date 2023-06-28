@@ -30,22 +30,25 @@ export class AuthService {
       }
     });
 
-    this.user$
-      .pipe(
-        filter(isNotNull),
-      )
-      .subscribe({
-        next: (user) => {
-          const role = getRolePath(user.role_id);
-          this.router.navigate([role]);
-        },
-      });
+    // this causes problem when user navigates to a path by window url
+    // this.user$
+    //   .pipe(
+    //     filter(isNotNull),
+    //   )
+    //   .subscribe({
+    //     next: (user) => {
+    //       const role = getRolePath(user.role_id);
+    //       // this.router.navigate([role]);
+    //     },
+    //   });
   }
 
   async getAuthenticatedUser() {
     const client = this.supabaseService.client;
     const res = await client.auth.getUser();
     const user = res.data.user;
+
+    // console.log("get authenticated user:", user);
 
     if (user !== null) this.updateCurrentUser(user.id);
 
@@ -56,7 +59,7 @@ export class AuthService {
     const user = this.userSubject.getValue();
 
     if (user == null) {
-      console.log('no user is signed in');
+      // console.log('no user is signed in');
       return null;
     }
 

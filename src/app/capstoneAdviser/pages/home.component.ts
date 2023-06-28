@@ -1,11 +1,12 @@
 import { Component, OnInit, WritableSignal, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
-import { Tab } from 'src/app/models/tab';
+import { Tab, TabDefinition } from 'src/app/models/tab';
 import { filter, fromEvent, map } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { SectionProject } from 'src/app/models/sectionProject';
 import { groupBySection } from 'src/app/utils/groupBySection';
+import { TabsService } from 'src/app/services/tabs.service';
 
 @Component({
   selector: 'CapstoneAdviserHome',
@@ -74,19 +75,7 @@ import { groupBySection } from 'src/app/utils/groupBySection';
 export class HomeComponent implements OnInit {
   active: string = 'projects';
   search: string = '';
-  tabs: Tab[] = [
-    {
-      name: 'projects',
-      active: true,
-      id: 'projects',
-      handler: this.handlerFactory('projects'),
-    },
-    {
-      name: 'dashboard',
-      id: 'dashboard',
-      handler: this.handlerFactory('dashboard'),
-    },
-  ];
+
   isDesktop = false;
   sections: WritableSignal<SectionProject[]> = signal([]);
   modalProjectId = -1;
@@ -95,30 +84,37 @@ export class HomeComponent implements OnInit {
     private router: Router,
     private projectService: ProjectService,
     private route: ActivatedRoute,
-    private spinner: NgxSpinnerService
-  ) {}
+    private spinner: NgxSpinnerService,
+    private tabsService: TabsService
+  ) {
+    const child1 = this.route.snapshot.firstChild;
+    if (child1 === null) throw new Error('impossible');
+
+    this.active = child1.url[0].path;
+  }
 
   ngOnInit() {
-    const windowResize$ = fromEvent(window, 'resize');
-    this.isDesktop = window.innerWidth >= 1240;
-    windowResize$.pipe(map((_) => window.innerWidth)).subscribe({
-      next: (width) => {
-        this.isDesktop = width >= 1240;
+    this.watchWindowSize();
+    this.watchActivePath();
+    this.setupProjects();
+    this.setupTabs();
+  }
+
+  setupTabs() {
+    const tabs: TabDefinition[] = [
+      {
+        name: 'Dashboard',
+        id: 'dashboard',
       },
-    });
+      {
+        name: 'Projects',
+        id: 'projects',
+      },
+    ];
+    this.tabsService.setTabs(tabs, ['c', 'home'], this.active);
+  }
 
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe({
-        next: (_) => {
-          const a = this.route.firstChild;
-
-          if (a === null) throw new Error('should be impossible');
-
-          this.active = a.snapshot.url[0].path;
-        },
-      });
-
+  setupProjects() {
     const projects$ = this.projectService.getProjects();
 
     projects$.subscribe({
@@ -135,14 +131,28 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  handlerFactory(path: string) {
-    return () => {
-      this.router.navigate(['c', 'home', path]);
+  watchActivePath() {
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe({
+        next: (_) => {
+          const a = this.route.firstChild;
 
-      this.tabs = this.tabs.map((tab) =>
-        tab.id === path ? { ...tab, active: true } : { ...tab, active: false }
-      );
-    };
+          if (a === null) throw new Error('should be impossible');
+
+          this.active = a.snapshot.url[0].path;
+        },
+      });
+  }
+
+  watchWindowSize() {
+    const windowResize$ = fromEvent(window, 'resize');
+    this.isDesktop = window.innerWidth >= 1240;
+    windowResize$.pipe(map((_) => window.innerWidth)).subscribe({
+      next: (width) => {
+        this.isDesktop = width >= 1240;
+      },
+    });
   }
 
   removeProjectCard() {

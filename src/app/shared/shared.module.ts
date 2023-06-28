@@ -51,7 +51,6 @@ import { NgChartsModule } from 'ng2-charts';
 import { RedirectComponent } from './components/redirect.component';
 import { DashboardComponent } from './components/dashboard.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ProfileComponent } from './components/profile.component';
 import { ProfileViewComponent } from './components/profileView.component';
 import { NavigationRailComponent } from './components/navigationRail.component';
@@ -124,7 +123,6 @@ const icons = {
     NgChartsModule,
     FeatherModule.pick(icons),
     NgxSpinnerModule,
-    BrowserAnimationsModule,
   ],
   exports: [
     FormsModule,
@@ -144,7 +142,6 @@ const icons = {
     DashboardComponent,
     DragDropModule,
     NgxSpinnerModule,
-    BrowserAnimationsModule,
     ProfileComponent,
     ProfileViewComponent,
     NavigationRailComponent,

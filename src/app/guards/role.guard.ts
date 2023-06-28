@@ -18,7 +18,6 @@ export const roleGuard: CanActivateFn = async (
   const userService = inject(UserService);
 
   const currentUser = authService.getCurrentUser();
-
   let userRole: number | null = null;
 
   if (currentUser !== null) {
@@ -44,6 +43,7 @@ export const roleGuard: CanActivateFn = async (
 
   if (root === userRolePath) return true;
 
+  console.log("repelled by role guard:", userRolePath,userRole);
   // todo: navigate to unauthorized
   router.navigate([userRolePath]);
 
