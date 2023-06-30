@@ -1,8 +1,12 @@
 import { Component } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { convertUnixEpochToDateString } from 'src/app/capstoneAdviser/utils/convertUnixEpochToDateString';
+import { ConsultationData } from 'src/app/models/consultationData';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
-import { Consultation } from 'src/app/types/collection';
+import { TaskService } from 'src/app/services/task.service';
+import { Consultation, Task } from 'src/app/types/collection';
+import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
 
 @Component({
   template: `
@@ -21,7 +25,10 @@ import { Consultation } from 'src/app/types/collection';
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <Accordion *ngFor="let consultation of consultations" [heading]="consultation.category">
+      <Accordion
+        *ngFor="let consultation of consultations"
+        [heading]="consultation.category"
+      >
         <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
           <ConsultationCard
             *ngFor="let data of consultation.items"
@@ -41,7 +48,7 @@ import { Consultation } from 'src/app/types/collection';
           <div class="flex w-full flex-col justify-between gap-4">
             <input
               type="datetime-local"
-              placeholder="Consultation Title"
+              [(ngModel)]="dateTime"
               class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-transparent px-3 py-2 text-[20px] text-base text-primary-content/70 placeholder:text-[20px] placeholder:text-primary-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
             />
           </div>
@@ -61,12 +68,14 @@ import { Consultation } from 'src/app/types/collection';
             <textarea
               class="textarea h-[117px] w-full shrink-0 rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 text-base leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0"
               placeholder="Description"
+              [(ngModel)]="description"
             ></textarea>
 
             <input
               type="text"
               placeholder="Location"
               class="bg-base input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+              [(ngModel)]="location"
             />
 
             <div class="flex items-center justify-between ">
@@ -85,19 +94,13 @@ import { Consultation } from 'src/app/types/collection';
                   class="dropdown-content menu z-[999] w-52 rounded-[3px] bg-base-100 p-2 shadow-md"
                 >
                   <!-- <li><a class="">Profile</a></li> -->
-
-                  <a
-                    class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
-                    >Done task title here >
-                  </a>
-                  <a
-                    class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
-                    >Done task title here >
-                  </a>
-                  <a
-                    class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
-                    >Done task title here >
-                  </a>
+                  <li *ngFor="let task of doneTasks">
+                    <a
+                      (click)="addTask(task.id)"
+                      class="flex justify-start gap-2 rounded-[3px] font-normal text-base-content"
+                      >{{ task.title }}
+                    </a>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -106,6 +109,7 @@ import { Consultation } from 'src/app/types/collection';
 
             <ul class="flex h-fit  flex-col gap-2">
               <li
+                *ngFor="let task of selectedTasks"
                 class="flex justify-between rounded-[3px] border px-2 py-2 text-base text-base-content shadow"
               >
                 <div class="flex w-full items-center gap-2">
@@ -114,66 +118,14 @@ import { Consultation } from 'src/app/types/collection';
                     name="check-circle"
                   />
                   <p class="line-clamp-1">
-                    A really long Task Title goes Here testing
+                    {{ task.title }}
                   </p>
                 </div>
 
-                <a class="btn-ghost btn-square btn">
-                  <i-feather class=" text-base-content/70" name="minus" />
-                </a>
-              </li>
-
-              <li
-                class="flex justify-between rounded-[3px] border px-2 py-2 text-base text-base-content shadow"
-              >
-                <div class="flex w-full items-center gap-2">
-                  <i-feather
-                    class="shrink-0 grow-0 basis-[20px] text-base-content/70"
-                    name="check-circle"
-                  />
-                  <p class="line-clamp-1">
-                    A really long Task Title goes Here testing tester testament
-                    testosterone
-                  </p>
-                </div>
-
-                <a class="btn-ghost btn-square btn">
-                  <i-feather class=" text-base-content/70" name="minus" />
-                </a>
-              </li>
-              <li
-                class="flex justify-between rounded-[3px] border px-2 py-2 text-base text-base-content shadow"
-              >
-                <div class="flex w-full items-center gap-2">
-                  <i-feather
-                    class="shrink-0 grow-0 basis-[20px] text-base-content/70"
-                    name="check-circle"
-                  />
-                  <p class="line-clamp-1">
-                    A really long Task Title goes Here testing
-                  </p>
-                </div>
-
-                <a class="btn-ghost btn-square btn">
-                  <i-feather class=" text-base-content/70" name="minus" />
-                </a>
-              </li>
-
-              <li
-                class="flex justify-between rounded-[3px] border px-2 py-2 text-base text-base-content shadow"
-              >
-                <div class="flex w-full items-center gap-2">
-                  <i-feather
-                    class="shrink-0 grow-0 basis-[20px] text-base-content/70"
-                    name="check-circle"
-                  />
-                  <p class="line-clamp-1">
-                    A really long Task Title goes Here testing tester testament
-                    testosterone
-                  </p>
-                </div>
-
-                <a class="btn-ghost btn-square btn">
+                <a
+                  (click)="removeTask(task.id)"
+                  class="btn-ghost btn-square btn"
+                >
                   <i-feather class=" text-base-content/70" name="minus" />
                 </a>
               </li>
@@ -184,6 +136,7 @@ import { Consultation } from 'src/app/types/collection';
           >
             <button
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+              (click)="scheduleConsultation()"
             >
               <i-feather class="text-base-content/70" name="calendar" />
               schedule
@@ -275,17 +228,23 @@ import { Consultation } from 'src/app/types/collection';
     </Modal>
   `,
 })
-// todo: make a one dynamic accordion component under shared module
 export class ConsultationsComponent {
   consultations: { category: string; items: Consultation[] }[] = [
     { category: 'Pending', items: [] },
     { category: 'Scheduled', items: [] },
     { category: 'Completed', items: [] },
   ];
+  dateTime = '';
+  description = '';
+  location = '';
+  doneTasks: Task[] = [];
+  selectedTasks: Task[] = [];
 
   constructor(
     private consultationService: ConsultationService,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private toastr: ToastrService,
+    private taskService: TaskService
   ) {}
 
   ngOnInit() {
@@ -329,7 +288,56 @@ export class ConsultationsComponent {
       },
     });
 
+    const doneTasks$ = this.taskService.getTasks(2, projectId);
+    doneTasks$.subscribe({
+      next: (tasks) => (this.doneTasks = tasks),
+      error: () => this.toastr.error('error getting done tasks'),
+    });
+  }
 
+  addTask(id: number) {
+    const selectedTasks = this.doneTasks.find((t) => t.id === id);
+
+    if (selectedTasks === undefined) throw new Error('should be impossiobl;e');
+
+    this.doneTasks = this.doneTasks.filter((t) => t.id !== id);
+    this.selectedTasks.push(selectedTasks);
+  }
+
+  removeTask(id: number) {
+    const selectedTasks = this.selectedTasks.find((t) => t.id === id);
+
+    if (selectedTasks === undefined) throw new Error('should be impossiobl;e');
+
+    this.selectedTasks = this.selectedTasks.filter((t) => t.id !== id);
+    this.doneTasks.push(selectedTasks);
+  }
+
+  scheduleConsultation() {
+    console.log('| schedule consultation |');
+    const epochDateTime = dateStringToEpoch(this.dateTime);
+    console.log('dateTime:', this.dateTime);
+    console.log('epochDateTime:', epochDateTime);
+    console.log('description:', this.description);
+    console.log('location:', this.location);
+
+    console.log('| ====================== |');
+
+    const data: ConsultationData = {
+      dateTime: epochDateTime,
+      description: this.description,
+      location: this.location,
+      taskIds: this.selectedTasks.map((t) => t.id),
+    };
+    const request$ = this.consultationService.scheduleConsultation(
+      data,
+      this.projectService.activeProjectId()
+    );
+
+    request$.subscribe({
+      next: (message) => this.toastr.success("created"),
+      error: (message) => this.toastr.error(message),
+    });
   }
 
   epochToDateString(unixEpoch: number) {

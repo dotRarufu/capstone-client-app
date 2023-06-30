@@ -65,7 +65,7 @@ export class TaskService {
     const request = this.client.from('task').select('*').eq('status_id', statusId).eq('project_id', projectId);
     const request$ = from(request).pipe(
       map(response => {
-        if (response.error) throw new Error(`error while fetching tasks: ${response.error}`)
+        if (response.error) throw new Error(`error while fetching tasks 1: ${response.error}`)
 
         console.log("statusId:", statusId, "projectId:", projectId, "res:", response);
 

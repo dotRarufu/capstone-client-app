@@ -3,7 +3,7 @@ export type Json =
   | number
   | boolean
   | null
-  | { [key: string]: Json }
+  | { [key: string]: Json | undefined }
   | Json[]
 
 export interface Database {
@@ -375,7 +375,7 @@ export interface Database {
           date_time: number
           description?: string
           id?: number
-          is_accepted: boolean
+          is_accepted?: boolean
           location: string
           organizer_id: string
           project_id: number

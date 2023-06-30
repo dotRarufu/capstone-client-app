@@ -38,17 +38,11 @@ type AnalyzerResultError = string;
 })
 export class ProjectService {
   supabase: SupabaseClient;
+
   private formUrlSubject: BehaviorSubject<string> = new BehaviorSubject('');
-  formUrl$ = this.formUrlSubject.asObservable();
-  private _analyzerResult$ = new BehaviorSubject<
-    TitleAnalyzerResult | AnalyzerResultError | undefined | null
-  >(undefined);
-  analyzerResult$ = this._analyzerResult$.asObservable().pipe(
-    filter((v) => v !== undefined),
-    map(this.checkError)
-  );
   private projectUpdate$ = new BehaviorSubject<number>(0);
   private newParticipant$ = new BehaviorSubject<number>(0);
+  formUrl$ = this.formUrlSubject.asObservable();
   activeProjectId: WritableSignal<number>;
 
   constructor(
@@ -85,6 +79,26 @@ export class ProjectService {
       });
 
     this.activeProjectId = signal(-1);
+  }
+
+  // todo: maybe create an active project subject instead of this method
+  getCurrentTechnicalAdviserId() {
+    const client = this.databaseService.client;
+    const request = client
+      .from('project')
+      .select('technical_adviser_id')
+      .eq('id', this.activeProjectId());
+
+    const request$ = from(request).pipe(
+      map((res) => {
+        if (res.error !== null)
+          throw new Error('error getting technical adviseri d');
+
+        return res.data[0].technical_adviser_id;
+      })
+    );
+
+    return request$;
   }
 
   getProjects() {
@@ -579,7 +593,13 @@ export class ProjectService {
   // todo: make the backend services automatically restart when something fails
 
   // move this in user service
-
+  private _analyzerResult$ = new BehaviorSubject<
+    TitleAnalyzerResult | AnalyzerResultError | undefined | null
+  >(undefined);
+  analyzerResult$ = this._analyzerResult$.asObservable().pipe(
+    filter((v) => v !== undefined),
+    map(this.checkError)
+  );
   clearAnalyzerResult() {
     this._analyzerResult$.next(undefined);
     console.log('clear result');
@@ -661,6 +681,6 @@ export class ProjectService {
 
     // console.log('url:', response.data);
 
-    return of(url).pipe(tap(url => this.formUrlSubject.next(url)));
+    return of(url).pipe(tap((url) => this.formUrlSubject.next(url)));
   }
 }

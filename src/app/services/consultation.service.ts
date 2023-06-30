@@ -5,7 +5,7 @@ import {
   AuthResponse,
   PostgrestSingleResponse,
 } from '@supabase/supabase-js';
-import { BehaviorSubject, Observable, from, map, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, Observable, forkJoin, from, map, merge, mergeAll, mergeMap, of, switchMap, tap } from 'rxjs';
 import { environment } from 'src/environments/environment.dev';
 import { CapstoolUser } from '../models/capstool-user';
 import { Database } from '../types/supabase';
@@ -14,6 +14,10 @@ import { SupabaseService } from './supabase.service';
 import { DatabaseService } from './database.service';
 import { Consultation, Task, User } from '../types/collection';
 import { getCurrentEpochTime } from '../utils/getCurrentEpochTime';
+import { ConsultationData } from '../models/consultationData';
+import { UserService } from './user.service';
+import { AuthService } from './auth.service';
+import { ProjectService } from './project.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +25,12 @@ import { getCurrentEpochTime } from '../utils/getCurrentEpochTime';
 export class ConsultationService {
   private readonly client;
 
-  constructor(private supabaseService: SupabaseService) {
+  constructor(
+    private supabaseService: SupabaseService,
+    private userService: UserService,
+    private authService: AuthService,
+    private projectService: ProjectService
+  ) {
     this.client = this.supabaseService.client;
   }
 
@@ -60,6 +69,71 @@ export class ConsultationService {
 
   //   return request$;
   // }
+
+  scheduleConsultation(data: ConsultationData, projectId: number) {
+    const user = this.authService.getCurrentUser();
+
+    if (user === null) throw new Error('must be impossible');
+
+    const request$ = this.insertConsultation(user.uid, data, projectId);
+    
+    return request$;
+  }
+
+  // todo: maybe move in db service
+  private insertConsultation(
+    userUid: string,
+    data: ConsultationData,
+    projectId: number,
+  ) {
+    const newData = {
+      organizer_id: userUid,
+      project_id: projectId,
+      date_time: data.dateTime,
+      location: data.location,
+      description: data.description,
+    };
+
+    const request = this.client
+      .from('consultation')
+      .insert(newData)
+      .select('id');
+    //  todo: insert task ids in accomplishedtask table
+
+    return from(request).pipe(
+      map((res) => {
+  
+        if (res.error !== null) throw new Error('error inserting consultation');
+
+        return res.data[0].id;
+      }),
+      // todo: see if switchmap works, i think merge is better for this
+      switchMap(id => this.insertAccomplishedTasks(id, data.taskIds))
+    );
+  }
+
+  private insertAccomplishedTasks(consultationId: number, taskIds: number[]) {
+    const insertRequests$ = taskIds.map((tId) => {
+      const data = {
+        consultation_id: consultationId,
+        task_id: tId,
+      };
+      const request = this.client.from('accomplished_task').insert(data);
+
+      return from(request).pipe(
+        map((res) => {
+          if (res.error !== null)
+            throw new Error('error inserting data in accomplsihed tasks');
+
+          return res.statusText;
+        })
+      );
+    });
+
+    return forkJoin([...insertRequests$]);
+  }
+
+  acceptConsultation() {}
 
   getConsultations(
     isScheduled: boolean,
@@ -103,7 +177,7 @@ export class ConsultationService {
     const res = from(request$).pipe(
       map((response) => {
         if (response.error)
-          throw new Error(`error while fetching tasks: ${response.error}`);
+          throw new Error(`error while fetching tasks 2: ${response.error}`);
 
         return response.data;
       })

@@ -47,7 +47,7 @@ const routes: Routes = [
   },
   {
     path: 'project',
-    canActivate: [participantGuard],
+    // canActivate: [participantGuard],
     children: [
       {
         path: ':projectId',

@@ -44,7 +44,6 @@ export class ConsultationCardComponent {
     return convertUnixEpochToDateString(unixEpoch);
   }
   getEpochTime(unixEpoch: number) {
-    console.log("runsasda");
     return getTimeFromEpoch(unixEpoch)
   }
 }
