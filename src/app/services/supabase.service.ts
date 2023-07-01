@@ -4,7 +4,7 @@ import {
   SupabaseClient,
   AuthResponse,
 } from '@supabase/supabase-js';
-import { BehaviorSubject, from, map, switchMap } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment.dev';
 import { CapstoolUser } from '../models/capstool-user';
 import { Database } from '../types/supabase';

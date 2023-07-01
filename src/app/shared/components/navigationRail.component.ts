@@ -142,8 +142,9 @@ export class NavigationRailComponent implements OnInit {
     this.projectId = this.projectService.activeProjectId();
   }
 
-  navigateTo(path: string) {
-    const user = this.authService.getCurrentUser();
+  async navigateTo(path: string) {
+    const user = await this.authService.getAuthenticatedUser();
+
     if (user != null) {
       // move this inside a pipe
       if (user.role_id === null) throw new Error('user has no role id');
@@ -153,8 +154,9 @@ export class NavigationRailComponent implements OnInit {
     }
   }
 
-  navigateToHome() {
-    const user = this.authService.getCurrentUser();
+  async navigateToHome() {
+    const user = await this.authService.getAuthenticatedUser();
+
     if (user != null) {
       // move this inside a pipe
       if (user.role_id === null) throw new Error('user has no role id');

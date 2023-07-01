@@ -3,13 +3,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { TechnicalAdviserHomeComponent } from './pages/home.component';
 import { TechnicalAdviserProjectComponent } from './pages/project.component';
 import { SideBarComponent } from './components/sidebar.component';
-import { TechnicalAdviserProjectsComponent } from './components/projects.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ConsultationsComponent } from './components/consultations.component';
-import { ProjectCardComponent } from './components/projectCard.component';
-import { TasksComponent } from './components/tasks.component';
-import { ParticipantsComponent } from './components/participants.component';
-import { ParticipantCardComponent } from './components/participantCard.component';
 import { TechnicalAdviserDashboardComponent } from './components/dashboard.component';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from '../shared/components/dashboard.component';
@@ -18,6 +13,9 @@ import { FormComponent } from '../shared/components/form.component';
 import { RedirectComponent } from '../shared/components/redirect.component';
 import { NotFoundComponent } from '../shared/components/notFound.component';
 import { participantGuard } from '../guards/participant.guard';
+import { ParticipantsPageComponent } from '../shared/pages/participants.component';
+import { ProjectsPageComponent } from '../shared/pages/projects.component';
+import { TasksPageComponent } from '../shared/pages/tasks.component';
 
 const routes: Routes = [
   {
@@ -27,7 +25,7 @@ const routes: Routes = [
     children: [
       {
         path: 'projects',
-        component: TechnicalAdviserProjectsComponent,
+        component: ProjectsPageComponent,
       },
       {
         path: 'dashboard',
@@ -48,11 +46,11 @@ const routes: Routes = [
         children: [
           {
             path: 'tasks',
-            component: TasksComponent,
+            component: TasksPageComponent,
           },
           {
             path: 'participants',
-            component: ParticipantsComponent,
+            component: ParticipantsPageComponent,
           },
           {
             path: 'consultations',
@@ -104,13 +102,8 @@ const routes: Routes = [
   declarations: [
     TechnicalAdviserHomeComponent,
     ConsultationsComponent,
-    ProjectCardComponent,
     TechnicalAdviserProjectComponent,
     SideBarComponent,
-    TechnicalAdviserProjectsComponent,
-    TasksComponent,
-    ParticipantsComponent,
-    ParticipantCardComponent,
     TechnicalAdviserDashboardComponent,
   ],
   imports: [SharedModule, DragDropModule, RouterModule.forChild(routes)],

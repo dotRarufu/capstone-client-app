@@ -14,11 +14,13 @@ import { FormGeneratorComponent } from '../shared/components/formGenerator.compo
 import { FormComponent } from '../shared/components/form.component';
 import { RedirectComponent } from '../shared/components/redirect.component';
 import { NotFoundComponent } from '../shared/components/notFound.component';
-import { ParticipantCardComponent } from './components/participantCard.component';
-import { ProjectCardComponent } from './components/projectCard.component';
 import { SideBarComponent } from './components/sidebar.component';
 import { SharedModule } from '../shared/shared.module';
 import { participantGuard } from '../guards/participant.guard';
+import { AddProjectModalComponent } from './components/modals/addProject.component';
+import { ScheduleConsultationModalComponent } from './components/modals/scheduleConsultation.component';
+import { AddParticipantModalComponent } from './components/modals/addParticipant.component';
+import { TitleAnalyzerModalComponent } from './components/modals/titleAnalyzer.component';
 
 const routes: Routes = [
   {
@@ -116,11 +118,13 @@ const routes: Routes = [
     TitleAnalyzerComponent,
     ResultComponent,
     ConsultationsComponent,
-    ProjectCardComponent,
     TasksComponent,
     TitleBuilderComponent,
     ParticipantsComponent,
-    ParticipantCardComponent,
+    AddProjectModalComponent,
+    ScheduleConsultationModalComponent,
+    AddParticipantModalComponent,
+    TitleAnalyzerModalComponent,
   ],
   imports: [SharedModule, RouterModule.forChild(routes)],
   exports: [StudentHomeComponent],

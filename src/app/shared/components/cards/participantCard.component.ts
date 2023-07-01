@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { User } from 'src/app/types/collection';
 
 @Component({
-  selector: 'StudentParticipantCard',
+  selector: 'ParticipantCard',
   template: `
     <div
       class="w-full sm1:w-[347px] flex items-center gap-2 rounded-[3px]  "

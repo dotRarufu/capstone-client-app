@@ -1,23 +1,21 @@
 import { Injectable } from '@angular/core';
+import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import {
-  createClient,
-  SupabaseClient,
-  AuthResponse,
-  PostgrestSingleResponse,
-} from '@supabase/supabase-js';
-import { BehaviorSubject, Observable, forkJoin, from, map, merge, mergeAll, mergeMap, of, switchMap, tap } from 'rxjs';
-import { environment } from 'src/environments/environment.dev';
-import { CapstoolUser } from '../models/capstool-user';
-import { Database } from '../types/supabase';
-import { Router } from '@angular/router';
+  Observable,
+  forkJoin,
+  from,
+  map,
+  merge,
+  mergeAll,
+  mergeMap,
+  of,
+  switchMap,
+} from 'rxjs';
 import { SupabaseService } from './supabase.service';
-import { DatabaseService } from './database.service';
-import { Consultation, Task, User } from '../types/collection';
+import { Consultation } from '../types/collection';
 import { getCurrentEpochTime } from '../utils/getCurrentEpochTime';
 import { ConsultationData } from '../models/consultationData';
-import { UserService } from './user.service';
 import { AuthService } from './auth.service';
-import { ProjectService } from './project.service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,56 +25,23 @@ export class ConsultationService {
 
   constructor(
     private supabaseService: SupabaseService,
-    private userService: UserService,
-    private authService: AuthService,
-    private projectService: ProjectService
+    private authService: AuthService
   ) {
     this.client = this.supabaseService.client;
   }
 
-  // add(task: Task) {
-  //   const request = this.client.from('task').insert(task);
-  //   const request$ = from(request);
-
-  //   return request$;
-  // }
-
-  // delete(taskId: number) {
-  //   const request = this.client.from('task').delete().eq('id', taskId);
-  //   const request$ = from(request);
-
-  //   return request$;
-  // }
-
-  // edit(id: number,title: string, description: string) {
-  //   const data = {
-  //     title,
-  //     description
-  //   }
-
-  //   const request = this.client.from('task').update(data).eq('id', id);
-  //   const request$ = from(request);
-
-  //   return request$;
-  // }
-
-  // changeStatus(id: number, statusId: number) {
-  //   const data = {
-  //     status_id: statusId
-  //   }
-  //   const request = this.client.from('task').update(data).eq('id', id);
-  //   const request$ = from(request);
-
-  //   return request$;
-  // }
-
   scheduleConsultation(data: ConsultationData, projectId: number) {
-    const user = this.authService.getCurrentUser();
+    const user$ = from(this.authService.getAuthenticatedUser());
 
-    if (user === null) throw new Error('must be impossible');
+    const request$ = user$.pipe(
+      map((user) => {
+        if (user === null) throw new Error('must be impossible');
 
-    const request$ = this.insertConsultation(user.uid, data, projectId);
-    
+        return user;
+      }),
+      switchMap((user) => this.insertConsultation(user.uid, data, projectId))
+    );
+
     return request$;
   }
 
@@ -84,7 +49,7 @@ export class ConsultationService {
   private insertConsultation(
     userUid: string,
     data: ConsultationData,
-    projectId: number,
+    projectId: number
   ) {
     const newData = {
       organizer_id: userUid,
@@ -102,13 +67,12 @@ export class ConsultationService {
 
     return from(request).pipe(
       map((res) => {
-  
         if (res.error !== null) throw new Error('error inserting consultation');
 
         return res.data[0].id;
       }),
       // todo: see if switchmap works, i think merge is better for this
-      switchMap(id => this.insertAccomplishedTasks(id, data.taskIds))
+      switchMap((id) => this.insertAccomplishedTasks(id, data.taskIds))
     );
   }
 

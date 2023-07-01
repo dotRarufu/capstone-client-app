@@ -50,7 +50,7 @@ import { Consultation } from 'src/app/types/collection';
    <ConsultationModal />
   `,
 })
-export class ConsultationsComponent {
+export class TechnicalAdviserConsultationsComponent {
   consultations: { category: string; items: Consultation[] }[] = [
     { category: 'Pending', items: [] },
     { category: 'Scheduled', items: [] },

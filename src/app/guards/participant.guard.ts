@@ -1,11 +1,8 @@
-import {
-  ActivatedRouteSnapshot,
-  Router,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ProjectService } from '../services/project.service';
 import { inject } from '@angular/core';
-import { catchError, from, map, of, switchMap} from 'rxjs';
+import { catchError, from, map, of, switchMap } from 'rxjs';
 
 export const participantGuard = (route: ActivatedRouteSnapshot) => {
   const authService = inject(AuthService);
@@ -18,34 +15,7 @@ export const participantGuard = (route: ActivatedRouteSnapshot) => {
 
   const projectId = Number(child1.url[0].path);
 
-  const currentUser = authService.getCurrentUser();
-
-//todo:   refactor
-  if (currentUser !== null) {
-    console.log('currentuser is null');
-    const currentUserPArticipant$ = projectService
-      .checkProjectParticipant(currentUser.uid, projectId)
-      .pipe(
-        map((dec) => {
-          if (!dec) {
-            console.log(
-              'user is not a participant, and repelled by the guard:'
-            );
-            router.navigate(['/', 'unauthorized']);
-          }
-
-          return dec;
-        }),
-        catchError((err) => {
-          console.log('error occured:', err);
-
-          router.navigate(['/']);
-          return of(false);
-        })
-      );
-
-    return currentUserPArticipant$;
-  }
+  //todo:   refactor
 
   const authenticatedUser = authService.getAuthenticatedUser();
   const authenticatedUser$ = from(authenticatedUser).pipe(
@@ -56,7 +26,7 @@ export const participantGuard = (route: ActivatedRouteSnapshot) => {
     }),
 
     switchMap((user) =>
-      projectService.checkProjectParticipant(user.id, projectId)
+      projectService.checkProjectParticipant(user.uid, projectId)
     ),
     map((dec) => {
       if (!dec) {

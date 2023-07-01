@@ -44,9 +44,9 @@ import {
   Minus,
 } from 'angular-feather/icons';
 import { TopAppBarComponent } from './components/topAppBar.component';
-import { ModalComponent } from './components/modal.component';
+import { ModalComponent } from './components/modals/modal.component';
 import { AccordionComponent } from './components/accordion/accordion.component';
-import { TaskCardComponent } from './components/taskCard.component';
+import { TaskCardComponent } from './components/cards/taskCard.component';
 import { NgChartsModule } from 'ng2-charts';
 import { RedirectComponent } from './components/redirect.component';
 import { DashboardComponent } from './components/dashboard.component';
@@ -54,11 +54,20 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { ProfileComponent } from './components/profile.component';
 import { ProfileViewComponent } from './components/profileView.component';
 import { NavigationRailComponent } from './components/navigationRail.component';
-import { ParticipantCardComponent } from './components/participantCard.component';
+import { ParticipantCardComponent } from './components/cards/participantCard.component';
 import { ProjectsAccordionComponent } from './components/accordion/projects.component';
 import { TodoAccordionComponent } from './components/accordion/todo.component';
-import { ConsultationCardComponent } from './components/consultationCard.component';
+import { ConsultationCardComponent } from './components/cards/consultationCard.component';
 import { UnauthorizedComponent } from './components/unauthorized.component';
+import { HomeLayoutComponent } from './layouts/home.component';
+import { ProjectCardComponent } from './components/cards/projectCard.component';
+import { ProjectLayoutComponent } from './layouts/project.component';
+import { ConsultationModalComponent } from './components/modals/consultation.component';
+import { TaskDetailsModalComponent } from './components/modals/taskDetails.component';
+import { AddTaskModalComponent } from './components/modals/addTask.component';
+import { ParticipantsPageComponent } from './pages/participants.component';
+import { ProjectsPageComponent } from './pages/projects.component';
+import { TasksPageComponent } from './pages/tasks.component';
 
 const icons = {
   ArrowLeft,
@@ -115,6 +124,15 @@ const icons = {
     ParticipantCardComponent,
     ConsultationCardComponent,
     UnauthorizedComponent,
+    HomeLayoutComponent,
+    ProjectCardComponent,
+    ProjectLayoutComponent,
+    ConsultationModalComponent,
+    TaskDetailsModalComponent,
+    AddTaskModalComponent,
+    ParticipantsPageComponent,
+    ProjectsPageComponent,
+    TasksPageComponent
   ],
   imports: [
     CommonModule,
@@ -152,6 +170,15 @@ const icons = {
     TodoAccordionComponent,
     ConsultationCardComponent,
     UnauthorizedComponent,
+    HomeLayoutComponent,
+    ProjectCardComponent,
+    ProjectLayoutComponent,
+    ConsultationModalComponent,
+    TaskDetailsModalComponent,
+    AddTaskModalComponent,
+    ParticipantsPageComponent,
+    ProjectsPageComponent,
+    TasksPageComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

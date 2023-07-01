@@ -12,10 +12,19 @@ import { from, map } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
+  selector: 'Tasks',
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
         <h1 class="text-[32px] text-base-content">Tasks</h1>
+        <button
+          onclick="addTask.showModal()"
+          class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+        >
+          <i-feather class="text-base-content/70" name="plus" />
+
+          Add
+        </button>
       </div>
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -25,7 +34,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
         class="flex h-full gap-[32px] overflow-x-scroll lg:justify-center "
       >
         <div *ngFor="let category of categories" class="w-[294px] shrink-0">
-          <TodoAccordion
+          <Accordion
             [withArrow]="false"
             [forcedOpen]="true"
             [heading]="category.title"
@@ -33,7 +42,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
           >
             <div
               isTodo
-              class="flex w-full flex-col gap-[16px] pt-[16px]"
+              class="flex flex-col gap-[16px] pt-[16px]"
               cdkDropList
               [cdkDropListData]="category.tasks"
               (cdkDropListDropped)="drop($event)"
@@ -45,23 +54,25 @@ import { NgxSpinnerService } from 'ngx-spinner';
                 [task]="item"
               />
             </div>
-          </TodoAccordion>
+          </Accordion>
         </div>
       </div>
-
-      <TaskDetailsModal />
     </div>
+
+    <TaskDetailsModal />
+
+    <AddTaskModal />
   `,
 })
-export class TasksComponent implements OnInit {
+export class TasksPageComponent implements OnInit {
   categories: { title: string; tasks: Task[] }[] = [];
-  isDraggingDisabled = true;
+  isDraggingDisabled = false;
 
   constructor(
     private authService: AuthService,
     public taskService: TaskService,
     public projectService: ProjectService,
-    public spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService
   ) {
     this.spinner.show();
 
@@ -86,21 +97,6 @@ export class TasksComponent implements OnInit {
       });
   }
 
-  ngOnInit(): void {
-    const projectId = this.projectService.activeProjectId();
-    // todo: make this observable complete
-
-    this.taskService
-      .getTasks(0, projectId)
-      .subscribe((tasks) => this.categories.push({ title: 'Todo', tasks }));
-    this.taskService
-      .getTasks(1, projectId)
-      .subscribe((tasks) => this.categories.push({ title: 'Doing', tasks }));
-    this.taskService
-      .getTasks(2, projectId)
-      .subscribe((tasks) => this.categories.push({ title: 'Done', tasks }));
-  }
-
   drop(event: CdkDragDrop<Task[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(
@@ -116,5 +112,20 @@ export class TasksComponent implements OnInit {
         event.currentIndex
       );
     }
+  }
+
+  ngOnInit(): void {
+    const projectId = this.projectService.activeProjectId();
+    // todo: make this observable complete
+
+    this.taskService
+      .getTasks(0, projectId)
+      .subscribe((tasks) => this.categories.push({ title: 'Todo', tasks }));
+    this.taskService
+      .getTasks(1, projectId)
+      .subscribe((tasks) => this.categories.push({ title: 'Doing', tasks }));
+    this.taskService
+      .getTasks(2, projectId)
+      .subscribe((tasks) => this.categories.push({ title: 'Done', tasks }));
   }
 }

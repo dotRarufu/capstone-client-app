@@ -29,25 +29,27 @@ import { NgxSpinnerService } from 'ngx-spinner';
           ></label>
           <ul
             tabindex="0"
-            class="z-[999] dropdown-content menu w-52 rounded-[3px] bg-base-100 p-2 shadow"
+            class="dropdown-content menu z-[999] w-52 rounded-[3px] bg-base-100 p-2 shadow"
           >
             <!-- <li><a class="">Profile</a></li> -->
 
             <a
-              class="btn-ghost btn flex justify-start rounded-[3px] gap-2 text-base-content" (click)="navigateHome()"
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+              (click)="navigateHome()"
               ><i-feather class="text-base-content/70" name="home" />home >
             </a>
             <a
-              class="btn-ghost btn flex justify-start rounded-[3px] gap-2
-              text-base-content" (click)="navigateProfile()" >
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px]
+              text-base-content"
+              (click)="navigateProfile()"
+            >
               <i-feather class="text-base-content/70" name="user" />profile
             </a>
             <a
-              class="btn-ghost btn flex justify-start rounded-[3px] gap-2
-              text-base-content" (click)="signOut()" ><i-feather
-                class="text-base-content/70"
-                name="log-out"
-              />sign out
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px]
+              text-base-content"
+              (click)="signOut()"
+              ><i-feather class="text-base-content/70" name="log-out" />sign out
             </a>
           </ul>
         </div>
@@ -73,11 +75,18 @@ export class TopAppBarComponent implements OnInit {
     private authService: AuthService,
     private spinner: NgxSpinnerService,
     private router: Router
-  ) {
-    }
+  ) {}
 
   ngOnInit(): void {
-    const user = this.authService.getCurrentUser();
+    // call an async function here, user's profile does not have to be immediately visible
+    this.setupUser();
+  }
+
+  async setupUser() {
+    const user = await this.authService.getAuthenticatedUser();
+
+    // if (user === null) throw new Error("should be impossiblr")
+
     this.name = user?.name || 'unnamed';
     this.profileUrl = `https://api.multiavatar.com/${
       user?.uid || 'unnamed'

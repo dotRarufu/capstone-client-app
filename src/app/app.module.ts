@@ -47,23 +47,30 @@ const routes: Routes = [
     loadChildren: () =>
       import('./student/student.module').then((m) => m.StudentModule),
   },
+  // {
+  //   path: 'c',
+  //   canActivate: [authGuard, roleGuard],
+  //   loadChildren: () =>
+  //     import('./capstoneAdviser/capstoneAdviser.module').then(
+  //       (m) => m.CapstoneAdviserModule
+  //     ),
+  // },
   {
-    path: 'c',
-    canActivate: [authGuard, roleGuard],
+    path: 'a',
     loadChildren: () =>
-      import('./capstoneAdviser/capstoneAdviser.module').then(
-        (m) => m.CapstoneAdviserModule
+      import('./adviser/adviser.module').then(
+        (m) => m.AdviserModule
       ),
   },
 
-  {
-    path: 't',
-    canActivate: [authGuard, roleGuard],
-    loadChildren: () =>
-      import('./technicalAdviser/technicalAdviser.module').then(
-        (m) => m.TechnicalAdviserModule
-      ),
-  },
+  // {
+  //   path: 't',
+  //   canActivate: [authGuard, roleGuard],
+  //   loadChildren: () =>
+  //     import('./technicalAdviser/technicalAdviser.module').then(
+  //       (m) => m.TechnicalAdviserModule
+  //     ),
+  // },
   {
     path: 'unauthorized',
     component: UnauthorizedComponent,

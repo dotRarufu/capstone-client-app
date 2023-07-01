@@ -1,9 +1,5 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
-import {
-  createClient,
-  PostgrestSingleResponse,
-  SupabaseClient,
-} from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import {
   BehaviorSubject,
   Observable,
@@ -13,10 +9,7 @@ import {
   merge,
   of,
   switchMap,
-  take,
-  takeWhile,
   tap,
-  throwError,
   zip,
 } from 'rxjs';
 import { environment } from 'src/environments/environment.dev';
@@ -37,8 +30,7 @@ type AnalyzerResultError = string;
   providedIn: 'root',
 })
 export class ProjectService {
-  supabase: SupabaseClient;
-
+  readonly client;
   private formUrlSubject: BehaviorSubject<string> = new BehaviorSubject('');
   private projectUpdate$ = new BehaviorSubject<number>(0);
   private newParticipant$ = new BehaviorSubject<number>(0);
@@ -54,10 +46,7 @@ export class ProjectService {
     private router: Router,
     private userService: UserService
   ) {
-    this.supabase = createClient(
-      environment.supabase_url,
-      environment.supabase_key
-    );
+    this.client = this.databaseService.client;
 
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -83,8 +72,7 @@ export class ProjectService {
 
   // todo: maybe create an active project subject instead of this method
   getCurrentTechnicalAdviserId() {
-    const client = this.databaseService.client;
-    const request = client
+    const request = this.client
       .from('project')
       .select('technical_adviser_id')
       .eq('id', this.activeProjectId());
@@ -101,98 +89,121 @@ export class ProjectService {
     return request$;
   }
 
-  getProjects() {
-    const user = this.authService.getCurrentUser();
-
-    if (user == null)
-      throw new Error('cant get student projects, no user is signed in');
-
-    const client = this.databaseService.client;
-
-    const studentRequest = client
+  private getStudentProjects(userUid: string) {
+    const studentRequest = this.client
       .from('member')
       .select('project_id')
-      .eq('student_uid', user.uid);
+      .eq('student_uid', userUid);
 
-    const capstoneAdviserRequest = client
+    const projects$ = from(studentRequest).pipe(
+      map((res) => {
+        if (res.error !== null) {
+          throw new Error('An error occurred while fetching projects | 0');
+        }
+
+        return res.data.map((d) => d.project_id);
+      }),
+      switchMap((projectIds) => from(this.getProjectRows(projectIds))),
+      switchMap((projectRows) => from(this.getProject(projectRows)))
+    );
+
+    return projects$;
+  }
+
+  private getCapstoneAdviserProjects(userUid: string) {
+    const request = this.client
       .from('project')
       .select('*')
-      .eq('capstone_adviser_id', user.uid);
+      .eq('capstone_adviser_id', userUid);
 
-    const technicalAdviserRequest = client
+    const projects$ = from(request).pipe(
+      map((res) => {
+        if (res.error !== null) {
+          throw new Error('An error occurred while fetching projects');
+        }
+
+        // return res.data.map((d) => d.id);
+        return res.data;
+      }),
+      switchMap(async (projectRows) => await this.getProject(projectRows))
+    );
+
+    return projects$;
+  }
+
+  private getTechnicalAdviserProjects(userUid: string) {
+    const request = this.client
       .from('project')
       .select('id')
-      .eq('technical_adviser_id', user.uid);
+      .eq('technical_adviser_id', userUid);
 
-    let projects$: Observable<Project[]>;
-    switch (user.role_id) {
-      case 0: {
-        projects$ = from(studentRequest).pipe(
-          map((res) => {
-            if (res.error !== null) {
-              throw new Error('An error occurred while fetching projects | 0');
-            }
+    const projects$ = from(request).pipe(
+      map((res) => {
+        if (res.error !== null) {
+          throw new Error('An error occurred while fetching projects');
+        }
 
-            return res.data.map((d) => d.project_id);
-          }),
-          switchMap((projectIds) => from(this.getProjectRows(projectIds))),
-          switchMap((projectRows) => from(this.getProject(projectRows)))
-        );
-        break;
-      }
+        return res.data.map((d) => d.id);
+      }),
+      switchMap(async (projectIds) => await this.getProjectRows(projectIds)),
+      switchMap(async (projectRows) => await this.getProject(projectRows))
+    );
 
-      case 1: {
-        projects$ = from(capstoneAdviserRequest).pipe(
-          map((res) => {
-            if (res.error !== null) {
-              throw new Error('An error occurred while fetching projects');
-            }
+    return projects$;
+  }
 
-            // return res.data.map((d) => d.id);
-            return res.data;
-          }),
-          switchMap(async (projectRows) => await this.getProject(projectRows))
-        );
-        break;
-      }
-      case 2: {
-        projects$ = from(technicalAdviserRequest).pipe(
-          map((res) => {
-            if (res.error !== null) {
-              throw new Error('An error occurred while fetching projects');
-            }
+  getProjects() {
+    const user$ = from(this.authService.getAuthenticatedUser());
 
-            return res.data.map((d) => d.id);
-          }),
-          switchMap(
-            async (projectIds) => await this.getProjectRows(projectIds)
-          ),
-          switchMap(async (projectRows) => await this.getProject(projectRows))
-        );
-        break;
-      }
+    const projects$ = user$.pipe(
+      map((user) => {
+        if (user === null) throw new Error('cant');
 
-      default:
-        throw new Error('unknown user role');
-    }
+        return user;
+      }),
+      switchMap((user) => {
+        switch (user.role_id) {
+          case 0: {
+            return this.getStudentProjects(user.uid);
+          }
+          case 1: {
+            return this.getCapstoneAdviserProjects(user.uid);
+          }
+          case 0: {
+            return this.getTechnicalAdviserProjects(user.uid);
+          }
+
+          default:
+            throw new Error('cannt');
+        }
+      })
+    );
 
     return this.projectUpdate$.pipe(
       switchMap((_) => merge(of(null), projects$))
     );
   }
 
-  createProject(name: string, fullTitle: string) {
-    const client = this.databaseService.client;
-    const user = this.authService.getCurrentUser();
-
-    if (user === null) throw new Error('no logged in user');
-
-    const section = client
+  private getUserSection(uid: string) {
+    const section = this.client
       .from('student_info')
       .select('section_id')
-      .eq('uid', user.uid);
+      .eq('uid', uid);
 
-    const section$ = from(section).pipe(
+    return from(section);
+  }
+
+  createProject(name: string, fullTitle: string) {
+    const user$ = from(this.authService.getAuthenticatedUser()).pipe(
+      map((user) => {
+        if (user === null) throw new Error('no logged in user');
+
+        return user;
+      })
+    );
+
+    const section$ = user$.pipe(
+      switchMap((user) => this.getUserSection(user.uid)),
       map((d) => {
         if (d.error !== null) throw new Error('error while getting section');
 
@@ -211,14 +222,18 @@ export class ProjectService {
           technical_adviser_id: null,
         };
 
-        const res = await client.from('project').insert(data).select('id');
+        const res = await this.client.from('project').insert(data).select('id');
 
         if (res.error) throw new Error('error while inserting project');
 
         return res.data[0].id;
       }),
       // add self to the new project
-      switchMap((projectId) => this.addStudentMember(projectId, user.uid)),
+      switchMap((projectId) =>
+        user$.pipe(
+          switchMap((user) => this.addStudentMember(projectId, user.uid))
+        )
+      ),
       tap((_) => this.signalProjectUpdate())
     );
 
@@ -229,13 +244,12 @@ export class ProjectService {
     // used observables so participants can be immediately updated when  new participant is added.
     // only for student,fort he add participant button
     // not intended for realtime sync with db
-    console.log('id signal', this.activeProjectId());
-    const client = this.databaseService.client;
-    const advisers = client
+
+    const advisers = this.client
       .from('project')
       .select('capstone_adviser_id, technical_adviser_id')
       .eq('id', this.activeProjectId());
-    const students = client
+    const students = this.client
       .from('member')
       .select('student_uid')
       .eq('project_id', this.activeProjectId());
@@ -283,8 +297,7 @@ export class ProjectService {
   }
 
   checkProjectParticipant(userUid: string, projectId?: number) {
-    const client = this.databaseService.client;
-    const advisersCheck = client
+    const advisersCheck = this.client
       .from('project')
       .select('capstone_adviser_id, technical_adviser_id')
       .eq('id', projectId || this.activeProjectId());
@@ -297,7 +310,7 @@ export class ProjectService {
         return adviserIds.filter((id) => id !== null);
       })
     );
-    const studentsCheck = client
+    const studentsCheck = this.client
       .from('member')
       .select('student_uid')
       .eq('project_id', projectId || this.activeProjectId());
@@ -318,7 +331,6 @@ export class ProjectService {
   }
 
   addParticipant(role: number, userUid: string, projectId: number) {
-    const client = this.databaseService.client;
     let res: Observable<string>;
     // todo: if the adviser already exist, notify user that they are replacing the adviser by adding new adviser
 
@@ -343,7 +355,10 @@ export class ProjectService {
         const data = {
           capstone_adviser_id: userUid,
         };
-        const update = client.from('project').update(data).eq('id', projectId);
+        const update = this.client
+          .from('project')
+          .update(data)
+          .eq('id', projectId);
         const update$ = from(update).pipe(
           map((r) => {
             if (r.error !== null)
@@ -371,7 +386,10 @@ export class ProjectService {
         const data = {
           technical_adviser_id: userUid,
         };
-        const update = client.from('project').update(data).eq('id', projectId);
+        const update = this.client
+          .from('project')
+          .update(data)
+          .eq('id', projectId);
         const update$ = from(update).pipe(
           map((r) => {
             // todo: create funtion for this, and use it on others
@@ -414,8 +432,7 @@ export class ProjectService {
   }
 
   private deleteProject(id: number) {
-    const client = this.databaseService.client;
-    const members = client.from('member').select('*').eq('project_id', id);
+    const members = this.client.from('member').select('*').eq('project_id', id);
     const members$ = from(members).pipe(
       map((res) => {
         if (res.error !== null) throw new Error('error getting members');
@@ -423,20 +440,18 @@ export class ProjectService {
         return res.data;
       }),
       filter((members) => members.length === 0),
-      switchMap((_) => from(client.from('project').delete().eq('id', id)))
+      switchMap((_) => from(this.client.from('project').delete().eq('id', id)))
     );
 
     return members$;
   }
 
   removeProjectParticipant(userUid: string, projectId: number) {
-    const client = this.databaseService.client;
-
     return from(this.userService.getUser(userUid)).pipe(
       switchMap((user) => {
         if (user.role_id === 0) {
           return from(
-            client
+            this.client
               .from('member')
               .delete()
               .eq('student_uid', user.uid)
@@ -450,14 +465,14 @@ export class ProjectService {
             capstone_adviser_id: null,
           };
           return from(
-            client.from('project').update(data).eq('id', projectId)
+            this.client.from('project').update(data).eq('id', projectId)
           ).pipe(tap((_) => this.signalProjectUpdate()));
         } else if (user.role_id === 2) {
           const data = {
             technical_adviser_id: null,
           };
           return from(
-            client.from('project').update(data).eq('id', projectId)
+            this.client.from('project').update(data).eq('id', projectId)
           ).pipe(tap((_) => this.signalProjectUpdate()));
         }
 
@@ -472,11 +487,18 @@ export class ProjectService {
   }
 
   removeProject(projectId: number) {
-    const user = this.authService.getCurrentUser();
+    const user$ = from(this.authService.getAuthenticatedUser());
 
-    if (user === null) throw new Error('this should be impossible');
+    const request$ = user$.pipe(
+      map((user) => {
+        if (user === null) throw new Error('this should be impossible');
 
-    return this.removeProjectParticipant(user.uid, projectId);
+        return user;
+      }),
+      switchMap((user) => this.removeProjectParticipant(user.uid, projectId))
+    );
+
+    return request$;
   }
 
   private signalProjectUpdate() {
@@ -489,12 +511,11 @@ export class ProjectService {
   }
 
   private addStudentMember(projectId: number, studentUid: string) {
-    const client = this.databaseService.client;
     const data = {
       project_id: projectId,
       student_uid: studentUid,
     };
-    const insertRequest = client.from('member').insert(data);
+    const insertRequest = this.client.from('member').insert(data);
     const insertRequest$ = from(insertRequest).pipe(
       map((d) => {
         if (d.error !== null) throw new Error('error inserting a member');
@@ -507,10 +528,9 @@ export class ProjectService {
   }
 
   private async getProjectRows(projectIds: number[]) {
-    const client = this.databaseService.client;
     const projectRows: ProjectRow[] = await Promise.all(
       projectIds.map(async (id) => {
-        const res = await client.from('project').select('*').eq('id', id);
+        const res = await this.client.from('project').select('*').eq('id', id);
         // todo: handle error
         if (res.error !== null) throw new Error('error while fetching project');
 
@@ -568,16 +588,14 @@ export class ProjectService {
 
   // todo: move in db service
   private async getSection(id: number) {
-    const client = this.databaseService.client;
-    const res = await client.from('section').select('name').eq('id', id);
+    const res = await this.client.from('section').select('name').eq('id', id);
     if (res.error !== null) throw new Error('error getting section');
 
     return res.data[0].name;
   }
 
   private async getProjectMembers(projectId: number) {
-    const client = this.databaseService.client;
-    const res = await client
+    const res = await this.client
       .from('member')
       .select('*')
       .eq('project_id', projectId);

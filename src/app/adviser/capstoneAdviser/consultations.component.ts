@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { convertUnixEpochToDateString } from 'src/app/capstoneAdviser/utils/convertUnixEpochToDateString';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { Consultation } from 'src/app/types/collection';
+import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateString';
 
 @Component({
   template: `
@@ -47,10 +47,10 @@ import { Consultation } from 'src/app/types/collection';
       </Accordion>
     </div>
 
-   <ConsultationModal />
+    <ConsultationModal />
   `,
 })
-export class ConsultationsComponent {
+export class CapstoneAdviserConsultationsComponent {
   consultations: { category: string; items: Consultation[] }[] = [
     { category: 'Pending', items: [] },
     { category: 'Scheduled', items: [] },

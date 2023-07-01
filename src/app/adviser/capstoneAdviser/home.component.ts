@@ -44,7 +44,7 @@ import { TabsService } from 'src/app/services/tabs.service';
     </HomeLayout>
   `,
 })
-export class HomeComponent implements OnInit {
+export class CapstoneAdviserHomeComponent implements OnInit {
   active: string = 'projects';
   isDesktop = false;
   sections: WritableSignal<SectionProject[]> = signal([]);
@@ -68,7 +68,7 @@ export class HomeComponent implements OnInit {
   ) {
     const child1 = this.route.snapshot.firstChild;
     if (child1 === null) throw new Error('impossible');
-
+    
     this.active = child1.url[0].path;
   }
 

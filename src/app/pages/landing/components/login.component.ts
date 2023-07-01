@@ -94,7 +94,7 @@ export class LoginComponent {
     from(authenticatedUser)
       .pipe(
         filter(isNotNull),
-        switchMap((user) => this.userService.getUser(user.id))
+        switchMap((user) => this.userService.getUser(user.uid))
       )
       .subscribe({
         next: (user) => {

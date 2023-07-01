@@ -3,14 +3,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { HomeComponent } from './pages/home.component';
 import { CapstoneAdviserProjectComponent } from './pages/project.component';
 import { SideBarComponent } from './components/sidebar.component';
-import { CapstoneAdviserProjectsComponent } from './components/projects.component';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ConsultationsComponent } from './components/consultations.component';
-import { ProjectCardComponent } from './components/projectCard.component';
-import { TasksComponent } from './components/tasks.component';
-import { ParticipantsComponent } from './components/participants.component';
-import { ParticipantCardComponent } from './components/participantCard.component';
 import { CapstoneAdviserDashboardComponent } from './components/dashboard.component';
 import { DashboardComponent } from '../shared/components/dashboard.component';
 import { FormGeneratorComponent } from '../shared/components/formGenerator.component';
@@ -19,6 +14,8 @@ import { RedirectComponent } from '../shared/components/redirect.component';
 import { NotFoundComponent } from '../shared/components/notFound.component';
 import { RouterModule, Routes } from '@angular/router';
 import { participantGuard } from '../guards/participant.guard';
+import { ParticipantsPageComponent } from '../shared/pages/participants.component';
+import { TasksPageComponent } from '../shared/pages/tasks.component';
 
 const routes: Routes = [
   {
@@ -52,11 +49,11 @@ const routes: Routes = [
         children: [
           {
             path: 'tasks',
-            component: TasksComponent,
+            component: TasksPageComponent,
           },
           {
             path: 'participants',
-            component: ParticipantsComponent,
+            component: ParticipantsPageComponent,
           },
           {
             path: 'consultations',
@@ -108,13 +105,8 @@ const routes: Routes = [
   declarations: [
     HomeComponent,
     ConsultationsComponent,
-    ProjectCardComponent,
     CapstoneAdviserProjectComponent,
     SideBarComponent,
-    CapstoneAdviserProjectsComponent,
-    TasksComponent,
-    ParticipantsComponent,
-    ParticipantCardComponent,
     CapstoneAdviserDashboardComponent,
   ],
   imports: [SharedModule, DragDropModule, RouterModule.forChild(routes)],

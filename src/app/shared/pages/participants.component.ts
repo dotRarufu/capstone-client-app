@@ -12,14 +12,6 @@ import { User } from 'src/app/types/collection';
         <h1 class="text-[24px] text-base-content sm1:text-[32px]">
           Participants
         </h1>
-        <button
-          onclick="addParticipant.showModal()"
-          class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
-        >
-          <i-feather class="text-base-content/70" name="plus" />
-
-          Add
-        </button>
       </div>
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -53,12 +45,10 @@ import { User } from 'src/app/types/collection';
         </div>
         <!-- </div> -->
       </div>
-
-      <AddParticipantModal />
     </div>
   `,
 })
-export class ParticipantsComponent implements OnInit {
+export class ParticipantsPageComponent implements OnInit {
   participants: User[] = [];
 
   constructor(

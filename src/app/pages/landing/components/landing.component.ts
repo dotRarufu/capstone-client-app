@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { from, map } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
 
@@ -36,13 +38,25 @@ import { getRolePath } from 'src/app/utils/getRolePath';
 export class LandingComponent implements OnInit {
   isLogin = true;
 
-  constructor(private authService: AuthService, private router: Router) {
-    const user = this.authService.getCurrentUser();
-    if (user != null) {
-      if (user.role_id === null) throw new Error('user has no role id');
-      const rolePath = getRolePath(user.role_id);
-      this.router.navigate([rolePath, 'home']);
-    }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private spinner: NgxSpinnerService
+  ) {
+    // use loading while getCurrentUser is not loaded
+    this.spinner.show();
+
+    const user$ = from(this.authService.getAuthenticatedUser());
+    user$.pipe().subscribe({
+      next: (user) => {
+        if (user !== null) {
+          const rolePath = getRolePath(user.role_id);
+          this.router.navigate([rolePath, 'home']);
+        }
+
+        this.spinner.hide();
+      },
+    });
   }
 
   ngOnInit(): void {}

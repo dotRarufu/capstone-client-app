@@ -4,7 +4,7 @@ import { Project } from 'src/app/models/project';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
-  selector: 'StudentProjectCard',
+  selector: 'ProjectCard',
   template: `
     <div
       class="h-[300px] w-[262px] rounded-[4px] border border-neutral/50 bg-base-100 drop-shadow"
@@ -15,9 +15,8 @@ import { ProjectService } from 'src/app/services/project.service';
       >
         {{ project.name }}
       </h2>
-
       <div
-        class="h-[106px] w-full gap-[8px]  p-[1rem] text-base text-base-content"
+        class="h-[106px] w-full gap-[8px] p-[1rem] text-base text-base-content"
       >
         <p class="line-clamp-3 h-full text-base">
           {{ project.title }}
@@ -26,7 +25,6 @@ import { ProjectService } from 'src/app/services/project.service';
       <div class="line-clamp-2 h-[48px] w-full px-[1rem] text-base">
         {{ project.members }}
       </div>
-
       <div class="flex w-full justify-end px-[1rem] text-base ">
         <button
           (click)="handleCardClick()"
@@ -45,7 +43,6 @@ import { ProjectService } from 'src/app/services/project.service';
     </div>
   `,
 })
-// roles differes in action buttons
 export class ProjectCardComponent implements OnInit {
   @Input() project: Project = {
     title: '',
@@ -54,25 +51,29 @@ export class ProjectCardComponent implements OnInit {
     id: -1,
     sectionName: '',
   };
-  @Output() removeProjectId = new EventEmitter<number>();
+  @Input() role = "";
+  @Output() removeProjectId: EventEmitter<number> = new EventEmitter<number>();
 
-  constructor(private router: Router, private projectService: ProjectService) {
-    // console.info(this.project);
-  }
+  constructor (private projectService: ProjectService, private router: Router) {}
 
   ngOnInit(): void {
+   this.addSpaceBeteenNames();
+  }
+
+  addSpaceBeteenNames() {
     this.project = {
       ...this.project,
       members: this.project.members.map((s) => ' ' + s),
     };
   }
 
-  handleCardClick() {
-    this.router.navigate(['s', 'project', this.project.id]);
-    this.projectService.activeProjectId.set(this.project.id);
-  }
-
   removeProject() {
     this.removeProjectId.emit(this.project.id);
+  }
+
+  handleCardClick() {
+      this.router.navigate([this.role, 'project', this.project.id]);
+      this.projectService.activeProjectId.set(this.project.id);
+    
   }
 }

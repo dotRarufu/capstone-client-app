@@ -3,6 +3,8 @@ import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
 import { AuthService } from 'src/app/services/auth.service';
 import { User } from 'src/app/types/collection';
+import { from, map } from 'rxjs';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'ProfileView',
@@ -26,8 +28,8 @@ import { User } from 'src/app/types/collection';
               </div>
             </div>
             <div class="flex flex-col justify-center gap-1">
-              <h1 class="text-[24px]">{{user.name}}</h1>
-              <p class="text-base text-base-content/70">ID: {{user.uid}}</p>
+              <h1 class="text-[24px]">{{ user.name }}</h1>
+              <p class="text-base text-base-content/70">ID: {{ user.uid }}</p>
             </div>
           </div>
 
@@ -87,16 +89,33 @@ export class ProfileViewComponent implements OnInit {
   projects: Project[] = [];
   theme: string = 'original';
   @Input() sideColumn? = false;
-  user: User = {name: 'Roadie Fernandez', role_id: -1, uid: '1231-232as-ddaf'};
+  user: User = { name: 'Unloggedin User', role_id: -1, uid: '1231-232as-ddaf' };
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private spinner: NgxSpinnerService
+  ) {}
 
   ngOnInit() {
-    const user = this.authService.getCurrentUser(); 
+    // use loading while getCurrentUser is not loaded
+    this.spinner.show();
 
-    if (user !== null) {
-      this.user = user;
-    }
+    const user$ = from(this.authService.getAuthenticatedUser());
+
+    user$
+      .pipe(
+        map((user) => {
+          if (user === null) throw new Error('user cant be null');
+
+          return user;
+        })
+      )
+      .subscribe({
+        next: (user) => {
+          this.user = user;
+          this.spinner.hide();
+        },
+      });
 
     window.addEventListener('beforeinstallprompt', (event) => {
       event.preventDefault(); // Prevent the default behavior

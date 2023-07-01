@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'Projects',
+  selector: 'ProjectsPage',
   template: `
     <div
       class="flex w-full flex-col gap-[1rem] sm2:w-[840px] md:w-full lg:w-full "
@@ -29,7 +29,7 @@ import { Component } from '@angular/core';
     </div>
   `,
 })
-export class CapstoneAdviserProjectsComponent {
+export class ProjectsPageComponent {
   search: string = '';
 
   constructor() {}

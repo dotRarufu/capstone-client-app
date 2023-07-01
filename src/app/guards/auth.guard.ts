@@ -6,10 +6,6 @@ export const authGuard: CanActivateFn = async (route: ActivatedRouteSnapshot) =>
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const currentUser = authService.getCurrentUser();
-
-  if (currentUser !== null) return true;
-
   const authenticatedUser = await authService.getAuthenticatedUser();
 
   if (authenticatedUser !== null) return true;

@@ -17,20 +17,14 @@ export const roleGuard: CanActivateFn = async (
   const router = inject(Router);
   const userService = inject(UserService);
 
-  const currentUser = authService.getCurrentUser();
   let userRole: number | null = null;
+  const authenticatedUser = await authService.getAuthenticatedUser();
 
-  if (currentUser !== null) {
-    userRole = currentUser.role_id;
-  } else {
-    const authenticatedUser = await authService.getAuthenticatedUser();
+  if (authenticatedUser === null)
+    throw new Error('no current user and authenticated user');
 
-    if (authenticatedUser === null)
-      throw new Error('no current user and authenticated user');
-
-    const userDetails = await userService.getUser(authenticatedUser.id);
-    userRole = userDetails.role_id;
-  }
+  const userDetails = await userService.getUser(authenticatedUser.uid);
+  userRole = userDetails.role_id;
 
   if (userRole === null) throw new Error('wip, currentUser has no role id');
 
@@ -43,7 +37,7 @@ export const roleGuard: CanActivateFn = async (
 
   if (root === userRolePath) return true;
 
-  console.log("repelled by role guard:", userRolePath,userRole);
+  console.log('repelled by role guard:', userRolePath, userRole);
   router.navigate(['/', 'unauthorized']);
 
   return false;

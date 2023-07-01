@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AuthResponse, AuthUser } from '@supabase/supabase-js';
-import { BehaviorSubject, from, map, switchMap, tap } from 'rxjs';
+import { from, map } from 'rxjs';
 import { SupabaseService } from './supabase.service';
 import { User } from '../types/collection';
 import { isNotNull } from '../student/utils/isNotNull';
@@ -20,16 +19,19 @@ export class DatabaseService {
     user: { name: string; roleId: number }
   ) {
     const client = this.supabaseService.client;
-    const query = client.from('user').upsert({
-      uid: userId,
-      name: user.name,
-      role_id: user.roleId,
-    }).select("*");
+    const query = client
+      .from('user')
+      .upsert({
+        uid: userId,
+        name: user.name,
+        role_id: user.roleId,
+      })
+      .select('*');
     const query$ = from(query).pipe(
       map((a) => {
         if (a.error) throw a.error;
 
-        return a.data[0]
+        return a.data[0];
       })
     );
 

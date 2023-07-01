@@ -8,8 +8,8 @@ import { Router } from '@angular/router';
 })
 export class TabsService {
   private tabsSubject = new BehaviorSubject<Tab[] | null>(null);
-  tabs$ = this.tabsSubject.asObservable();
   private activeIdSubject = new BehaviorSubject<string>('default');
+  tabs$ = this.tabsSubject.asObservable();
   activeId$ = this.activeIdSubject.asObservable();
 
   constructor(private router: Router) {}

@@ -327,14 +327,7 @@ type Action =
       </div>
     </div>
 
-    <ngx-spinner
-      bdColor="rgba(0, 0, 0, 0.8)"
-      size="default"
-      color="#fff"
-      type="square-loader"
-      [fullScreen]="true"
-      ><p style="color: white">Loading...</p></ngx-spinner
-    >
+  
   `,
 })
 export class TitleBuilderComponent {
