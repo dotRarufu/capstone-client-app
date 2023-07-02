@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, WritableSignal, signal } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { Consultation } from 'src/app/types/collection';
@@ -28,6 +29,7 @@ import { Consultation } from 'src/app/types/collection';
           <ConsultationCard
             *ngFor="let data of consultation.items"
             [data]="data"
+            (click)="handleCardClick(data)"
           >
             <!-- todo: add slot for controls -->
           </ConsultationCard>
@@ -41,7 +43,7 @@ import { Consultation } from 'src/app/types/collection';
       [location]="location"
     />
 
-    <ConsultationModal />
+    <ConsultationDetailsModal [consultation$]="activeConsultation$" />
   `,
 })
 export class ConsultationsComponent {
@@ -53,11 +55,12 @@ export class ConsultationsComponent {
   dateTime = '';
   description = '';
   location = '';
-
+  activeConsultationSubject = new BehaviorSubject<Consultation | null>(null);
+  activeConsultation$ = this.activeConsultationSubject.asObservable();
 
   constructor(
     private consultationService: ConsultationService,
-    private projectService: ProjectService,
+    private projectService: ProjectService
   ) {}
 
   ngOnInit() {
@@ -100,9 +103,10 @@ export class ConsultationsComponent {
         completed.items = consultations;
       },
     });
-
-   
   }
 
-  
+  handleCardClick(data: Consultation) {
+    this.activeConsultationSubject.next(data);
+    console.log('select card:', data);
+  }
 }

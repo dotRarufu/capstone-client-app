@@ -367,6 +367,7 @@ export interface Database {
           description: string
           id: number
           is_accepted: boolean
+          is_done: boolean
           location: string
           organizer_id: string
           project_id: number
@@ -376,6 +377,7 @@ export interface Database {
           description?: string
           id?: number
           is_accepted?: boolean
+          is_done?: boolean
           location: string
           organizer_id: string
           project_id: number
@@ -385,6 +387,7 @@ export interface Database {
           description?: string
           id?: number
           is_accepted?: boolean
+          is_done?: boolean
           location?: string
           organizer_id?: string
           project_id?: number

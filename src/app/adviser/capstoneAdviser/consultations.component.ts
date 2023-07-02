@@ -50,7 +50,7 @@ import { convertUnixEpochToDateString } from '../../student/utils/convertUnixEpo
       </Accordion>
     </div>
 
-    <ConsultationModal />
+    <ConsultationDetailsModal />
   `,
 })
 export class CapstoneAdviserConsultationsComponent {

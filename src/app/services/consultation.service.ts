@@ -86,6 +86,7 @@ export class ConsultationService {
     );
   }
 
+  // todo: move in task service
   private insertAccomplishedTasks(consultationId: number, taskIds: number[]) {
     const request = Promise.all(
       taskIds.map(async (id) => {
@@ -114,7 +115,24 @@ export class ConsultationService {
     return from(request);
   }
 
-  acceptConsultation() {}
+  acceptConsultation(id: number) {
+    const data = {
+      is_accepted: true,
+    };
+    const request = this.client.from('consultation').update(data).eq('id', id);
+
+    const request$ = from(request).pipe(
+      map((res) => {
+        //todo:  create operator for this, or wrapper, handle the return in another operator
+        if (res.error !== null) throw new Error('error updating consultation');
+
+        return res.statusText;
+      }),
+      tap((_) => this.signalNewConsultation())
+    );
+
+    return request$;
+  }
 
   getConsultations(
     isScheduled: boolean,
@@ -128,6 +146,7 @@ export class ConsultationService {
           description: string;
           id: number;
           is_accepted: boolean;
+          is_done: boolean;
           location: string;
           organizer_id: string;
           project_id: number;
@@ -136,13 +155,12 @@ export class ConsultationService {
     >;
 
     if (isCompleted) {
-      const currentTime = getCurrentEpochTime();
       request$ = from(
         this.client
           .from('consultation')
           .select('*')
           .eq('is_accepted', true)
-          .lt('date_time', currentTime)
+          .eq('is_done', true)
           .eq('project_id', projectId)
       );
     } else {
@@ -151,6 +169,7 @@ export class ConsultationService {
           .from('consultation')
           .select('*')
           .eq('is_accepted', isScheduled)
+          .eq('is_done', false)
           .eq('project_id', projectId)
       );
     }

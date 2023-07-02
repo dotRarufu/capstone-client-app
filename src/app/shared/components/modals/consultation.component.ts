@@ -1,76 +1,79 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Observable, filter, switchMap, tap } from 'rxjs';
+import { TaskService } from 'src/app/services/task.service';
+import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
+import { isNotNull } from 'src/app/student/utils/isNotNull';
+import { Consultation, Task } from 'src/app/types/collection';
+import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 
 @Component({
-    selector: "ConsultationModal",
+  selector: 'ConsultationDetailsModal',
   template: `
     <Modal inputId="consultationModal">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
-        <div class="flex justify-between bg-primary p-[24px]">
-          <div class="flex flex-col justify-between">
-            <h1 class="text-[24px] text-primary-content">
-              Consultation title placeholder
+        <div class="flex h-fit justify-between bg-primary p-[24px]">
+          <div class="flex w-full flex-col justify-between gap-4">
+            <h1 class="text-[20px] text-primary-content">
+              {{ epochToDate(consultation?.date_time || 0) }} {{epochToTime(consultation?.date_time || 0)}}
             </h1>
-
-            <div class="text-[12px] text-primary-content/50">
-              Created at 5/1/23 by Student Name
-            </div>
           </div>
         </div>
         <div
           class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
         >
-          <div class="flex w-full flex-col gap-2 bg-base-100 p-6">
-            <div>
-              <div class="flex items-center justify-between ">
-                <h1 class="text-[20px] text-base-content">Description</h1>
-              </div>
-
-              <div class="h-[2px] w-full bg-base-content/10"></div>
-
-              <div class="text-base text-base-content">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem
-                ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem
-                ipsum dolor sit
-              </div>
-            </div>
-            <div>
-              <div class="flex items-center justify-between ">
-                <h1 class="text-[20px] text-base-content">Date and Time</h1>
-              </div>
-
-              <div class="h-[2px] w-full bg-base-content/10"></div>
-
-              <div class="text-base text-base-content">
-                May 1, 2023 - 10:00 PM
-              </div>
+          <div
+            class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-scroll"
+          >
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Description</h1>
             </div>
 
-            <div>
-              <div class="flex items-center justify-between ">
-                <h1 class="text-[20px] text-base-content">Location</h1>
-              </div>
+            <div class="h-[2px] w-full bg-base-content/10"></div>
 
-              <div class="h-[2px] w-full bg-base-content/10"></div>
-
-              <div class="text-base text-base-content">comlab 3</div>
+            <div class="text-base text-base-content">
+              {{ consultation?.description }}
             </div>
+
+            <div class="text-base text-base-content">
+              {{ consultation?.location }}
+            </div>
+
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Accomplishments</h1>
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/30"></div>
+
+            <ul class="flex h-fit  flex-col gap-2">
+              <li
+                *ngFor="let task of accomplishedTasks"
+                class="flex justify-between rounded-[3px] border px-2 py-2 text-base text-base-content shadow"
+              >
+                <div class="flex w-full items-center gap-2">
+                  <i-feather
+                    class="shrink-0 grow-0 basis-[20px] text-base-content/70"
+                    name="check-circle"
+                  />
+                  <p class="line-clamp-1">
+                    {{ task.title }}
+                  </p>
+                </div>
+              </li>
+            </ul>
           </div>
           <ul
             class="flex h-full w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
           >
+          
             <div class="h-full"></div>
+
             <button
-              class="btn-ghost btn flex justify-start gap-2 rounded-[3px]"
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+              (click)="clearAccomplishedTasks()"
             >
-              <i-feather
-                class="text-base-content/70"
-                name="x-circle"
-              ></i-feather>
-              close
+              <i-feather class="text-base-content/70" name="x" /> close
             </button>
           </ul>
         </div>
@@ -78,4 +81,44 @@ import { Component } from '@angular/core';
     </Modal>
   `,
 })
-export class ConsultationModalComponent {}
+export class ConsultationModalComponent implements OnChanges {
+  @Input() consultation$: Observable<Consultation | null> | null = null;
+  accomplishedTasks: Task[] = [];
+  consultation: Consultation | null = null;
+
+  constructor(private taskService: TaskService) {
+  }
+
+  clearAccomplishedTasks() {
+    this.accomplishedTasks = [];
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log("changes runs");
+    const consultation$ = changes['consultation$'].currentValue as Observable<Consultation | null>; 
+
+      if (consultation$ !== null) {
+      consultation$.pipe(
+        filter(isNotNull),
+        tap(c => {
+          console.log("c:", c);
+          this.consultation = c
+        }),
+        switchMap(c => this.taskService.getAccompishedTasks(c.id))
+      ).subscribe({
+      next: (tasks) => {
+        this.accomplishedTasks = tasks;
+        console.log('accomplishedTasks:', this.accomplishedTasks);
+      },
+    })
+    }
+  }
+
+  epochToDate(epoch: number) {
+    return convertUnixEpochToDateString(epoch);
+  }
+
+  epochToTime(epoch: number) {
+    return getTimeFromEpoch(epoch);
+  }
+}

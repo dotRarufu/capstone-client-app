@@ -4,7 +4,7 @@ import {
   SupabaseClient,
   AuthResponse,
 } from '@supabase/supabase-js';
-import { BehaviorSubject, from, map, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, forkJoin, from, map, merge, mergeMap, switchMap, tap } from 'rxjs';
 import { environment } from 'src/environments/environment.dev';
 import { CapstoolUser } from '../models/capstool-user';
 import { Database } from '../types/supabase';
@@ -67,11 +67,43 @@ export class TaskService {
       map(response => {
         if (response.error) throw new Error(`error while fetching tasks 1: ${response.error}`)
 
-        console.log("statusId:", statusId, "projectId:", projectId, "res:", response);
-
         return response.data
       })
     );
+
+    return request$;
+  }
+  
+  getAccompishedTasks(consultationId: number) {
+    const taskIds = this.client.from("accomplished_task").select("task_id").eq("consultation_id", consultationId);
+
+    const tasks$ = from(taskIds).pipe(
+      map(res => {
+        if (res.error !== null) throw new Error("failed to get accomplished tasks");
+
+        return res.data
+       }),
+       switchMap(taskIds => {
+        const tasks$ = taskIds.map(({task_id: id}) => this.getTask(id));
+
+        return forkJoin(tasks$);
+       }),
+    )
+
+    
+      
+    return tasks$;
+  }
+
+  getTask(id: number) {
+    const request = this.client.from("task").select("*").eq("id", id);
+    const request$ = from(request).pipe(
+      map(res => {
+        if (res.error !== null) throw new Error("error getting task");
+
+        return res.data[0];
+      })
+    )
 
     return request$;
   }

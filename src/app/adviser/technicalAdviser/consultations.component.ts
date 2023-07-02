@@ -13,7 +13,10 @@ import { Consultation } from 'src/app/types/collection';
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <Accordion *ngFor="let consultation of consultations" [heading]="consultation.category">
+      <Accordion
+        *ngFor="let consultation of consultations"
+        [heading]="consultation.category"
+      >
         <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
           <div
             *ngFor="let item of consultation.items"
@@ -47,7 +50,7 @@ import { Consultation } from 'src/app/types/collection';
       </Accordion>
     </div>
 
-   <ConsultationModal />
+    <ConsultationDetailsModal />
   `,
 })
 export class TechnicalAdviserConsultationsComponent {
@@ -102,8 +105,6 @@ export class TechnicalAdviserConsultationsComponent {
         completed.items = consultations;
       },
     });
-
-
   }
 
   epochToDateString(unixEpoch: number) {
