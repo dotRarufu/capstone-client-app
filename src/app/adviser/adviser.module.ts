@@ -26,7 +26,7 @@ import { RedirectComponent } from '../shared/components/redirect.component';
 const routes: Routes = [
   {
     path: 'c',
-    canActivate: [authGuard, roleGuard],
+    canActivate: [authGuard, roleGuard("c")],
     children: [
       {
         path: 'home',
@@ -113,7 +113,7 @@ const routes: Routes = [
   },
   {
     path: 't',
-    canActivate: [authGuard, roleGuard],
+    canActivate: [authGuard, roleGuard("t")],
     children: [
       {
         path: 'home',

@@ -90,6 +90,7 @@ export class LoginComponent {
     private toastr: ToastrService,
     private userService: UserService
   ) {
+    this.spinner.show();
     const authenticatedUser = this.authService.getAuthenticatedUser();
     from(authenticatedUser)
       .pipe(
@@ -98,10 +99,17 @@ export class LoginComponent {
       )
       .subscribe({
         next: (user) => {
-         
-            const role = getRolePath(user.role_id);
-            this.router.navigate([role]);
-            this.toastr.success("Welcome back " + user.name);
+          const role = getRolePath(user.role_id);
+          console.log('this runs:', role);
+          if (role === 's') {
+            this.router.navigate(['s']);
+
+            return;
+          }
+
+          this.router.navigate(['a', role]);
+          this.toastr.success('Welcome back ' + user.name);
+          this.spinner.hide();
         },
       });
   }
@@ -112,9 +120,17 @@ export class LoginComponent {
     signIn$.subscribe({
       next: (user) => {
         // todo: refactor
-        // const role = getRolePath(user.role_id);
+        const role = getRolePath(user.role_id);
         this.spinner.hide();
-        // this.router.navigate([role]);
+        // todo: make this a constant
+        console.log('role:', role);
+        if (role === 's') {
+          this.router.navigate(['s']);
+
+          return;
+        }
+
+        this.router.navigate(['a', role]);
       },
       error: () => {
         this.spinner.hide();

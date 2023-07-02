@@ -51,13 +51,13 @@ export class ProjectCardComponent implements OnInit {
     id: -1,
     sectionName: '',
   };
-  @Input() role = "";
+  @Input() role = '';
   @Output() removeProjectId: EventEmitter<number> = new EventEmitter<number>();
 
-  constructor (private projectService: ProjectService, private router: Router) {}
+  constructor(private projectService: ProjectService, private router: Router) {}
 
   ngOnInit(): void {
-   this.addSpaceBeteenNames();
+    this.addSpaceBeteenNames();
   }
 
   addSpaceBeteenNames() {
@@ -72,8 +72,9 @@ export class ProjectCardComponent implements OnInit {
   }
 
   handleCardClick() {
-      this.router.navigate([this.role, 'project', this.project.id]);
-      this.projectService.activeProjectId.set(this.project.id);
-    
+    const studentPath = [this.role, 'project', this.project.id];
+    const adviserPath = ['a', this.role, 'project', this.project.id];
+    this.router.navigate(this.role === 's' ? studentPath : adviserPath);
+    this.projectService.activeProjectId.set(this.project.id);
   }
 }

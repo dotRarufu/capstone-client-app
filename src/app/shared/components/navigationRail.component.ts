@@ -150,7 +150,12 @@ export class NavigationRailComponent implements OnInit {
       if (user.role_id === null) throw new Error('user has no role id');
 
       const rolePath = getRolePath(user.role_id);
-      this.router.navigate([rolePath, 'project', this.projectId, path]);
+      if (rolePath === 's') {
+        this.router.navigate([rolePath, 'project', this.projectId, path]);
+        return;
+      }
+
+      this.router.navigate(['a', rolePath, 'project', this.projectId, path]);
     }
   }
 
@@ -158,11 +163,14 @@ export class NavigationRailComponent implements OnInit {
     const user = await this.authService.getAuthenticatedUser();
 
     if (user != null) {
-      // move this inside a pipe
-      if (user.role_id === null) throw new Error('user has no role id');
-
       const rolePath = getRolePath(user.role_id);
-      this.router.navigate([rolePath, 'home']);
+
+      if (rolePath === 's') {
+        this.router.navigate([rolePath, 'home']);
+        return;
+      }
+
+      this.router.navigate(['a', rolePath, 'home']);
     }
   }
 

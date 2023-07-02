@@ -53,17 +53,27 @@ export class ProjectService {
       .subscribe({
         next: (_) => {
           const child1 = this.route.firstChild;
+
           if (child1 === null) return;
-          if (['s', 't', 'c'].includes(child1.snapshot.url[0].path)) {
-            const child2 = child1.children[0];
-            const child2Path = child2.snapshot.url[0].path;
 
-            if (child2Path === 'project') {
-              const id = child2.children[0].snapshot.url[0].path;
+          if (child1.snapshot.url.length !== 0) {
+            const child1Path = child1.snapshot.url[0].path;
 
-              this.activeProjectId.set(Number(id));
+            if (['s', 'a'].includes(child1Path)) {
+              const child2 = child1.children[0];
+              const child2Path = child2.snapshot.url[0].path;
+
+              if (child2Path === 'project') {
+                const id = child2.children[0].snapshot.url[0].path;
+
+                this.activeProjectId.set(Number(id));
+
+                return;
+              }
             }
           }
+
+          console.log('not llogged in, no project id to get');
         },
       });
 
@@ -169,11 +179,12 @@ export class ProjectService {
           case 1: {
             return this.getCapstoneAdviserProjects(user.uid);
           }
-          case 0: {
+          case 2: {
             return this.getTechnicalAdviserProjects(user.uid);
           }
 
           default:
+            console.log("unknown user role:", user.role_id);
             throw new Error('cannt');
         }
       })
