@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import {
+  BehaviorSubject,
   Observable,
   forkJoin,
   from,
@@ -10,6 +11,8 @@ import {
   mergeMap,
   of,
   switchMap,
+  take,
+  tap,
 } from 'rxjs';
 import { SupabaseService } from './supabase.service';
 import { Consultation } from '../types/collection';
@@ -22,6 +25,7 @@ import { AuthService } from './auth.service';
 })
 export class ConsultationService {
   private readonly client;
+  private newConsultationSignal$ = new BehaviorSubject(0);
 
   constructor(
     private supabaseService: SupabaseService,
@@ -32,17 +36,24 @@ export class ConsultationService {
 
   scheduleConsultation(data: ConsultationData, projectId: number) {
     const user$ = from(this.authService.getAuthenticatedUser());
-
     const request$ = user$.pipe(
       map((user) => {
         if (user === null) throw new Error('must be impossible');
 
         return user;
       }),
-      switchMap((user) => this.insertConsultation(user.uid, data, projectId))
+      switchMap((user) => this.insertConsultation(user.uid, data, projectId)),
+      tap(() => this.signalNewConsultation())
     );
 
     return request$;
+  }
+
+  private signalNewConsultation() {
+    console.log('signals new consultation');
+    const old = this.newConsultationSignal$.getValue();
+
+    this.newConsultationSignal$.next(old + 1);
   }
 
   // todo: maybe move in db service
@@ -59,42 +70,48 @@ export class ConsultationService {
       description: data.description,
     };
 
-    const request = this.client
+    const insertConsultation = this.client
       .from('consultation')
       .insert(newData)
       .select('id');
-    //  todo: insert task ids in accomplishedtask table
 
-    return from(request).pipe(
+    return from(insertConsultation).pipe(
       map((res) => {
         if (res.error !== null) throw new Error('error inserting consultation');
 
         return res.data[0].id;
       }),
-      // todo: see if switchmap works, i think merge is better for this
+
       switchMap((id) => this.insertAccomplishedTasks(id, data.taskIds))
     );
   }
 
   private insertAccomplishedTasks(consultationId: number, taskIds: number[]) {
-    const insertRequests$ = taskIds.map((tId) => {
-      const data = {
-        consultation_id: consultationId,
-        task_id: tId,
-      };
-      const request = this.client.from('accomplished_task').insert(data);
+    const request = Promise.all(
+      taskIds.map(async (id) => {
+        try {
+          const data = {
+            consultation_id: consultationId,
+            task_id: id,
+          };
+          const response = await this.client
+            .from('accomplished_task')
+            .insert(data)
+            .select('*');
 
-      return from(request).pipe(
-        map((res) => {
-          if (res.error !== null)
-            throw new Error('error inserting data in accomplsihed tasks');
+          if (response.error !== null)
+            throw new Error('error in inserting accomplished task');
 
-          return res.statusText;
-        })
-      );
-    });
+          console.log('data:', response.data);
 
-    return forkJoin([...insertRequests$]);
+          return response.statusText;
+        } catch (err) {
+          throw new Error('error in inserting accomplished task');
+        }
+      })
+    );
+
+    return from(request);
   }
 
   acceptConsultation() {}
@@ -138,7 +155,8 @@ export class ConsultationService {
       );
     }
 
-    const res = from(request$).pipe(
+    const res = this.newConsultationSignal$.pipe(
+      switchMap((_) => request$),
       map((response) => {
         if (response.error)
           throw new Error(`error while fetching tasks 2: ${response.error}`);

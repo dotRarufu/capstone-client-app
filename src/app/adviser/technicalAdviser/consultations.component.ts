@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { convertUnixEpochToDateString } from 'src/app/capstoneAdviser/utils/convertUnixEpochToDateString';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
+import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
 import { Consultation } from 'src/app/types/collection';
 
 @Component({

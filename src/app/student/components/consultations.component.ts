@@ -1,12 +1,7 @@
 import { Component } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-import { convertUnixEpochToDateString } from 'src/app/capstoneAdviser/utils/convertUnixEpochToDateString';
-import { ConsultationData } from 'src/app/models/consultationData';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
-import { TaskService } from 'src/app/services/task.service';
-import { Consultation, Task } from 'src/app/types/collection';
-import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
+import { Consultation } from 'src/app/types/collection';
 
 @Component({
   template: `
@@ -44,7 +39,6 @@ import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
       [dateTime]="dateTime"
       [description]="description"
       [location]="location"
- 
     />
 
     <ConsultationModal />

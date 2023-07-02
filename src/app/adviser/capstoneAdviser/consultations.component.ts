@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { Consultation } from 'src/app/types/collection';
-import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateString';
+import { convertUnixEpochToDateString } from '../../student/utils/convertUnixEpochToDateString';
 
 @Component({
   template: `
@@ -13,11 +13,14 @@ import { convertUnixEpochToDateString } from '../utils/convertUnixEpochToDateStr
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <Accordion *ngFor="let consultation of consultations" [heading]="consultation.category">
+      <Accordion
+        *ngFor="let consultation of consultations"
+        [heading]="consultation.category"
+      >
         <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
           <div
             *ngFor="let item of consultation.items"
-            class="card card-compact h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
           >
             <figure class="h-[92px] bg-secondary">
               <button
@@ -102,8 +105,6 @@ export class CapstoneAdviserConsultationsComponent {
         completed.items = consultations;
       },
     });
-
-
   }
 
   epochToDateString(unixEpoch: number) {

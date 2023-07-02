@@ -1,14 +1,16 @@
 import { Component, Input } from '@angular/core';
-import { convertUnixEpochToDateString } from 'src/app/capstoneAdviser/utils/convertUnixEpochToDateString';
+import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
 import { Consultation } from 'src/app/types/collection';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 
 @Component({
   selector: 'ConsultationCard',
   template: `
-    <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start w-[260px]">
+    <div
+      class="flex w-[260px] flex-wrap justify-center gap-[24px] sm1:justify-start"
+    >
       <div
-        class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+        class="card card-compact h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
       >
         <figure class="h-[92px] bg-secondary">
           <button
@@ -19,7 +21,9 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
           </button>
         </figure>
         <div class="card-body">
-          <p class="text-sm">{{ data.location }} | {{getEpochTime(data.date_time)}}</p>
+          <p class="text-sm">
+            {{ data.location }} | {{ getEpochTime(data.date_time) }}
+          </p>
           <p class="text-sm">
             {{ data.description }}
           </p>
@@ -38,12 +42,20 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
   `,
 })
 export class ConsultationCardComponent {
-    @Input() data: Consultation = {date_time: 1, description: '', id: -1, is_accepted: false, location: '', organizer_id: '', project_id: -1};
+  @Input() data: Consultation = {
+    date_time: 1,
+    description: '',
+    id: -1,
+    is_accepted: false,
+    location: '',
+    organizer_id: '',
+    project_id: -1,
+  };
 
   epochToDateString(unixEpoch: number) {
     return convertUnixEpochToDateString(unixEpoch);
   }
   getEpochTime(unixEpoch: number) {
-    return getTimeFromEpoch(unixEpoch)
+    return getTimeFromEpoch(unixEpoch);
   }
 }

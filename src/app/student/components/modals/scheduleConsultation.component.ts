@@ -129,7 +129,6 @@ export class ScheduleConsultationModalComponent implements OnInit {
   @Input() dateTime = '';
   @Input() description = '';
   @Input() location = '';
-  @Input() taskIds = [];
   doneTasks: Task[] = [];
   selectedTasks: Task[] = [];
 
@@ -157,7 +156,7 @@ export class ScheduleConsultationModalComponent implements OnInit {
       dateTime: epochDateTime,
       description: this.description,
       location: this.location,
-      taskIds: this.taskIds,
+      taskIds: this.selectedTasks.map(t => t.id),
     };
     const request$ = this.consultationService.scheduleConsultation(
       data,
