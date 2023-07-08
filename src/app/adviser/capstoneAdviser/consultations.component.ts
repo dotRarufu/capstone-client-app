@@ -3,6 +3,7 @@ import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { Consultation } from 'src/app/types/collection';
 import { convertUnixEpochToDateString } from '../../student/utils/convertUnixEpochToDateString';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   template: `
@@ -13,44 +14,57 @@ import { convertUnixEpochToDateString } from '../../student/utils/convertUnixEpo
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <Accordion
-        *ngFor="let consultation of consultations"
-        [heading]="consultation.category"
-      >
+      <Accordion heading="Pending">
         <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
-          <div
-            *ngFor="let item of consultation.items"
-            class="card-compact card h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+          <ConsultationCard
+            *ngFor="let data of consultations[0].items"
+            [data]="data"
+            (click)="handleCardClick(data)"
           >
-            <figure class="h-[92px] bg-secondary">
-              <button
-                onclick="consultationModal.showModal()"
-                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
-              >
-                {{ epochToDateString(item.date_time) }}
-              </button>
-            </figure>
-            <div class="card-body">
-              <p class="text-sm">{{ item.location }}</p>
-              <p class="text-sm">
-                {{ item.description }}
-              </p>
-
-              <div class="card-actions justify-end">
-                <button
-                  onclick="consultationModal.showModal()"
-                  class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
-                >
-                  <i-feather class="text-base-content/70" name="log-in" />
-                </button>
-              </div>
-            </div>
-          </div>
+            <!-- todo: add slot for controls -->
+          </ConsultationCard>
+        </div>
+      </Accordion>
+      <Accordion heading="Scheduled">
+        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+          <ConsultationCard
+            *ngFor="let data of consultations[1].items"
+            [data]="data"
+            (click)="handleCardClick(data)"
+          >
+            <!-- todo: add slot for controls -->
+          </ConsultationCard>
+        </div>
+      </Accordion>
+      <Accordion heading="Completed">
+        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+          <ConsultationCard
+            *ngFor="let data of consultations[2].items"
+            [data]="data"
+            (click)="handleCardClick(data)"
+            buttonId="techAdCompleted"
+          >
+            <!-- todo: add slot for controls -->
+          </ConsultationCard>
+        </div>
+      </Accordion>
+      <Accordion heading="Declined">
+        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+          <ConsultationCard
+            *ngFor="let data of consultations[3].items"
+            [data]="data"
+            (click)="handleCardClick(data)"
+            buttonId="techAdCompleted"
+          >
+            <!-- todo: add slot for controls -->
+          </ConsultationCard>
         </div>
       </Accordion>
     </div>
 
-    <ConsultationDetailsModal />
+    <ConsultationDetailsModal [consultation$]="activeConsultation$" />
+
+    <CompletedConsultationModal [consultation$]="activeConsultation$" />
   `,
 })
 export class CapstoneAdviserConsultationsComponent {
@@ -58,7 +72,10 @@ export class CapstoneAdviserConsultationsComponent {
     { category: 'Pending', items: [] },
     { category: 'Scheduled', items: [] },
     { category: 'Completed', items: [] },
+    { category: 'Declined', items: [] },
   ];
+  activeConsultationSubject = new BehaviorSubject<Consultation | null>(null);
+  activeConsultation$ = this.activeConsultationSubject.asObservable();
 
   constructor(
     private consultationService: ConsultationService,
@@ -68,21 +85,10 @@ export class CapstoneAdviserConsultationsComponent {
   ngOnInit() {
     const projectId = this.projectService.activeProjectId();
     // todo: refactor these
-    const scheduled$ = this.consultationService.getConsultations(
-      true,
-      projectId,
-      false
-    );
-    const pending$ = this.consultationService.getConsultations(
-      false,
-      projectId,
-      false
-    );
-    const completed$ = this.consultationService.getConsultations(
-      true,
-      projectId,
-      true
-    );
+    const scheduled$ = this.consultationService.getConsultations(projectId, 1);
+    const pending$ = this.consultationService.getConsultations(projectId, 0);
+    const completed$ = this.consultationService.getConsultations(projectId, 2);
+    const rejected$ = this.consultationService.getConsultations(projectId, 3);
 
     scheduled$.subscribe({
       next: (consultations) => {
@@ -105,9 +111,20 @@ export class CapstoneAdviserConsultationsComponent {
         completed.items = consultations;
       },
     });
+    rejected$.subscribe({
+      next: (consultations) => {
+        const rejected = this.consultations[3];
+        // maybe make this non mutated
+        rejected.items = consultations;
+      },
+    });
   }
 
   epochToDateString(unixEpoch: number) {
     return convertUnixEpochToDateString(unixEpoch);
+  }
+
+  handleCardClick(data: Consultation) {
+    this.activeConsultationSubject.next(data);
   }
 }

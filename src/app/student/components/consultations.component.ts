@@ -1,4 +1,5 @@
 import { Component, WritableSignal, signal } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
@@ -21,13 +22,44 @@ import { Consultation } from 'src/app/types/collection';
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <Accordion
-        *ngFor="let consultation of consultations"
-        [heading]="consultation.category"
-      >
+      <Accordion heading="Pending">
         <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
           <ConsultationCard
-            *ngFor="let data of consultation.items"
+            *ngFor="let data of consultations[0].items"
+            [data]="data"
+            (click)="handleCardClick(data)"
+            buttonId="studentPending"
+          >
+            <!-- todo: add slot for controls -->
+          </ConsultationCard>
+        </div>
+      </Accordion>
+      <Accordion heading="Scheduled">
+        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+          <ConsultationCard
+            *ngFor="let data of consultations[1].items"
+            [data]="data"
+            (click)="handleCardClick(data)"
+          >
+            <!-- todo: add slot for controls -->
+          </ConsultationCard>
+        </div>
+      </Accordion>
+      <Accordion heading="Completed">
+        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+          <ConsultationCard
+            *ngFor="let data of consultations[2].items"
+            [data]="data"
+            (click)="handleCardClick(data)"
+          >
+            <!-- todo: add slot for controls -->
+          </ConsultationCard>
+        </div>
+      </Accordion>
+      <Accordion heading="Declined">
+        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+          <ConsultationCard
+            *ngFor="let data of consultations[3].items"
             [data]="data"
             (click)="handleCardClick(data)"
           >
@@ -44,6 +76,19 @@ import { Consultation } from 'src/app/types/collection';
     />
 
     <ConsultationDetailsModal [consultation$]="activeConsultation$" />
+
+    <!-- todo: find out why id has  to be wrapped -->
+    <ConsultationDetailsModal
+      [consultation$]="activeConsultation$"
+      [id]="'pendingConsultationsModal'"
+    >
+      <button
+        (click)="cancelInvitation()"
+        class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+      >
+        <i-feather class="text-base-content/70" name="x" /> cancel
+      </button>
+    </ConsultationDetailsModal>
   `,
 })
 export class ConsultationsComponent {
@@ -51,6 +96,7 @@ export class ConsultationsComponent {
     { category: 'Pending', items: [] },
     { category: 'Scheduled', items: [] },
     { category: 'Completed', items: [] },
+    { category: 'Declined', items: [] },
   ];
   dateTime = '';
   description = '';
@@ -60,27 +106,27 @@ export class ConsultationsComponent {
 
   constructor(
     private consultationService: ConsultationService,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private toastr: ToastrService
   ) {}
+
+  cancelInvitation() {
+    const consultation = this.activeConsultationSubject.getValue();
+    if (consultation === null)
+      throw new Error('cant cancel invitation without an active one');
+    this.consultationService.cancelInvitation(consultation.id).subscribe({
+      next: (res) => this.toastr.success(res),
+      error: (res) => this.toastr.error(res),
+    });
+  }
 
   ngOnInit() {
     const projectId = this.projectService.activeProjectId();
     // todo: refactor these
-    const scheduled$ = this.consultationService.getConsultations(
-      true,
-      projectId,
-      false
-    );
-    const pending$ = this.consultationService.getConsultations(
-      false,
-      projectId,
-      false
-    );
-    const completed$ = this.consultationService.getConsultations(
-      true,
-      projectId,
-      true
-    );
+    const scheduled$ = this.consultationService.getConsultations(projectId, 1);
+    const pending$ = this.consultationService.getConsultations(projectId, 0);
+    const completed$ = this.consultationService.getConsultations(projectId, 2);
+    const rejected$ = this.consultationService.getConsultations(projectId, 3);
 
     scheduled$.subscribe({
       next: (consultations) => {
@@ -103,10 +149,16 @@ export class ConsultationsComponent {
         completed.items = consultations;
       },
     });
+    rejected$.subscribe({
+      next: (consultations) => {
+        const rejected = this.consultations[3];
+        // maybe make this non mutated
+        rejected.items = consultations;
+      },
+    });
   }
 
   handleCardClick(data: Consultation) {
     this.activeConsultationSubject.next(data);
-    console.log('select card:', data);
   }
 }

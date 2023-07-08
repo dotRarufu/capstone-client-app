@@ -22,6 +22,12 @@ import { ParticipantsPageComponent } from '../shared/pages/participants.componen
 import { FormGeneratorComponent } from '../shared/components/formGenerator.component';
 import { FormComponent } from '../shared/components/form.component';
 import { RedirectComponent } from '../shared/components/redirect.component';
+import { ScheduledConsultationModalComponent } from './technicalAdviser/scheduledModal.component';
+import { AccomplishmentsComponent } from './components/accomplishments.component';
+import { ActualAccomplishmentsComponent } from './components/actualAccomplishments.component';
+import { ProposedNextStepsComponent } from './components/proposedNextSteps.component';
+import { NextDeliverablesComponent } from './components/nextDeliverables.component';
+import { CompletedConsultationModalComponent } from './components/completedConsultationModal.component';
 
 const routes: Routes = [
   {
@@ -212,6 +218,12 @@ const routes: Routes = [
     TechnicalAdviserHomeComponent,
     TechnicalAdviserProjectComponent,
     TechnicalAdviserSideBarComponent,
+    ScheduledConsultationModalComponent,
+    AccomplishmentsComponent,
+    ActualAccomplishmentsComponent,
+    ProposedNextStepsComponent,
+    NextDeliverablesComponent,
+    CompletedConsultationModalComponent
   ],
   imports: [
     CommonModule,

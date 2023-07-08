@@ -363,31 +363,37 @@ export interface Database {
       }
       consultation: {
         Row: {
+          category_id: number
           date_time: number
           description: string
           id: number
           is_accepted: boolean
           is_done: boolean
+          is_rejected: boolean
           location: string
           organizer_id: string
           project_id: number
         }
         Insert: {
+          category_id?: number
           date_time: number
           description?: string
           id?: number
           is_accepted?: boolean
           is_done?: boolean
+          is_rejected?: boolean
           location: string
           organizer_id: string
           project_id: number
         }
         Update: {
+          category_id?: number
           date_time?: number
           description?: string
           id?: number
           is_accepted?: boolean
           is_done?: boolean
+          is_rejected?: boolean
           location?: string
           organizer_id?: string
           project_id?: number

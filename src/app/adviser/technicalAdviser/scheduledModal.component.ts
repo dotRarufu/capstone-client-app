@@ -1,15 +1,17 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { Observable, filter, switchMap, tap } from 'rxjs';
-import { TaskService } from 'src/app/services/task.service';
+import { Component, Input, OnChanges, SimpleChanges, WritableSignal, signal } from '@angular/core';
+import { BehaviorSubject, Observable, filter, switchMap, tap } from 'rxjs';
 import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
 import { isNotNull } from 'src/app/student/utils/isNotNull';
 import { Consultation, Task } from 'src/app/types/collection';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
+import { TaskService } from 'src/app/services/task.service';
+import { ConsultationService } from 'src/app/services/consultation.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'ConsultationDetailsModal',
+  selector: 'ScheduledConsultationModal',
   template: `
-    <Modal [inputId]="id || 'consultationModal'">
+    <Modal inputId="scheduledConsultationsModal">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -41,33 +43,24 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
               {{ consultation?.location }}
             </div>
 
-            <div class="flex items-center justify-between ">
-              <h1 class="text-[20px] text-base-content">Accomplishments</h1>
-            </div>
+            <Accomplishments [data]="accomplishedTasks"/>
 
-            <div class="h-[2px] w-full bg-base-content/10"></div>
+            <ActualAccomplishments [dataSignal]="actualAccomplishments" />
 
-            <ul class="flex h-fit  flex-col gap-2">
-              <li
-                *ngFor="let task of accomplishedTasks"
-                class="flex justify-between rounded-[3px] border px-2 py-2 text-base text-base-content shadow"
-              >
-                <div class="flex w-full items-center gap-2">
-                  <i-feather
-                    class="shrink-0 grow-0 basis-[20px] text-base-content/70"
-                    name="check-circle"
-                  />
-                  <p class="line-clamp-1">
-                    {{ task.title }}
-                  </p>
-                </div>
-              </li>
-            </ul>
+            <ProposedNextSteps [dataSignal]="proposedNextSteps"/>
+
+            <NextDeliverables [dataSignal]="nextDeliverables"/>
           </div>
+
           <ul
             class="flex h-full w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
           >
-            <ng-content />
+            <button
+              (click)="handleCompleteClick()"
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+            >
+              <i-feather class="text-base-content/70" name="x" /> Complete
+            </button>
 
             <div class="h-full"></div>
 
@@ -83,13 +76,44 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
     </Modal>
   `,
 })
-export class ConsultationModalComponent implements OnChanges {
+export class ScheduledConsultationModalComponent implements OnChanges {
   @Input() consultation$?: Observable<Consultation | null>;
   accomplishedTasks: Task[] = [];
   consultation: Consultation | null = null;
-  @Input() id = 'consultationModal';
+  actualAccomplishments: WritableSignal<string[]> = signal([]);
+  proposedNextSteps: WritableSignal<string[]> = signal([]);
+  nextDeliverables: WritableSignal<string[]> = signal([]);
 
-  constructor(private taskService: TaskService) {
+  constructor(private taskService: TaskService, private consultationService: ConsultationService, private toastr: ToastrService) {}
+
+  handleCompleteClick() {
+    if (this.consultation === null) throw new Error("cant do this without id");
+
+    const id = this.consultation.id;
+    console.log(" this.actualAccomplishments():", this.actualAccomplishments());
+    console.log("this.proposedNextSteps():", this.proposedNextSteps());
+    console.log("this.nextDeliverables():", this.nextDeliverables());
+    const completeScheduled = this.consultationService.completeScheduled(id,  this.actualAccomplishments(), this.proposedNextSteps(), this.nextDeliverables());
+    completeScheduled.subscribe({
+      next: (res) => {
+        this.toastr.success("success")
+      },
+      error: (err) => {
+        this.toastr.error("err")
+      }
+    })
+
+    this.actualAccomplishments.set([]);
+    this.proposedNextSteps.set([]);
+    this.nextDeliverables.set([]);
+  }
+
+  epochToDate(epoch: number) {
+    return convertUnixEpochToDateString(epoch);
+  }
+
+  epochToTime(epoch: number) {
+    return getTimeFromEpoch(epoch);
   }
 
   clearAccomplishedTasks() {
@@ -97,16 +121,7 @@ export class ConsultationModalComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.handleIdChanges(changes);
     this.handleConsultation$Changes(changes);
-  }
-
-  handleIdChanges(changes: SimpleChanges) {
-    if (changes['id'] === undefined) return;
-
-    const id = changes['id'].currentValue as string;
-
-    this.id = id;
   }
 
   handleConsultation$Changes(changes: SimpleChanges) {
@@ -121,6 +136,7 @@ export class ConsultationModalComponent implements OnChanges {
         .pipe(
           filter(isNotNull),
           tap((c) => {
+            console.log('c:', c);
             this.consultation = c;
           }),
           switchMap((c) => this.taskService.getAccompishedTasks(c.id))
@@ -129,13 +145,5 @@ export class ConsultationModalComponent implements OnChanges {
           next: (tasks) => (this.accomplishedTasks = tasks),
         });
     }
-  }
-
-  epochToDate(epoch: number) {
-    return convertUnixEpochToDateString(epoch);
-  }
-
-  epochToTime(epoch: number) {
-    return getTimeFromEpoch(epoch);
   }
 }

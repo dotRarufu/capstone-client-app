@@ -49,8 +49,103 @@ export class ConsultationService {
     return request$;
   }
 
+  completeScheduled(
+    id: number,
+    actualAccomplishments: string[],
+    proposedNextSteps: string[],
+    nextDeliverables: string[]
+  ) {
+    const request$ = this.markAsComplete(id).pipe(
+      switchMap((_) =>
+        this.insertConsultationOutcome(0, actualAccomplishments, id)
+      ),
+      switchMap((_) =>
+        this.insertConsultationOutcome(1, proposedNextSteps, id)
+      ),
+      switchMap((_) => this.insertConsultationOutcome(2, nextDeliverables, id)),
+      tap((_) => this.signalNewConsultation())
+    );
+
+    return request$;
+  }
+
+  private markAsComplete(id: number) {
+    const data = {
+      category_id: 2,
+    };
+    const request = this.client.from('consultation').update(data).eq('id', id);
+    const request$ = from(request).pipe(
+      map((res) => {
+        if (res.error !== null) throw new Error('failed: mark as complete');
+
+        return res.statusText;
+      })
+    );
+
+    return request$;
+  }
+
+  private insertConsultationOutcome(
+    outcomeId: number,
+    contents: string[],
+    consultationId: number
+  ) {
+    let tableName = '';
+    switch (outcomeId) {
+      case 0:
+        tableName = 'actual_accomplishment';
+        break;
+      case 1:
+        tableName = 'proposed_next_step';
+        break;
+      case 2:
+        tableName = 'next_deliverable';
+        break;
+
+      default:
+        throw new Error('unknwon outcomeId');
+    }
+
+    const request = Promise.all(
+      contents.map(async (c) => {
+        try {
+          const data = {
+            content: c,
+            consultation_id: consultationId,
+          };
+          const response = await this.client.from(tableName).insert(data);
+
+          if (response.error !== null)
+            throw new Error('error in inserting outcome');
+
+          return response.statusText;
+        } catch (err) {
+          throw new Error('error:' + err);
+        }
+      })
+    );
+
+    return from(request);
+  }
+
+  handleInvitation(id: number, decision: boolean) {
+    const data = {
+      category_id: decision ? 1 : 3,
+    };
+    const request = this.client.from('consultation').update(data).eq('id', id);
+    const request$ = from(request).pipe(
+      map((res) => {
+        if (res.error !== null) throw new Error('error handling invitation');
+
+        return res.statusText;
+      }),
+      tap((_) => this.signalNewConsultation())
+    );
+
+    return request$;
+  }
+
   private signalNewConsultation() {
-    console.log('signals new consultation');
     const old = this.newConsultationSignal$.getValue();
 
     this.newConsultationSignal$.next(old + 1);
@@ -115,64 +210,14 @@ export class ConsultationService {
     return from(request);
   }
 
-  acceptConsultation(id: number) {
-    const data = {
-      is_accepted: true,
-    };
-    const request = this.client.from('consultation').update(data).eq('id', id);
-
-    const request$ = from(request).pipe(
-      map((res) => {
-        //todo:  create operator for this, or wrapper, handle the return in another operator
-        if (res.error !== null) throw new Error('error updating consultation');
-
-        return res.statusText;
-      }),
-      tap((_) => this.signalNewConsultation())
+  getConsultations(projectId: number, categoryId: number) {
+    const request$ = from(
+      this.client
+        .from('consultation')
+        .select('*')
+        .eq('project_id', projectId)
+        .eq('category_id', categoryId)
     );
-
-    return request$;
-  }
-
-  getConsultations(
-    isScheduled: boolean,
-    projectId: number,
-    isCompleted: boolean
-  ) {
-    let request$: Observable<
-      PostgrestSingleResponse<
-        {
-          date_time: number;
-          description: string;
-          id: number;
-          is_accepted: boolean;
-          is_done: boolean;
-          location: string;
-          organizer_id: string;
-          project_id: number;
-        }[]
-      >
-    >;
-
-    if (isCompleted) {
-      request$ = from(
-        this.client
-          .from('consultation')
-          .select('*')
-          .eq('is_accepted', true)
-          .eq('is_done', true)
-          .eq('project_id', projectId)
-      );
-    } else {
-      request$ = from(
-        this.client
-          .from('consultation')
-          .select('*')
-          .eq('is_accepted', isScheduled)
-          .eq('is_done', false)
-          .eq('project_id', projectId)
-      );
-    }
 
     const res = this.newConsultationSignal$.pipe(
       switchMap((_) => request$),
@@ -187,7 +232,65 @@ export class ConsultationService {
     return res;
   }
 
-  getConsultationDetails(consultation: Consultation) {
-    // const a = this.client.from()
+  cancelInvitation(id: number) {
+    const deleteReq = this.client.from("consultation").delete().eq("id", id);
+    const deleteReq$ = from(deleteReq).pipe(
+      map(res => {
+        if (res.error !== null) throw new Error("failed deleting invitation");
+
+        return res.statusText
+      }),
+      tap(() => this.signalNewConsultation())
+    );
+
+    return deleteReq$;
+  }
+
+  getConsultationOutcomes(id: number) {
+    const actualAccomplishments = this.client
+      .from('actual_accomplishment')
+      .select('content')
+      .eq('consultation_id', id);
+    const proposedNextSteps = this.client
+      .from('proposed_next_step')
+      .select('content')
+      .eq('consultation_id', id);
+    const nextDeliverables = this.client
+      .from('next_deliverable')
+      .select('content')
+      .eq('consultation_id', id);
+
+    const actualAccomplishments$ = from(actualAccomplishments).pipe(
+      map((res) => {
+        if (res.error !== null)
+          throw new Error('error getting actual accomplishments');
+
+        return res.data.map((r) => r.content);
+      })
+    );
+    const proposedNextSteps$ = from(proposedNextSteps).pipe(
+      map((res) => {
+        if (res.error !== null)
+          throw new Error('error gettingproposed next steps');
+
+        return res.data.map((r) => r.content);
+      })
+    );
+    const nextDeliverables$ = from(nextDeliverables).pipe(
+      map((res) => {
+        if (res.error !== null)
+          throw new Error('error getting nextDeliverables');
+
+        return res.data.map((r) => r.content);
+      })
+    );
+
+    const res$ = forkJoin({
+      actualAccomplishments: actualAccomplishments$,
+      proposedNextSteps: proposedNextSteps$,
+      nextDeliverables: nextDeliverables$,
+    });
+
+    return res$;
   }
 }

@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { BehaviorSubject } from 'rxjs';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
@@ -13,44 +15,78 @@ import { Consultation } from 'src/app/types/collection';
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <Accordion
-        *ngFor="let consultation of consultations"
-        [heading]="consultation.category"
-      >
+      <Accordion heading="Pending">
         <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
-          <div
-            *ngFor="let item of consultation.items"
-            class="card card-compact h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
+          <ConsultationCard
+            *ngFor="let data of consultations[0].items"
+            [data]="data"
+            (click)="handleCardClick(data)"
+            buttonId="techAdPending"
           >
-            <figure class="h-[92px] bg-secondary">
-              <button
-                onclick="consultationModal.showModal()"
-                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
-              >
-                {{ epochToDateString(item.date_time) }}
-              </button>
-            </figure>
-            <div class="card-body">
-              <p class="text-sm">{{ item.location }}</p>
-              <p class="text-sm">
-                {{ item.description }}
-              </p>
-
-              <div class="card-actions justify-end">
-                <button
-                  onclick="consultationModal.showModal()"
-                  class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
-                >
-                  <i-feather class="text-base-content/70" name="log-in" />
-                </button>
-              </div>
-            </div>
-          </div>
+            <!-- todo: add slot for controls -->
+          </ConsultationCard>
+        </div>
+      </Accordion>
+      <Accordion heading="Scheduled">
+        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+          <ConsultationCard
+            *ngFor="let data of consultations[1].items"
+            [data]="data"
+            (click)="handleCardClick(data)"
+            buttonId="techAdScheduled"
+          >
+            <!-- todo: add slot for controls -->
+          </ConsultationCard>
+        </div>
+      </Accordion>
+      <Accordion heading="Completed">
+        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+          <ConsultationCard
+            *ngFor="let data of consultations[2].items"
+            [data]="data"
+            (click)="handleCardClick(data)"
+            buttonId="techAdCompleted"
+          >
+            <!-- todo: add slot for controls -->
+          </ConsultationCard>
+        </div>
+      </Accordion>
+      <Accordion heading="Declined">
+        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+          <ConsultationCard
+            *ngFor="let data of consultations[3].items"
+            [data]="data"
+            (click)="handleCardClick(data)"
+          >
+            <!-- todo: add slot for controls -->
+          </ConsultationCard>
         </div>
       </Accordion>
     </div>
 
-    <ConsultationDetailsModal />
+    <ConsultationDetailsModal [consultation$]="activeConsultation$" />
+
+    <ScheduledConsultationModal [consultation$]="activeConsultation$" />
+
+    <CompletedConsultationModal [consultation$]="activeConsultation$" />
+
+    <ConsultationDetailsModal
+      [id]="'techAdPendingConsultationsModal'"
+      [consultation$]="activeConsultation$"
+    >
+      <button
+        (click)="handleInvitation(true)"
+        class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+      >
+        <i-feather class="text-base-content/70" name="x" /> Accept
+      </button>
+      <button
+        (click)="handleInvitation(false)"
+        class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+      >
+        <i-feather class="text-base-content/70" name="x" /> Decline
+      </button>
+    </ConsultationDetailsModal>
   `,
 })
 export class TechnicalAdviserConsultationsComponent {
@@ -58,31 +94,24 @@ export class TechnicalAdviserConsultationsComponent {
     { category: 'Pending', items: [] },
     { category: 'Scheduled', items: [] },
     { category: 'Completed', items: [] },
+    { category: 'Declined', items: [] },
   ];
+  activeConsultationSubject = new BehaviorSubject<Consultation | null>(null);
+  activeConsultation$ = this.activeConsultationSubject.asObservable();
 
   constructor(
     private consultationService: ConsultationService,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
     const projectId = this.projectService.activeProjectId();
     // todo: refactor these
-    const scheduled$ = this.consultationService.getConsultations(
-      true,
-      projectId,
-      false
-    );
-    const pending$ = this.consultationService.getConsultations(
-      false,
-      projectId,
-      false
-    );
-    const completed$ = this.consultationService.getConsultations(
-      true,
-      projectId,
-      true
-    );
+    const scheduled$ = this.consultationService.getConsultations(projectId, 1);
+    const pending$ = this.consultationService.getConsultations(projectId, 0);
+    const completed$ = this.consultationService.getConsultations(projectId, 2);
+    const rejected$ = this.consultationService.getConsultations(projectId, 3);
 
     scheduled$.subscribe({
       next: (consultations) => {
@@ -105,9 +134,38 @@ export class TechnicalAdviserConsultationsComponent {
         completed.items = consultations;
       },
     });
+    rejected$.subscribe({
+      next: (consultations) => {
+        const rejected = this.consultations[3];
+        // maybe make this non mutated
+        rejected.items = consultations;
+      },
+    });
+  }
+
+  handleInvitation(decision: boolean) {
+    const activeConsultation = this.activeConsultationSubject.getValue();
+
+    if (activeConsultation === null)
+      throw new Error('should be nmpossible, no consultation is selected');
+
+    const id = activeConsultation.id;
+
+    this.consultationService.handleInvitation(id, decision).subscribe({
+      next: (res) => {
+        this.toastr.success(res);
+      },
+      error: (err) => {
+        this.toastr.error(err);
+      },
+    });
   }
 
   epochToDateString(unixEpoch: number) {
     return convertUnixEpochToDateString(unixEpoch);
+  }
+
+  handleCardClick(data: Consultation) {
+    this.activeConsultationSubject.next(data);
   }
 }
