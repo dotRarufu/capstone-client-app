@@ -11,12 +11,13 @@ import { CommonModule } from '@angular/common';
 import { HomeLayoutComponent } from 'src/app/layouts/home.component';
 import { ProjectsAccordionComponent } from 'src/app/components/accordion/projects.component';
 import { ProjectCardComponent } from 'src/app/components/card/project-card.component';
+import { ProjectsComponent } from '../components/projects.component';
 import { ReportsComponent } from 'src/app/components/reports.component';
-import { ProjectsComponent } from 'src/app/components/projects.component';
+
 
 @Component({
   standalone: true,
-  imports: [CommonModule, HomeLayoutComponent, ProjectsComponent, ProjectsAccordionComponent, ProjectCardComponent, ReportsComponent, ProjectsComponent],
+  imports: [CommonModule, HomeLayoutComponent, ProjectsAccordionComponent, ProjectCardComponent, ReportsComponent, ProjectsComponent],
   selector: 'Home',
   template: `
     <HomeLayout [modalProjectId]="modalProjectId" role="c" [tabs]="tabs">
@@ -45,7 +46,7 @@ import { ProjectsComponent } from 'src/app/components/projects.component';
           <div
             class="w-full sm2:flex sm2:justify-center md:flex-shrink-0  md:basis-[357px]"
           >
-            <Reports />
+          <Reports [sideColumn]="true"/>
           </div>
         </ng-container>
       </div>

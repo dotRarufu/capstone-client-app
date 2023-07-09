@@ -1,4 +1,10 @@
-import { Component, Input, OnChanges, SimpleChanges, WritableSignal, signal } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { BehaviorSubject, Observable, filter, switchMap, tap } from 'rxjs';
 import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
 import { isNotNull } from 'src/app/student/utils/isNotNull';
@@ -6,21 +12,26 @@ import { Consultation, Task } from 'src/app/types/collection';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { TaskService } from 'src/app/services/task.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
-import { ToastrService } from 'ngx-toastr';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
-import { AccomplishmentsComponent } from 'src/app/components/modal/accomplishments.component';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
-import { ActualAccomplishmentsComponent } from '../components/actualAccomplishments.component';
-import { ProposedNextStepsComponent } from '../components/proposedNextSteps.component';
-import { NextDeliverablesComponent } from '../components/nextDeliverables.component';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { ActualAccomplishmentsComponent } from './actual-accomplishments.component';
+import { AccomplishmentsComponent } from 'src/app/components/modal/accomplishments.component';
+import { ProposedNextStepsComponent } from './proposed-next-steps.component';
+import { NextDeliverablesComponent } from './next-deliverables.component';
 
 @Component({
   standalone: true,
-  imports: [FeatherIconsModule, ModalComponent, 
-  AccomplishmentsComponent, ActualAccomplishmentsComponent, ProposedNextStepsComponent, NextDeliverablesComponent],
-  selector: 'ScheduledConsultationModal',
+  imports: [
+    ActualAccomplishmentsComponent,
+    ModalComponent,
+    AccomplishmentsComponent,
+    ProposedNextStepsComponent,
+    NextDeliverablesComponent,
+    FeatherIconsModule,
+  ],
+  selector: 'CompletedConsultationModal',
   template: `
-    <Modal inputId="scheduledConsultationsModal">
+    <Modal inputId="completedConsultationsModal">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -52,25 +63,21 @@ import { NextDeliverablesComponent } from '../components/nextDeliverables.compon
               {{ consultation?.location }}
             </div>
 
-            <Accomplishments [data]="accomplishedTasks"/>
+            <Accomplishments [hideInput]="true" [data]="accomplishedTasks" />
 
-            <ActualAccomplishments [dataSignal]="actualAccomplishments" />
+            <ActualAccomplishments
+              [hideInput]="true"
+              [data]="actualAccomplishments"
+            />
 
-            <ProposedNextSteps [dataSignal]="proposedNextSteps"/>
+            <ProposedNextSteps [hideInput]="true" [data]="proposedNextSteps" />
 
-            <NextDeliverables [dataSignal]="nextDeliverables"/>
+            <NextDeliverables [hideInput]="true" [data]="nextDeliverables" />
           </div>
 
           <ul
             class="flex h-full w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
           >
-            <button
-              (click)="handleCompleteClick()"
-              class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
-            >
-              <i-feather class="text-base-content/70" name="x" /> Complete
-            </button>
-
             <div class="h-full"></div>
 
             <button
@@ -85,37 +92,18 @@ import { NextDeliverablesComponent } from '../components/nextDeliverables.compon
     </Modal>
   `,
 })
-export class ScheduledConsultationModalComponent implements OnChanges {
+export class CompletedConsultationModalComponent implements OnChanges, OnInit {
   @Input() consultation$?: Observable<Consultation | null>;
   accomplishedTasks: Task[] = [];
   consultation: Consultation | null = null;
-  actualAccomplishments: WritableSignal<string[]> = signal([]);
-  proposedNextSteps: WritableSignal<string[]> = signal([]);
-  nextDeliverables: WritableSignal<string[]> = signal([]);
+  actualAccomplishments: string[] = [];
+  proposedNextSteps: string[] = [];
+  nextDeliverables: string[] = [];
 
-  constructor(private taskService: TaskService, private consultationService: ConsultationService, private toastr: ToastrService) {}
-
-  handleCompleteClick() {
-    if (this.consultation === null) throw new Error("cant do this without id");
-
-    const id = this.consultation.id;
-    console.log(" this.actualAccomplishments():", this.actualAccomplishments());
-    console.log("this.proposedNextSteps():", this.proposedNextSteps());
-    console.log("this.nextDeliverables():", this.nextDeliverables());
-    const completeScheduled = this.consultationService.completeScheduled(id,  this.actualAccomplishments(), this.proposedNextSteps(), this.nextDeliverables());
-    completeScheduled.subscribe({
-      next: (res) => {
-        this.toastr.success("success")
-      },
-      error: (err) => {
-        this.toastr.error("err")
-      }
-    })
-
-    this.actualAccomplishments.set([]);
-    this.proposedNextSteps.set([]);
-    this.nextDeliverables.set([]);
-  }
+  constructor(
+    private taskService: TaskService,
+    private consultationService: ConsultationService
+  ) {}
 
   epochToDate(epoch: number) {
     return convertUnixEpochToDateString(epoch);
@@ -132,6 +120,8 @@ export class ScheduledConsultationModalComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.handleConsultation$Changes(changes);
   }
+
+  ngOnInit(): void {}
 
   handleConsultation$Changes(changes: SimpleChanges) {
     if (changes['consultation$'] === undefined) return;
@@ -152,6 +142,21 @@ export class ScheduledConsultationModalComponent implements OnChanges {
         )
         .subscribe({
           next: (tasks) => (this.accomplishedTasks = tasks),
+        });
+
+      consultation$
+        .pipe(
+          filter(isNotNull),
+          switchMap(({ id }) =>
+            this.consultationService.getConsultationOutcomes(id)
+          )
+        )
+        .subscribe({
+          next: (res) => {
+            this.actualAccomplishments = res.actualAccomplishments;
+            this.proposedNextSteps = res.proposedNextSteps;
+            this.nextDeliverables = res.nextDeliverables;
+          },
         });
     }
   }

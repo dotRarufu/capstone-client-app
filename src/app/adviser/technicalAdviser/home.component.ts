@@ -9,14 +9,14 @@ import { groupBySection } from 'src/app/utils/groupBySection';
 import { TabsService } from 'src/app/services/tabs.service';
 import { CommonModule } from '@angular/common';
 import { HomeLayoutComponent } from 'src/app/layouts/home.component';
-import { ProjectsComponent } from 'src/app/components/projects.component';
 import { ProjectsAccordionComponent } from 'src/app/components/accordion/projects.component';
 import { ProjectCardComponent } from 'src/app/components/card/project-card.component';
-import { TechnicalAdviserReportsComponent } from './reports.component';
+import { ProjectsComponent } from '../components/projects.component';
+import { ReportsComponent } from 'src/app/components/reports.component';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, HomeLayoutComponent, ProjectsComponent, ProjectsAccordionComponent,ProjectCardComponent, TechnicalAdviserReportsComponent],
+  imports: [CommonModule, HomeLayoutComponent, ProjectsComponent, ProjectsAccordionComponent,ProjectCardComponent, ReportsComponent],
   selector: 'TechnicalAdviserHome',
   template: `
     <!-- <div class="flex flex-col gap-[1rem]"> -->
@@ -46,7 +46,7 @@ import { TechnicalAdviserReportsComponent } from './reports.component';
             <div
               class="w-full sm2:flex sm2:justify-center md:flex-shrink-0  md:basis-[357px]"
             >
-              <Reports />
+              <Reports [sideColumn]="true"/>
             </div>
           </ng-container>
         </div>

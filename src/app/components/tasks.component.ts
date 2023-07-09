@@ -13,17 +13,28 @@ import { from, map } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
 import { TodoAccordionComponent } from 'src/app/components/accordion/todo.component';
-import { TaskDetailsModalComponent } from 'src/app/components/modal/taskDetails.component';
+import { TaskDetailsModalComponent } from 'src/app/components/modal/task-details.component';
 import { TaskCardComponent } from 'src/app/components/card/task-card.component';
+import { AddTaskModalComponent } from 'src/app/components/modal/add-task.component';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
 @Component({
   selector: "Tasks",
   standalone: true,
-  imports: [CommonModule, TodoAccordionComponent, TaskDetailsModalComponent, DragDropModule, TaskCardComponent],
+  imports: [CommonModule, TodoAccordionComponent, TaskDetailsModalComponent, DragDropModule, TaskCardComponent, AddTaskModalComponent, FeatherIconsModule],
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
-        <h1 class="text-[32px] text-base-content">Tasks</h1>
+        <h1 class="text-[32px] text-base-content">Tasks</h1>\
+        <button
+        *ngIf="!isStudent"
+          onclick="addTask.showModal()"
+          class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+        >
+          <i-feather class="text-base-content/70" name="plus" />
+
+          Add
+        </button>
       </div>
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -49,7 +60,7 @@ import { TaskCardComponent } from 'src/app/components/card/task-card.component';
               <TaskCard
                 *ngFor="let item of category.tasks"
                 cdkDrag
-                [cdkDragDisabled]="isDraggingDisabled"
+                [cdkDragDisabled]="!isStudent"
                 [task]="item"
               />
             </div>
@@ -58,12 +69,15 @@ import { TaskCardComponent } from 'src/app/components/card/task-card.component';
       </div>
 
       <TaskDetailsModal />
+
+        <AddTaskModal *ngIf="!isStudent"/>
+
     </div>
   `,
 })
 export class TasksComponent implements OnInit {
   categories: { title: string; tasks: Task[] }[] = [];
-  isDraggingDisabled = true;
+  isStudent = true;
 
   constructor(
     private authService: AuthService,
@@ -87,7 +101,7 @@ export class TasksComponent implements OnInit {
       .subscribe({
         next: (user) => {
           const isStudent = user.role_id === 0;
-          this.isDraggingDisabled = !isStudent;
+          this.isStudent = isStudent;
 
           this.spinner.hide();
         },

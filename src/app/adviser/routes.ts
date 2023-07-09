@@ -1,26 +1,19 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
-import { NotFoundComponent } from '../pages/not-found/notFound.component';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { CapstoneAdviserConsultationsComponent } from './capstoneAdviser/consultations.component';
-import { CapstoneAdviserReportsComponent } from './capstoneAdviser/reports.component';
+import { Routes } from '@angular/router';
+import { NotFoundComponent } from '../pages/not-found/not-found.component';
 import { CapstoneAdviserHomeComponent } from './capstoneAdviser/home.component';
 import { CapstoneAdviserProjectComponent } from './capstoneAdviser/project.component';
-import { CapstoneAdviserSideBarComponent } from './capstoneAdviser/sidebar.component';
-import { TechnicalAdviserConsultationsComponent } from './technicalAdviser/consultations.component';
-import { TechnicalAdviserReportsComponent } from './technicalAdviser/reports.component';
 import { TechnicalAdviserHomeComponent } from './technicalAdviser/home.component';
 import { TechnicalAdviserProjectComponent } from './technicalAdviser/project.component';
-import { TechnicalAdviserSideBarComponent } from './technicalAdviser/sidebar.component';
 import { authGuard } from '../guards/auth.guard';
 import { roleGuard } from '../guards/role.guard';
 import { participantGuard } from '../guards/participant.guard';
-import { TasksPageComponent } from '../shared/pages/tasks.component';
-import { ParticipantsPageComponent } from '../shared/pages/participants.component';
+import { ParticipantsPageComponent } from './components/participants.component';
 import { RedirectComponent } from '../components/redirect.component';
-import { FormGeneratorComponent } from '../components/form/formGenerator.component';
+import { FormGeneratorComponent } from '../components/form/form-generator.component';
 import { FormComponent } from '../components/form/form.component';
+import { TasksComponent } from '../components/tasks.component';
+import { ReportsComponent } from '../components/reports.component';
+import { ConsultationsComponent } from '../components/consultations.component';
 
 const routes: Routes = [
   {
@@ -40,7 +33,7 @@ const routes: Routes = [
           },
           {
             path: 'reports',
-            component: CapstoneAdviserReportsComponent,
+            component: ReportsComponent,
             // does not matter, is rendered in home component
           },
 
@@ -58,7 +51,7 @@ const routes: Routes = [
             children: [
               {
                 path: 'tasks',
-                component: TasksPageComponent,
+                component: TasksComponent,
               },
               {
                 path: 'participants',
@@ -66,11 +59,12 @@ const routes: Routes = [
               },
               {
                 path: 'consultations',
-                component: CapstoneAdviserConsultationsComponent,
+                component: ConsultationsComponent,
+                data: {role: "c"}
               },
               {
                 path: 'reports',
-                component: CapstoneAdviserReportsComponent,
+                component: ReportsComponent,
               },
               {
                 path: 'forms',
@@ -128,7 +122,7 @@ const routes: Routes = [
           },
           {
             path: 'reports',
-            component: TechnicalAdviserReportsComponent,
+            component: ReportsComponent,
             // does not matter, is rendered in home component
           },
 
@@ -146,7 +140,7 @@ const routes: Routes = [
             children: [
               {
                 path: 'tasks',
-                component: TasksPageComponent,
+                component: TasksComponent,
               },
               {
                 path: 'participants',
@@ -154,11 +148,13 @@ const routes: Routes = [
               },
               {
                 path: 'consultations',
-                component: TechnicalAdviserConsultationsComponent,
+                component: ConsultationsComponent,
+                data: {role: "t"}
+
               },
               {
                 path: 'reports',
-                component: TechnicalAdviserReportsComponent,
+                component: ReportsComponent,
               },
               {
                 path: 'forms',

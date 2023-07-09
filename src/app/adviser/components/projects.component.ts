@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FeatherIconsModule } from '../modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
 @Component({
   standalone: true,

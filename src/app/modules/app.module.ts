@@ -1,8 +1,6 @@
 import { NgModule, isDevMode } from '@angular/core';
-import { AppComponent } from '../app.component';
 import { RouterModule, Routes } from '@angular/router';
-import { NotFoundComponent } from '../pages/not-found/notFound.component';
-import { ReportsComponent } from '../components/reports.component';
+import { NotFoundComponent } from '../pages/not-found/not-found.component';
 import { ProfileComponent } from '../pages/profile/profile.component';
 import { ToastrModule } from 'ngx-toastr';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -13,7 +11,21 @@ import { authGuard } from '../guards/auth.guard';
 import { roleGuard } from '../guards/role.guard';
 import { UnauthorizedComponent } from '../pages/unauthorized/unauthorized.component';
 import { LandingComponent } from '../pages/landing/landing.component';
-import { ProfileViewComponent } from '../pages/profile/profileView.component';
+import { ProfileViewComponent } from '../pages/profile/profile-view.component';
+import { Component } from '@angular/core';
+import { ReportsComponent } from '../components/reports.component';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <div class="h-screen w-screen">
+      <router-outlet />
+    </div>
+  `,
+})
+class AppComponent {
+  title = 'capstone-client-app';
+}
 
 const routes: Routes = [
   {

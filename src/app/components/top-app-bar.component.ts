@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { FeatherIconsModule } from '../modules/feather-icons.module';
+import { getRolePath } from '../utils/getRolePath';
 
 @Component({
   selector: 'TopAppBar',
@@ -105,7 +106,19 @@ export class TopAppBarComponent implements OnInit {
     this.router.navigate(['profile', 'view']);
   }
 
-  navigateHome() {
-    this.router.navigate(['']);
+  async navigateHome() {
+    console.log('navigateHome()');
+    const user = await this.authService.getAuthenticatedUser();
+
+    if (user !== null) {
+      const rolePath = getRolePath(user.role_id);
+      const route = [rolePath, 'home'];
+
+      if (rolePath !== 's') {
+        route.unshift('a');
+      }
+
+      this.router.navigate(route);
+    }
   }
 }

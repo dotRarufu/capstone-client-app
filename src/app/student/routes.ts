@@ -1,18 +1,18 @@
 import { RouterModule, Routes } from '@angular/router';
 import { StudentHomeComponent } from './pages/home.component';
-import { TitleAnalyzerComponent } from './components/titleAnalyzer.component';
+import { TitleAnalyzerComponent } from './components/title-analyzer.component';
 import { ProjectsComponent } from './components/projects.component';
 import { ResultComponent } from './pages/result.component';
-import { TitleBuilderComponent } from './components/titleBuilder.component';
+import { TitleBuilderComponent } from './components/title-builder.component';
 import { StudentProjectComponent } from './pages/project.component';
-import { ReportsComponent } from '../components/reports.component';
-import { TasksComponent } from './components/tasks.component';
+import { TasksComponent } from '../components/tasks.component';
 import { ParticipantsComponent } from './components/participants.component';
-import { ConsultationsComponent } from './components/consultations.component';
 import { RedirectComponent } from '../components/redirect.component';
-import { NotFoundComponent } from '../pages/not-found/notFound.component';
-import { FormGeneratorComponent } from '../components/form/formGenerator.component';
+import { NotFoundComponent } from '../pages/not-found/not-found.component';
+import { FormGeneratorComponent } from '../components/form/form-generator.component';
 import { FormComponent } from '../components/form/form.component';
+import { ReportsComponent } from '../components/reports.component';
+import { ConsultationsComponent } from '../components/consultations.component';
 
 const routes: Routes = [
   {
@@ -62,6 +62,7 @@ const routes: Routes = [
           {
             path: 'consultations',
             component: ConsultationsComponent,
+            data: {role: "s"}
           },
           {
             path: 'forms',

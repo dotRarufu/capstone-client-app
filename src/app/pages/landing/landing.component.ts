@@ -57,6 +57,12 @@ export class LandingComponent implements OnInit {
       next: (user) => {
         if (user !== null) {
           const rolePath = getRolePath(user.role_id);
+
+          if (rolePath !== "s") {
+
+            this.router.navigate(["a", rolePath, 'home']);
+          }
+          
           this.router.navigate([rolePath, 'home']);
         }
 

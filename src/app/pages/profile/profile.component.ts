@@ -4,8 +4,9 @@ import { TabsComponent } from 'src/app/components/tabs.component';
 import { TopAppBarComponent } from 'src/app/components/top-app-bar.component';
 import { Project } from 'src/app/models/project';
 import { Tab } from 'src/app/models/tab';
-import { ReportsComponent } from '../../components/reports.component';
-import { ProfileViewComponent } from './profileView.component';
+import { ProfileViewComponent } from './profile-view.component';
+import { ReportsComponent } from 'src/app/components/reports.component';
+
 
 @Component({
   standalone: true,
