@@ -41,28 +41,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
               {{ consultation?.location }}
             </div>
 
-            <div class="flex items-center justify-between ">
-              <h1 class="text-[20px] text-base-content">Accomplishments</h1>
-            </div>
-
-            <div class="h-[2px] w-full bg-base-content/10"></div>
-
-            <ul class="flex h-fit  flex-col gap-2">
-              <li
-                *ngFor="let task of accomplishedTasks"
-                class="flex justify-between rounded-[3px] border px-2 py-2 text-base text-base-content shadow"
-              >
-                <div class="flex w-full items-center gap-2">
-                  <i-feather
-                    class="shrink-0 grow-0 basis-[20px] text-base-content/70"
-                    name="check-circle"
-                  />
-                  <p class="line-clamp-1">
-                    {{ task.title }}
-                  </p>
-                </div>
-              </li>
-            </ul>
+           <Accomplishments [data]="accomplishedTasks" [hideInput]="true"/>
           </div>
           <ul
             class="flex h-full w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"

@@ -49,7 +49,7 @@ import { AccordionComponent } from './components/accordion/accordion.component';
 import { TaskCardComponent } from './components/cards/taskCard.component';
 import { NgChartsModule } from 'ng2-charts';
 import { RedirectComponent } from './components/redirect.component';
-import { DashboardComponent } from './components/dashboard.component';
+import { ReportsComponent } from './components/reports.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { ProfileComponent } from './components/profile.component';
 import { ProfileViewComponent } from './components/profileView.component';
@@ -68,6 +68,7 @@ import { AddTaskModalComponent } from './components/modals/addTask.component';
 import { ParticipantsPageComponent } from './pages/participants.component';
 import { ProjectsPageComponent } from './pages/projects.component';
 import { TasksPageComponent } from './pages/tasks.component';
+import { AccomplishmentsComponent } from './components/modals/accomplishments.component';
 
 const icons = {
   ArrowLeft,
@@ -117,7 +118,7 @@ const icons = {
     TodoAccordionComponent,
     TaskCardComponent,
     RedirectComponent,
-    DashboardComponent,
+    ReportsComponent,
     ProfileComponent,
     ProfileViewComponent,
     NavigationRailComponent,
@@ -132,7 +133,8 @@ const icons = {
     AddTaskModalComponent,
     ParticipantsPageComponent,
     ProjectsPageComponent,
-    TasksPageComponent
+    TasksPageComponent,
+    AccomplishmentsComponent,
   ],
   imports: [
     CommonModule,
@@ -159,7 +161,7 @@ const icons = {
     TaskCardComponent,
     NgChartsModule,
     RedirectComponent,
-    DashboardComponent,
+    ReportsComponent,
     DragDropModule,
     NgxSpinnerModule,
     ProfileComponent,
@@ -178,7 +180,8 @@ const icons = {
     AddTaskModalComponent,
     ParticipantsPageComponent,
     ProjectsPageComponent,
-    TasksPageComponent
+    TasksPageComponent,
+    AccomplishmentsComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

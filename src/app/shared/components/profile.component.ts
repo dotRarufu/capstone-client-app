@@ -25,7 +25,7 @@ import { Tab } from 'src/app/models/tab';
           </div>
 
           <div class=" w-[357px] shrink-0  basis-[357px] ">
-            <Dashboard [sideColumn]="true" />
+            <Reports [sideColumn]="true" />
           </div>
         </div>
       </div>
@@ -41,9 +41,9 @@ export class ProfileComponent {
       handler: this.handlerFactory('view'),
     },
     {
-      name: 'dashboard',
-      id: 'dashboard',
-      handler: this.handlerFactory('dashboard'),
+      name: 'reports',
+      id: 'reports',
+      handler: this.handlerFactory('reports'),
     },
   ];
   projects: Project[] = [];

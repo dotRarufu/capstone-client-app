@@ -28,11 +28,11 @@ import { getRolePath } from 'src/app/utils/getRolePath';
             Tasks
           </button>
           <button
-            (click)="navigateTo('dashboard')"
+            (click)="navigateTo('reports')"
             class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
           >
             <i-feather name="monitor" />
-            Dashboard
+            Reports
           </button>
           <button
             (click)="navigateTo('consultations')"
@@ -87,11 +87,11 @@ import { getRolePath } from 'src/app/utils/getRolePath';
             Tasks
           </button>
           <button
-            (click)="navigateTo('dashboard')"
+            (click)="navigateTo('reports')"
             class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] border-0 bg-base-100/70 px-[4px] py-[8px] text-[10px] text-base-content"
           >
             <i-feather name="monitor" />
-            Dashboard
+            Reports
           </button>
           <button
             (click)="navigateTo('consultations')"

@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {TabDefinition } from 'src/app/models/tab';
+import { TabDefinition } from 'src/app/models/tab';
 import { ProjectService } from 'src/app/services/project.service';
 import { TabsService } from 'src/app/services/tabs.service';
 
@@ -24,7 +24,7 @@ import { TabsService } from 'src/app/services/tabs.service';
         </button>
       </div>
 
-      <hr class="h-[2px] w-full border-base-content/10" />
+      <div class="h-[2px] w-full bg-base-content/10"></div>
 
       <div>
         <Tabs [isResponsive]="false" />

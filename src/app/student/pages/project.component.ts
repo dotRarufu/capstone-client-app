@@ -23,7 +23,7 @@ export class StudentProjectComponent {}
 //        <div class="h-5 w-5">
 //          <i-feather class="text-base-content/70"name="monitor"></i-feather>
 //        </div>
-//        <span class="btm-nav-label text-[10px]">Dashboard</span>
+//        <span class="btm-nav-label text-[10px]">Reports</span>
 //      </button>
 //      <button class="btn-ghost btn flex-1 rounded-[3px]">
 //        <div class="h-5 w-5">

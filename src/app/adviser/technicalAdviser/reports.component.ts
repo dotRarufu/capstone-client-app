@@ -3,17 +3,17 @@ import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { ChartConfiguration, ChartData } from 'chart.js';
 
 @Component({
-  selector: 'TechnicalAdviserDashboard',
+  selector: 'TechnicalAdviserReports',
   template: `
     <ng-container *ngIf="!sideColumn">
       <div class="flex h-full flex-col gap-[16px] ">
         <div class="flex justify-between ">
           <h1 class="text-[24px] text-base-content sm2:text-[32px]">
-            Dashboard
+            Reports
           </h1>
         </div>
 
-        <hr class="h-[2px] w-full border-base-content/10" />
+        <div class="h-[2px] w-full bg-base-content/10"></div>
 
         <div
           class="flex flex-col items-center gap-4 sm2:grid sm2:grid-flow-col sm2:grid-rows-3 sm2:place-content-center   sm2:items-start md:flex md:flex-col md:items-center md:gap-4"
@@ -107,7 +107,7 @@ import { ChartConfiguration, ChartData } from 'chart.js';
   
   `,
 })
-export class TechnicalAdviserDashboardComponent {
+export class TechnicalAdviserReportsComponent {
   taskByStatus: ChartConfiguration<'bar'>['data'] = {
     labels: ['To Do', 'Done', 'Doing'],
     datasets: [

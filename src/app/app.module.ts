@@ -5,7 +5,7 @@ import { SharedModule } from './shared/shared.module';
 import { LandingPageModule } from './pages/landing/landingPage.module';
 import { LandingComponent } from './pages/landing/components/landing.component';
 import { NotFoundComponent } from './shared/components/notFound.component';
-import { DashboardComponent } from './shared/components/dashboard.component';
+import { ReportsComponent } from './shared/components/reports.component';
 import { ProfileComponent } from './shared/components/profile.component';
 import { ProfileViewComponent } from './shared/components/profileView.component';
 import { ToastrModule } from 'ngx-toastr';
@@ -27,8 +27,8 @@ const routes: Routes = [
     component: ProfileComponent,
     children: [
       {
-        path: 'dashboard',
-        component: DashboardComponent,
+        path: 'reports',
+        component: ReportsComponent,
       },
       {
         path: 'view',
@@ -36,7 +36,7 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: '/profile/dashboard',
+        redirectTo: '/profile/reports',
         pathMatch: 'full',
       },
     ],

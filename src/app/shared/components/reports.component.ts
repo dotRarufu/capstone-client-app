@@ -3,12 +3,12 @@ import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { ChartConfiguration, ChartData, } from 'chart.js';
 
 @Component({
-  selector: 'Dashboard',
+  selector: 'Reports',
   template: `
     <ng-container *ngIf="!sideColumn">
     <div class="flex h-full flex-col gap-[16px]">
       <div class="flex justify-between ">
-        <h1 class="text-[24px] text-base-content sm2:text-[32px]">Dashboard</h1>
+        <h1 class="text-[24px] text-base-content sm2:text-[32px]">Reports</h1>
         <!-- <label
           for="schedule-consultation"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
@@ -20,7 +20,7 @@ import { ChartConfiguration, ChartData, } from 'chart.js';
       </div>
 
 <!-- todo: replace other dividers with this -->
-      <hr class="h-[2px] w-full border-base-content/10" />
+      <div class="h-[2px] w-full bg-base-content/10"></div>
 
       <div
         class="flex flex-col items-center gap-4 sm2:grid sm2:grid-flow-col sm2:grid-rows-3 sm2:place-content-center   sm2:items-start "
@@ -114,7 +114,7 @@ import { ChartConfiguration, ChartData, } from 'chart.js';
     <ng-container *ngIf="sideColumn">
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
-        <h1 class="text-[32px] text-base-content ">Dashboard</h1>
+        <h1 class="text-[32px] text-base-content ">Reports</h1>
         <!-- <label
           for="schedule-consultation"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
@@ -216,7 +216,7 @@ import { ChartConfiguration, ChartData, } from 'chart.js';
     </ng-container>
   `,
 })
-export class DashboardComponent {
+export class ReportsComponent {
   taskByStatus: ChartConfiguration<'bar'>['data'] = {
     labels: ['To Do', 'Done', 'Doing'],
     datasets: [

@@ -6,7 +6,7 @@ import { ProjectsComponent } from './components/projects.component';
 import { ResultComponent } from './pages/result.component';
 import { TitleBuilderComponent } from './components/titleBuilder.component';
 import { StudentProjectComponent } from './pages/project.component';
-import { DashboardComponent } from '../shared/components/dashboard.component';
+import { ReportsComponent } from '../shared/components/reports.component';
 import { TasksComponent } from './components/tasks.component';
 import { ParticipantsComponent } from './components/participants.component';
 import { ConsultationsComponent } from './components/consultations.component';
@@ -56,8 +56,8 @@ const routes: Routes = [
         component: StudentProjectComponent,
         children: [
           {
-            path: 'dashboard',
-            component: DashboardComponent,
+            path: 'reports',
+            component: ReportsComponent,
           },
           {
             path: 'tasks',

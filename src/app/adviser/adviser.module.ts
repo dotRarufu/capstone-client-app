@@ -5,12 +5,12 @@ import { NotFoundComponent } from '../shared/components/notFound.component';
 import { SharedModule } from '../shared/shared.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CapstoneAdviserConsultationsComponent } from './capstoneAdviser/consultations.component';
-import { CapstoneAdviserDashboardComponent } from './capstoneAdviser/dashboard.component';
+import { CapstoneAdviserReportsComponent } from './capstoneAdviser/reports.component';
 import { CapstoneAdviserHomeComponent } from './capstoneAdviser/home.component';
 import { CapstoneAdviserProjectComponent } from './capstoneAdviser/project.component';
 import { CapstoneAdviserSideBarComponent } from './capstoneAdviser/sidebar.component';
 import { TechnicalAdviserConsultationsComponent } from './technicalAdviser/consultations.component';
-import { TechnicalAdviserDashboardComponent } from './technicalAdviser/dashboard.component';
+import { TechnicalAdviserReportsComponent } from './technicalAdviser/reports.component';
 import { TechnicalAdviserHomeComponent } from './technicalAdviser/home.component';
 import { TechnicalAdviserProjectComponent } from './technicalAdviser/project.component';
 import { TechnicalAdviserSideBarComponent } from './technicalAdviser/sidebar.component';
@@ -23,7 +23,6 @@ import { FormGeneratorComponent } from '../shared/components/formGenerator.compo
 import { FormComponent } from '../shared/components/form.component';
 import { RedirectComponent } from '../shared/components/redirect.component';
 import { ScheduledConsultationModalComponent } from './technicalAdviser/scheduledModal.component';
-import { AccomplishmentsComponent } from './components/accomplishments.component';
 import { ActualAccomplishmentsComponent } from './components/actualAccomplishments.component';
 import { ProposedNextStepsComponent } from './components/proposedNextSteps.component';
 import { NextDeliverablesComponent } from './components/nextDeliverables.component';
@@ -32,7 +31,7 @@ import { CompletedConsultationModalComponent } from './components/completedConsu
 const routes: Routes = [
   {
     path: 'c',
-    canActivate: [authGuard, roleGuard("c")],
+    canActivate: [authGuard, roleGuard('c')],
     children: [
       {
         path: 'home',
@@ -46,8 +45,8 @@ const routes: Routes = [
             component: CapstoneAdviserProjectComponent,
           },
           {
-            path: 'dashboard',
-            component: CapstoneAdviserDashboardComponent,
+            path: 'reports',
+            component: CapstoneAdviserReportsComponent,
             // does not matter, is rendered in home component
           },
 
@@ -76,8 +75,8 @@ const routes: Routes = [
                 component: CapstoneAdviserConsultationsComponent,
               },
               {
-                path: 'dashboard',
-                component: CapstoneAdviserDashboardComponent,
+                path: 'reports',
+                component: CapstoneAdviserReportsComponent,
               },
               {
                 path: 'forms',
@@ -119,7 +118,7 @@ const routes: Routes = [
   },
   {
     path: 't',
-    canActivate: [authGuard, roleGuard("t")],
+    canActivate: [authGuard, roleGuard('t')],
     children: [
       {
         path: 'home',
@@ -133,8 +132,8 @@ const routes: Routes = [
             component: TechnicalAdviserProjectComponent,
           },
           {
-            path: 'dashboard',
-            component: TechnicalAdviserDashboardComponent,
+            path: 'reports',
+            component: TechnicalAdviserReportsComponent,
             // does not matter, is rendered in home component
           },
 
@@ -163,8 +162,8 @@ const routes: Routes = [
                 component: TechnicalAdviserConsultationsComponent,
               },
               {
-                path: 'dashboard',
-                component: TechnicalAdviserDashboardComponent,
+                path: 'reports',
+                component: TechnicalAdviserReportsComponent,
               },
               {
                 path: 'forms',
@@ -209,21 +208,20 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     CapstoneAdviserConsultationsComponent,
-    CapstoneAdviserDashboardComponent,
+    CapstoneAdviserReportsComponent,
     CapstoneAdviserHomeComponent,
     CapstoneAdviserProjectComponent,
     CapstoneAdviserSideBarComponent,
     TechnicalAdviserConsultationsComponent,
-    TechnicalAdviserDashboardComponent,
+    TechnicalAdviserReportsComponent,
     TechnicalAdviserHomeComponent,
     TechnicalAdviserProjectComponent,
     TechnicalAdviserSideBarComponent,
     ScheduledConsultationModalComponent,
-    AccomplishmentsComponent,
     ActualAccomplishmentsComponent,
     ProposedNextStepsComponent,
     NextDeliverablesComponent,
-    CompletedConsultationModalComponent
+    CompletedConsultationModalComponent,
   ],
   imports: [
     CommonModule,

@@ -33,11 +33,11 @@ import { TabsService } from 'src/app/services/tabs.service';
           </div>
         </ng-container>
 
-        <ng-container *ngIf="active === 'dashboard' || isDesktop">
+        <ng-container *ngIf="active === 'reports' || isDesktop">
           <div
             class="w-full sm2:flex sm2:justify-center md:flex-shrink-0  md:basis-[357px]"
           >
-            <CapstoneAdviserDashboard />
+            <CapstoneAdviserReports />
           </div>
         </ng-container>
       </div>
@@ -51,8 +51,8 @@ export class CapstoneAdviserHomeComponent implements OnInit {
   modalProjectId = -1;
   tabs: TabDefinition[] = [
     {
-      name: 'Dashboard',
-      id: 'dashboard',
+      name: 'Reports',
+      id: 'reports',
     },
     {
       name: 'Projects',

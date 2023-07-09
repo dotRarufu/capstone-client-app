@@ -34,11 +34,11 @@ import { TabsService } from 'src/app/services/tabs.service';
             </div>
           </ng-container>
 
-          <ng-container *ngIf="active === 'dashboard' || isDesktop">
+          <ng-container *ngIf="active === 'reports' || isDesktop">
             <div
               class="w-full sm2:flex sm2:justify-center md:flex-shrink-0  md:basis-[357px]"
             >
-              <TechnicalAdviserDashboard />
+              <TechnicalAdviserReports />
             </div>
           </ng-container>
         </div>
@@ -55,8 +55,8 @@ export class TechnicalAdviserHomeComponent implements OnInit {
       id: 'projects',
     },
     {
-      name: 'dashboard',
-      id: 'dashboard',
+      name: 'reports',
+      id: 'reports',
     },
   ];
   isDesktop = false;
@@ -109,8 +109,8 @@ export class TechnicalAdviserHomeComponent implements OnInit {
 
     const tabs: TabDefinition[] = [
       {
-        name: 'Dashboard',
-        id: 'dashboard',
+        name: 'Reports',
+        id: 'reports',
         // handler: this.handlerFactory('title-analyzer'),
       },
       {

@@ -42,7 +42,7 @@ import { User } from 'src/app/types/collection';
         <!-- </li> -->
         <!-- </> -->
         <div class="border-neutrla hidden h-full w-full border-l sm2:block">
-          WIP name, uid, role, profile picture, dashboard
+          WIP name, uid, role, profile picture, reports
           <!-- <div class="placeholder avatar">
             <div
               class="w-24 rounded-full bg-neutral-focus text-neutral-content"
