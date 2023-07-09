@@ -1,6 +1,8 @@
+import { CommonModule } from '@angular/common';
 import { EventEmitter, Output, Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { filter, from, switchMap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
@@ -10,6 +12,8 @@ import { getRolePath } from 'src/app/utils/getRolePath';
 
 @Component({
   selector: 'Login',
+  standalone: true,
+  imports: [NgxSpinnerModule, FormsModule],
   template: `
     <div
       class="flex h-fit max-h-[568px] w-full max-w-[387px] flex-col gap-4 rounded-[3px] bg-base-100 px-[2rem] py-8"

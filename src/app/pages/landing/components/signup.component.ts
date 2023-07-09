@@ -1,9 +1,14 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { FormsModule } from '@angular/forms';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'SignUp',
+  standalone: true,
+  imports: [NgxSpinnerModule, FormsModule, CommonModule, FeatherIconsModule],
   template: `
     <ng-container *ngIf="!isInLastStep">
       <div
@@ -94,7 +99,7 @@ import { AuthService } from 'src/app/services/auth.service';
         </div>
 
         <!-- todo: error message for inputs -->
-        
+
         <input
           type="number"
           placeholder="Section"
@@ -164,10 +169,12 @@ export class SignupComponent {
     if (this.fullName.length === 0) throw Error('wip: name is empty');
 
     const user = { name: this.fullName, roleId: this.roleId };
-    this.authService.signUp(this.email, this.password, user, this.studentNumber, this.section).subscribe((v) => {
-      this.spinner.hide();
-      this.navigateToLogin();
-    });
+    this.authService
+      .signUp(this.email, this.password, user, this.studentNumber, this.section)
+      .subscribe((v) => {
+        this.spinner.hide();
+        this.navigateToLogin();
+      });
   }
 
   selectRole(id: number) {

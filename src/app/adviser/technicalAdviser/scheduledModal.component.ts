@@ -7,8 +7,17 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { TaskService } from 'src/app/services/task.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ToastrService } from 'ngx-toastr';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { AccomplishmentsComponent } from 'src/app/components/modal/accomplishments.component';
+import { ModalComponent } from 'src/app/components/modal/modal.component';
+import { ActualAccomplishmentsComponent } from '../components/actualAccomplishments.component';
+import { ProposedNextStepsComponent } from '../components/proposedNextSteps.component';
+import { NextDeliverablesComponent } from '../components/nextDeliverables.component';
 
 @Component({
+  standalone: true,
+  imports: [FeatherIconsModule, ModalComponent, 
+  AccomplishmentsComponent, ActualAccomplishmentsComponent, ProposedNextStepsComponent, NextDeliverablesComponent],
   selector: 'ScheduledConsultationModal',
   template: `
     <Modal inputId="scheduledConsultationsModal">

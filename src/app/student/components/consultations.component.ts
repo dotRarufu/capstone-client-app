@@ -1,11 +1,20 @@
 import { Component, WritableSignal, signal } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { AccordionComponent } from 'src/app/components/accordion/accordion.component';
+import { ConsultationCardComponent } from 'src/app/components/card/consultation.component';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { Consultation } from 'src/app/types/collection';
+import { ScheduleConsultationModalComponent } from './modals/scheduleConsultation.component';
+import { ConsultationDetailsModalComponent } from 'src/app/components/modal/consultation.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
+  selector: "Consultations",
+  standalone: true,
+  imports: [AccordionComponent, FeatherIconsModule, ConsultationCardComponent, ScheduleConsultationModalComponent, ConsultationDetailsModalComponent, CommonModule],
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">

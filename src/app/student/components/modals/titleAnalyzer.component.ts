@@ -1,10 +1,15 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'TitleAnalyzerModal',
+  standalone: true,
+  imports: [CommonModule, ModalComponent, FormsModule],
   template: `
     <Modal
       inputId="titleAnalyzer"

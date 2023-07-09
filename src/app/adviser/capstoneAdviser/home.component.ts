@@ -7,9 +7,17 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { SectionProject } from 'src/app/models/sectionProject';
 import { groupBySection } from 'src/app/utils/groupBySection';
 import { TabsService } from 'src/app/services/tabs.service';
+import { CommonModule } from '@angular/common';
+import { HomeLayoutComponent } from 'src/app/layouts/home.component';
+import { ProjectsAccordionComponent } from 'src/app/components/accordion/projects.component';
+import { ProjectCardComponent } from 'src/app/components/card/project-card.component';
+import { ReportsComponent } from 'src/app/components/reports.component';
+import { ProjectsComponent } from 'src/app/components/projects.component';
 
 @Component({
-  selector: 'CapstoneAdviserHome',
+  standalone: true,
+  imports: [CommonModule, HomeLayoutComponent, ProjectsComponent, ProjectsAccordionComponent, ProjectCardComponent, ReportsComponent, ProjectsComponent],
+  selector: 'Home',
   template: `
     <HomeLayout [modalProjectId]="modalProjectId" role="c" [tabs]="tabs">
       <div
@@ -17,7 +25,7 @@ import { TabsService } from 'src/app/services/tabs.service';
       >
         <ng-container *ngIf="active === 'projects' || isDesktop">
           <div class="w-full">
-            <ProjectsPage>
+            <Projects>
               <ProjectsAccordion
                 *ngFor="let section of sections()"
                 [heading]="section.section"
@@ -29,7 +37,7 @@ import { TabsService } from 'src/app/services/tabs.service';
                   role="c"
                 />
               </ProjectsAccordion>
-            </ProjectsPage>
+            </Projects>
           </div>
         </ng-container>
 
@@ -37,7 +45,7 @@ import { TabsService } from 'src/app/services/tabs.service';
           <div
             class="w-full sm2:flex sm2:justify-center md:flex-shrink-0  md:basis-[357px]"
           >
-            <CapstoneAdviserReports />
+            <Reports />
           </div>
         </ng-container>
       </div>

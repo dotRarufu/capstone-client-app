@@ -13,10 +13,19 @@ import { ToastrService } from 'ngx-toastr';
 import { Project } from 'src/app/models/project';
 import { Subscription, filter, fromEvent, map } from 'rxjs';
 import { TabsService } from 'src/app/services/tabs.service';
+import { HomeLayoutComponent } from 'src/app/layouts/home.component';
+import { CommonModule } from '@angular/common';
+import { TitleAnalyzerComponent } from '../components/titleAnalyzer.component';
+import { ResultComponent } from './result.component';
+import { ProjectsComponent } from '../components/projects.component';
+import { ProjectCardComponent } from 'src/app/components/card/project-card.component';
+import { AddProjectModalComponent } from '../components/modals/addProject.component';
+import { TitleAnalyzerModalComponent } from '../components/modals/titleAnalyzer.component';
 
 @Component({
   selector: 'StudentHome',
-
+  standalone: true,
+  imports: [HomeLayoutComponent, CommonModule, TitleAnalyzerComponent, ResultComponent, ProjectsComponent, ProjectCardComponent, AddProjectModalComponent, TitleAnalyzerModalComponent],
   template: `
     <HomeLayout [modalProjectId]="modalProjectId" role="s" [tabs]="tabs">
       <ng-container *ngIf="tabsService.activeId$ | async as activeId">

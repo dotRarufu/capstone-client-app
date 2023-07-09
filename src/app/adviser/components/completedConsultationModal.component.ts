@@ -12,8 +12,16 @@ import { Consultation, Task } from 'src/app/types/collection';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { TaskService } from 'src/app/services/task.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
+import { ModalComponent } from 'src/app/components/modal/modal.component';
+import { ActualAccomplishmentsComponent } from './actualAccomplishments.component';
+import { ProposedNextStepsComponent } from './proposedNextSteps.component';
+import { AccomplishmentsComponent } from 'src/app/components/modal/accomplishments.component';
+import { NextDeliverablesComponent } from './nextDeliverables.component';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
 @Component({
+  standalone: true,
+  imports: [ActualAccomplishmentsComponent, ModalComponent, AccomplishmentsComponent, ProposedNextStepsComponent, NextDeliverablesComponent, FeatherIconsModule],
   selector: 'CompletedConsultationModal',
   template: `
     <Modal inputId="completedConsultationsModal">

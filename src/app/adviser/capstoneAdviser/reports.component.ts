@@ -1,8 +1,12 @@
 import { Component, Input } from '@angular/core';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { ChartConfiguration, ChartData } from 'chart.js';
+import { CommonModule } from '@angular/common';
+import { NgChartsModule } from 'ng2-charts';
 
 @Component({
+  standalone: true,
+  imports: [CommonModule, NgChartsModule],
   selector: 'CapstoneAdviserReports',
   template: `
     <ng-container *ngIf="!sideColumn">

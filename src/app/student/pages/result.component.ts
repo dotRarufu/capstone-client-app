@@ -1,14 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
-import { Tab } from 'src/app/models/tab';
 import { TitleAnalyzerResult } from 'src/app/models/titleAnalyzerResult';
-import { SupabaseService } from 'src/app/services/supabase.service';
 import { DatabaseService } from 'src/app/services/database.service';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { formatStringArray } from '../utils/formatStringArray';
 import { getReadabilityScoreMeaning } from '../utils/getReadabilityScoreMeaning';
+import { FeatherModule } from 'angular-feather';
+import { CommonModule } from '@angular/common';
+import {AccordionComponent} from "src/app/components/accordion/accordion.component";
 
 interface AnalysesDataItem {
   heading: string;
@@ -22,6 +23,8 @@ interface InformationalDataItem {
 
 @Component({
   selector: 'TitleAnalyzerResult',
+  standalone: true,
+  imports: [CommonModule, FeatherModule, AccordionComponent, NgxSpinnerModule],
   template: `
     <ng-container *ngIf="!sideColumn">
       <div

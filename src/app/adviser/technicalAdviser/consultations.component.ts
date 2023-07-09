@@ -1,12 +1,21 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject } from 'rxjs';
+import { AccordionComponent } from 'src/app/components/accordion/accordion.component';
+import { ConsultationCardComponent } from 'src/app/components/card/consultation.component';
+import { ConsultationDetailsModalComponent } from 'src/app/components/modal/consultation.component';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
 import { Consultation } from 'src/app/types/collection';
+import { ScheduledConsultationModalComponent } from './scheduledModal.component';
+import { CompletedConsultationModalComponent } from '../components/completedConsultationModal.component';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
 @Component({
+  standalone: true,
+  imports: [CommonModule, AccordionComponent, ConsultationCardComponent, ConsultationDetailsModalComponent, ScheduledConsultationModalComponent, CompletedConsultationModalComponent, FeatherIconsModule],
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">

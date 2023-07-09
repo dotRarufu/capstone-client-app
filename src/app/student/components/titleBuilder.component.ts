@@ -1,6 +1,9 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { TopAppBarComponent } from 'src/app/components/top-app-bar.component';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
 
 type Action =
@@ -12,6 +15,8 @@ type Action =
   | 'clientName';
 
 @Component({
+  standalone: true,
+  imports: [CommonModule, TopAppBarComponent, FeatherIconsModule],
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>

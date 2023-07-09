@@ -1,6 +1,10 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { ConsultationData } from 'src/app/models/consultationData';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { TaskService } from 'src/app/services/task.service';
@@ -9,6 +13,8 @@ import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
 
 @Component({
   selector: 'ScheduleConsultationModal',
+  standalone: true,
+  imports: [ModalComponent, FormsModule, FeatherIconsModule, CommonModule],
   template: `
     <Modal inputId="scheduleConsultation">
       <div

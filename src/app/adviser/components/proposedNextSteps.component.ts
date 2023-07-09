@@ -1,6 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, WritableSignal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
 @Component({
+  standalone: true,
+  imports: [CommonModule, FeatherIconsModule, FormsModule],
   selector: 'ProposedNextSteps',
   template: `
     <div class="flex flex-col gap-2">

@@ -1,9 +1,13 @@
 import { Component, Input } from '@angular/core';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { ChartConfiguration, ChartData } from 'chart.js';
+import { CommonModule } from '@angular/common';
+import { NgChartsModule } from 'ng2-charts';
 
 @Component({
-  selector: 'TechnicalAdviserReports',
+  standalone: true,
+  imports: [CommonModule, NgChartsModule],
+  selector: 'Reports',
   template: `
     <ng-container *ngIf="!sideColumn">
       <div class="flex h-full flex-col gap-[16px] ">

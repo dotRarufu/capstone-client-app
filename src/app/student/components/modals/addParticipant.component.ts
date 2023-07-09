@@ -1,10 +1,15 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { ModalComponent } from 'src/app/components/modal/modal.component';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'AddParticipantModal',
+  standalone: true,
+  imports: [FormsModule, ModalComponent, FeatherIconsModule],
   template: `
     <Modal inputId="addParticipant">
       <div

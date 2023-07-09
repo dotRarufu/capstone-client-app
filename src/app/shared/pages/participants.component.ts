@@ -1,11 +1,15 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { ParticipantCardComponent } from 'src/app/components/card/participant-card.component';
 import { ProjectService } from 'src/app/services/project.service';
 import { User } from 'src/app/types/collection';
 
 @Component({
   selector: 'StudentParticipants',
+  standalone: true,
+  imports: [CommonModule, ParticipantCardComponent],
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex items-center justify-between">

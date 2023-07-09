@@ -1,9 +1,14 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { FeatherModule } from 'angular-feather';
 import { ToastrService } from 'ngx-toastr';
+import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'AddProjectModal',
+  standalone: true,
+  imports: [FormsModule, ModalComponent, FeatherModule],
   template: `
     <Modal inputId="addProject">
       <div

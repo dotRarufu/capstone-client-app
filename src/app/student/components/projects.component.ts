@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
 @Component({
   selector: 'Projects',
+  standalone: true,
+  imports: [FeatherIconsModule],
   template: `
     <div class="flex w-full flex-col gap-[1rem]">
       <div class="flex justify-between ">

@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'CapstoneAdviserSideBar',
+  standalone: true,
+  imports: [],
+  selector: 'SideBar',
   template: `
     <div
       class="flex h-full w-[311px] flex-col gap-[16px] bg-base-100 px-[24px] py-[32px]"

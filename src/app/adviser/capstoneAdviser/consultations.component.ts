@@ -4,8 +4,15 @@ import { ProjectService } from 'src/app/services/project.service';
 import { Consultation } from 'src/app/types/collection';
 import { convertUnixEpochToDateString } from '../../student/utils/convertUnixEpochToDateString';
 import { BehaviorSubject } from 'rxjs';
+import { AccordionComponent } from 'src/app/components/accordion/accordion.component';
+import { CommonModule } from '@angular/common';
+import { ConsultationCardComponent } from 'src/app/components/card/consultation.component';
+import { ConsultationDetailsModalComponent } from 'src/app/components/modal/consultation.component';
+import { CompletedConsultationModalComponent } from '../components/completedConsultationModal.component';
 
 @Component({
+  standalone: true,
+  imports: [AccordionComponent, CommonModule, ConsultationCardComponent, ConsultationDetailsModalComponent, CompletedConsultationModalComponent],
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">

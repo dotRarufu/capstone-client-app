@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ProjectService } from 'src/app/services/project.service';
 import {
   CdkDragDrop,
+  DragDropModule,
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
@@ -10,8 +11,15 @@ import { TaskService } from 'src/app/services/task.service';
 import { Task } from 'src/app/types/collection';
 import { from, map } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { CommonModule } from '@angular/common';
+import { TodoAccordionComponent } from 'src/app/components/accordion/todo.component';
+import { TaskDetailsModalComponent } from 'src/app/components/modal/taskDetails.component';
+import { TaskCardComponent } from 'src/app/components/card/task-card.component';
 
 @Component({
+  selector: "Tasks",
+  standalone: true,
+  imports: [CommonModule, TodoAccordionComponent, TaskDetailsModalComponent, DragDropModule, TaskCardComponent],
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">

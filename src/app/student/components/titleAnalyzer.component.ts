@@ -1,11 +1,16 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { AccordionComponent } from 'src/app/components/accordion/accordion.component';
 import { Project } from 'src/app/models/project';
 import { Tab } from 'src/app/models/tab';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'TitleAnalyzer',
+  standalone: true,
+  imports: [FeatherIconsModule, AccordionComponent, CommonModule],
   template: `
     <div class="w-full ">
       <div class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full ">
