@@ -10,9 +10,9 @@ import { Consultation } from 'src/app/types/collection';
 import { ConsultationDetailsModalComponent } from 'src/app/components/modal/consultation.component';
 import { CommonModule } from '@angular/common';
 import { ScheduleConsultationModalComponent } from '../student/components/modals/scheduleConsultation.component';
-import { CompletedConsultationModalComponent } from '../adviser/components/completed-consultationModal.component';
-import { ScheduledConsultationModalComponent } from '../adviser/technicalAdviser/scheduled-modal.component';
+import { CompletedConsultationModalComponent } from './modal/completed-consultationModal.component';
 import { ActivatedRoute } from '@angular/router';
+import { ScheduledConsultationModalComponent } from './modal/scheduled-modal.component';
 
 @Component({
   selector: 'Consultations',
@@ -166,11 +166,10 @@ export class ConsultationsComponent {
     private toastr: ToastrService,
     private route: ActivatedRoute
   ) {
-
-    this.role = this.route.snapshot.data["role"];
+    this.role = this.route.snapshot.data['role'];
 
     // const child1 = this.route.firstChild;
-    // todo: or just use data prop 
+    // todo: or just use data prop
     // if (child1 === null) return;
 
     // if (child1.snapshot.url.length !== 0) {

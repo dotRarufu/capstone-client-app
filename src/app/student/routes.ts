@@ -13,6 +13,7 @@ import { FormGeneratorComponent } from '../components/form/form-generator.compon
 import { FormComponent } from '../components/form/form.component';
 import { ReportsComponent } from '../components/reports.component';
 import { ConsultationsComponent } from '../components/consultations.component';
+import { participantGuard } from '../guards/participant.guard';
 
 const routes: Routes = [
   {
@@ -41,7 +42,7 @@ const routes: Routes = [
   },
   {
     path: 'project',
-    // canActivate: [participantGuard],
+    canActivate: [participantGuard],
     children: [
       {
         path: ':projectId',
