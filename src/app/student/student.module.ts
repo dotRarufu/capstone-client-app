@@ -74,7 +74,7 @@ const routes: Routes = [
           {
             path: 'forms',
             component: FormGeneratorComponent,
-            // redirectTo: '1',
+            data: {role: "s"},
             children: [
               {
                 path: ':formNumber',

@@ -81,6 +81,7 @@ const routes: Routes = [
               {
                 path: 'forms',
                 component: FormGeneratorComponent,
+                data: {role: "c"},
 
                 children: [
                   {
@@ -168,7 +169,7 @@ const routes: Routes = [
               {
                 path: 'forms',
                 component: FormGeneratorComponent,
-
+                data: {role: "t"},
                 children: [
                   {
                     path: '1',
