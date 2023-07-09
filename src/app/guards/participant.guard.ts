@@ -12,7 +12,7 @@ export const participantGuard = (route: ActivatedRouteSnapshot) => {
   const child1 = route.firstChild;
 
   if (child1 === null) throw new Error('1 shoudl be impossible');
-
+  
   const projectId = Number(child1.url[0].path);
 
   //todo:   refactor

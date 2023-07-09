@@ -311,7 +311,7 @@ export class ProjectService {
     const advisersCheck = this.client
       .from('project')
       .select('capstone_adviser_id, technical_adviser_id')
-      .eq('id', projectId || this.activeProjectId());
+      .eq('id', projectId ?? this.activeProjectId());
     const advisersId$ = from(advisersCheck).pipe(
       map((a) => {
         if (a.error !== null) throw new Error('error fetching project');
@@ -319,7 +319,7 @@ export class ProjectService {
         const adviserIds = getObjectValues<string | null>(a.data[0]);
 
         return adviserIds.filter((id) => id !== null);
-      })
+      }),
     );
     const studentsCheck = this.client
       .from('member')
