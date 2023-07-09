@@ -1,8 +1,6 @@
 import { Routes } from '@angular/router';
 import { NotFoundComponent } from '../pages/not-found/not-found.component';
-import { CapstoneAdviserHomeComponent } from './capstoneAdviser/home.component';
 import { CapstoneAdviserProjectComponent } from './capstoneAdviser/project.component';
-import { TechnicalAdviserHomeComponent } from './technicalAdviser/home.component';
 import { TechnicalAdviserProjectComponent } from './technicalAdviser/project.component';
 import { authGuard } from '../guards/auth.guard';
 import { roleGuard } from '../guards/role.guard';
@@ -14,6 +12,7 @@ import { FormComponent } from '../components/form/form.component';
 import { TasksComponent } from '../components/tasks.component';
 import { ReportsComponent } from '../components/reports.component';
 import { ConsultationsComponent } from '../components/consultations.component';
+import { HomeComponent } from './components/home.component';
 
 const routes: Routes = [
   {
@@ -22,7 +21,8 @@ const routes: Routes = [
     children: [
       {
         path: 'home',
-        component: CapstoneAdviserHomeComponent,
+        component: HomeComponent,
+        data: {role: "c"},
 
         children: [
           {
@@ -111,8 +111,8 @@ const routes: Routes = [
     children: [
       {
         path: 'home',
-        component: TechnicalAdviserHomeComponent,
-
+        component: HomeComponent,
+        data: {role: "t"},
         children: [
           {
             path: 'projects',

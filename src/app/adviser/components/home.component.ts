@@ -35,7 +35,7 @@ import { ReportsComponent } from 'src/app/components/reports.component';
                   (removeProjectId)="removeProjectId($event)"
                   *ngFor="let project of section.projects"
                   [project]="project"
-                  role="c"
+                  [role]="role"
                 />
               </ProjectsAccordion>
             </Projects>
@@ -53,7 +53,7 @@ import { ReportsComponent } from 'src/app/components/reports.component';
     </HomeLayout>
   `,
 })
-export class CapstoneAdviserHomeComponent implements OnInit {
+export class HomeComponent implements OnInit {
   active: string = 'projects';
   isDesktop = false;
   sections: WritableSignal<SectionProject[]> = signal([]);
@@ -68,6 +68,7 @@ export class CapstoneAdviserHomeComponent implements OnInit {
       id: 'projects',
     },
   ];
+  role = this.route.snapshot.data["role"];
 
   constructor(
     private router: Router,
@@ -79,6 +80,8 @@ export class CapstoneAdviserHomeComponent implements OnInit {
     if (child1 === null) throw new Error('impossible');
     
     this.active = child1.url[0].path;
+
+    console.log("this.role:", this.role);
   }
 
   ngOnInit() {
