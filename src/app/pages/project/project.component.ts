@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
+import { SideBarComponent } from 'src/app/components/sidebar.component';
 import { ProjectLayoutComponent } from 'src/app/layouts/project.component';
-import { SideBarComponent } from 'src/app/student/components/sidebar.component';
 
 @Component({
   standalone: true,
   imports: [ProjectLayoutComponent, SideBarComponent],
-  selector: 'TechnicalAdviserProject',
+  selector: 'Project',
   template: `
     <ProjectLayout>
       <SideBar />
     </ProjectLayout>
   `,
 })
-export class TechnicalAdviserProjectComponent {}
+export class ProjectPageComponent {}

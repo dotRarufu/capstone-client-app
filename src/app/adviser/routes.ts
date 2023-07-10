@@ -1,7 +1,5 @@
 import { Routes } from '@angular/router';
 import { NotFoundComponent } from '../pages/not-found/not-found.component';
-import { CapstoneAdviserProjectComponent } from './capstoneAdviser/project.component';
-import { TechnicalAdviserProjectComponent } from './technicalAdviser/project.component';
 import { authGuard } from '../guards/auth.guard';
 import { roleGuard } from '../guards/role.guard';
 import { participantGuard } from '../guards/participant.guard';
@@ -12,7 +10,8 @@ import { FormComponent } from '../components/form/form.component';
 import { TasksComponent } from '../components/tasks.component';
 import { ReportsComponent } from '../components/reports.component';
 import { ConsultationsComponent } from '../components/consultations.component';
-import { HomeComponent } from './components/home.component';
+import { HomeComponent } from './pages/home.component';
+import { ProjectPageComponent } from '../pages/project/project.component';
 
 const routes: Routes = [
   {
@@ -29,7 +28,7 @@ const routes: Routes = [
             path: 'projects',
 
             // does not matter, is rendered in home component
-            component: CapstoneAdviserProjectComponent,
+            component: ProjectPageComponent,
           },
           {
             path: 'reports',
@@ -46,7 +45,7 @@ const routes: Routes = [
         children: [
           {
             path: ':projectId',
-            component: CapstoneAdviserProjectComponent,
+            component: ProjectPageComponent,
 
             children: [
               {
@@ -118,7 +117,7 @@ const routes: Routes = [
             path: 'projects',
 
             // does not matter, is rendered in home component
-            component: TechnicalAdviserProjectComponent,
+            component: ProjectPageComponent,
           },
           {
             path: 'reports',
@@ -135,7 +134,7 @@ const routes: Routes = [
         children: [
           {
             path: ':projectId',
-            component: TechnicalAdviserProjectComponent,
+            component: ProjectPageComponent,
 
             children: [
               {

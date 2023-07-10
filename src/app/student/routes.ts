@@ -4,7 +4,6 @@ import { TitleAnalyzerComponent } from './components/title-analyzer.component';
 import { ProjectsComponent } from './components/projects.component';
 import { ResultComponent } from './pages/result.component';
 import { TitleBuilderComponent } from './components/title-builder.component';
-import { StudentProjectComponent } from './pages/project.component';
 import { TasksComponent } from '../components/tasks.component';
 import { ParticipantsComponent } from './components/participants.component';
 import { RedirectComponent } from '../components/redirect.component';
@@ -14,6 +13,7 @@ import { FormComponent } from '../components/form/form.component';
 import { ReportsComponent } from '../components/reports.component';
 import { ConsultationsComponent } from '../components/consultations.component';
 import { participantGuard } from '../guards/participant.guard';
+import { ProjectPageComponent } from '../pages/project/project.component';
 
 const routes: Routes = [
   {
@@ -46,7 +46,7 @@ const routes: Routes = [
     children: [
       {
         path: ':projectId',
-        component: StudentProjectComponent,
+        component: ProjectPageComponent,
         children: [
           {
             path: 'reports',
