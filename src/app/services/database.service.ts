@@ -1,25 +1,23 @@
 import { Injectable } from '@angular/core';
-import { from, map } from 'rxjs';
-import { SupabaseService } from './supabase.service';
+import { from, map, switchMap } from 'rxjs';
 import { User } from '../types/collection';
-import { isNotNull } from '../student/utils/isNotNull';
+import errorFilter from '../utils/errorFilter';
+import { ConsultationData } from '../models/consultationData';
+import supabaseClient from '../lib/supabase';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DatabaseService {
-  readonly client;
-  constructor(private supabaseService: SupabaseService) {
-    this.client = this.supabaseService.client;
-  }
+  readonly client = supabaseClient;
+  constructor() {}
 
   updateUserData(
     userId: string,
     //todo: create interface for this, name it UserRow
     user: { name: string; roleId: number }
   ) {
-    const client = this.supabaseService.client;
-    const query = client
+    const query = this.client
       .from('user')
       .upsert({
         uid: userId,
@@ -38,11 +36,81 @@ export class DatabaseService {
     return query$;
   }
 
+  createStudentInfo(uid: string, studentNumber: string, sectionId: number) {
+    const client = this.client;
+    const data = {
+      uid,
+      number: studentNumber,
+      section_id: sectionId,
+    };
+
+    const insert = client.from('student_info').insert(data);
+    const insert$ = from(insert).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      })
+    );
+
+    return insert$;
+  }
+
+  insertConsultation(
+    userUid: string,
+    data: ConsultationData,
+    projectId: number
+  ) {
+    const newData = {
+      organizer_id: userUid,
+      project_id: projectId,
+      date_time: data.dateTime,
+      location: data.location,
+      description: data.description,
+    };
+
+    const insertConsultation = this.client
+      .from('consultation')
+      .insert(newData)
+      .select('id');
+
+    return from(insertConsultation).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data[0].id;
+      }),
+
+      switchMap((id) => this.insertAccomplishedTasks(id, data.taskIds))
+    );
+  }
+
+  insertAccomplishedTasks(consultationId: number, taskIds: number[]) {
+    const request = Promise.all(
+      taskIds.map(async (id) => {
+        const data = {
+          consultation_id: consultationId,
+          task_id: id,
+        };
+        const response = await this.client
+          .from('accomplished_task')
+          .insert(data)
+          .select('*');
+
+        const { statusText } = errorFilter(response);
+
+        return statusText;
+      })
+    );
+
+    return from(request);
+  }
+
   async getUserData(userId: string) {
     if (userId == null) throw new Error('user is null');
 
     const userUid = userId;
-    const userRow = await this.supabaseService.client
+    const userRow = await this.client
       .from('user')
       .select('name, role_id')
       .eq('uid', userUid)
@@ -63,41 +131,8 @@ export class DatabaseService {
     return res;
   }
 
-  // todo: do this in backend instead
-  // todo: move in projectService, just like in task.service
-  async getProjectsFromCategory(categoryId: number) {
-    const projectIds = (
-      await this.supabaseService.client
-        .from('category_projects')
-        .select('project_id')
-        .eq('category_id', categoryId)
-    ).data;
-
-    const getTitles = async (id: number) =>
-      (
-        await this.supabaseService.client
-          .from('capstone_projects')
-          .select('title')
-          .eq('project_id', id)
-      ).data;
-
-    if (!projectIds)
-      throw new Error(`wip, no project found with category ${categoryId}`);
-
-    const titles = (
-      await Promise.all(
-        projectIds.map(async ({ project_id }) => await getTitles(project_id))
-      )
-    )
-      .filter(isNotNull)
-      .flat()
-      .map((a) => a.title);
-
-    return titles;
-  }
-
   async getProjectCount() {
-    const response = await this.supabaseService.client
+    const response = await this.client
       .from('capstone_projects')
       .select('project_id');
     const count = response.data?.length;
@@ -119,5 +154,12 @@ export class DatabaseService {
       throw new Error(`error getting category name for ${categoryId}`);
 
     return response.data[0].name;
+  }
+
+  async getSection(id: number) {
+    const res = await this.client.from('section').select('name').eq('id', id);
+    const { data } = errorFilter(res);
+
+    return data[0].name;
   }
 }

@@ -14,10 +14,16 @@ import { ProjectCardComponent } from 'src/app/components/card/project-card.compo
 import { ProjectsComponent } from '../components/projects.component';
 import { ReportsComponent } from 'src/app/components/reports.component';
 
-
 @Component({
   standalone: true,
-  imports: [CommonModule, HomeLayoutComponent, ProjectsAccordionComponent, ProjectCardComponent, ReportsComponent, ProjectsComponent],
+  imports: [
+    CommonModule,
+    HomeLayoutComponent,
+    ProjectsAccordionComponent,
+    ProjectCardComponent,
+    ReportsComponent,
+    ProjectsComponent,
+  ],
   selector: 'Home',
   template: `
     <HomeLayout [modalProjectId]="modalProjectId" role="c" [tabs]="tabs">
@@ -46,7 +52,7 @@ import { ReportsComponent } from 'src/app/components/reports.component';
           <div
             class="w-full sm2:flex sm2:justify-center md:flex-shrink-0  md:basis-[357px]"
           >
-          <Reports [sideColumn]="true"/>
+            <Reports [sideColumn]="true" />
           </div>
         </ng-container>
       </div>
@@ -68,7 +74,7 @@ export class HomeComponent implements OnInit {
       id: 'projects',
     },
   ];
-  role = this.route.snapshot.data["role"];
+  role = this.route.snapshot.data['role'];
 
   constructor(
     private router: Router,
@@ -78,10 +84,10 @@ export class HomeComponent implements OnInit {
   ) {
     const child1 = this.route.snapshot.firstChild;
     if (child1 === null) throw new Error('impossible');
-    
+
     this.active = child1.url[0].path;
 
-    console.log("this.role:", this.role);
+    console.log('this.role:', this.role);
   }
 
   ngOnInit() {
@@ -95,6 +101,7 @@ export class HomeComponent implements OnInit {
 
     projects$.subscribe({
       next: (projects) => {
+        console.log('projects$ emits');
         if (projects === null) {
           this.sections.set([]);
           this.spinner.show();
@@ -104,6 +111,8 @@ export class HomeComponent implements OnInit {
         this.spinner.hide();
         this.sections.set(groupBySection(projects));
       },
+      complete: () => console.log('projects$ complete'),
+      error: () => console.log('projects$ errored'),
     });
   }
 

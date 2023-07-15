@@ -5,12 +5,14 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
   selector: 'Projects',
   standalone: true,
   imports: [FeatherIconsModule],
+  // no need to refactor this, adviser's projects will have search function
+  // so, unless the search function is short, do not combine the two
   template: `
     <div class="flex w-full flex-col gap-[1rem]">
       <div class="flex justify-between ">
         <h1 class="text-[32px] text-base-content">Projects</h1>
         <button
-            onclick="addProject.showModal()"
+          onclick="addProject.showModal()"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
           <i-feather class="text-base-content/70" name="plus" />

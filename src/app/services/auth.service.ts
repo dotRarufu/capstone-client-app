@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter, from, map, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, from, map, switchMap, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import { SupabaseService } from './supabase.service';
 import { DatabaseService } from './database.service';
 import { User } from '../types/collection';
 import { UserService } from './user.service';
-import { isNotNull } from '../student/utils/isNotNull';
-import { getRolePath } from '../utils/getRolePath';
+import supabaseClient from '../lib/supabase';
 
 @Injectable({
   providedIn: 'root',
@@ -16,30 +14,22 @@ export class AuthService {
   user$ = this.userSubject.asObservable();
 
   constructor(
-    private supabaseService: SupabaseService,
     private databaseService: DatabaseService,
     private userService: UserService,
     private router: Router
   ) {
-    const client = this.supabaseService.client;
-    const unsubscribe = client.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out');
-        this.userSubject.next(null);
-        this.router.navigate(['']);
-      }
-    });
+    this.handleSignOutEvent();
   }
 
   async getAuthenticatedUser() {
     const currentUser = this.getCurrentUser();
-    
+
     if (currentUser !== null) return currentUser;
-    
-    const client = this.supabaseService.client;
+
+    const client = supabaseClient;
     const response = await client.auth.getUser();
     const user = response.data.user;
-    
+
     if (user !== null) {
       this.updateCurrentUser(user.id);
       return await this.userService.getUser(user.id);
@@ -48,17 +38,8 @@ export class AuthService {
     return user;
   }
 
-  private getCurrentUser() {
-    const user = this.userSubject.getValue();
-
-    if (user == null) return null;
-
-    return user;
-  }
-
   async updateCurrentUser(id: string) {
     const userDetails = await this.userService.getUser(id);
-
     const loggedInUser: User = {
       name: userDetails.name,
       role_id: userDetails.role_id,
@@ -69,7 +50,7 @@ export class AuthService {
   }
 
   login(email: string, password: string) {
-    const client = this.supabaseService.client.auth;
+    const client = supabaseClient.auth;
     const login = client.signInWithPassword({
       email,
       password,
@@ -87,24 +68,24 @@ export class AuthService {
   }
 
   signUp(
+    // todo: handle this with forms
     email: string,
     password: string,
     userInfo: { name: string; roleId: number },
     studentNumber: string,
     sectionId: number
   ) {
-    const client = this.supabaseService.client;
+    const client = supabaseClient;
     const signUp = client.auth.signUp({
       email,
       password,
     });
     const signUp$ = from(signUp).pipe(
       map((authRes) => {
-        // todo separate this block in another pipe
         if (authRes.error) throw authRes.error.message;
         if (authRes.data.user == null)
-          // todo: on what case is user == null, even without error
-          throw 'user is null, while data.error is null';
+          // on what case is user == null, even without error
+          throw new Error('user is null, while data.error is null');
 
         return authRes.data.user;
       }),
@@ -112,38 +93,40 @@ export class AuthService {
         this.databaseService.updateUserData(user.id, userInfo)
       ),
       switchMap((user) =>
-        this.createStudentInfo(user.uid, studentNumber, sectionId)
+        this.databaseService.createStudentInfo(
+          user.uid,
+          studentNumber,
+          sectionId
+        )
       )
     );
 
     return signUp$;
   }
 
-  createStudentInfo(uid: string, studentNumber: string, sectionId: number) {
-    const client = this.databaseService.client;
-    const data = {
-      uid,
-      number: studentNumber,
-      section_id: sectionId,
-    };
-    const insert = client.from('student_info').insert(data);
-    const insert$ = from(insert).pipe(
-      map((res) => {
-        if (res.error !== null)
-          throw new Error('error in creating student info');
-
-        return res.statusText;
-      })
-    );
-
-    return insert$;
-  }
-
   signOut() {
-    const signOut = this.supabaseService.client.auth.signOut();
+    const signOut = supabaseClient.auth.signOut();
     const signOut$ = from(signOut);
-    // this._user$.next
 
     return signOut$;
+  }
+
+  private handleSignOutEvent() {
+    const client = supabaseClient;
+    client.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
+        this.userSubject.next(null);
+        this.router.navigate(['']);
+      }
+    });
+  }
+
+  private getCurrentUser() {
+    const user = this.userSubject.getValue();
+
+    if (user == null) return null;
+
+    return user;
   }
 }

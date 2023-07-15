@@ -9,7 +9,8 @@ import { formatStringArray } from '../utils/formatStringArray';
 import { getReadabilityScoreMeaning } from '../utils/getReadabilityScoreMeaning';
 import { FeatherModule } from 'angular-feather';
 import { CommonModule } from '@angular/common';
-import {AccordionComponent} from "src/app/components/accordion/accordion.component";
+import { AccordionComponent } from 'src/app/components/accordion/accordion.component';
+import { TaskService } from 'src/app/services/task.service';
 
 interface AnalysesDataItem {
   heading: string;
@@ -262,7 +263,7 @@ export class ResultComponent implements OnInit {
           // concatenate the category name to the title
           async (id) => {
             const category = await this.databaseService.getCategoryName(id);
-            const titles = await this.databaseService.getProjectsFromCategory(
+            const titles = await this.projectService.getProjectsFromCategory(
               id
             );
             const newTitles = titles.map((t) => `${t} - ${category}`);

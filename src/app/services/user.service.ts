@@ -1,29 +1,13 @@
 import { Injectable } from '@angular/core';
-import {
-  createClient,
-  SupabaseClient,
-  AuthResponse,
-} from '@supabase/supabase-js';
-import { BehaviorSubject, from, map, switchMap, tap } from 'rxjs';
-import { environment } from 'src/environments/environment.dev';
-import { CapstoolUser } from '../models/capstool-user';
-import { Database } from '../types/supabase';
-import { Router } from '@angular/router';
-import { SupabaseService } from './supabase.service';
-import { DatabaseService } from './database.service';
-import { Task, User } from '../types/collection';
+import supabaseClient from '../lib/supabase';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private readonly client;
+  private readonly client = supabaseClient;
 
-  constructor(
-    private supabaseService: SupabaseService,
-  ) {
-   this.client = this.supabaseService.client
-  }
+  constructor() {}
 
   async getUser(uid: string) {
     const res = await this.client.from('user').select('*').eq('uid', uid);

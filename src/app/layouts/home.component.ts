@@ -19,7 +19,13 @@ import { ModalComponent } from '../components/modal/modal.component';
 @Component({
   selector: 'HomeLayout',
   standalone: true,
-  imports: [CommonModule, NgxSpinnerModule, TopAppBarComponent, TabsComponent, ModalComponent],
+  imports: [
+    CommonModule,
+    NgxSpinnerModule,
+    TopAppBarComponent,
+    TabsComponent,
+    ModalComponent,
+  ],
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
@@ -99,7 +105,7 @@ export class HomeLayoutComponent implements OnInit {
 
     removeProject$.subscribe({
       next: (res) => console.log('remove project:', res),
-      complete: () => console.log('remove project complete'),
+      complete: () => console.log('remove project complete 1'),
       error: (err) => console.log('removeProject error:', err),
     });
   }
