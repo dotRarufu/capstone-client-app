@@ -55,6 +55,7 @@ const routes: Routes = [
           {
             path: 'tasks',
             component: TasksComponent,
+            data: {role: "s"},
           },
           {
             path: 'participants',

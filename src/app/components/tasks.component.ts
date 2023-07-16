@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, WritableSignal, signal } from '@angular/core';
 import { ProjectService } from 'src/app/services/project.service';
 import {
   CdkDragDrop,
@@ -49,9 +49,12 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
       <div
         cdkDropListGroup
-        class="flex h-full gap-[32px] overflow-x-scroll lg:justify-center "
+        class="flex h-full max-h-[calc(100vh-130px)] gap-[32px] overflow-x-scroll  lg:justify-center  "
       >
-        <div *ngFor="let category of categories" class="w-[294px] shrink-0">
+        <div
+          *ngFor="let category of categories"
+          class="w-[294px] shrink-0 py-[16px]"
+        >
           <TodoAccordion
             [withArrow]="false"
             [forcedOpen]="true"
@@ -59,45 +62,51 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
             [isHeadingCentered]="true"
           >
             <div
+              class="flex w-full flex-col gap-[16px]  pt-[16px]"
               isTodo
-              class="flex w-full flex-col gap-[16px] pt-[16px]"
               cdkDropList
               [cdkDropListData]="category.tasks"
-              (cdkDropListDropped)="drop($event)"
+              (cdkDropListDropped)="drop($event, category.statusId)"
             >
               <TaskCard
                 *ngFor="let item of category.tasks"
                 cdkDrag
+                [cdkDragData]="item"
                 [cdkDragDisabled]="!isStudent"
                 [task]="item"
+                (click)="setActiveTask(item)"
               />
             </div>
           </TodoAccordion>
         </div>
       </div>
 
-      <TaskDetailsModal />
+      <TaskDetailsModal [task]="activeTask()" />
 
       <AddTaskModal *ngIf="!isStudent" />
     </div>
   `,
 })
 export class TasksComponent implements OnInit {
-  categories: { title: string; tasks: Task[] }[] = [
+  categories: { title: string; statusId: number; tasks: Task[] }[] = [
     {
       title: 'Todo',
       tasks: [],
+      statusId: 0,
     },
     {
       title: 'Doing',
       tasks: [],
+      statusId: 1,
     },
     {
       title: 'Done',
       tasks: [],
+      statusId: 2,
     },
   ];
   isStudent = true;
+  activeTask: WritableSignal<Task | null>;
 
   constructor(
     private authService: AuthService,
@@ -106,6 +115,9 @@ export class TasksComponent implements OnInit {
     public spinner: NgxSpinnerService
   ) {
     this.spinner.show();
+
+    this.activeTask = signal<Task | null>(null);
+    console.log('active task test:', this.activeTask());
 
     const user$ = from(this.authService.getAuthenticatedUser());
     user$
@@ -128,11 +140,15 @@ export class TasksComponent implements OnInit {
       });
   }
 
+  setActiveTask(task: Task) {
+    this.activeTask.set(task);
+  }
+
   ngOnInit(): void {
     // todo: make this observable complete
-    this.taskService.getTasks(0).subscribe((tasks) => 
-      this.categories[0].tasks = tasks
-    );
+    this.taskService
+      .getTasks(0)
+      .subscribe((tasks) => (this.categories[0].tasks = tasks));
     this.taskService
       .getTasks(1)
       .subscribe((tasks) => (this.categories[1].tasks = tasks));
@@ -141,20 +157,20 @@ export class TasksComponent implements OnInit {
       .subscribe((tasks) => (this.categories[2].tasks = tasks));
   }
 
-  drop(event: CdkDragDrop<Task[]>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-    }
+  drop(event: CdkDragDrop<Task[]>, statusId: number) {
+    const task = event.item.data as Task;
+
+    if (event.previousContainer === event.container) return;
+
+    this.taskService.changeStatus(task.id, statusId).subscribe({
+      next: () => {},
+    });
+
+    transferArrayItem(
+      event.previousContainer.data,
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    );
   }
 }

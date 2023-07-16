@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DatabaseService } from 'src/app/services/database.service';
+import { TaskService } from 'src/app/services/task.service';
 import { Task } from 'src/app/types/collection';
 
 @Component({
@@ -36,11 +37,12 @@ export class TaskCardComponent implements OnInit {
     assigner_id: '',
     description: '',
     id: 0,
-    
+    date_added: 0,
     project_id: 0,
     status_id: 0,
     title: '',
   };
+  @Input() setActiveTask: null | ((t: Task) => void) = null;
   adviserName = '';
 
   constructor(private databaseService: DatabaseService) {}

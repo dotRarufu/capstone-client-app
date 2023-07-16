@@ -830,6 +830,7 @@ export interface Database {
       task: {
         Row: {
           assigner_id: string
+          date_added: number
           description: string
           id: number
           project_id: number
@@ -838,6 +839,7 @@ export interface Database {
         }
         Insert: {
           assigner_id: string
+          date_added: number
           description: string
           id?: number
           project_id: number
@@ -846,6 +848,7 @@ export interface Database {
         }
         Update: {
           assigner_id?: string
+          date_added?: number
           description?: string
           id?: number
           project_id?: number

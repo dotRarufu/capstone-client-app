@@ -21,7 +21,7 @@ const routes: Routes = [
       {
         path: 'home',
         component: HomeComponent,
-        data: {role: "c"},
+        data: { role: 'c' },
 
         children: [
           {
@@ -51,6 +51,7 @@ const routes: Routes = [
               {
                 path: 'tasks',
                 component: TasksComponent,
+                data: { role: 'c' },
               },
               {
                 path: 'participants',
@@ -59,7 +60,7 @@ const routes: Routes = [
               {
                 path: 'consultations',
                 component: ConsultationsComponent,
-                data: {role: "c"}
+                data: { role: 'c' },
               },
               {
                 path: 'reports',
@@ -111,7 +112,7 @@ const routes: Routes = [
       {
         path: 'home',
         component: HomeComponent,
-        data: {role: "t"},
+        data: { role: 't' },
         children: [
           {
             path: 'projects',
@@ -140,6 +141,7 @@ const routes: Routes = [
               {
                 path: 'tasks',
                 component: TasksComponent,
+                data: { role: 't' },
               },
               {
                 path: 'participants',
@@ -148,8 +150,7 @@ const routes: Routes = [
               {
                 path: 'consultations',
                 component: ConsultationsComponent,
-                data: {role: "t"}
-
+                data: { role: 't' },
               },
               {
                 path: 'reports',

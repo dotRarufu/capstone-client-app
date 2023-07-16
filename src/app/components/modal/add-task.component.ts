@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { TaskService } from 'src/app/services/task.service';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { map, switchMap } from 'rxjs';
 
 @Component({
   selector: 'AddTaskModal',
@@ -48,7 +49,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             class="flex w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
           >
             <button
-            (click)="handleDoneClick()"
+              (click)="handleDoneClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="check-square" />
@@ -79,13 +80,20 @@ export class AddTaskModalComponent {
   ) {}
 
   handleDoneClick() {
-    this.taskService.add(this.title, this.description).subscribe({
+    const status$ = this.taskService.add(this.title, this.description);
+    console.log("clicked");
+    status$.subscribe({
       next: (status) => {
+        console.log("runs 123");
         this.toastr.success(status);
       },
       error: (err) => {
+        console.log("runs error");
         this.toastr.error(err);
       },
+      complete: () => {
+        console.log("completed")
+      }
     });
   }
 }

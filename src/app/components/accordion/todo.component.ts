@@ -6,7 +6,7 @@ import { Component, Input } from '@angular/core';
   imports: [],
   template: `
     <div
-      class="rounded-[4px] collapse w-full"
+      class="collapse h-full w-full rounded-[4px] "
       [class.collapse-arrow]="withArrow"
       [class.collapse-open]="forcedOpen"
     >
@@ -18,9 +18,9 @@ import { Component, Input } from '@angular/core';
         {{ heading }}
       </div>
       <div
-        class="collapse-content  border border-base-content/50 text-base-content"
+        class="collapse-content  overflow-y-scroll border border-base-content/50 text-base-content"
       >
-        <div class="flex justify-center">
+        <div class="flex h-full justify-center ">
           <ng-content />
         </div>
       </div>

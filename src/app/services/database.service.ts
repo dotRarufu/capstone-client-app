@@ -120,7 +120,7 @@ export class DatabaseService {
       throw new Error(
         `no found row for user id ${userUid} even though user was able to log in`
       );
-    console.log('user data:', userRow.data);
+    
     const { name, role_id } = userRow.data;
 
     if (!name) throw new Error('wip, name is undefined');

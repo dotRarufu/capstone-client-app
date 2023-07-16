@@ -130,13 +130,10 @@ export class ConsultationCardComponent {
     date_time: 1,
     description: '',
     id: -1,
-    is_done: false,
-    is_accepted: false,
     location: '',
     organizer_id: '',
     project_id: -1,
-    is_rejected: false,
-    category_id: 3
+    category_id: 3,
   };
   @Input() buttonId?: string;
 

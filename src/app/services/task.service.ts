@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import {
   createClient,
   SupabaseClient,
@@ -6,12 +6,14 @@ import {
 } from '@supabase/supabase-js';
 import {
   BehaviorSubject,
+  combineLatest,
   forkJoin,
   from,
   map,
   merge,
   mergeMap,
   switchMap,
+  take,
   tap,
 } from 'rxjs';
 import { Task, User } from '../types/collection';
@@ -26,6 +28,7 @@ import { ProjectService } from './project.service';
 export class TaskService {
   private readonly client = supabaseClient;
   private readonly taskUpdateSubject = new BehaviorSubject<number>(0);
+  // activeTaskId = signal<number | null>(null);
 
   constructor(
     private authService: AuthService,
@@ -38,13 +41,13 @@ export class TaskService {
     const userUid$ = from(this.authService.getAuthenticatedUser()).pipe(
       map((user) => {
         if (user === null) throw new Error('could not get authenticated user');
-
         return user.uid;
       })
     );
     const projectId$ = this.projectService.activeProjectId$;
 
-    const add$ = forkJoin({ uid: userUid$, projectId: projectId$ }).pipe(
+    const add$ = combineLatest({ uid: userUid$, projectId: projectId$ }).pipe(
+      take(1),
       map(({ uid, projectId }) => {
         const data = {
           title,
@@ -52,6 +55,7 @@ export class TaskService {
           status_id: 0,
           assigner_id: uid,
           project_id: projectId,
+          date_added: Math.floor(Date.now() / 1000),
         };
         return data;
       }),
@@ -71,10 +75,24 @@ export class TaskService {
     return add$;
   }
 
-  delete(taskId: number) {
+  delete(taskId: number, assignerUid: string) {
     const request = this.client.from('task').delete().eq('id', taskId);
     const request$ = from(request);
-    const delete$ = request$.pipe(
+    const userCheck$ = from(this.authService.getAuthenticatedUser()).pipe(
+      map((user) => {
+        if (user === null) throw new Error('should be impossible4');
+
+        return user.uid;
+      }),
+      map((uid) => {
+        if (uid !== assignerUid)
+          throw new Error("You can't delete task not added by you");
+
+        return uid;
+      })
+    );
+    const delete$ = userCheck$.pipe(
+      switchMap((_) => request$),
       map((res) => {
         const { statusText } = errorFilter(res);
 
@@ -103,7 +121,7 @@ export class TaskService {
       tap((_) => this.signalNewTask())
     );
 
-    return request$;
+    return edit$;
   }
 
   changeStatus(id: number, statusId: number) {
@@ -113,7 +131,16 @@ export class TaskService {
     const request = this.client.from('task').update(data).eq('id', id);
     const request$ = from(request);
 
-    return request$;
+    const edit$ = request$.pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      }),
+      tap((_) => this.signalNewTask())
+    );
+
+    return edit$;
   }
 
   getTasks(statusId: number) {
@@ -133,6 +160,11 @@ export class TaskService {
         const { data } = errorFilter(res);
 
         return data;
+      }),
+      map((data) => {
+        const ordered = data.sort((a, b) => a.date_added - b.date_added);
+
+        return ordered;
       })
     );
 
