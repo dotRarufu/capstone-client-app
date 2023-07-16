@@ -367,9 +367,6 @@ export interface Database {
           date_time: number
           description: string
           id: number
-          is_accepted: boolean
-          is_done: boolean
-          is_rejected: boolean
           location: string
           organizer_id: string
           project_id: number
@@ -379,9 +376,6 @@ export interface Database {
           date_time: number
           description?: string
           id?: number
-          is_accepted?: boolean
-          is_done?: boolean
-          is_rejected?: boolean
           location: string
           organizer_id: string
           project_id: number
@@ -391,9 +385,6 @@ export interface Database {
           date_time?: number
           description?: string
           id?: number
-          is_accepted?: boolean
-          is_done?: boolean
-          is_rejected?: boolean
           location?: string
           organizer_id?: string
           project_id?: number
@@ -839,27 +830,24 @@ export interface Database {
       task: {
         Row: {
           assigner_id: string
-          description: string | null
+          description: string
           id: number
-          is_validated: boolean
           project_id: number
           status_id: number
           title: string
         }
         Insert: {
           assigner_id: string
-          description?: string | null
+          description: string
           id?: number
-          is_validated: boolean
           project_id: number
           status_id: number
           title: string
         }
         Update: {
           assigner_id?: string
-          description?: string | null
+          description?: string
           id?: number
-          is_validated?: boolean
           project_id?: number
           status_id?: number
           title?: string

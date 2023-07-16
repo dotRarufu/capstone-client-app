@@ -72,7 +72,7 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
 
     <ng-container *ngIf="isFab">
       <div
-        class="text-primary- flex h-full w-fit flex-col items-center justify-between gap-[12px] bg-transparent px-[4px] py-[24px]"
+        class="flex h-full w-fit flex-col items-center justify-between gap-[12px] bg-transparent px-[4px] py-[24px] text-primary"
       >
         <div class="hidden h-[48px] lg:block"></div>
         <button

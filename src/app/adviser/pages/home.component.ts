@@ -26,7 +26,7 @@ import { ReportsComponent } from 'src/app/components/reports.component';
   ],
   selector: 'Home',
   template: `
-    <HomeLayout [modalProjectId]="modalProjectId" role="c" [tabs]="tabs">
+    <HomeLayout [modalProjectId]="modalProjectId" [role]="role" [tabs]="tabs">
       <div
         class="w-full gap-[1rem] sm2:w-[840px]  md:flex md:w-full lg:w-[1040px]"
       >
@@ -86,8 +86,6 @@ export class HomeComponent implements OnInit {
     if (child1 === null) throw new Error('impossible');
 
     this.active = child1.url[0].path;
-
-    console.log('this.role:', this.role);
   }
 
   ngOnInit() {

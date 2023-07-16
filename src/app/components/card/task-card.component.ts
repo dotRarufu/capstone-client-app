@@ -36,7 +36,7 @@ export class TaskCardComponent implements OnInit {
     assigner_id: '',
     description: '',
     id: 0,
-    is_validated: false,
+    
     project_id: 0,
     status_id: 0,
     title: '',

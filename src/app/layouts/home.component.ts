@@ -80,22 +80,16 @@ export class HomeLayoutComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // const tabs: TabDefinition[] = [
-    //   {
-    //     name: 'Title Analyzer',
-    //     id: 'title-analyzer',
-    //   },
-    //   {
-    //     name: 'Projects',
-    //     id: 'projects',
-    //   },
-    // ];
     const child1 = this.route.snapshot.firstChild;
 
     if (child1 === null) throw new Error('impossible');
 
     const active = child1.url[0].path;
-    this.tabsService.setTabs(this.tabs, [this.role, 'home'], active);
+    const routes = ['c', 't'].includes(this.role)
+      ? ['a', this.role, 'home']
+      : [this.role, 'home'];
+   
+    this.tabsService.setTabs(this.tabs, routes, active);
   }
 
   removeProjectCard() {

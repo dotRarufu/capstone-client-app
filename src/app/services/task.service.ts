@@ -17,27 +17,72 @@ import {
 import { Task, User } from '../types/collection';
 import errorFilter from '../utils/errorFilter';
 import supabaseClient from '../lib/supabase';
+import { AuthService } from './auth.service';
+import { ProjectService } from './project.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TaskService {
   private readonly client = supabaseClient;
+  private readonly taskUpdateSubject = new BehaviorSubject<number>(0);
 
-  constructor() {}
+  constructor(
+    private authService: AuthService,
+    private projectService: ProjectService
+  ) {}
 
-  add(task: Task) {
-    const request = this.client.from('task').insert(task);
-    const request$ = from(request);
+  add(title: string, description: string, statusId: number) {
+    // todo: separate in another function
+    const userUid$ = from(this.authService.getAuthenticatedUser()).pipe(
+      map((user) => {
+        if (user === null) throw new Error('could not get authenticated user');
 
-    return request$;
+        return user.uid;
+      })
+    );
+    const projectId = this.projectService.activeProjectId();
+
+    const add$ = userUid$.pipe(
+      map((uid) => {
+        const data = {
+          title,
+          description,
+          status_id: statusId,
+          assigner_id: uid,
+          project_id: projectId,
+        };
+        return data;
+      }),
+      switchMap((data) => {
+        const request = this.client.from('task').insert(data);
+
+        return request;
+      }),
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      }),
+      tap((_) => this.signalNewTask())
+    );
+
+    return add$;
   }
 
   delete(taskId: number) {
     const request = this.client.from('task').delete().eq('id', taskId);
     const request$ = from(request);
+    const delete$ = request$.pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
 
-    return request$;
+        return statusText;
+      }),
+      tap((_) => this.signalNewTask())
+    );
+
+    return delete$;
   }
 
   edit(id: number, title: string, description: string) {
@@ -48,6 +93,14 @@ export class TaskService {
 
     const request = this.client.from('task').update(data).eq('id', id);
     const request$ = from(request);
+    const edit$ = request$.pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      }),
+      tap((_) => this.signalNewTask())
+    );
 
     return request$;
   }
@@ -68,12 +121,12 @@ export class TaskService {
       .select('*')
       .eq('status_id', statusId)
       .eq('project_id', projectId);
-    const request$ = from(request).pipe(
-      map((response) => {
-        if (response.error)
-          throw new Error(`error while fetching tasks 1: ${response.error}`);
+    const request$ = this.taskUpdateSubject.pipe(
+      switchMap((_) => from(request)),
+      map((res) => {
+        const { data } = errorFilter(res);
 
-        return response.data;
+        return data;
       })
     );
 
@@ -113,5 +166,10 @@ export class TaskService {
     );
 
     return request$;
+  }
+
+  private signalNewTask() {
+    const old = this.taskUpdateSubject.getValue();
+    this.taskUpdateSubject.next(old + 1);
   }
 }
