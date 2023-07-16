@@ -17,6 +17,7 @@ import { TaskDetailsModalComponent } from 'src/app/components/modal/task-details
 import { TaskCardComponent } from 'src/app/components/card/task-card.component';
 import { AddTaskModalComponent } from 'src/app/components/modal/add-task.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'Tasks',
@@ -112,7 +113,8 @@ export class TasksComponent implements OnInit {
     private authService: AuthService,
     public taskService: TaskService,
     public projectService: ProjectService,
-    public spinner: NgxSpinnerService
+    public spinner: NgxSpinnerService,
+    private toastr: ToastrService
   ) {
     this.spinner.show();
 
@@ -160,6 +162,12 @@ export class TasksComponent implements OnInit {
   drop(event: CdkDragDrop<Task[]>, statusId: number) {
     const task = event.item.data as Task;
 
+    // todo: add check if target container's length is already 5
+    if (statusId !== 2 && event.container.data.length >= 5) {
+      this.toastr.error('Max amount reached');
+
+      return;
+    }
     if (event.previousContainer === event.container) return;
 
     this.taskService.changeStatus(task.id, statusId).subscribe({

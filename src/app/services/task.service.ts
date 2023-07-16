@@ -45,8 +45,25 @@ export class TaskService {
       })
     );
     const projectId$ = this.projectService.activeProjectId$;
+    const taskCount = this.client
+      .from('task')
+      .select('*', { count: 'exact', head: true })
+      .eq('status_id', 0);
+    const taskCount$ = from(taskCount).pipe(
+      map((res) => {
+        if (res.error !== null) throw new Error('eror getting count');
+      
+        return res.count || 0;
+      }),
+      map((c) => {
+        console.log('C:', c);
+        if (c > 5) throw new Error('reached max amount of todo');
 
-    const add$ = combineLatest({ uid: userUid$, projectId: projectId$ }).pipe(
+        return c;
+      })
+    );
+    const add$ = taskCount$.pipe(
+      switchMap((_) => combineLatest({ uid: userUid$, projectId: projectId$ })),
       take(1),
       map(({ uid, projectId }) => {
         const data = {
