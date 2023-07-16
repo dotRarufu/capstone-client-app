@@ -132,7 +132,7 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
 })
 export class NavigationRailComponent implements OnInit {
   search: string = '';
-  projectId = -1;
+  projectId: number | null = null;
   @Output() toggleDrawer: EventEmitter<string> = new EventEmitter();
   @Input() isFab = false;
 
@@ -143,7 +143,11 @@ export class NavigationRailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.projectId = this.projectService.activeProjectId();
+    this.projectService.activeProjectId$.subscribe({
+      next: (id) => {
+        this.projectId = id; 
+      }
+    });
   }
 
   async navigateTo(path: string) {

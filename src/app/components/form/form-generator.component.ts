@@ -73,7 +73,7 @@ export class FormGeneratorComponent implements OnInit {
     ];
     const child1 = this.route.snapshot.firstChild;
     const active = child1?.url[0].path;
-    const projectId = this.projectService.activeProjectId();
+    const projectId = this.projectService.activeProjectId() || -1;
     const role: string = this.route.snapshot.data["role"];
     let route = [role, 'project', projectId.toString(), 'forms'];
     if (role !== "s") {

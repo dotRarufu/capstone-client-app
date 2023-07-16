@@ -32,8 +32,9 @@ export class TaskService {
     private projectService: ProjectService
   ) {}
 
-  add(title: string, description: string, statusId: number) {
+  add(title: string, description: string) {
     // todo: separate in another function
+    // todo: add check if usser is not a student
     const userUid$ = from(this.authService.getAuthenticatedUser()).pipe(
       map((user) => {
         if (user === null) throw new Error('could not get authenticated user');
@@ -41,14 +42,14 @@ export class TaskService {
         return user.uid;
       })
     );
-    const projectId = this.projectService.activeProjectId();
+    const projectId$ = this.projectService.activeProjectId$;
 
-    const add$ = userUid$.pipe(
-      map((uid) => {
+    const add$ = forkJoin({ uid: userUid$, projectId: projectId$ }).pipe(
+      map(({ uid, projectId }) => {
         const data = {
           title,
           description,
-          status_id: statusId,
+          status_id: 0,
           assigner_id: uid,
           project_id: projectId,
         };
@@ -115,14 +116,19 @@ export class TaskService {
     return request$;
   }
 
-  getTasks(statusId: number, projectId: number) {
-    const request = this.client
-      .from('task')
-      .select('*')
-      .eq('status_id', statusId)
-      .eq('project_id', projectId);
+  getTasks(statusId: number) {
     const request$ = this.taskUpdateSubject.pipe(
-      switchMap((_) => from(request)),
+      switchMap((_) => this.projectService.activeProjectId$),
+      switchMap((projectId) => {
+        console.log('projectId:', projectId);
+        const request = this.client
+          .from('task')
+          .select('*')
+          .eq('status_id', statusId)
+          .eq('project_id', projectId);
+
+        return from(request);
+      }),
       map((res) => {
         const { data } = errorFilter(res);
 
@@ -155,7 +161,7 @@ export class TaskService {
     return tasks$;
   }
 
-  getTask(id: number) {
+  private getTask(id: number) {
     const request = this.client.from('task').select('*').eq('id', id);
     const request$ = from(request).pipe(
       map((res) => {

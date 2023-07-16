@@ -91,10 +91,10 @@ export class AddParticipantModalComponent {
 
   addParticipant() {
     this.spinner.show();
-    const projectId = this.projectService.activeProjectId();
+  
     const addParticipant$ = this.projectService.addParticipant(
       this.userUid,
-      projectId
+     
     );
 
     addParticipant$.subscribe({

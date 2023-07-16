@@ -146,9 +146,7 @@ export class ScheduleConsultationModalComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const projectId = this.projectService.activeProjectId();
-
-    const doneTasks$ = this.taskService.getTasks(2, projectId);
+    const doneTasks$ = this.taskService.getTasks(2);
     doneTasks$.subscribe({
       next: (tasks) => (this.doneTasks = tasks),
       error: () => this.toastr.error('error getting done tasks'),
@@ -162,11 +160,10 @@ export class ScheduleConsultationModalComponent implements OnInit {
       dateTime: epochDateTime,
       description: this.description,
       location: this.location,
-      taskIds: this.selectedTasks.map(t => t.id),
+      taskIds: this.selectedTasks.map((t) => t.id),
     };
     const request$ = this.consultationService.scheduleConsultation(
       data,
-      this.projectService.activeProjectId()
     );
 
     request$.subscribe({

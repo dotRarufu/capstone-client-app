@@ -216,12 +216,12 @@ export class ConsultationsComponent {
   }
 
   ngOnInit() {
-    const projectId = this.projectService.activeProjectId();
+ 
     // todo: refactor these
-    const scheduled$ = this.consultationService.getConsultations(projectId, 1);
-    const pending$ = this.consultationService.getConsultations(projectId, 0);
-    const completed$ = this.consultationService.getConsultations(projectId, 2);
-    const rejected$ = this.consultationService.getConsultations(projectId, 3);
+    const scheduled$ = this.consultationService.getConsultations(1);
+    const pending$ = this.consultationService.getConsultations( 0);
+    const completed$ = this.consultationService.getConsultations( 2);
+    const rejected$ = this.consultationService.getConsultations( 3);
 
     scheduled$.subscribe({
       next: (consultations) => {

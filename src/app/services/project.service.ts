@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, WritableSignal, signal } from '@angular/core';
 import {
   BehaviorSubject,
   filter,
@@ -9,6 +9,8 @@ import {
   switchMap,
   tap,
   zip,
+  forkJoin,
+  Observable,
 } from 'rxjs';
 import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
 import { ToastrService } from 'ngx-toastr';
@@ -22,6 +24,7 @@ import { getObjectValues } from '../utils/getObjectValues';
 import errorFilter from '../utils/errorFilter';
 import { isNotNull } from '../student/utils/isNotNull';
 import supabaseClient from '../lib/supabase';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 type AnalyzerResultError = string;
 
@@ -34,7 +37,13 @@ export class ProjectService {
   private projectUpdate$ = new BehaviorSubject<number>(0);
   private newParticipant$ = new BehaviorSubject<number>(0);
   formUrl$ = this.formUrlSubject.asObservable();
-  activeProjectId = signal(-1);
+  activeProjectId = signal<number | null>(null);
+  activeProjectId$ = toObservable(this.activeProjectId).pipe(
+    map((id) => {
+      if (id === null) throw new Error('should be impossible');
+      return id;
+    })
+  );
 
   constructor(
     private databaseService: DatabaseService,
@@ -44,10 +53,12 @@ export class ProjectService {
     private router: Router,
     private userService: UserService
   ) {
-    this.watchRouterEvents();
+    console.log("activeProjectId:", this.activeProjectId());
+    this.setUrlProjectId();
+    console.log("activeProjectId 2:", this.activeProjectId());
   }
 
-  watchRouterEvents() {
+  setUrlProjectId() {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe({
@@ -63,17 +74,23 @@ export class ProjectService {
               const child2 = child1.children[0];
               const child2Path = child2.snapshot.url[0].path;
 
-              if (child2Path === 'project') {
-                const id = child2.children[0].snapshot.url[0].path;
+              if (['t', 'c'].includes(child2Path)) {
+                const child3 = child2.children[0];
+                const child3Path = child3.snapshot.url[0].path;
 
-                this.activeProjectId.set(Number(id));
+                if (child3Path === 'project') {
+                  const child4 = child3.children[0];
+                  const child4Path = child4.snapshot.url[0].path;
+
+                  const id = child4Path;
+                 
+                  this.activeProjectId.set(Number(id));
+                }
 
                 return;
               }
             }
           }
-
-          // console.log('not llogged in, no project id to get');
         },
       });
   }
@@ -262,12 +279,16 @@ export class ProjectService {
     return isUserParticipant$;
   }
 
-  addParticipant(userUid: string, projectId: number) {
+  addParticipant(userUid: string) {
     // todo: if the adviser already exist, notify user that they are replacing the adviser by adding new adviser
 
     const role$ = from(this.userService.getUser(userUid));
-    const newParticipant$ = role$.pipe(
-      switchMap(({ role_id }) => {
+    const projectId$ = this.activeProjectId$;
+    const newParticipant$ = forkJoin({
+      role: role$,
+      projectId: projectId$,
+    }).pipe(
+      switchMap(({ role: { role_id }, projectId }) => {
         if (role_id === 0)
           return from(this.userService.getUser(userUid)).pipe(
             switchMap((_) => this.addStudentMember(projectId, userUid)),

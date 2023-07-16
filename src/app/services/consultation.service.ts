@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import errorFilter from '../utils/errorFilter';
 import { DatabaseService } from './database.service';
 import supabaseClient from '../lib/supabase';
+import { ProjectService } from './project.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,18 +16,23 @@ export class ConsultationService {
 
   constructor(
     private authService: AuthService,
-    private databaseService: DatabaseService
+    private databaseService: DatabaseService,
+    private projectService: ProjectService
   ) {}
 
-  scheduleConsultation(data: ConsultationData, projectId: number) {
-    const user$ = from(this.authService.getAuthenticatedUser());
-    const request$ = user$.pipe(
+  scheduleConsultation(data: ConsultationData) {
+    const user$ = from(this.authService.getAuthenticatedUser()).pipe(
       map((user) => {
         if (user === null) throw new Error('must be impossible');
 
         return user;
-      }),
-      switchMap((user) =>
+      })
+    );
+
+    const projectId$ = this.projectService.activeProjectId$;
+
+    const request$ = forkJoin({ user: user$, projectId: projectId$ }).pipe(
+      switchMap(({ user, projectId }) =>
         this.databaseService.insertConsultation(user.uid, data, projectId)
       ),
       tap(() => this.signalNewConsultation())
@@ -72,17 +78,20 @@ export class ConsultationService {
     return request$;
   }
 
-  getConsultations(projectId: number, categoryId: number) {
-    const request$ = from(
-      this.client
-        .from('consultation')
-        .select('*')
-        .eq('project_id', projectId)
-        .eq('category_id', categoryId)
-    );
-
+  getConsultations(categoryId: number) {
     const res = this.newConsultationSignal$.pipe(
-      switchMap((_) => request$),
+      switchMap((_) => this.projectService.activeProjectId$),
+      switchMap((projectId) => {
+        const request$ = from(
+          this.client
+            .from('consultation')
+            .select('*')
+            .eq('project_id', projectId)
+            .eq('category_id', categoryId)
+        );
+
+        return request$;
+      }),
       map((response) => {
         if (response.error)
           throw new Error(`error while fetching tasks 2: ${response.error}`);

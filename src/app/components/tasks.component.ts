@@ -19,15 +19,23 @@ import { AddTaskModalComponent } from 'src/app/components/modal/add-task.compone
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
 @Component({
-  selector: "Tasks",
+  selector: 'Tasks',
   standalone: true,
-  imports: [CommonModule, TodoAccordionComponent, TaskDetailsModalComponent, DragDropModule, TaskCardComponent, AddTaskModalComponent, FeatherIconsModule],
+  imports: [
+    CommonModule,
+    TodoAccordionComponent,
+    TaskDetailsModalComponent,
+    DragDropModule,
+    TaskCardComponent,
+    AddTaskModalComponent,
+    FeatherIconsModule,
+  ],
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
-        <h1 class="text-[32px] text-base-content">Tasks</h1>\
+        <h1 class="text-[32px] text-base-content">Tasks</h1>
         <button
-        *ngIf="!isStudent"
+          *ngIf="!isStudent"
           onclick="addTask.showModal()"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
@@ -70,13 +78,25 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
       <TaskDetailsModal />
 
-        <AddTaskModal *ngIf="!isStudent"/>
-
+      <AddTaskModal *ngIf="!isStudent" />
     </div>
   `,
 })
 export class TasksComponent implements OnInit {
-  categories: { title: string; tasks: Task[] }[] = [];
+  categories: { title: string; tasks: Task[] }[] = [
+    {
+      title: 'Todo',
+      tasks: [],
+    },
+    {
+      title: 'Doing',
+      tasks: [],
+    },
+    {
+      title: 'Done',
+      tasks: [],
+    },
+  ];
   isStudent = true;
 
   constructor(
@@ -109,18 +129,16 @@ export class TasksComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const projectId = this.projectService.activeProjectId();
     // todo: make this observable complete
-
+    this.taskService.getTasks(0).subscribe((tasks) => 
+      this.categories[0].tasks = tasks
+    );
     this.taskService
-      .getTasks(0, projectId)
-      .subscribe((tasks) => this.categories.push({ title: 'Todo', tasks }));
+      .getTasks(1)
+      .subscribe((tasks) => (this.categories[1].tasks = tasks));
     this.taskService
-      .getTasks(1, projectId)
-      .subscribe((tasks) => this.categories.push({ title: 'Doing', tasks }));
-    this.taskService
-      .getTasks(2, projectId)
-      .subscribe((tasks) => this.categories.push({ title: 'Done', tasks }));
+      .getTasks(2)
+      .subscribe((tasks) => (this.categories[2].tasks = tasks));
   }
 
   drop(event: CdkDragDrop<Task[]>) {
