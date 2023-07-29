@@ -49,6 +49,7 @@ export class LandingComponent implements OnInit {
     private router: Router,
     private spinner: NgxSpinnerService
   ) {
+  
     // use loading while getCurrentUser is not loaded
     this.spinner.show();
 
@@ -57,12 +58,13 @@ export class LandingComponent implements OnInit {
       next: (user) => {
         if (user !== null) {
           const rolePath = getRolePath(user.role_id);
-
-          if (rolePath !== "s") {
-
-            this.router.navigate(["a", rolePath, 'home']);
-          }
           
+          if (rolePath !== 's') {
+            this.router.navigate(['a', rolePath, 'home']);
+
+            return;
+          }
+
           this.router.navigate([rolePath, 'home']);
         }
 

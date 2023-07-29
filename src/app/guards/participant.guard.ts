@@ -2,7 +2,7 @@ import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ProjectService } from '../services/project.service';
 import { inject } from '@angular/core';
-import { catchError, from, map, of, switchMap } from 'rxjs';
+import { catchError, from, map, of, switchMap, tap } from 'rxjs';
 
 export const participantGuard = (route: ActivatedRouteSnapshot) => {
   const authService = inject(AuthService);
@@ -12,7 +12,7 @@ export const participantGuard = (route: ActivatedRouteSnapshot) => {
   const child1 = route.firstChild;
 
   if (child1 === null) throw new Error('1 shoudl be impossible');
-  
+
   const projectId = Number(child1.url[0].path);
 
   //todo:   refactor
@@ -24,7 +24,6 @@ export const participantGuard = (route: ActivatedRouteSnapshot) => {
 
       return res;
     }),
-
     switchMap((user) =>
       projectService.checkProjectParticipant(user.uid, projectId)
     ),

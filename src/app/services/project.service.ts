@@ -10,7 +10,10 @@ import {
   tap,
   zip,
   forkJoin,
+  retry,
   Observable,
+  throwError,
+  first,
 } from 'rxjs';
 import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
 import { ToastrService } from 'ngx-toastr';
@@ -53,9 +56,7 @@ export class ProjectService {
     private router: Router,
     private userService: UserService
   ) {
-    console.log("activeProjectId:", this.activeProjectId());
     this.setUrlProjectId();
-    console.log("activeProjectId 2:", this.activeProjectId());
   }
 
   setUrlProjectId() {
@@ -83,7 +84,7 @@ export class ProjectService {
                   const child4Path = child4.snapshot.url[0].path;
 
                   const id = child4Path;
-                 
+
                   this.activeProjectId.set(Number(id));
                 }
 
@@ -246,12 +247,13 @@ export class ProjectService {
     );
   }
 
-  checkProjectParticipant(userUid: string, projectId?: number) {
-    const advisersCheck = this.client
+  checkProjectParticipant(userUid: string, projectId: number) {
+    const adviser = this.client
       .from('project')
       .select('capstone_adviser_id, technical_adviser_id')
-      .eq('id', projectId ?? this.activeProjectId());
-    const advisersId$ = from(advisersCheck).pipe(
+      .eq('id', projectId);
+
+    const advisersId$ = from(adviser).pipe(
       map((a) => {
         const { data } = errorFilter(a);
         const adviserIds = getObjectValues<string | null>(data[0]);
@@ -259,11 +261,13 @@ export class ProjectService {
         return adviserIds.filter((id) => id !== null);
       })
     );
-    const studentsCheck = this.client
+
+    const students = this.client
       .from('member')
       .select('student_uid')
-      .eq('project_id', projectId || this.activeProjectId());
-    const studentIds$ = from(studentsCheck).pipe(
+      .eq('project_id', projectId);
+
+    const studentIds$ = from(students).pipe(
       map((a) => {
         const { data } = errorFilter(a);
 
@@ -273,6 +277,7 @@ export class ProjectService {
 
     const isUserParticipant$ = zip(studentIds$, advisersId$).pipe(
       map((a) => a.flat()),
+
       map((ids) => ids.includes(userUid))
     );
 
@@ -302,7 +307,10 @@ export class ProjectService {
     );
 
     return of('').pipe(
-      switchMap((_) => this.checkProjectParticipant(userUid)),
+      switchMap(() => projectId$),
+      switchMap((projectId) =>
+        this.checkProjectParticipant(userUid, projectId)
+      ),
       map((isParticipant) => {
         if (isParticipant) throw new Error('participant already exists');
 

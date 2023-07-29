@@ -1,4 +1,12 @@
-import { Component, Input } from '@angular/core';
+import {
+  Component,
+  Input,
+  WritableSignal,
+  signal,
+  effect,
+  OnChanges,
+  OnInit,
+} from '@angular/core';
 import { ModalComponent } from './modal.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ActivatedRoute } from '@angular/router';
@@ -6,11 +14,12 @@ import { CommonModule } from '@angular/common';
 import { TaskService } from 'src/app/services/task.service';
 import { ToastrService } from 'ngx-toastr';
 import { Task } from 'src/app/types/collection';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'TaskDetailsModal',
   standalone: true,
-  imports: [ModalComponent, FeatherIconsModule, CommonModule],
+  imports: [ModalComponent, FeatherIconsModule, CommonModule, FormsModule],
   template: `
     <Modal inputId="taskDetails">
       <div
@@ -18,12 +27,24 @@ import { Task } from 'src/app/types/collection';
       >
         <div class="flex justify-between bg-primary p-[24px]">
           <div class="flex flex-col justify-between">
-            <h1 class="text-[24px] text-primary-content">
-              Task title placeholder
+            <h1 *ngIf="!isInEdit()" class="text-[24px] text-primary-content">
+              {{ this.task?.title }}
             </h1>
+            <input
+              *ngIf="isInEdit()"
+              [(ngModel)]="title"
+              type="text"
+              placeholder="Task Title"
+              class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
+            />
 
-            <div class="text-[12px] text-primary-content/50">
-              Created at 5/1/23 by Adviser Name | Currently in Doing
+            <div
+              *ngIf="!isInEdit()"
+              class="text-[12px] text-primary-content/50"
+            >
+              Created at {{ this.task?.date_added }} by
+              {{ this.task?.assigner_id }} | Currently in
+              {{ this.task?.status_id }}
             </div>
           </div>
         </div>
@@ -39,48 +60,71 @@ import { Task } from 'src/app/types/collection';
 
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
-            <div class="text-base text-base-content">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem
-              ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-              tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum
-              dolor sit
+            <div *ngIf="!isInEdit()" class="text-base text-base-content">
+              {{ this.task?.description }}
             </div>
+            <textarea
+              *ngIf="isInEdit()"
+              [(ngModel)]="description"
+              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
+              placeholder="Description"
+            ></textarea>
           </div>
           <ul class=" flex w-full flex-col  bg-neutral/20 py-2 sm1:w-[223px]">
-            <button
-              *ngIf="['c', 't'].includes(role)"
+            <label
+              (click)="handleEditClick()"
+              *ngIf="!isInEdit() && ['c', 't'].includes(role)"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="edit" />
               edit
-            </button>
+            </label>
             <button
               (click)="handleDeleteClick()"
-              *ngIf="['c', 't'].includes(role)"
+              *ngIf="!isInEdit() && ['c', 't'].includes(role)"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="user-check" />
               Delete
             </button>
+            <button
+              (click)="handleSaveClick()"
+              *ngIf="isInEdit() && ['c', 't'].includes(role)"
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+            >
+              <i-feather class="text-base-content/70" name="user-check" />
+              Save
+            </button>
 
             <div class="h-full"></div>
 
             <button
+              *ngIf="!isInEdit()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x-circle" />
-              close
+              Close
             </button>
+            <label
+              (click)="handleEditCancelClick()"
+              *ngIf="isInEdit() && ['c', 't'].includes(role)"
+              class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+            >
+              <i-feather class="text-base-content/70" name="user-check" />
+              Cancel
+            </label>
           </ul>
         </div>
       </div>
     </Modal>
   `,
 })
-export class TaskDetailsModalComponent {
+export class TaskDetailsModalComponent implements OnInit, OnChanges {
   role: 's' | 't' | 'c';
-  @Input() task: Task | null = null;
+  @Input({ required: true }) task!: Task | null;
+  isInEdit = signal(false);
+  description = '';
+  title = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -88,6 +132,31 @@ export class TaskDetailsModalComponent {
     private toastr: ToastrService
   ) {
     this.role = this.route.snapshot.data['role'];
+  }
+
+  handleEditCancelClick() {
+    this.isInEdit.set(false);
+  }
+
+  handleSaveClick() {
+    if (this.task === null) return;
+
+    this.taskService
+      .edit(this.task.id, this.title, this.description)
+      .subscribe({
+        next: () => {
+          this.toastr.success('task edited successfully');
+          this.isInEdit.set(false);
+        },
+        error: () => {
+          this.toastr.error('failed to edit task');
+          this.isInEdit.set(false);
+        },
+      });
+  }
+
+  handleEditClick() {
+    this.isInEdit.set(true);
   }
 
   handleDeleteClick() {
@@ -103,5 +172,14 @@ export class TaskDetailsModalComponent {
         this.toastr.error(err);
       },
     });
+  }
+
+  ngOnInit() {}
+
+  ngOnChanges(changes: any) {
+    if ('task' in changes) {
+      this.description = this.task?.description || '';
+      this.title = this.task?.title || '';
+    }
   }
 }
