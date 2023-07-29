@@ -17,10 +17,11 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
       >
         <div class="hidden h-[48px] lg:block"></div>
         <button
-          (click)="handleMenuClick()"
+        (click)="navigateTo('project')"
           class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] lg:hidden"
         >
-          <i-feather name="sidebar" />
+          <i-feather name="list" />
+          Project
         </button>
 
         <div class="flex h-fit  flex-col items-center gap-[12px]">
@@ -31,13 +32,7 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
             <i-feather name="trello" />
             Tasks
           </button>
-          <button
-            (click)="navigateTo('reports')"
-            class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
-          >
-            <i-feather name="monitor" />
-            Reports
-          </button>
+        
           <button
             (click)="navigateTo('consultations')"
             class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
@@ -46,19 +41,13 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
             Consult
           </button>
           <button
-            (click)="navigateTo('participants')"
+            (click)="navigateTo('milestones')"
             class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
           >
             <i-feather name="users" />
-            Participants
+            Milestones
           </button>
-          <button
-            (click)="navigateTo('forms')"
-            class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
-          >
-            <i-feather name="file-text" />
-            Forms
-          </button>
+         
         </div>
 
         <button
@@ -66,6 +55,7 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
           class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
         >
           <i-feather name="arrow-left" />
+          Back
         </button>
       </div>
     </ng-container>
@@ -161,11 +151,11 @@ export class NavigationRailComponent implements OnInit {
 
       const rolePath = getRolePath(user.role_id);
       if (rolePath === 's') {
-        this.router.navigate([rolePath, 'project', this.projectId, path]);
+        this.router.navigate([rolePath, 'p', this.projectId, path]);
         return;
       }
 
-      this.router.navigate(['a', rolePath, 'project', this.projectId, path]);
+      this.router.navigate(['a', rolePath, 'p', this.projectId, path]);
     }
   }
 

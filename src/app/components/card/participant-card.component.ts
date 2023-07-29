@@ -1,45 +1,36 @@
 import { Component, Input } from '@angular/core';
+import { FeatherModule } from 'angular-feather';
 import { User } from 'src/app/types/collection';
 
 @Component({
   selector: 'ParticipantCard',
   standalone: true,
-  imports: [],
+  imports: [FeatherModule],
   template: `
     <div
-      class="w-full sm1:w-[347px] flex items-center gap-2 rounded-[3px]  "
+      class="flex w-full items-center justify-between rounded-[3px]"
     >
-      <div class=" btn btn-square p-0">
-        <!-- <div
-          class="w-full rounded-square bg-neutral-focus text-neutral-content"
-        > -->
+      <div class="flex items-center gap-2 py-[8px]">
+        <div class=" btn-square btn  bg-blue-300 p-0">
           <span class="text-xl">K</span>
-        <!-- </div> -->
+        </div>
+
+        <div class="flex w-full flex-col">
+          <a
+            class="btn-link btn-xs btn w-fit p-0 text-base font-normal capitalize text-base-content no-underline sm1:text-[18px]"
+          >
+            {{ user.name }}
+          </a>
+          <p class="text-base text-base-content/70">role {{ user.role_id }}</p>
+        </div>
       </div>
 
-      <div class="flex w-full flex-col">
-        <a class="no-underline font-normal capitalize btn btn-link w-fit p-0 btn-sm text-base text-base-content sm1:text-[18px] ">
-          {{ user.name }}
-        </a>
-        <p class=" text-base text-base-content/70">role {{ user.role_id }}</p>
-        <!-- <p class=" text-base text-base-content/70">{{ user.uid }}</p> -->
-      </div>
-
-      <!-- <div class="dropdown-end dropdown text-base-content">
-        <label tabindex="0" class="btn-ghost btn-sm btn">
-          <i-feather class="text-base-content/70" name="menu" />
-        </label>
-        <ul
-          tabindex="0"
-          class="dropdown-content menu w-52 border border-base-content/30 bg-base-100 shadow-md"
-        >
-          <li>
-            <a class="rounded-[3px] hover:rounded-[3px] focus:rounded-[3px] "
-              >Remove</a
-            >
-          </li>
-        </ul>
-      </div> -->
+      <button
+        onclick="addParticipant.showModal()"
+        class="btn-ghost btn-xs btn gap-2 rounded-[3px] text-[14px] font-normal text-base-content hover:text-error  "
+      >
+        Remove
+      </button>
     </div>
   `,
 })

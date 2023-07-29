@@ -54,6 +54,7 @@ const routes: Routes = [
   {
     path: 's',
     canActivate: [authGuard, roleGuard('s')],
+      data: { breadcrumb: "Home" },
     loadChildren: () => import('../student/routes'),
   },
 

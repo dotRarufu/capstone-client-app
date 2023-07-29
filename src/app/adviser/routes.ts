@@ -12,6 +12,7 @@ import { ReportsComponent } from '../components/reports.component';
 import { ConsultationsComponent } from '../components/consultations.component';
 import { HomeComponent } from './pages/home.component';
 import { ProjectPageComponent } from '../pages/project/project.component';
+import { MilestonesComponent } from '../student/components/milestones.component';
 
 const routes: Routes = [
   {
@@ -40,7 +41,7 @@ const routes: Routes = [
         ],
       },
       {
-        path: 'project',
+        path: 'p',
         canActivate: [participantGuard],
         children: [
           {
@@ -54,13 +55,18 @@ const routes: Routes = [
                 data: { role: 'c' },
               },
               {
-                path: 'participants',
+                path: 'project',
                 component: ParticipantsPageComponent,
               },
               {
                 path: 'consultations',
                 component: ConsultationsComponent,
                 data: { role: 'c' },
+              },
+              {
+                path: 'milestones',
+                component: MilestonesComponent,
+              
               },
               {
                 path: 'reports',
@@ -94,7 +100,7 @@ const routes: Routes = [
                 path: '',
                 component: RedirectComponent,
                 // redirectTo: redirectToNewPath, pathMatch: 'full'
-                data: { path: ['a', 'c', 'project'] },
+                data: { path: ['a', 'c', 'p'] },
               },
             ],
           },
@@ -130,7 +136,7 @@ const routes: Routes = [
         ],
       },
       {
-        path: 'project',
+        path: 'p',
         canActivate: [participantGuard],
         children: [
           {
@@ -183,7 +189,7 @@ const routes: Routes = [
                 path: '',
                 component: RedirectComponent,
                 // redirectTo: redirectToNewPath, pathMatch: 'full'
-                data: { path: ['a', 't', 'project'] },
+                data: { path: ['a', 't', 'p'] },
               },
             ],
           },

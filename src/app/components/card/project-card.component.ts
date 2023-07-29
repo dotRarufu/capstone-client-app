@@ -75,9 +75,8 @@ export class ProjectCardComponent implements OnInit {
   }
 
   handleCardClick() {
-    const studentPath = [this.role, 'project', this.project.id];
-    const adviserPath = ['a', this.role, 'project', this.project.id];
+    const studentPath = [this.role, 'p', this.project.id];
+    const adviserPath = ['a', this.role, 'p', this.project.id];
     this.router.navigate(this.role === 's' ? studentPath : adviserPath);
-  
   }
 }

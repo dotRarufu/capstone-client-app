@@ -69,7 +69,7 @@ export class TitleAnalyzerComponent implements OnInit {
 
   navigateToProject(uid: number) {
     return () => {
-      this.router.navigate(['s', 'project', uid]);
+      this.router.navigate(['s', 'p', uid]);
        
     };
   }

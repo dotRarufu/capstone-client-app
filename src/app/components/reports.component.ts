@@ -11,17 +11,7 @@ import { CommonModule } from '@angular/common';
   template: `
     <ng-container *ngIf="!sideColumn">
       <div class="flex h-full flex-col gap-[16px]">
-        <div class="flex justify-between ">
-          <h1 class="text-[24px] text-base-content sm2:text-[32px]">Reports</h1>
-          <!-- <label
-          for="schedule-consultation"
-          class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
-        >
-          <i-feather class="text-base-content/70"name="plus"></i-feather>
-
-          button
-        </label> -->
-        </div>
+       
 
         <!-- todo: replace other dividers with this -->
         <div class="h-[2px] w-full bg-base-content/10"></div>

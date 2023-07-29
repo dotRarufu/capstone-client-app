@@ -9,7 +9,7 @@ import { TabsService } from 'src/app/services/tabs.service';
   imports: [CommonModule],
   template: `
     <div
-      class="border-b border-base-content/20 px-[1rem] py-1 sm1:px-[32px] sm2:px-0 md:border-none "
+      class="border-b border-base-content/20 px-[1rem] py-1 sm1:px-[32px] sm2:px-0 md:border-none  overflow-x-scroll"
     >
       <div
         [class.md:hidden]="isResponsive"

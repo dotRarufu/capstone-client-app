@@ -5,7 +5,7 @@ import { ProjectsComponent } from './components/projects.component';
 import { ResultComponent } from './pages/result.component';
 import { TitleBuilderComponent } from './components/title-builder.component';
 import { TasksComponent } from '../components/tasks.component';
-import { ParticipantsComponent } from './components/participants.component';
+import { ProjectComponent } from './components/project.component';
 import { RedirectComponent } from '../components/redirect.component';
 import { NotFoundComponent } from '../pages/not-found/not-found.component';
 import { FormGeneratorComponent } from '../components/form/form-generator.component';
@@ -14,6 +14,10 @@ import { ReportsComponent } from '../components/reports.component';
 import { ConsultationsComponent } from '../components/consultations.component';
 import { participantGuard } from '../guards/participant.guard';
 import { ProjectPageComponent } from '../pages/project/project.component';
+import { ProjectLayoutComponent } from 'src/app/layouts/project.component';
+import { MilestonesComponent } from './components/milestones.component';
+import { GeneralComponent } from '../components/project/general.component';
+import { DangerZoneComponent } from '../components/project/danger-zone.component';
 
 const routes: Routes = [
   {
@@ -41,59 +45,92 @@ const routes: Routes = [
     component: TitleBuilderComponent,
   },
   {
-    path: 'project',
+    path: 'p',
     canActivate: [participantGuard],
+    data: { breadcrumb: { skip: true } },
     children: [
       {
         path: ':projectId',
-        component: ProjectPageComponent,
+        component: ProjectLayoutComponent,
+
         children: [
-          {
-            path: 'reports',
-            component: ReportsComponent,
-          },
           {
             path: 'tasks',
             component: TasksComponent,
-            data: {role: "s"},
+            data: { role: 's', breadcrumb: "Tasks" },
+
           },
           {
-            path: 'participants',
-            component: ParticipantsComponent,
-          },
-          {
-            path: 'consultations',
-            component: ConsultationsComponent,
-            data: {role: "s"}
-          },
-          {
-            path: 'forms',
-            component: FormGeneratorComponent,
-            data: { role: 's' },
+            path: 'project',
+            component: ProjectComponent,
+            data: {  breadcrumb: "Project" },
+
             children: [
               {
-                path: ':formNumber',
-                component: FormComponent,
+                path: 'settings',
+                data: {  breadcrumb: "General" },
+
+                component: GeneralComponent,
               },
               {
-                path: '2',
-                component: FormComponent,
+                path: 'reports',
+                data: {  breadcrumb: "Reports" },
+
+                component: ReportsComponent,
               },
               {
-                path: '3',
-                component: FormComponent,
+                path: 'danger-zone',
+                data: {  breadcrumb: "Danger Zone" },
+
+                component: DangerZoneComponent,
               },
               {
-                path: '4',
-                component: FormComponent,
+                path: 'forms',
+                data: { role: 's', breadcrumb: "Forms" },
+
+                component: FormGeneratorComponent,
+                children: [
+                  {
+                    path: ':formNumber',
+                    component: FormComponent,
+                  },
+                  {
+                    path: '2',
+                    component: FormComponent,
+                  },
+                  {
+                    path: '3',
+                    component: FormComponent,
+                  },
+                  {
+                    path: '4',
+                    component: FormComponent,
+                  },
+                ],
+              },
+              {
+                path: '',
+                pathMatch: 'full',
+                redirectTo: 'settings',
               },
             ],
           },
           {
+            path: 'consultations',
+            component: ConsultationsComponent,
+            data: { role: 's', breadcrumb: "Consultations" },
+          },
+          {
+            path: 'milestones',
+            data: { breadcrumb: "Milestones" },
+            component: MilestonesComponent,
+          },
+
+          {
             path: '',
             component: RedirectComponent,
             // redirectTo: redirectToNewPath, pathMatch: 'full'
-            data: { path: ['s', 'project'] },
+            data: { path: ['s', 'p'] },
           },
         ],
       },
