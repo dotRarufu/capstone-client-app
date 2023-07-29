@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { ConsultationData } from 'src/app/models/consultationData';
@@ -142,11 +143,14 @@ export class ScheduleConsultationModalComponent implements OnInit {
     private consultationService: ConsultationService,
     private projectService: ProjectService,
     private toastr: ToastrService,
-    private taskService: TaskService
+    private taskService: TaskService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    const doneTasks$ = this.taskService.getTasks(2);
+    const projectId = Number(this.route.parent!.snapshot.url[0].path);
+
+    const doneTasks$ = this.taskService.getTasks(2, projectId);
     doneTasks$.subscribe({
       next: (tasks) => (this.doneTasks = tasks),
       error: () => this.toastr.error('error getting done tasks'),
@@ -162,8 +166,12 @@ export class ScheduleConsultationModalComponent implements OnInit {
       location: this.location,
       taskIds: this.selectedTasks.map((t) => t.id),
     };
+
+    const projectId = Number(this.route.parent!.snapshot.url[0].path);
+    console.log('consultation projectId:', projectId);
     const request$ = this.consultationService.scheduleConsultation(
       data,
+      projectId
     );
 
     request$.subscribe({

@@ -61,21 +61,18 @@ export class ParticipantsPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const participants$ = this.projectService.getParticipants();
-
-    participants$.subscribe({
-      next: (p) => {
-        if (p === null) {
-          this.participants = [];
-          this.spinner.show();
-
-          return;
-        }
-        this.spinner.hide();
-
-        this.participants = p;
-      },
-      complete: () => console.log('getParticipants complete'),
-    });
+    // const participants$ = this.projectService.getParticipants();
+    // participants$.subscribe({
+    //   next: (p) => {
+    //     if (p === null) {
+    //       this.participants = [];
+    //       this.spinner.show();
+    //       return;
+    //     }
+    //     this.spinner.hide();
+    //     this.participants = p;
+    //   },
+    //   complete: () => console.log('getParticipants complete'),
+    // });
   }
 }

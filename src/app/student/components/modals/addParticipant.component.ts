@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'AddParticipantModal',
@@ -86,15 +87,17 @@ export class AddParticipantModalComponent {
   constructor(
     private spinner: NgxSpinnerService,
     private projectService: ProjectService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private route: ActivatedRoute
   ) {}
 
   addParticipant() {
     this.spinner.show();
-  
+    const projectId = Number(this.route.parent!.snapshot.url[0].path);
+    console.log("add participant | projectId:", projectId);
     const addParticipant$ = this.projectService.addParticipant(
       this.userUid,
-     
+      projectId
     );
 
     addParticipant$.subscribe({

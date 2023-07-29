@@ -73,18 +73,14 @@ export class FormGeneratorComponent implements OnInit {
     ];
     const child1 = this.route.snapshot.firstChild;
     const active = child1?.url[0].path;
-    const projectId = this.projectService.activeProjectId() || -1;
-    const role: string = this.route.snapshot.data["role"];
+    const projectId = Number(this.route.parent!.snapshot.url[0].path);
+    const role: string = this.route.snapshot.data['role'];
     let route = [role, 'project', projectId.toString(), 'forms'];
-    if (role !== "s") {
-      route = ["a", role, 'project', projectId.toString(), 'forms'];
+    if (role !== 's') {
+      route = ['a', role, 'project', projectId.toString(), 'forms'];
     }
 
-    this.tabsService.setTabs(
-      tabs,
-      route,
-      active
-    );
+    this.tabsService.setTabs(tabs, route, active);
   }
 
   downloadFile(anchor: HTMLAnchorElement) {

@@ -6,6 +6,7 @@ import { TaskService } from 'src/app/services/task.service';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { map, switchMap } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'AddTaskModal',
@@ -76,24 +77,31 @@ export class AddTaskModalComponent {
   constructor(
     private taskService: TaskService,
     private toastr: ToastrService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private route: ActivatedRoute
   ) {}
 
   handleDoneClick() {
-    const status$ = this.taskService.add(this.title, this.description);
-    console.log("clicked");
+    const projectId = Number(this.route.parent!.snapshot.url[0].path);
+
+    const status$ = this.taskService.add(
+      this.title,
+      this.description,
+      projectId
+    );
+    console.log('clicked');
     status$.subscribe({
       next: (status) => {
-        console.log("runs 123");
+        console.log('runs 123');
         this.toastr.success(status);
       },
       error: (err) => {
-        console.log("runs error");
+        console.log('runs error');
         this.toastr.error(err);
       },
       complete: () => {
-        console.log("completed")
-      }
+        console.log('completed');
+      },
     });
   }
 }

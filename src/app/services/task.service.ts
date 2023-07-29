@@ -35,7 +35,7 @@ export class TaskService {
     private projectService: ProjectService
   ) {}
 
-  add(title: string, description: string) {
+  add(title: string, description: string, projectId: number) {
     // todo: separate in another function
     // todo: add check if usser is not a student
     const userUid$ = from(this.authService.getAuthenticatedUser()).pipe(
@@ -44,7 +44,6 @@ export class TaskService {
         return user.uid;
       })
     );
-    const projectId$ = this.projectService.activeProjectId$;
     const taskCount = this.client
       .from('task')
       .select('*', { count: 'exact', head: true })
@@ -52,7 +51,7 @@ export class TaskService {
     const taskCount$ = from(taskCount).pipe(
       map((res) => {
         if (res.error !== null) throw new Error('eror getting count');
-      
+
         return res.count || 0;
       }),
       map((c) => {
@@ -63,9 +62,9 @@ export class TaskService {
       })
     );
     const add$ = taskCount$.pipe(
-      switchMap((_) => combineLatest({ uid: userUid$, projectId: projectId$ })),
-      take(1),
-      map(({ uid, projectId }) => {
+      switchMap((_) => userUid$),
+      // take(1),
+      map((uid) => {
         const data = {
           title,
           description,
@@ -160,11 +159,9 @@ export class TaskService {
     return edit$;
   }
 
-  getTasks(statusId: number) {
+  getTasks(statusId: number, projectId: number) {
     const request$ = this.taskUpdateSubject.pipe(
-      switchMap((_) => this.projectService.activeProjectId$),
-      switchMap((projectId) => {
-        console.log('projectId:', projectId);
+      switchMap(() => {
         const request = this.client
           .from('task')
           .select('*')

@@ -216,12 +216,13 @@ export class ConsultationsComponent {
   }
 
   ngOnInit() {
- 
+    const projectId = Number(this.route.parent!.snapshot.url[0].path);
+    console.log("get consultations | projectId: ", projectId);
     // todo: refactor these
-    const scheduled$ = this.consultationService.getConsultations(1);
-    const pending$ = this.consultationService.getConsultations( 0);
-    const completed$ = this.consultationService.getConsultations( 2);
-    const rejected$ = this.consultationService.getConsultations( 3);
+    const scheduled$ = this.consultationService.getConsultations(1, projectId);
+    const pending$ = this.consultationService.getConsultations( 0, projectId);
+    const completed$ = this.consultationService.getConsultations( 2, projectId);
+    const rejected$ = this.consultationService.getConsultations( 3, projectId);
 
     scheduled$.subscribe({
       next: (consultations) => {

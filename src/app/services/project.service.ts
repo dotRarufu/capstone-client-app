@@ -40,13 +40,8 @@ export class ProjectService {
   private projectUpdate$ = new BehaviorSubject<number>(0);
   private newParticipant$ = new BehaviorSubject<number>(0);
   formUrl$ = this.formUrlSubject.asObservable();
-  activeProjectId = signal<number | null>(null);
-  activeProjectId$ = toObservable(this.activeProjectId).pipe(
-    map((id) => {
-      if (id === null) throw new Error('should be impossible');
-      return id;
-    })
-  );
+  
+ 
 
   constructor(
     private databaseService: DatabaseService,
@@ -56,63 +51,9 @@ export class ProjectService {
     private router: Router,
     private userService: UserService
   ) {
-    this.setUrlProjectId();
+   
   }
-
-  setUrlProjectId() {
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe({
-        next: (_) => {
-          const child1 = this.route.firstChild;
-
-          if (child1 === null) return;
-
-          if (child1.snapshot.url.length !== 0) {
-            const child1Path = child1.snapshot.url[0].path;
-
-            if (['s', 'a'].includes(child1Path)) {
-              const child2 = child1.children[0];
-              const child2Path = child2.snapshot.url[0].path;
-
-              if (['t', 'c'].includes(child2Path)) {
-                const child3 = child2.children[0];
-                const child3Path = child3.snapshot.url[0].path;
-
-                if (child3Path === 'project') {
-                  const child4 = child3.children[0];
-                  const child4Path = child4.snapshot.url[0].path;
-
-                  const id = child4Path;
-
-                  this.activeProjectId.set(Number(id));
-                }
-
-                return;
-              }
-            }
-          }
-        },
-      });
-  }
-
-  getCurrentTechnicalAdviserId() {
-    const request = this.client
-      .from('project')
-      .select('technical_adviser_id')
-      .eq('id', this.activeProjectId());
-
-    const request$ = from(request).pipe(
-      map((res) => {
-        const { data } = errorFilter(res);
-
-        return data[0].technical_adviser_id;
-      })
-    );
-
-    return request$;
-  }
-
+ 
   getProjects() {
     const user$ = from(this.authService.getAuthenticatedUser());
 
@@ -193,7 +134,7 @@ export class ProjectService {
     return insertRequest$;
   }
 
-  getParticipants() {
+  getParticipants(projectId: number) {
     // used observables so participants can be immediately updated when  new participant is added.
     // only for student,fort he add participant button
     // not intended for realtime sync with db
@@ -201,13 +142,16 @@ export class ProjectService {
     const advisers = this.client
       .from('project')
       .select('capstone_adviser_id, technical_adviser_id')
-      .eq('id', this.activeProjectId());
+      .eq('id', projectId);
     const students = this.client
       .from('member')
       .select('student_uid')
-      .eq('project_id', this.activeProjectId());
+      .eq('project_id', projectId);
 
     const advisers$ = from(advisers).pipe(
+      tap((a) => {
+        console.log('a:', a);
+      }),
       map((a) => {
         const { data } = errorFilter(a);
 
@@ -284,16 +228,13 @@ export class ProjectService {
     return isUserParticipant$;
   }
 
-  addParticipant(userUid: string) {
+  addParticipant(userUid: string, projectId: number) {
     // todo: if the adviser already exist, notify user that they are replacing the adviser by adding new adviser
 
     const role$ = from(this.userService.getUser(userUid));
-    const projectId$ = this.activeProjectId$;
-    const newParticipant$ = forkJoin({
-      role: role$,
-      projectId: projectId$,
-    }).pipe(
-      switchMap(({ role: { role_id }, projectId }) => {
+
+    const newParticipant$ = role$.pipe(
+      switchMap(({ role_id }) => {
         if (role_id === 0)
           return from(this.userService.getUser(userUid)).pipe(
             switchMap((_) => this.addStudentMember(projectId, userUid)),
@@ -307,10 +248,7 @@ export class ProjectService {
     );
 
     return of('').pipe(
-      switchMap(() => projectId$),
-      switchMap((projectId) =>
-        this.checkProjectParticipant(userUid, projectId)
-      ),
+      switchMap((_) => this.checkProjectParticipant(userUid, projectId)),
       map((isParticipant) => {
         if (isParticipant) throw new Error('participant already exists');
 

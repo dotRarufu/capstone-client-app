@@ -7,11 +7,17 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
 import { User } from 'src/app/types/collection';
 import { AddParticipantModalComponent } from './modals/addParticipant.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'Participants',
   standalone: true,
-  imports: [FeatherIconsModule, ParticipantCardComponent, CommonModule, AddParticipantModalComponent],
+  imports: [
+    FeatherIconsModule,
+    ParticipantCardComponent,
+    CommonModule,
+    AddParticipantModalComponent,
+  ],
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex items-center justify-between">
@@ -30,35 +36,7 @@ import { AddParticipantModalComponent } from './modals/addParticipant.component'
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <div class="flex gap-4">
-        <table
-          class="flex table w-fit flex-col gap-2  sm1:items-center sm2:items-start"
-        >
-          <!-- <li  *ngFor="let participant of participants"> -->
-          <!-- <a class="p-0 btn btn-ghost"> -->
-          <tbody>
-            <tr *ngFor="let participant of participants">
-              <td class="p-2">
-                <ParticipantCard [user]="participant" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <!-- </a> -->
-        <!-- </li> -->
-        <!-- </> -->
-        <div class="border-neutrla hidden h-full w-full border-l sm2:block">
-          WIP name, uid, role, profile picture, reports
-          <!-- <div class="placeholder avatar">
-            <div
-              class="w-24 rounded-full bg-neutral-focus text-neutral-content"
-            >
-              <span class="text-3xl">K</span>
-            </div>
-          </div> -->
-        </div>
-        <!-- </div> -->
-      </div>
+      <div class="border border-red-500">test</div>
 
       <AddParticipantModal />
     </div>
@@ -69,11 +47,15 @@ export class ParticipantsComponent implements OnInit {
 
   constructor(
     private projectService: ProjectService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    const participants$ = this.projectService.getParticipants();
+    console.log('debuyg:', this.route.parent!.snapshot.url[0].path);
+    const projectId = Number(this.route.parent!.snapshot.url[0].path);
+    // console.log("debug | projectId:", projectId);
+    const participants$ = this.projectService.getParticipants(projectId);
 
     participants$.subscribe({
       next: (p) => {

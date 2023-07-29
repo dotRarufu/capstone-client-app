@@ -18,6 +18,7 @@ import { TaskCardComponent } from 'src/app/components/card/task-card.component';
 import { AddTaskModalComponent } from 'src/app/components/modal/add-task.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ToastrService } from 'ngx-toastr';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'Tasks',
@@ -114,7 +115,8 @@ export class TasksComponent implements OnInit {
     public taskService: TaskService,
     public projectService: ProjectService,
     public spinner: NgxSpinnerService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private route: ActivatedRoute
   ) {
     this.spinner.show();
 
@@ -147,15 +149,17 @@ export class TasksComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const projectId = Number(this.route.parent!.snapshot.url[0].path);
+
     // todo: make this observable complete
     this.taskService
-      .getTasks(0)
+      .getTasks(0, projectId)
       .subscribe((tasks) => (this.categories[0].tasks = tasks));
     this.taskService
-      .getTasks(1)
+      .getTasks(1, projectId)
       .subscribe((tasks) => (this.categories[1].tasks = tasks));
     this.taskService
-      .getTasks(2)
+      .getTasks(2, projectId)
       .subscribe((tasks) => (this.categories[2].tasks = tasks));
   }
 

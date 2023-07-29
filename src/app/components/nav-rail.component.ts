@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
@@ -139,14 +139,16 @@ export class NavigationRailComponent implements OnInit {
   constructor(
     private router: Router,
     private projectService: ProjectService,
-    private authService: AuthService
+    private authService: AuthService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    this.projectService.activeProjectId$.subscribe({
-      next: (id) => {
-        this.projectId = id; 
-      }
+    this.route.url.subscribe({
+      next: (b) => {
+        const projectId = Number(b[0].path);
+        this.projectId = projectId;
+      },
     });
   }
 

@@ -137,7 +137,7 @@ export class TaskDetailsModalComponent implements OnInit, OnChanges {
   handleEditCancelClick() {
     this.isInEdit.set(false);
   }
-
+  // todo: delete add task comp, use this instead
   handleSaveClick() {
     if (this.task === null) return;
 

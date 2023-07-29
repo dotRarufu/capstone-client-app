@@ -78,6 +78,6 @@ export class ProjectCardComponent implements OnInit {
     const studentPath = [this.role, 'project', this.project.id];
     const adviserPath = ['a', this.role, 'project', this.project.id];
     this.router.navigate(this.role === 's' ? studentPath : adviserPath);
-    this.projectService.activeProjectId.set(this.project.id);
+  
   }
 }

@@ -20,7 +20,7 @@ export class ConsultationService {
     private projectService: ProjectService
   ) {}
 
-  scheduleConsultation(data: ConsultationData) {
+  scheduleConsultation(data: ConsultationData, projectId: number) {
     const user$ = from(this.authService.getAuthenticatedUser()).pipe(
       map((user) => {
         if (user === null) throw new Error('must be impossible');
@@ -29,10 +29,8 @@ export class ConsultationService {
       })
     );
 
-    const projectId$ = this.projectService.activeProjectId$;
-
-    const request$ = forkJoin({ user: user$, projectId: projectId$ }).pipe(
-      switchMap(({ user, projectId }) =>
+    const request$ = user$.pipe(
+      switchMap((user) =>
         this.databaseService.insertConsultation(user.uid, data, projectId)
       ),
       tap(() => this.signalNewConsultation())
@@ -78,10 +76,9 @@ export class ConsultationService {
     return request$;
   }
 
-  getConsultations(categoryId: number) {
+  getConsultations(categoryId: number, projectId: number) {
     const res = this.newConsultationSignal$.pipe(
-      switchMap((_) => this.projectService.activeProjectId$),
-      switchMap((projectId) => {
+      switchMap(() => {
         const request$ = from(
           this.client
             .from('consultation')
@@ -104,6 +101,7 @@ export class ConsultationService {
   }
 
   cancelInvitation(id: number) {
+    // todo: fix foreign key violation
     const deleteReq = this.client.from('consultation').delete().eq('id', id);
     const deleteReq$ = from(deleteReq).pipe(
       map((res) => {
