@@ -101,6 +101,8 @@ export class ProjectService {
       map((d) => {
         const { data } = errorFilter(d);
 
+        if (data.length === 0) throw new Error("user has no section");
+
         return data[0].section_id;
       })
     );
@@ -259,7 +261,7 @@ export class ProjectService {
     );
   }
 
-  removeProjectParticipant(userUid: string, projectId: number) {
+  removeProjectParticipant(userUid: string, projectId: number, isLeave?: boolean) {
     const user$ = from(this.userService.getUser(userUid));
 
     return user$.pipe(
@@ -284,8 +286,12 @@ export class ProjectService {
 
         return statusText;
       }),
-      switchMap((_) => this.deleteProject(projectId)),
-      tap((_) => this.signalNewParticipant())
+      switchMap((_) => this.deleteEmptyProject(projectId)),
+      tap((_) => {
+        if (!isLeave) {
+          this.signalNewParticipant();
+        }
+      })
     );
   }
 
@@ -331,6 +337,19 @@ export class ProjectService {
     );
 
     return req$;
+  }
+
+  deleteProject(projectId: number) {
+    const req = this.client.from("project").delete().eq("id", projectId);
+    const req$ = from(req).pipe(
+      map((res) => {
+        const {statusText} = errorFilter(res);
+
+        return statusText;
+      })
+    )
+    return req$;
+    
   }
 
   async getProjectsFromCategory(categoryId: number) {
@@ -530,7 +549,7 @@ export class ProjectService {
     return a;
   }
 
-  private deleteProject(id: number) {
+  private deleteEmptyProject(id: number) {
     const members = this.client.from('member').select('*').eq('project_id', id);
     const members$ = from(members).pipe(
       map((res) => {

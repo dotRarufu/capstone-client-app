@@ -4,6 +4,7 @@ import { FeatherModule } from 'angular-feather';
 import { ToastrService } from 'ngx-toastr';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { ProjectService } from 'src/app/services/project.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'AddProjectModal',
@@ -71,14 +72,15 @@ export class AddProjectModalComponent {
 
   constructor(
     private projectService: ProjectService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private spinner: NgxSpinnerService
   ) {}
 
   addProject() {
-    // this.spinner.show();
+    this.spinner.show();
     this.projectService.createProject(this.name, this.fullTitle).subscribe({
       next: (a) => {
-        // this.spinner.hide();
+        this.spinner.hide();
         this.toastr.success('Project added successfully');
       },
     });
