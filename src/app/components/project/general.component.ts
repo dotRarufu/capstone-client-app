@@ -75,7 +75,11 @@ import { FormsModule } from '@angular/forms';
         />
       </div>
       
-     
+      <div class="flex flex-col gap-[4px]">
+            <div class="text-base font-semibold">Date Created</div>
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+            <div>July 23, 2023</div>
+          </div>
     </div>
   `,
 })

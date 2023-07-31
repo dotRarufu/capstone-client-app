@@ -54,12 +54,14 @@ const routes: Routes = [
   {
     path: 's',
     canActivate: [authGuard, roleGuard('s')],
-      data: { breadcrumb: "Home" },
+    data: { breadcrumb: 'Home' },
     loadChildren: () => import('../student/routes'),
   },
 
   {
     path: 'a',
+    // data: { breadcrumb: "Home" },
+    data: { breadcrumb: {skip: true} },
     loadChildren: () => import('../adviser/routes'),
   },
   {

@@ -31,7 +31,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
       >
         <ul class="flex w-full flex-col gap-[4px] ">
           <a
-          [routerLink]="['settings']" routerLinkActive="btn-active"
+          [routerLink]="['general']" routerLinkActive="btn-active"
             class="btn-ghost btn flex-col items-start justify-center rounded-[3px]  normal-case"
             ><span>General</span></a
           >

@@ -13,17 +13,19 @@ import { ConsultationsComponent } from '../components/consultations.component';
 import { HomeComponent } from './pages/home.component';
 import { ProjectPageComponent } from '../pages/project/project.component';
 import { MilestonesComponent } from '../student/components/milestones.component';
+import { GeneralComponent } from '../components/project/general.component';
+import { DangerZoneComponent } from '../components/project/danger-zone.component';
 
 const routes: Routes = [
   {
     path: 'c',
     canActivate: [authGuard, roleGuard('c')],
+    data: { breadcrumb: 'Home' },
     children: [
       {
         path: 'home',
-        component: HomeComponent,
         data: { role: 'c' },
-
+        component: HomeComponent,
         children: [
           {
             path: 'projects',
@@ -43,58 +45,80 @@ const routes: Routes = [
       {
         path: 'p',
         canActivate: [participantGuard],
+        data: { breadcrumb: { skip: true } },
         children: [
           {
             path: ':projectId',
             component: ProjectPageComponent,
-
             children: [
               {
                 path: 'tasks',
                 component: TasksComponent,
-                data: { role: 'c' },
+                data: { role: 'c', breadcrumb: 'Tasks' },
               },
+
               {
                 path: 'project',
                 component: ParticipantsPageComponent,
+                data: { breadcrumb: 'Project' },
+                children: [
+                  {
+                    path: 'general',
+                    data: { breadcrumb: 'General' },
+
+                    component: GeneralComponent,
+                  },
+                  {
+                    path: 'reports',
+                    data: { breadcrumb: 'Reports' },
+
+                    component: ReportsComponent,
+                  },
+                  {
+                    path: 'danger-zone',
+                    data: { breadcrumb: 'Danger Zone' },
+                    component: DangerZoneComponent,
+                  },
+                  {
+                    path: 'forms',
+                    data: { role: 'c', breadcrumb: 'Forms' },
+
+                    component: FormGeneratorComponent,
+                    children: [
+                      {
+                        path: ':formNumber',
+                        component: FormComponent,
+                      },
+                      {
+                        path: '2',
+                        component: FormComponent,
+                      },
+                      {
+                        path: '3',
+                        component: FormComponent,
+                      },
+                      {
+                        path: '4',
+                        component: FormComponent,
+                      },
+                    ],
+                  },
+                  {
+                    path: '',
+                    pathMatch: 'full',
+                    redirectTo: 'general',
+                  },
+                ],
               },
               {
                 path: 'consultations',
                 component: ConsultationsComponent,
-                data: { role: 'c' },
+                data: { role: 'c', breadcrumb: 'Consultations' },
               },
               {
                 path: 'milestones',
                 component: MilestonesComponent,
-              
-              },
-              {
-                path: 'reports',
-                component: ReportsComponent,
-              },
-              {
-                path: 'forms',
-                component: FormGeneratorComponent,
-                data: { role: 'c' },
-
-                children: [
-                  {
-                    path: '1',
-                    component: FormComponent,
-                  },
-                  {
-                    path: '2',
-                    component: FormComponent,
-                  },
-                  {
-                    path: '3',
-                    component: FormComponent,
-                  },
-                  {
-                    path: '4',
-                    component: FormComponent,
-                  },
-                ],
+                data: { breadcrumb: 'Milestones' },
               },
               {
                 path: '',
@@ -114,6 +138,7 @@ const routes: Routes = [
   {
     path: 't',
     canActivate: [authGuard, roleGuard('t')],
+    data: { breadcrumb: 'Home' },
     children: [
       {
         path: 'home',
@@ -138,6 +163,7 @@ const routes: Routes = [
       {
         path: 'p',
         canActivate: [participantGuard],
+        data: { breadcrumb: { skip: true } },
         children: [
           {
             path: ':projectId',
@@ -147,44 +173,67 @@ const routes: Routes = [
               {
                 path: 'tasks',
                 component: TasksComponent,
-                data: { role: 't' },
+                data: { role: 't', breadcrumb: 'Tasks' },
               },
               {
-                path: 'participants',
+                path: 'project',
                 component: ParticipantsPageComponent,
+                data: { breadcrumb: 'Project' },
+                children: [
+                  {
+                    path: 'general',
+                    data: { breadcrumb: 'General' },
+
+                    component: GeneralComponent,
+                  },
+                  {
+                    path: 'reports',
+                    data: { breadcrumb: 'Reports' },
+
+                    component: ReportsComponent,
+                  },
+                  {
+                    path: 'danger-zone',
+                    data: { breadcrumb: 'Danger Zone' },
+                    component: DangerZoneComponent,
+                  },
+                  {
+                    path: 'forms',
+                    data: { role: 'c', breadcrumb: 'Forms' },
+
+                    component: FormGeneratorComponent,
+                    children: [
+                      {
+                        path: ':formNumber',
+                        component: FormComponent,
+                      },
+                      {
+                        path: '2',
+                        component: FormComponent,
+                      },
+                      {
+                        path: '3',
+                        component: FormComponent,
+                      },
+                      {
+                        path: '4',
+                        component: FormComponent,
+                      },
+                    ],
+                  },
+                  {
+                    path: '',
+                    pathMatch: 'full',
+                    redirectTo: 'general',
+                  },
+                ],
               },
               {
                 path: 'consultations',
                 component: ConsultationsComponent,
-                data: { role: 't' },
+                data: { role: 't', breadcrumb: 'Consultations' },
               },
-              {
-                path: 'reports',
-                component: ReportsComponent,
-              },
-              {
-                path: 'forms',
-                component: FormGeneratorComponent,
-                data: { role: 't' },
-                children: [
-                  {
-                    path: '1',
-                    component: FormComponent,
-                  },
-                  {
-                    path: '2',
-                    component: FormComponent,
-                  },
-                  {
-                    path: '3',
-                    component: FormComponent,
-                  },
-                  {
-                    path: '4',
-                    component: FormComponent,
-                  },
-                ],
-              },
+
               {
                 path: '',
                 component: RedirectComponent,

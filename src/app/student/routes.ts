@@ -67,7 +67,7 @@ const routes: Routes = [
 
             children: [
               {
-                path: 'settings',
+                path: 'general',
                 data: {  breadcrumb: "General" },
 
                 component: GeneralComponent,
@@ -111,7 +111,7 @@ const routes: Routes = [
               {
                 path: '',
                 pathMatch: 'full',
-                redirectTo: 'settings',
+                redirectTo: 'general',
               },
             ],
           },
