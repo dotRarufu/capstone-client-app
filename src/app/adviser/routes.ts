@@ -57,7 +57,11 @@ const routes: Routes = [
                 component: TasksComponent,
                 data: { role: 'c', breadcrumb: 'Tasks' },
               },
-
+              {
+                path: 'milestones',
+                data: { breadcrumb: "Milestones" },
+                component: MilestonesComponent,
+              },
               {
                 path: 'project',
                 component: ProjectComponent,
@@ -200,7 +204,7 @@ const routes: Routes = [
                   },
                   {
                     path: 'forms',
-                    data: { role: 'c', breadcrumb: 'Forms' },
+                    data: { role: 't', breadcrumb: 'Forms' },
 
                     component: FormGeneratorComponent,
                     children: [
@@ -234,7 +238,11 @@ const routes: Routes = [
                 component: ConsultationsComponent,
                 data: { role: 't', breadcrumb: 'Consultations' },
               },
-
+              {
+                path: 'milestones',
+                data: { breadcrumb: "Milestones" },
+                component: MilestonesComponent,
+              },
               {
                 path: '',
                 component: RedirectComponent,

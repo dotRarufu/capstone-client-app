@@ -1,106 +1,40 @@
-import {Component} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { MilestoneCardComponent } from 'src/app/components/milestone/card.component';
 
 @Component({
-  selector: "milestones",
+  selector: 'milestones',
   standalone: true,
+  imports: [MilestoneCardComponent, CommonModule],
   template: `
-  <div
-      class="flex h-full w-[311px] flex-col gap-[16px] bg-base-100 px-[24px] py-[32px]"
-    >
-      <div class="w-full text-base text-base-content">
-        Development and Evaluation of Capstool: a Web-based Capstone Project
-        Development Progress Tracker with Title Analyzer for Pamantasan ng
-        Lungsod ng Valenzuela - Information Technology Department
-      </div>
-
-      <div class="h-[1px] w-full bg-base-content/20"></div>
-
-      <div class="flex flex-col overflow-y-scroll">
-        <div class="flex  gap-[1rem]">
-          <div
-            class="flex justify-stretch w-[12px] flex-col items-center px-2 pt-[10px]"
-          >
-            <!-- circle -->
-            <span
-              class="inline-block h-[12px] w-[12px] flex-shrink-0 rounded-full bg-primary outline outline-1 outline-primary "
-            >
-            </span>
-            <!-- line -->
-            <div class="h-full w-[2px] flex-shrink-0 bg-primary"></div>
-          </div>
-          <div class="flex w-full flex-col gap-[8px] py-1">
-            <div class="text-base text-base-content">Title Defense</div>
-            <p class="text-[12px] text-base-content/50">
-              Development and Evaluation of Capstool: a Web-based Capstone
-              Project Development Progress Tracker with Title Analyzer for
-              Pamantasan ng Lungsod ng Valenzuela - Information Technology
-              Department
-            </p>
-            <div class="flex w-full justify-end">
-              <div class="badge badge-sm bg-secondary">May 2023</div>
-            </div>
-          </div>
+    <div class="h-full border border-red-500 grid sm1:grid sm1:grid-cols-[auto_1fr] md:grid-cols-[1fr_3fr] gap-x-[16px]">
+      <ul class="hidden sm1:flex w-full flex-col gap-[4px] overflow-y-scroll">
+        <div class="border border-green-500 w-[200px]">
+          Card
         </div>
+      </ul>
 
-        <div class="flex gap-[1rem]">
-          <div class="flex justify-stretch w-[12px] flex-col items-center px-2">
-            <!-- line -->
-            <div
-              class="w-[2px] flex-shrink-0 flex-grow basis-[10px] bg-primary"
-            ></div>
-            <!-- circle -->
-            <span
-              class="inline-block h-[12px] w-[12px] flex-shrink-0 rounded-full bg-primary outline outline-1 outline-primary "
-            >
-            </span>
-            <!-- line -->
-            <div class="h-full w-[2px] flex-shrink-0 bg-primary"></div>
-          </div>
-          <div class="flex w-full flex-col gap-[8px] py-1">
-            <div class="text-base text-base-content">Title Defense</div>
-            <p class="text-[12px] text-base-content/50">
-              Development and Evaluation of Capstool: a Web-based Capstone
-              Project Development Progress Tracker with Title Analyzer for
-              Pamantasan ng Lungsod ng Valenzuela - Information Technology
-              Department
-            </p>
-            <div class="flex w-full justify-end">
-              <div class="badge badge-sm bg-secondary">May 2023</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex h-full gap-[1rem]">
-          <div class="flex  h-full w-[12px] flex-col items-center px-2">
-            <!-- line -->
-            <div
-              class="w-[2px] flex-shrink-0 flex-grow basis-[10px] bg-primary"
-            ></div>
-            <!-- circle -->
-            <span
-              class="inline-block h-[12px] w-[12px] flex-shrink-0 rounded-full bg-base-100 outline outline-1 outline-base-content "
-            >
-            </span>
-            <!-- spacer -->
-            <div class="h-full  flex-shrink-0 "></div>
-          </div>
-          <div class="flex w-full flex-col gap-[8px] py-1">
-            <div class="text-base text-base-content">Title Defense</div>
-            <p class="text-[12px] text-base-content/50">
-              Development and Evaluation of Capstool: a Web-based Capstone
-              Project Development Progress Tracker with Title Analyzer for
-              Pamantasan ng Lungsod ng Valenzuela - Information Technology
-              Department
-            </p>
-            <div class="flex w-full justify-end">
-              <div class="badge badge-sm bg-secondary">May 2023</div>
-            </div>
-          </div>
-        </div>
+      <div class="border border-blue-500">
+          info
       </div>
     </div>
-  `
+  `,
 })
 export class MilestonesComponent {
+  data = [0,1,2];
 
+  getOrder(index: number, length: number) {
+    if (index === 0) {
+      console.log('upper | index:', index);
+      return 'upper';
+    }
+    // if (index !== 0 && index === length - 1) {
+    if (index === 1) {
+      console.log('lower | index:', index);
+      return 'lower';
+    }
+
+    console.log('mid | index:', index);
+    return 'mid';
+  }
 }

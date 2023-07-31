@@ -7,18 +7,18 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
   standalone: true,
   imports: [FeatherIconsModule, RouterModule],
   template: `
-  <div class="btm-nav min-[998px]:hidden">
+  <div class="btm-nav relative">
   <button
   [routerLink]="['tasks']" routerLinkActive="active text-primary "
 >
   <i-feather name="trello" />
   </button>
-  <button class="active"
+  <button 
   [routerLink]="['consultations']"  routerLinkActive="active text-primary "
   >
   <i-feather name="clipboard" />
   </button>
-  <button  [routerLink]="['project']"  routerLinkActive="active text-primary "
+  <button  [routerLink]="['milestones']"  routerLinkActive="active text-primary "
 >
   <i-feather name="sidebar" />
   </button>

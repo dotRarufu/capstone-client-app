@@ -11,8 +11,9 @@ import { getRolePath } from '../utils/getRolePath';
   imports: [FeatherIconsModule, BreadcrumbModule],
   template: `
     <div
-      class="navbar fixed left-0 top-0 z-[1] bg-base-100 px-[32px] shadow min-[998px]:hidden"
+      class="navbar relative bg-base-100 shadow px-[16px] sm1:px-[32px] sm2:px-0"
     >
+    <div class="w-full sm2:mx-auto sm2:w-[840px]">
       <div class="flex-1">
         <xng-breadcrumb
           [separator]="iconTemplate"
@@ -27,6 +28,7 @@ import { getRolePath } from '../utils/getRolePath';
           <i-feather name="list" />
         </button>
       </div>
+    </div>
     </div>
   `,
 })

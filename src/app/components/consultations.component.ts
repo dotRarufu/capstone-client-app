@@ -45,7 +45,7 @@ import { ScheduledConsultationModalComponent } from './modal/scheduled-modal.com
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
       <Accordion heading="Pending">
-        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+        <div class="flex flex-wrap gap-[24px] justify-start">
           <ConsultationCard
             *ngFor="let data of consultations[0].items"
             [data]="data"
@@ -57,7 +57,7 @@ import { ScheduledConsultationModalComponent } from './modal/scheduled-modal.com
         </div>
       </Accordion>
       <Accordion heading="Scheduled">
-        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+        <div class="flex flex-wrap gap-[24px] justify-start">
           <ConsultationCard
             *ngFor="let data of consultations[1].items"
             [data]="data"
@@ -69,7 +69,7 @@ import { ScheduledConsultationModalComponent } from './modal/scheduled-modal.com
         </div>
       </Accordion>
       <Accordion heading="Completed">
-        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+        <div class="flex flex-wrap gap-[24px] justify-start">
           <ConsultationCard
             *ngFor="let data of consultations[2].items"
             [data]="data"
@@ -81,7 +81,7 @@ import { ScheduledConsultationModalComponent } from './modal/scheduled-modal.com
         </div>
       </Accordion>
       <Accordion heading="Declined">
-        <div class="flex flex-wrap justify-center gap-[24px] sm1:justify-start">
+        <div class="flex flex-wrap justify-start gap-[24px] ">
           <ConsultationCard
             *ngFor="let data of consultations[3].items"
             [data]="data"

@@ -21,22 +21,26 @@ import { MobileHeaderComponent } from '../components/mobile-header.component';
     MobileHeaderComponent,
   ],
   template: `
-    <div class="flex">
-      <mobile-header />
-
-      <!-- "min-[998px]" makes up for the space taken by navrail -->
+    <div class="flex flex-col h-full min-[998px]:flex-row">
       <div class="hidden min-[998px]:block">
         <NavigationRail />
       </div>
 
+      <div class="basis-[64px] min-[998px]:hidden">
+        <mobile-header />
+      </div>
+
       <div
-        class="h-screen w-screen overflow-y-scroll p-4 px-[16px] sm1:px-[32px] sm2:w-full sm2:px-0 md:px-[200px] lg:px-0"
+        class="flex-1 overflow-y-scroll  w-screen p-4 px-[16px] sm1:px-[32px] sm2:w-full sm2:px-0 md:px-[200px] lg:px-0"
       >
-        <div class=" w-full sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]">
+        <div class="h-full w-full sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]">
           <router-outlet />
         </div>
       </div>
-      <bottom-nav />
+    
+      <div class="basis-[64px] min-[998px]:hidden">
+        <bottom-nav />
+      <div>
     </div>
 
     <ngx-spinner

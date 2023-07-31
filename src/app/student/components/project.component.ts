@@ -21,16 +21,14 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
   ],
   template: `
     <div
-      class="flex h-[calc(100vh-128px)] flex-col gap-[16px] overflow-y-scroll sm1:overflow-y-clip "
+      class="flex h-fit sm1:h-full  flex-col gap-[16px] overflow-y-clip"
     >
-      <div class="flex items-center justify-between">
-        <h1 class="text-[24px] text-base-content sm1:text-[32px]">Project</h1>
-      </div>
+      <h1 class="text-[24px] text-base-content sm1:text-[32px]">Project</h1>
 
       <div
-        class="flex flex-1 flex-col gap-[16px] sm1:grid sm1:grid-cols-[auto_1fr] sm1:overflow-y-scroll md:grid-cols-[1fr_3fr]"
+        class="flex  flex-col gap-[16px] sm1:grid sm1:grid-cols-[auto_1fr] sm1:flex-1 overflow-y-scroll md:grid-cols-[1fr_3fr] pb-[16px] sm1:pb-0"
       >
-        <ul class="flex w-full flex-col gap-[4px] ">
+        <ul class="flex w-full flex-col gap-[4px] overflow-y-scroll">
           <a
             [routerLink]="['general']"
             routerLinkActive="btn-active"
@@ -62,7 +60,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
         </ul>
 
         <div
-          class="h-full sm1:h-[calc(100vh-198px)] w-full overflow-x-scroll sm1:pr-[32px] min-[998px]:h-full"
+          class="h-full overflow-y-scroll w-full overflow-x-scroll sm1:pr-[32px] min-[998px]:h-full"
         >
           <router-outlet />
         </div>
