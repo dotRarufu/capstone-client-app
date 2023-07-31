@@ -29,7 +29,7 @@ import { User } from 'src/app/types/collection';
           <tbody>
             <tr *ngFor="let participant of participants">
               <td class="p-2">
-                <ParticipantCard [user]="participant" />
+                <!-- <ParticipantCard [user]="participant" /> -->
               </td>
             </tr>
           </tbody>

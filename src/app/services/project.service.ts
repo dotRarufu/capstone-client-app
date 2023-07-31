@@ -279,14 +279,13 @@ export class ProjectService {
           this.client.from('project').update(data).eq('id', projectId)
         );
       }),
-
       map((res) => {
         const { statusText } = errorFilter(res);
 
         return statusText;
       }),
-
-      switchMap((_) => this.deleteProject(projectId))
+      switchMap((_) => this.deleteProject(projectId)),
+      tap((_) => this.signalNewParticipant())
     );
   }
 

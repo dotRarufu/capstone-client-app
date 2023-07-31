@@ -1,23 +1,22 @@
-import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FeatherModule } from 'angular-feather';
 import { User } from 'src/app/types/collection';
 
 @Component({
   selector: 'ParticipantCard',
   standalone: true,
-  imports: [FeatherModule],
+  imports: [FeatherModule, CommonModule],
   template: `
-    <div
-      class="flex w-full items-center justify-between rounded-[3px]"
-    >
+    <div class="flex w-full items-center justify-between rounded-[3px]">
       <div class="flex items-center gap-2 py-[8px]">
-        <div class=" btn-square btn  bg-blue-300 p-0">
-          <span class="text-xl">K</span>
+        <div class=" avatar  aspect-square rounded-[5px] flex items-center bg-blue-300 p-0">
+          <span class="text-xl w-11 text-center">K</span>
         </div>
 
         <div class="flex w-full flex-col">
           <a
-            class="btn-link btn-xs btn w-fit p-0 text-base font-normal capitalize text-base-content no-underline sm1:text-[18px]"
+            class=" w-fit p-0 text-base font-normal capitalize text-base-content no-underline sm1:text-[18px]"
           >
             {{ user.name }}
           </a>
@@ -26,7 +25,8 @@ import { User } from 'src/app/types/collection';
       </div>
 
       <button
-        onclick="addParticipant.showModal()"
+        *ngIf="showRemoveButton"
+        (click)="handleClick && handleClick()"
         class="btn-ghost btn-xs btn gap-2 rounded-[3px] text-[14px] font-normal text-base-content hover:text-error  "
       >
         Remove
@@ -36,6 +36,12 @@ import { User } from 'src/app/types/collection';
 })
 export class ParticipantCardComponent {
   @Input() user: User = { name: '', role_id: -1, uid: '' };
+  @Input({ required: true }) showRemoveButton!: boolean;
+  @Output() removeButtonClicked = new EventEmitter<string>();
 
   constructor() {}
+
+  handleClick() {
+    this.removeButtonClicked.emit(this.user.uid);
+  }
 }

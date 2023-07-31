@@ -71,4 +71,8 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
     <AddParticipantModal />
   `,
 })
-export class ProjectComponent {}
+export class ProjectComponent {
+  constructor() {
+    console.log("project omponent renders");
+  }
+}

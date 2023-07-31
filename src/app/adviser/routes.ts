@@ -178,7 +178,7 @@ const routes: Routes = [
               },
               {
                 path: 'project',
-                component: ParticipantsPageComponent,
+                component: ProjectComponent,
                 data: { breadcrumb: 'Project' },
                 children: [
                   {

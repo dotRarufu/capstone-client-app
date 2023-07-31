@@ -93,8 +93,7 @@ export class AddParticipantModalComponent {
 
   addParticipant() {
     this.spinner.show();
-    const projectId = Number(this.route.parent!.snapshot.url[0].path);
-    console.log("add participant | projectId:", projectId);
+    const projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
     const addParticipant$ = this.projectService.addParticipant(
       this.userUid,
       projectId

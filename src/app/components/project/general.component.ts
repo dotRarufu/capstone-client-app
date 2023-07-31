@@ -10,7 +10,16 @@ import { User } from 'src/app/types/collection';
 import { ProjectCardPreviewComponent } from './project-card-preview.component';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs';
+import {
+  Subject,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
+import { getRolePath } from 'src/app/utils/getRolePath';
 
 @Component({
   selector: 'general',
@@ -22,6 +31,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxj
     AddParticipantModalComponent,
     ProjectCardPreviewComponent,
     FormsModule,
+    AddParticipantModalComponent,
   ],
 
   template: `
@@ -32,8 +42,9 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxj
             <div class="text-base font-semibold">Name</div>
             <div class="h-[2px] w-full bg-base-content/10"></div>
             <input
-            [(ngModel)]="name"
-            (change)="handleNameChange()"
+              [(ngModel)]="name"
+              (change)="handleNameChange()"
+              [disabled]="!isStudent"
               type="text"
               placeholder="Type here"
               class="input-bordered input input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
@@ -44,16 +55,18 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxj
             <div class="text-base font-semibold">Full Title</div>
             <div class="h-[2px] w-full bg-base-content/10"></div>
             <textarea
+            
               [(ngModel)]="title"
               (change)="handleTitleChange()"
+              [disabled]="!isStudent"
               type="text"
               placeholder="Type here"
-              class="textarea-bordered textarea input-md h-[85px] w-full rounded-[3px] focus:textarea-primary focus:outline-0"
+              class="textarea-bordered textarea input-md h-[144px] w-full rounded-[3px] focus:textarea-primary focus:outline-0"
             ></textarea>
           </div>
         </div>
 
-        <div class="flex w-[320px] flex-col gap-[4px]">
+        <div *ngIf="isStudent" class="flex w-[320px] flex-col gap-[4px]">
           <div class="text-base font-semibold">Preview</div>
           <project-card-preview [name]="name" [title]="title" />
         </div>
@@ -64,6 +77,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxj
           Participants
 
           <button
+          *ngIf="isStudent"
             onclick="addParticipant.showModal()"
             class="btn-ghost btn-sm btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
@@ -76,6 +90,8 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxj
         <ParticipantCard
           *ngFor="let participant of participants"
           [user]="participant"
+          [showRemoveButton]="shouldShowParticipant(participant)"
+          (removeButtonClicked)="handleRemoveButtonClick($event)"
         />
       </div>
 
@@ -88,11 +104,21 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxj
         <div class="text-base font-semibold">Mark as Done</div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <div class="flex gap-[8px]">
-          <input type="checkbox" class="toggle-success toggle" [checked]="isDone" [(ngModel)]="isDone" (change)="handleIsDoneChange()" />
-          <div class="text-base font-semibold">{{isDone ? "Done" : "Not Done"}}</div>
+          <input
+            type="checkbox"
+            class="toggle-success toggle"
+            [checked]="isDone"
+            [(ngModel)]="isDone"
+            (change)="handleIsDoneChange()"
+            [disabled]="!isStudent"
+          />
+          <div class="text-base font-semibold">
+            {{ isDone ? 'Done' : 'Not Done' }}
+          </div>
         </div>
       </div>
     </div>
+    <AddParticipantModal />
   `,
 })
 export class GeneralComponent implements OnInit {
@@ -104,12 +130,16 @@ export class GeneralComponent implements OnInit {
   newName$ = new Subject<string>();
   newTitle$ = new Subject<string>();
   newIsDone$ = new Subject<boolean>();
+  // todo: initiate this
+  isStudent = false;
+  user: User | null = null;
 
   constructor(
     private projectService: ProjectService,
     private spinner: NgxSpinnerService,
     private route: ActivatedRoute,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -143,59 +173,98 @@ export class GeneralComponent implements OnInit {
       },
     });
 
-    this.newName$.pipe(
-      debounceTime(3000),
-      distinctUntilChanged(),
-      switchMap((newName) =>
-        this.projectService.updateGeneralInfo(this.projectId, {
-          name: newName,
-        })
-      ),
-      tap(() => console.log("projhect name chagned"))
-    ).subscribe({
-      next: (res) => {
-        this.toastr.success("successfully changed project name to " + res.name )
-      },
-      error: () => {
-        this.toastr.error("error changing project name")
-      }
-    });
+    this.newName$
+      .pipe(
+        debounceTime(3000),
+        distinctUntilChanged(),
+        switchMap((newName) =>
+          this.projectService.updateGeneralInfo(this.projectId, {
+            name: newName,
+          })
+        ),
+        tap(() => console.log('projhect name chagned'))
+      )
+      .subscribe({
+        next: (res) => {
+          this.toastr.success(
+            'successfully changed project name to ' + res.name
+          );
+        },
+        error: () => {
+          this.toastr.error('error changing project name');
+        },
+      });
 
-    this.newTitle$.pipe(
-      debounceTime(3000),
-      distinctUntilChanged(),
-      switchMap((newTitle) =>
-        this.projectService.updateGeneralInfo(this.projectId, {
-          full_title: newTitle,
-        })
-      ),
-      tap(() => console.log("projhect name chagned"))
-    ).subscribe({
-      next: (res) => {
-        this.toastr.success("successfully changed project title to " + res.full_title )
-      },
-      error: () => {
-        this.toastr.error("error changing project title")
-      }
-    });
+    this.newTitle$
+      .pipe(
+        debounceTime(3000),
+        distinctUntilChanged(),
+        switchMap((newTitle) =>
+          this.projectService.updateGeneralInfo(this.projectId, {
+            full_title: newTitle,
+          })
+        )
+      )
+      .subscribe({
+        next: (res) => {
+          this.toastr.success(
+            'successfully changed project title to ' + res.full_title
+          );
+        },
+        error: () => {
+          this.toastr.error('error changing project title');
+        },
+      });
 
-    this.newIsDone$.pipe(
-      debounceTime(3000),
-      distinctUntilChanged(),
-      switchMap((newIsDone) =>
-        this.projectService.updateGeneralInfo(this.projectId, {
-          is_done: newIsDone,
-        })
-      ),
-    
-    ).subscribe({
-      next: (res) => {
-        this.toastr.success("successfully changed project is done to " + res.is_done )
+    this.newIsDone$
+      .pipe(
+        debounceTime(3000),
+        distinctUntilChanged(),
+        switchMap((newIsDone) =>
+          this.projectService.updateGeneralInfo(this.projectId, {
+            is_done: newIsDone,
+          })
+        )
+      )
+      .subscribe({
+        next: (res) => {
+          this.toastr.success(
+            'successfully changed project is done to ' + res.is_done
+          );
+        },
+        error: () => {
+          this.toastr.error('error changing project is done');
+        },
+      });
+
+    this.authService.user$.pipe(take(1)).subscribe({
+      next: (user) => {
+        console.log('user !:', user);
+        if (user === null) {
+          this.toastr.error('no loggedin user');
+          return;
+        }
+        this.user = user;
+        this.isStudent = getRolePath(user.role_id) === 's';
       },
       error: () => {
-        this.toastr.error("error changing project is done")
-      }
+        this.toastr.error('no loggedin user');
+      },
     });
+  }
+
+  handleRemoveButtonClick(userUid: string) {
+    console.log('remove button clicked:' + userUid);
+    this.projectService
+      .removeProjectParticipant(userUid, this.projectId)
+      .subscribe({
+        next: () => {
+          this.toastr.success('successfully removed user from the project');
+        },
+        error: () => {
+          this.toastr.error('failed to removed user from the project');
+        },
+      });
   }
 
   handleNameChange() {
@@ -208,5 +277,17 @@ export class GeneralComponent implements OnInit {
 
   handleIsDoneChange() {
     this.newIsDone$.next(this.isDone);
+  }
+
+  shouldShowParticipant(participant: {
+    name: string;
+    role_id: number;
+    uid: string;
+  }) {
+    if (!this.isStudent) {
+      return false;
+    }
+
+    return this.user !== null && participant.uid !== this.user.uid;
   }
 }
