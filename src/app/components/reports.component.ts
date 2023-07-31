@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
   imports: [NgChartsModule, CommonModule],
   template: `
     <ng-container *ngIf="!sideColumn">
-      <div class="flex h-full flex-col gap-[16px]">
+      <div class="flex h-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible">
        
 
         <!-- todo: replace other dividers with this -->

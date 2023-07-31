@@ -15,6 +15,7 @@ import { ProjectPageComponent } from '../pages/project/project.component';
 import { MilestonesComponent } from '../student/components/milestones.component';
 import { GeneralComponent } from '../components/project/general.component';
 import { DangerZoneComponent } from '../components/project/danger-zone.component';
+import { ProjectComponent } from '../student/components/project.component';
 
 const routes: Routes = [
   {
@@ -59,7 +60,7 @@ const routes: Routes = [
 
               {
                 path: 'project',
-                component: ParticipantsPageComponent,
+                component: ProjectComponent,
                 data: { breadcrumb: 'Project' },
                 children: [
                   {

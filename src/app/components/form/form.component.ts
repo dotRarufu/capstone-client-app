@@ -14,7 +14,7 @@ import { ProjectService } from 'src/app/services/project.service';
         (loaded)="finishedLoading()"
         [url]="src"
         viewer="office"
-        style="width:100%;height:100vh;"
+        style="width:100%;height:100%;"
       />
     </div>
 

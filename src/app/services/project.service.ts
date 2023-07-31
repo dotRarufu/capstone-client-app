@@ -306,6 +306,34 @@ export class ProjectService {
     return request$;
   }
 
+  updateGeneralInfo(projectId: number, data: {}) {
+    console.log("update with data:", data)
+    const req = this.client.from("project").update(data).eq("id", projectId).select("*");
+
+    const req$ = from(req).pipe(
+      map(res => {
+        const {data} = errorFilter(res);
+
+        return data[0]
+      })
+    )
+
+    return req$;
+  }
+
+  getProjectInfo(projectId: number) {
+    const req = this.client.from("project").select("*").eq("id", projectId);
+    const req$ = from(req).pipe(
+      map(res => {
+        const { data } = errorFilter(res);
+
+        return data[0];
+      })
+    );
+
+    return req$;
+  }
+
   async getProjectsFromCategory(categoryId: number) {
     const projectIds = (
       await this.client

@@ -11,12 +11,12 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [FeatherIconsModule, TabsComponent, CommonModule, RouterModule],
   template: `
-    <div class="flex h-full w-full flex-col gap-[16px]">
+    <div class="flex h-full w-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible">
       <div class="w-full">
         <Tabs [isResponsive]="false" />
       </div>
 
-      <div class="h-[calc(100vh-60px)] relative">
+      <div class="h-[calc(100vh-60px)] overflow-x-scroll relative">
         <router-outlet />
         <button
         (click)="downloadFile(anchor)"
