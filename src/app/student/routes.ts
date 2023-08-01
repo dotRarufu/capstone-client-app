@@ -18,6 +18,7 @@ import { ProjectLayoutComponent } from 'src/app/layouts/project.component';
 import { MilestonesComponent } from './components/milestones.component';
 import { GeneralComponent } from '../components/project/general.component';
 import { DangerZoneComponent } from '../components/project/danger-zone.component';
+import { MilestoneInfoComponent } from '../components/milestone/info.component';
 
 const routes: Routes = [
   {
@@ -52,7 +53,7 @@ const routes: Routes = [
       {
         path: ':projectId',
         component: ProjectLayoutComponent,
-
+        data: { breadcrumb: { skip: true } },
         children: [
           {
             path: 'tasks',
@@ -124,6 +125,14 @@ const routes: Routes = [
             path: 'milestones',
             data: { breadcrumb: "Milestones" },
             component: MilestonesComponent,
+            children: [
+              {
+                path: ':milestoneId',
+                // todo: do this in :projectId
+                data: { breadcrumb: { alias: "milestoneId" } },
+                component: MilestoneInfoComponent
+              }
+            ]
           },
 
           {

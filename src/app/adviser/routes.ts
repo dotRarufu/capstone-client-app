@@ -16,6 +16,7 @@ import { MilestonesComponent } from '../student/components/milestones.component'
 import { GeneralComponent } from '../components/project/general.component';
 import { DangerZoneComponent } from '../components/project/danger-zone.component';
 import { ProjectComponent } from '../student/components/project.component';
+import { MilestoneInfoComponent } from '../components/milestone/info.component';
 
 const routes: Routes = [
   {
@@ -50,6 +51,7 @@ const routes: Routes = [
         children: [
           {
             path: ':projectId',
+            data: { breadcrumb: { skip: true } },
             component: ProjectPageComponent,
             children: [
               {
@@ -61,6 +63,14 @@ const routes: Routes = [
                 path: 'milestones',
                 data: { breadcrumb: "Milestones" },
                 component: MilestonesComponent,
+                children: [
+                  {
+                    path: ':milestoneId',
+                    // todo: do this in :projectId
+                    data: { breadcrumb: { alias: "milestoneId" } },
+                    component: MilestoneInfoComponent
+                  }
+                ]
               },
               {
                 path: 'project',
@@ -172,6 +182,7 @@ const routes: Routes = [
         children: [
           {
             path: ':projectId',
+            data: { breadcrumb: { skip: true } },
             component: ProjectPageComponent,
 
             children: [
@@ -242,6 +253,14 @@ const routes: Routes = [
                 path: 'milestones',
                 data: { breadcrumb: "Milestones" },
                 component: MilestonesComponent,
+                children: [
+                  {
+                    path: ':milestoneId',
+                    // todo: do this in :projectId
+                    data: { breadcrumb: { alias: "milestoneId" } },
+                    component: MilestoneInfoComponent
+                  }
+                ]
               },
               {
                 path: '',

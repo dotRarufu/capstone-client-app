@@ -459,27 +459,27 @@ export interface Database {
       }
       milestone_data: {
         Row: {
-          description: string | null
+          description: string
+          due_date: string
           id: number
-          is_achieved: boolean
+          is_achieved: boolean | null
           milestone_id: number
-          step: number
           title: string
         }
         Insert: {
-          description?: string | null
+          description: string
+          due_date: string
           id?: number
-          is_achieved: boolean
+          is_achieved?: boolean | null
           milestone_id: number
-          step: number
           title: string
         }
         Update: {
-          description?: string | null
+          description?: string
+          due_date?: string
           id?: number
-          is_achieved?: boolean
+          is_achieved?: boolean | null
           milestone_id?: number
-          step?: number
           title?: string
         }
         Relationships: [
