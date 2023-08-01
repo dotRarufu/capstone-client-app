@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { MilestoneCardComponent } from 'src/app/components/milestone/card.component';
 import { MilestoneListItemComponent } from 'src/app/components/milestone/list-item.component';
+import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milestone.component';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
 
@@ -15,6 +16,7 @@ import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
     CommonModule,
     RouterModule,
     MilestoneListItemComponent,
+    AddMilestoneModalComponent
   ],
   template: `
     <div
@@ -42,6 +44,9 @@ import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
             </div>
           </div>
         </li>
+        <li onclick="addMilestone.showModal()" class="btn btn-ghost btn-sm w-full">
+          Add
+        </li>
       </ul>
 
       <div>
@@ -54,6 +59,8 @@ import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
         </div>
       </div>
     </div>
+
+    <add-milestone-modal />
   `,
 })
 export class MilestonesComponent implements OnInit {
@@ -72,12 +79,13 @@ export class MilestonesComponent implements OnInit {
 
     this.milestoneService.getMilestones(projectId).subscribe({
       next: (milestones) => {
-        const a  = milestones.map((m) => ({
+        const a  = milestones.map((m) => {
+          return {
           dueDate: new Date(m.due_date),
           title: m.title,
           isAchieved: m.is_achieved,
-          id: m.id
-        }));
+          id: m.milestone_id
+        }});
 
         const sorted = a.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime()).map(a => ({...a, isAchieved: !!a.isAchieved, dueDate: a.dueDate.toDateString()}));
 

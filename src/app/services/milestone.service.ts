@@ -18,6 +18,7 @@ import {
   take,
 } from 'rxjs';
 import errorFilter from '../utils/errorFilter';
+import { dateToDateString } from '../utils/dateToDateString';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +29,67 @@ export class MilestoneService {
   updateMilestones$ = this.updateMilestonesSubject.asObservable();
 
   constructor() {}
+
+  add(
+    projectId: number,
+    data: { title: string; description: string; dueDate: string }
+  ) {
+    const req = this.client
+      .from('milestone')
+      .insert({ project_id: projectId })
+      .select('id');
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        if (data.length === 0) throw new Error('failed to create milestone');
+
+        return data[0].id;
+      }),
+      tap((_) => console.log('this runs:', data)),
+      switchMap((id) => this.createMilestoneData(id, data)),
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      }),
+      tap((_) => this.signalMilestonesUpdate())
+    );
+
+    return req$;
+  }
+
+  private createMilestoneData(
+    milestoneId: number,
+    data: { title: string; description: string; dueDate: string }
+  ) {
+    const req = this.client.from('milestone_data').insert({
+      description: data.description,
+      title: data.title,
+      due_date: data.dueDate,
+      milestone_id: milestoneId,
+    });
+    const req$ = from(req);
+
+    return req$;
+  }
+
+  delete(milestoneDataId: number) {
+    const req = this.client
+      .from('milestone')
+      .delete()
+      .eq('id', milestoneDataId);
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      }),
+      tap((_) => this.signalMilestonesUpdate())
+    );
+
+    return req$;
+  }
 
   update(milestoneDataId: number, data: {}) {
     const req = this.client
@@ -63,7 +125,7 @@ export class MilestoneService {
       map((milestones) => milestones.map((m) => m.id)),
       switchMap((ids) => {
         const a = ids.map((id) => this.getMilestoneData(id));
-
+        console.log('ids:', ids);
         return forkJoin(a);
       })
     );
@@ -72,7 +134,10 @@ export class MilestoneService {
   }
 
   getMilestoneData(id: number) {
-    const req = this.client.from('milestone_data').select('*').eq('id', id);
+    const req = this.client
+      .from('milestone_data')
+      .select('*')
+      .eq('milestone_id', id);
     const req$ = from(req).pipe(
       take(1),
       map((res) => {

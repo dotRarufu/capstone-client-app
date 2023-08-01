@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import {
   Subject,
@@ -8,7 +8,7 @@ import {
   from,
   map,
   switchMap,
-  tap
+  tap,
 } from 'rxjs';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
@@ -72,6 +72,22 @@ import { getRolePath } from 'src/app/utils/getRolePath';
           </div>
         </div>
       </div>
+
+      <div class="flex items-center justify-between ">
+        <div class="flex flex-col gap-[4px]">
+          <div class="text-base font-semibold">Delete</div>
+          <div>
+            Once you delete a milestone, there is no going back. Please be
+            certain.
+          </div>
+        </div>
+        <button
+          (click)="handleDeleteMilestone()"
+          class="btn-sm btn gap-2 rounded-[3px] text-error hover:btn-error"
+        >
+          Delete
+        </button>
+      </div>
     </div>
   `,
 })
@@ -90,6 +106,7 @@ export class MilestoneInfoComponent implements OnInit {
     private breadcrumb: BreadcrumbService,
     private milestoneService: MilestoneService,
     private route: ActivatedRoute,
+    private router: Router,
     private toastr: ToastrService,
     private authService: AuthService
   ) {}
@@ -194,7 +211,7 @@ export class MilestoneInfoComponent implements OnInit {
           this.description = d.description;
           this.dueDate = d.due_date;
           this.isAchieved = !!d.is_achieved;
-          this.id = d.id;
+          this.id = d.milestone_id;
         },
         error: (err) => {
           this.toastr.error('error getting milestone data');
@@ -212,5 +229,22 @@ export class MilestoneInfoComponent implements OnInit {
 
   handleIsAchievedChange() {
     this.newIsAchieved$.next(this.isAchieved);
+  }
+
+  handleDeleteMilestone() {
+    console.log("delete click: ", this.id);
+    this.milestoneService.delete(this.id).subscribe({
+      next: () => {
+        this.toastr.success('successfully deleted a milestone');
+        this.navigateToMilestones();
+      },
+      error: () => {
+        this.toastr.error('failed to delete a milestone');
+      },
+    });
+  }
+
+  navigateToMilestones() {
+    this.router.navigate(['../../milestones'], { relativeTo: this.route });
   }
 }
