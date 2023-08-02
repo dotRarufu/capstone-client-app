@@ -92,7 +92,7 @@ const routes: Routes = [
                 component: FormGeneratorComponent,
                 children: [
                   {
-                    path: ':formNumber',
+                    path: '1',
                     component: FormComponent,
                   },
                   {
@@ -107,6 +107,7 @@ const routes: Routes = [
                     path: '4',
                     component: FormComponent,
                   },
+                  
                 ],
               },
               {

@@ -32,7 +32,6 @@ export class TabsService {
       ...t,
       active: defaultActiveId === t.id,
       handler: () => {
-        console.log('runs', route);
         this.router.navigate([...route, t.id]);
         this.setActive(t.id);
         this.activeIdSubject.next(t.id);

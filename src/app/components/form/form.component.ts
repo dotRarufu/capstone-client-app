@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
-import { switchMap } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
+import { map, switchMap, tap } from 'rxjs';
+import { FormGeneratorService } from 'src/app/services/form-generator.service';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
@@ -29,34 +31,62 @@ import { ProjectService } from 'src/app/services/project.service';
   `,
 })
 export class FormComponent {
-  src =
-    'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_2_project_0.docx?t=2023-05-18T14%3A11%3A02.027Z';
+  src = "";
   formNumber = -1;
 
   constructor(
-    private projectService: ProjectService,
+    private formGeneratorService: FormGeneratorService,
     private spinner: NgxSpinnerService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toastr: ToastrService
   ) {
-    this.spinner.show();
-    const url$ = this.route.paramMap.pipe(
-      switchMap((params) => {
-        const formNumber = params.get('formNumber');
-
-        if (formNumber === null) throw new Error('shold be impossible');
-
-        return formNumber;
-      }),
-      switchMap((formNumber) =>
-        this.projectService.generateForm(Number(formNumber))
-      )
+    const projectId = Number(
+      this.route.parent!.parent!.parent!.snapshot.url[0].path
     );
-
-    url$.subscribe({
+    const formNumber = Number(this.route.snapshot.url[0].path);
+    this.spinner.show();
+    this.formGeneratorService.generateForm(projectId, formNumber).subscribe({
       next: (url) => {
         this.src = url;
+        console.log("successfully generated form:", url)
+        this.toastr.success('successfullyedgenerated form');
       },
-    });
+      error: (err) => {
+        this.toastr.error('error generating form:', err);
+        this.spinner.hide();
+      }
+    })
+
+    // this.route.url
+    //   .pipe(
+    //     tap(_ => {
+    //       this.spinner.show();
+    //       console.log("runs change");
+    //     }),
+    //     map((url) => {
+    //       const formNumber = Number(url[0].path);
+          
+    //       return formNumber;
+    //     }),
+    //     tap(url => console.log("request form:", url)),
+    //     switchMap((formNumber) =>
+    //       this.formGeneratorService.generateForm(projectId, formNumber)
+    //     )
+    //   )
+    //   .subscribe({
+    //     next: (url) => {
+    //       if (url === undefined || url === null) {
+    //         this.toastr.error('error generating form:', url);
+    //         this.spinner.hide();
+    //         return;
+    //       }
+
+    //       this.src = url;
+    //       this.toastr.success('successfullyedgenerated form');
+
+    //       console.log('generated form res:', url);
+    //     },
+    //   });
   }
 
   finishedLoading() {
