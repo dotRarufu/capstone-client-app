@@ -16,9 +16,11 @@ import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
     CommonModule,
     RouterModule,
     MilestoneListItemComponent,
-    AddMilestoneModalComponent
+    AddMilestoneModalComponent,
   ],
   template: `
+    <h1 class="text-[32px] text-base-content hidden min-[998px]:block">Milestones</h1>
+
     <div
       class="flex h-full flex-col justify-start gap-x-[16px] sm1:grid sm1:grid-cols-[auto_1fr] md:grid-cols-[1fr_3fr]"
     >
@@ -44,7 +46,10 @@ import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
             </div>
           </div>
         </li>
-        <li onclick="addMilestone.showModal()" class="btn btn-ghost btn-sm w-full">
+        <li
+          onclick="addMilestone.showModal()"
+          class="btn-ghost btn-sm btn w-full"
+        >
           Add
         </li>
       </ul>
@@ -65,13 +70,17 @@ import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
 })
 export class MilestonesComponent implements OnInit {
   data = [0, 1, 2];
-  milestones: { title: string; isAchieved: boolean; dueDate: string, id: number }[] = [];
-  
+  milestones: {
+    title: string;
+    isAchieved: boolean;
+    dueDate: string;
+    id: number;
+  }[] = [];
 
   constructor(
     private milestoneService: MilestoneService,
     private route: ActivatedRoute,
-    private toastr: ToastrService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -79,15 +88,22 @@ export class MilestonesComponent implements OnInit {
 
     this.milestoneService.getMilestones(projectId).subscribe({
       next: (milestones) => {
-        const a  = milestones.map((m) => {
+        const a = milestones.map((m) => {
           return {
-          dueDate: new Date(m.due_date),
-          title: m.title,
-          isAchieved: m.is_achieved,
-          id: m.milestone_id
-        }});
+            dueDate: new Date(m.due_date),
+            title: m.title,
+            isAchieved: m.is_achieved,
+            id: m.milestone_id,
+          };
+        });
 
-        const sorted = a.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime()).map(a => ({...a, isAchieved: !!a.isAchieved, dueDate: a.dueDate.toDateString()}));
+        const sorted = a
+          .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())
+          .map((a) => ({
+            ...a,
+            isAchieved: !!a.isAchieved,
+            dueDate: a.dueDate.toDateString(),
+          }));
 
         this.milestones = sorted;
       },

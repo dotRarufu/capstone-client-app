@@ -17,13 +17,14 @@ import { CommonModule } from '@angular/common';
       </div>
 
       <div class="h-[calc(100vh-60px)] overflow-x-scroll relative">
-        <router-outlet />
+        <router-outlet #myOutlet="outlet"/>
         <button
+        [class.hidden]="!myOutlet.isActivated"
         (click)="downloadFile(anchor)"
         class="btn-ghost btn absolute bottom-0 right-0 gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
       >
         <i-feather class="text-base-content/70" name="download" />
-        Download
+       
       </button>
       </div>
 

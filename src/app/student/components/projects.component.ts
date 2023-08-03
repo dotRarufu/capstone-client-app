@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
 @Component({
@@ -27,4 +27,6 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 })
 export class ProjectsComponent {
   constructor() {}
+
+  @Input() hideHeader = false; 
 }

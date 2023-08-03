@@ -35,7 +35,7 @@ import { ActivatedRoute } from '@angular/router';
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
-        <h1 class="text-[32px] text-base-content">Tasks</h1>
+        <h1 class="text-[32px] text-base-content hidden min-[998px]:block">Tasks</h1>
         <button
           *ngIf="!isStudent"
           onclick="addTask.showModal()"

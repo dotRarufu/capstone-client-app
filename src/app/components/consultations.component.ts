@@ -30,7 +30,7 @@ import { ScheduledConsultationModalComponent } from './modal/scheduled-modal.com
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
-        <h1 class="text-[32px] text-base-content">Consultation</h1>
+        <h1 class="text-[32px] text-base-content hidden min-[998px]:block">Consultation</h1>
         <button
           *ngIf="role === 's'"
           onclick="scheduleConsultation.showModal()"

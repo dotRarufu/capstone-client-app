@@ -23,7 +23,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
     <div
       class="flex h-fit sm1:h-full  flex-col gap-[16px] overflow-y-clip"
     >
-      <h1 class="text-[24px] text-base-content sm1:text-[32px]">Project</h1>
+      <h1 class="text-[24px] text-base-content sm1:text-[32px] hidden min-[998px]:block">Project</h1>
 
       <div
         class="flex  flex-col gap-[16px] sm1:grid sm1:grid-cols-[auto_1fr] sm1:flex-1 overflow-y-scroll md:grid-cols-[1fr_3fr] pb-[16px] sm1:pb-0"

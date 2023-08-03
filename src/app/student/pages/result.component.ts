@@ -25,7 +25,11 @@ interface InformationalDataItem {
 @Component({
   selector: 'TitleAnalyzerResult',
   standalone: true,
-  imports: [CommonModule, FeatherModule, AccordionComponent, NgxSpinnerModule],
+  imports: [
+    CommonModule,
+    AccordionComponent,
+    NgxSpinnerModule,
+  ],
   template: `
     <ng-container *ngIf="!sideColumn">
       <div

@@ -40,8 +40,6 @@ export class ProjectService {
   private projectUpdate$ = new BehaviorSubject<number>(0);
   private newParticipant$ = new BehaviorSubject<number>(0);
   formUrl$ = this.formUrlSubject.asObservable();
-  
- 
 
   constructor(
     private databaseService: DatabaseService,
@@ -50,10 +48,8 @@ export class ProjectService {
     private route: ActivatedRoute,
     private router: Router,
     private userService: UserService
-  ) {
-   
-  }
- 
+  ) {}
+
   getProjects() {
     const user$ = from(this.authService.getAuthenticatedUser());
 
@@ -101,7 +97,7 @@ export class ProjectService {
       map((d) => {
         const { data } = errorFilter(d);
 
-        if (data.length === 0) throw new Error("user has no section");
+        if (data.length === 0) throw new Error('user has no section');
 
         return data[0].section_id;
       })
@@ -261,7 +257,11 @@ export class ProjectService {
     );
   }
 
-  removeProjectParticipant(userUid: string, projectId: number, isLeave?: boolean) {
+  removeProjectParticipant(
+    userUid: string,
+    projectId: number,
+    isLeave?: boolean
+  ) {
     const user$ = from(this.userService.getUser(userUid));
 
     return user$.pipe(
@@ -312,24 +312,28 @@ export class ProjectService {
   }
 
   updateGeneralInfo(projectId: number, data: {}) {
-    console.log("update with data:", data)
-    const req = this.client.from("project").update(data).eq("id", projectId).select("*");
+    console.log('update with data:', data);
+    const req = this.client
+      .from('project')
+      .update(data)
+      .eq('id', projectId)
+      .select('*');
 
     const req$ = from(req).pipe(
-      map(res => {
-        const {data} = errorFilter(res);
+      map((res) => {
+        const { data } = errorFilter(res);
 
-        return data[0]
+        return data[0];
       })
-    )
+    );
 
     return req$;
   }
 
   getProjectInfo(projectId: number) {
-    const req = this.client.from("project").select("*").eq("id", projectId);
+    const req = this.client.from('project').select('*').eq('id', projectId);
     const req$ = from(req).pipe(
-      map(res => {
+      map((res) => {
         const { data } = errorFilter(res);
 
         return data[0];
@@ -340,16 +344,15 @@ export class ProjectService {
   }
 
   deleteProject(projectId: number) {
-    const req = this.client.from("project").delete().eq("id", projectId);
+    const req = this.client.from('project').delete().eq('id', projectId);
     const req$ = from(req).pipe(
       map((res) => {
-        const {statusText} = errorFilter(res);
+        const { statusText } = errorFilter(res);
 
         return statusText;
       })
-    )
+    );
     return req$;
-    
   }
 
   async getProjectsFromCategory(categoryId: number) {
@@ -646,51 +649,5 @@ export class ProjectService {
     return a;
   }
 
-  generateForm(number: number, dateTime?: number, dateTimeRange?: number[]) {
-    // const response = await this.supabase.functions.invoke('form-generator', {
-    //   body: {
-    //     formNumber: number,
-    //     projectId: this.activeProjectId(),
-    //     dateTime: 123,
-    //     // todo: update the edge fn to accept dateTimeRange
-    //     // why accept dateTimeRange? why not just output the form 4 without asking for range
-    //     // dateTimeRange,
-    //     name: 'Functions',
-    //   },
-    // });
-
-    let url = '';
-    switch (number) {
-      case 1:
-        url =
-          // response.data ||
-          'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_1_project_0.docx';
-        break;
-      case 2:
-        url =
-          // response.data ||
-          'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_2_project_0.docx?t=2023-05-18T14%3A11%3A02.027Z';
-        break;
-      case 3:
-        url =
-          // response.data ||
-          'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_3_project_0.docx';
-        break;
-      case 4:
-        url =
-          // response.data ||
-          'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_4_project_0.docx';
-        break;
-
-      default:
-        url =
-          // response.data ||
-          'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
-        break;
-    }
-
-    // console.log('url:', response.data);
-
-    return of(url).pipe(tap((url) => this.formUrlSubject.next(url)));
-  }
+  generateForm(number: number, dateTime?: number, dateTimeRange?: number[]) {}
 }

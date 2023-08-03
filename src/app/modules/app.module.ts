@@ -61,7 +61,7 @@ const routes: Routes = [
   {
     path: 'a',
     // data: { breadcrumb: "Home" },
-    data: { breadcrumb: {skip: true} },
+    data: { breadcrumb: { skip: true } },
     loadChildren: () => import('../adviser/routes'),
   },
   {
