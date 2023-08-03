@@ -110,6 +110,16 @@ export class StudentHomeComponent implements OnInit, OnDestroy {
     public tabsService: TabsService
   ) {
     this.projectsSubscription = this.initializeProjects();
+    this.projectService.analyzerResult$.subscribe({
+      next: (v) => {
+        if (v === null) {
+          this.hasResult = false;
+          console.log("should reset result");
+
+          return;
+        }
+      }
+    })
   }
 
   ngOnInit() {

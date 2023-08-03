@@ -11,6 +11,7 @@ import { FeatherModule } from 'angular-feather';
 import { CommonModule } from '@angular/common';
 import { AccordionComponent } from 'src/app/components/accordion/accordion.component';
 import { TaskService } from 'src/app/services/task.service';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
 interface AnalysesDataItem {
   heading: string;
@@ -27,6 +28,7 @@ interface InformationalDataItem {
   standalone: true,
   imports: [
     CommonModule,
+    FeatherIconsModule,
     AccordionComponent,
     NgxSpinnerModule,
   ],
@@ -68,22 +70,7 @@ interface InformationalDataItem {
 
           <div
             class="flex w-full flex-shrink-0  basis-[294px] flex-col gap-[16px]"
-          >
-            <Accordion
-              *ngFor="let data of informationalData"
-              [withArrow]="true"
-              [forcedOpen]="false"
-              [heading]="data.heading"
-            >
-              <div class="max-h-[340px] overflow-y-scroll pt-[16px]">
-                <ul class="menu">
-                  <li *ngFor="let title of data.content" class=" ">
-                    <a class="">{{ title }}</a>
-                  </li>
-                </ul>
-              </div>
-            </Accordion>
-          </div>
+          ></div>
         </div>
 
         <!-- desktop -->
@@ -119,22 +106,9 @@ interface InformationalDataItem {
             </Accordion>
           </div>
 
-          <div class="flex  flex-shrink-0 basis-[294px] flex-col gap-[16px]">
-            <Accordion
-              *ngFor="let data of informationalData"
-              [withArrow]="true"
-              [forcedOpen]="false"
-              [heading]="data.heading"
-            >
-              <div class="max-h-[340px] overflow-y-scroll pt-[16px]">
-                <ul class="menu">
-                  <li *ngFor="let title of data.content" class=" ">
-                    <a class="">{{ title }}</a>
-                  </li>
-                </ul>
-              </div>
-            </Accordion>
-          </div>
+          <div
+            class="flex  flex-shrink-0 basis-[294px] flex-col gap-[16px]"
+          ></div>
         </div>
       </div>
     </ng-container>
@@ -153,13 +127,13 @@ interface InformationalDataItem {
 
             Back
           </button>
-          <button
+          <!-- <button
             class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
             <i-feather class="text-base-content/70" name="zap" />
 
             Save
-          </button>
+          </button> -->
         </div>
 
         <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -177,33 +151,9 @@ interface InformationalDataItem {
 
         <div
           class="flex w-full flex-shrink-0  basis-[294px] flex-col gap-[16px]"
-        >
-          <Accordion
-            *ngFor="let data of informationalData"
-            [withArrow]="true"
-            [forcedOpen]="false"
-            [heading]="data.heading"
-          >
-            <div class="max-h-[340px] overflow-y-scroll pt-[16px]">
-              <ul class="menu">
-                <li *ngFor="let title of data.content" class=" ">
-                  <a class="">{{ title }}</a>
-                </li>
-              </ul>
-            </div>
-          </Accordion>
-        </div>
+        ></div>
       </div>
     </ng-container>
-
-    <ngx-spinner
-      bdColor="rgba(0, 0, 0, 0.8)"
-      size="default"
-      color="#fff"
-      type="square-loader"
-      [fullScreen]="true"
-      ><p style="color: white">Loading...</p></ngx-spinner
-    >
   `,
 })
 export class ResultComponent implements OnInit {
@@ -230,11 +180,16 @@ export class ResultComponent implements OnInit {
   ngOnInit(): void {
     this.projectService.analyzerResult$.subscribe({
       next: (v) => {
-        this.prepareData(v);
+        console.log('new result');
+
+        if (v !== undefined) this.prepareData(v);
       },
       error: (err) => {
         this.toastr.error('Error occured while analyzing title');
       },
+      complete: () => {
+        console.log("analyzer result completes");
+      }
     });
   }
 
@@ -246,7 +201,6 @@ export class ResultComponent implements OnInit {
   async prepareData(data: TitleAnalyzerResult) {
     this.spinner.show();
     try {
-      await this.prepareInformationalData(data);
       await this.prepareAnalysesData(data);
 
       this.title = data.title;
@@ -254,54 +208,6 @@ export class ResultComponent implements OnInit {
       console.error('error occured:', err);
     }
     this.spinner.hide();
-  }
-
-  async prepareInformationalData(data: TitleAnalyzerResult) {
-    const categoryIds = data.category_rarity.report.map(
-      (item) => item.category_id
-    );
-
-    const titles = (
-      await Promise.all(
-        categoryIds.map(
-          // concatenate the category name to the title
-          async (id) => {
-            const category = await this.databaseService.getCategoryName(id);
-            const titles = await this.projectService.getProjectsFromCategory(
-              id
-            );
-            const newTitles = titles.map((t) => `${t} - ${category}`);
-
-            return newTitles;
-          }
-        )
-      )
-    ).flat();
-
-    const similarProjects: InformationalDataItem = {
-      heading: 'Past Projects withy Similar Category',
-      content: titles,
-    };
-
-    const grammarSuggestions = ['debug', 'mode'];
-    // const wordSuggestions = data.words_suggestions.suggestions.map(
-    //   ({ original_word, suggested_word }) =>
-    //     `${original_word} -> ${suggested_word}`
-    // );
-    const wordSuggestions = ['debug', 'mode'];
-    // const grammarSuggestions =
-    //   data.grammar_spelling_suggestions.suggestions.map(
-    //     ({ original_word, suggested_word }) =>
-    //       `${original_word} -> ${suggested_word}`
-    //   );
-
-    const suggestions: InformationalDataItem = {
-      heading: 'Suggestions',
-      content: [...grammarSuggestions, ...wordSuggestions],
-    };
-    //* consider disabling grammar suggestion, its still of bad quality
-
-    this.informationalData = [similarProjects, suggestions];
   }
 
   async prepareAnalysesData(data: TitleAnalyzerResult) {

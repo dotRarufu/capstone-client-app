@@ -14,6 +14,7 @@ import {
   Observable,
   throwError,
   first,
+  Subject,
 } from 'rxjs';
 import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
 import { ToastrService } from 'ngx-toastr';
@@ -28,8 +29,6 @@ import errorFilter from '../utils/errorFilter';
 import { isNotNull } from '../student/utils/isNotNull';
 import supabaseClient from '../lib/supabase';
 import { toObservable } from '@angular/core/rxjs-interop';
-
-type AnalyzerResultError = string;
 
 @Injectable({
   providedIn: 'root',
@@ -607,11 +606,13 @@ export class ProjectService {
 
   // move this in user service
   private _analyzerResult$ = new BehaviorSubject<
-    TitleAnalyzerResult | AnalyzerResultError | undefined | null
+    TitleAnalyzerResult | null | undefined
   >(undefined);
   analyzerResult$ = this._analyzerResult$.asObservable().pipe(
-    filter((v) => v !== undefined),
-    map(this.checkError)
+    map((d) => {
+      if (d === null) throw new Error('err');
+      return d;
+    })
   );
   clearAnalyzerResult() {
     this._analyzerResult$.next(undefined);
@@ -631,23 +632,11 @@ export class ProjectService {
         name: 'Functions',
       },
     });
+    console.log('response:', response);
     const data = response.data as TitleAnalyzerResult | null;
     this._analyzerResult$.next(data);
+    console.log('emits:', data?.title_uniqueness);
 
     return data;
   }
-
-  checkError(a: TitleAnalyzerResult | undefined | null | AnalyzerResultError) {
-    if (a === undefined || a === null) {
-      console.log('should show error toast');
-      this.toastr.error('error occured while analyzing title');
-      throw new Error('undefined result');
-    }
-
-    if (typeof a === 'string') throw new Error(a);
-
-    return a;
-  }
-
-  generateForm(number: number, dateTime?: number, dateTimeRange?: number[]) {}
 }
