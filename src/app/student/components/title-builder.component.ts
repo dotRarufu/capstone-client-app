@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { TopAppBarComponent } from 'src/app/components/top-app-bar.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
@@ -16,7 +16,12 @@ type Action =
 
 @Component({
   standalone: true,
-  imports: [CommonModule, TopAppBarComponent, FeatherIconsModule],
+  imports: [
+    CommonModule,
+    TopAppBarComponent,
+    FeatherIconsModule,
+    NgxSpinnerModule,
+  ],
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
@@ -333,6 +338,15 @@ type Action =
         </div>
       </div>
     </div>
+
+    <ngx-spinner
+      bdColor="rgba(0, 0, 0, 0.8)"
+      size="default"
+      color="#fff"
+      type="square-loader"
+      [fullScreen]="true"
+      ><p style="color: white">Loading...</p></ngx-spinner
+    >
   `,
 })
 export class TitleBuilderComponent {
@@ -361,9 +375,11 @@ export class TitleBuilderComponent {
       name ? `${name}:` : description
     } ${description} for ${client} `;
 
+    console.log('this is run');
+
     await this.projectService.analyzeTitle(title);
     this.spinner.hide();
-    this.router.navigate(['s', 'home', 'title-analyzer-result']);
+    this.router.navigate(['s', 'home', 'title-analyzer']);
   }
 
   editTitle(action: Action, ...params: string[]) {
@@ -383,8 +399,10 @@ export class TitleBuilderComponent {
 
   nextStep(step: number, action?: Action, ...params: string[]) {
     // todo: implement history
-    if (step === 6) this.analyzeTitle();
-    else this.step = step;
+    if (step === 6) {
+      this.editTitle('clientName', ...params);
+      this.analyzeTitle();
+    } else this.step = step;
 
     if (action) this.editTitle(action, ...params);
   }

@@ -50,7 +50,7 @@ import { TitleAnalyzerModalComponent } from '../components/modals/titleAnalyzer.
               </ng-container>
 
               <ng-container *ngIf="hasResult">
-                <TitleAnalyzerResult [sideColumn]="true" />
+                <TitleAnalyzerResult />
               </ng-container>
             </div>
           </ng-container>
@@ -114,12 +114,12 @@ export class StudentHomeComponent implements OnInit, OnDestroy {
       next: (v) => {
         if (v === null) {
           this.hasResult = false;
-          console.log("should reset result");
+          console.log('should reset result');
 
           return;
         }
-      }
-    })
+      },
+    });
   }
 
   ngOnInit() {

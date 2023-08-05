@@ -33,100 +33,22 @@ interface InformationalDataItem {
     NgxSpinnerModule,
   ],
   template: `
-    <ng-container *ngIf="!sideColumn">
-      <div
-        class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
-      >
-        <!-- mobile -->
-        <div
-          class="flex w-full flex-col  gap-[16px] sm2:hidden sm2:w-[840px] md:w-full lg:w-[1040px]"
-        >
-          <div class="flex justify-between gap-2">
-            <h1 class="text-[24px] text-base-content">
-              {{ title }}
-            </h1>
-
-            <button
-              class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
-            >
-              <i-feather class="text-base-content/70" name="zap" />
-
-              Save
-            </button>
-          </div>
-
-          <div class="h-[2px] w-full bg-base-content/10"></div>
-
-          <Accordion
-            *ngFor="let data of analysesData"
-            [isResult]="true"
-            [score]="data.value"
-            [heading]="data.heading"
-          >
-            <div class="pt-[16px] text-base-content">
-              {{ data.content }}
-            </div>
-          </Accordion>
-
-          <div
-            class="flex w-full flex-shrink-0  basis-[294px] flex-col gap-[16px]"
-          ></div>
-        </div>
-
-        <!-- desktop -->
-        <div
-          class=" hidden w-[840px] gap-[1rem] sm2:flex md:w-full lg:w-[1040px]"
-        >
-          <div class="flex w-[48px] flex-grow flex-col gap-[1rem] ">
-            <div class="flex justify-end gap-4 ">
-              <button
-                class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
-              >
-                <i-feather class="text-base-content/70" name="heart" />
-
-                Save
-              </button>
-            </div>
-
-            <h1 class="text-[24px] text-base-content">
-              {{ title }}
-            </h1>
-
-            <Accordion
-              *ngFor="let data of analysesData"
-              [isResult]="true"
-              [score]="data.value"
-              [heading]="data.heading"
-            >
-              <!-- todo: change all px to rem -->
-              <!-- pt-[32px] is a fix -->
-              <div class="p-4 pt-[32px]  text-base-content">
-                {{ data.content }}
-              </div>
-            </Accordion>
-          </div>
-
-          <div
-            class="flex  flex-shrink-0 basis-[294px] flex-col gap-[16px]"
-          ></div>
-        </div>
-      </div>
-    </ng-container>
-
-    <ng-container *ngIf="sideColumn">
-      <div class="flex w-full flex-col  gap-[16px] ">
+  
+   
+      <div class="flex w-full sm2:max-w-[840px] md:max-w-none lg:max-w-[1040px] flex-col  gap-[16px] ">
         <div class="flex justify-between gap-2">
           <h1 class="text-[24px] text-base-content">
             {{ title }}
           </h1>
           <button
             (click)="handleBackButtonClick()"
-            class="btn-ghost btn-sm gap-2 flex flex-row items-center font-[500] rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+            class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
           >
-            <i-feather class="text-base-content/70 w-[20px] h-[20px]" name="arrow-left" />
-            <span class="uppercase">
-              Back
-</span>
+            <i-feather
+              class="h-[20px] w-[20px] text-base-content/70"
+              name="arrow-left"
+            />
+            <span class="uppercase"> Back </span>
           </button>
           <!-- <button
             class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
@@ -154,7 +76,7 @@ interface InformationalDataItem {
           class="flex w-full flex-shrink-0  basis-[294px] flex-col gap-[16px]"
         ></div>
       </div>
-    </ng-container>
+  
   `,
 })
 export class ResultComponent implements OnInit {
@@ -179,6 +101,7 @@ export class ResultComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('runss');
     this.projectService.analyzerResult$.subscribe({
       next: (v) => {
         console.log('new result');
@@ -189,8 +112,8 @@ export class ResultComponent implements OnInit {
         this.toastr.error('Error occured while analyzing title');
       },
       complete: () => {
-        console.log("analyzer result completes");
-      }
+        console.log('analyzer result completes');
+      },
     });
   }
 

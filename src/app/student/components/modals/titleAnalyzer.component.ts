@@ -45,7 +45,7 @@ import { ProjectService } from 'src/app/services/project.service';
             </button>
             <button
               onclick="titleAnalyzer.showModal()"
-              (click)="navigateTo('title-analyzer-result')"
+              (click)="analyzeTitle()"
               class="btn-primary btn grow rounded-[3px]"
             >
               Next
@@ -107,6 +107,12 @@ export class TitleAnalyzerModalComponent {
     this.alreadyHaveTitle = false;
   }
 
+  async analyzeTitle() {
+    this.spinner.show();
+
+    await this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle);
+    this.spinner.hide();
+  }
   async navigateTo(path: string) {
     this.spinner.show();
 

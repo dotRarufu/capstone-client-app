@@ -33,10 +33,10 @@ const routes: Routes = [
         path: 'projects',
         component: ProjectsComponent,
       },
-      {
-        path: 'title-analyzer-result',
-        component: ResultComponent,
-      },
+      // {
+      //   path: 'title-analyzer-result',
+      //   component: ResultComponent,
+      // },
 
       { path: '', redirectTo: '/s/home/title-analyzer', pathMatch: 'full' },
     ],
