@@ -14,7 +14,7 @@ import { Component, Input } from '@angular/core';
       <input type="checkbox" class="peer " />
       <div
         [class.text-center]="isHeadingCentered"
-        class="collapse-title border border-base-content/50 bg-primary/10 p-[1rem] text-[20px] "
+        class="collapse-title border border-base-content/50 bg-primary/10 p-[1rem] text-base rounded-[4px]"
       >
         {{ heading }}
       </div>

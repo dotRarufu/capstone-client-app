@@ -12,7 +12,7 @@ import { ReportsComponent } from '../components/reports.component';
 import { ConsultationsComponent } from '../components/consultations.component';
 import { HomeComponent } from './pages/home.component';
 import { ProjectPageComponent } from '../pages/project/project.component';
-import { MilestonesComponent } from '../student/components/milestones.component';
+import { MilestonesComponent } from '../components/milestones.component';
 import { GeneralComponent } from '../components/project/general.component';
 import { DangerZoneComponent } from '../components/project/danger-zone.component';
 import { ProjectComponent } from '../student/components/project.component';
@@ -61,16 +61,16 @@ const routes: Routes = [
               },
               {
                 path: 'milestones',
-                data: { breadcrumb: "Milestones" },
+                data: { breadcrumb: 'Milestones' },
                 component: MilestonesComponent,
                 children: [
                   {
                     path: ':milestoneId',
                     // todo: do this in :projectId
-                    data: { breadcrumb: { alias: "milestoneId" } },
-                    component: MilestoneInfoComponent
-                  }
-                ]
+                    data: { breadcrumb: { alias: 'milestoneId' } },
+                    component: MilestoneInfoComponent,
+                  },
+                ],
               },
               {
                 path: 'project',
@@ -251,16 +251,16 @@ const routes: Routes = [
               },
               {
                 path: 'milestones',
-                data: { breadcrumb: "Milestones" },
+                data: { breadcrumb: 'Milestones' },
                 component: MilestonesComponent,
                 children: [
                   {
                     path: ':milestoneId',
                     // todo: do this in :projectId
-                    data: { breadcrumb: { alias: "milestoneId" } },
-                    component: MilestoneInfoComponent
-                  }
-                ]
+                    data: { breadcrumb: { alias: 'milestoneId' } },
+                    component: MilestoneInfoComponent,
+                  },
+                ],
               },
               {
                 path: '',

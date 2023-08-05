@@ -7,6 +7,7 @@ import { MilestoneListItemComponent } from 'src/app/components/milestone/list-it
 import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milestone.component';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
+import { FeatherIconsModule } from '../modules/feather-icons.module';
 
 @Component({
   selector: 'milestones',
@@ -17,9 +18,10 @@ import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
     RouterModule,
     MilestoneListItemComponent,
     AddMilestoneModalComponent,
+    FeatherIconsModule
   ],
   template: `
-    <h1 class="text-[32px] text-base-content hidden min-[998px]:block">Milestones</h1>
+    <h1 class="text-2xl text-base-content hidden min-[998px]:block">Milestones</h1>
 
     <div
       class="flex h-full flex-col justify-start gap-x-[16px] sm1:grid sm1:grid-cols-[auto_1fr] md:grid-cols-[1fr_3fr]"
@@ -46,12 +48,17 @@ import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
             </div>
           </div>
         </li>
+        
+       
         <li
           onclick="addMilestone.showModal()"
-          class="btn-ghost btn-sm btn w-full"
+          class="btn-ghost btn-sm gap-2 flex flex-row justify-center items-center font-[500] rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
-          Add
-        </li>
+          <i-feather class="text-base-content/70 w-[20px] h-[20px]" name="plus" />
+          <span class="uppercase">
+            Add
+          </span>
+</li>
       </ul>
 
       <div>

@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TabsComponent } from 'src/app/components/tabs.component';
 import { TopAppBarComponent } from 'src/app/components/top-app-bar.component';
 import { Project } from 'src/app/models/project';
 import { Tab } from 'src/app/models/tab';
 import { ProfileViewComponent } from './profile-view.component';
 import { ReportsComponent } from 'src/app/components/reports.component';
+import { TabsService } from 'src/app/services/tabs.service';
 
 
 @Component({
@@ -45,7 +46,7 @@ import { ReportsComponent } from 'src/app/components/reports.component';
     </div>
   `,
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   tabs: Tab[] = [
     {
       name: 'Profile',
@@ -61,7 +62,7 @@ export class ProfileComponent {
   ];
   projects: Project[] = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private route: ActivatedRoute, private tabsService: TabsService) {}
 
   handlerFactory(path: string) {
     return () => {
@@ -72,4 +73,16 @@ export class ProfileComponent {
       );
     };
   }
+
+  ngOnInit() {
+    const child1 = this.route.snapshot.firstChild;
+
+    if (child1 === null) throw new Error('impossible');
+
+    const active = child1.url[0].path;
+    const route = ['profile'];
+   
+    this.tabsService.setTabs(this.tabs, route, active);
+  }
+
 }

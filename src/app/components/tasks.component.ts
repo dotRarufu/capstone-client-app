@@ -35,15 +35,17 @@ import { ActivatedRoute } from '@angular/router';
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
-        <h1 class="text-[32px] text-base-content hidden min-[998px]:block">Tasks</h1>
+        <h1 class="text-2xl text-base-content hidden min-[998px]:block">Tasks</h1>
         <button
           *ngIf="!isStudent"
           onclick="addTask.showModal()"
-          class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+          class="btn-ghost btn-sm gap-2 flex flex-row items-center font-[500] rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
-          <i-feather class="text-base-content/70" name="plus" />
-
-          Add
+          <i-feather class="text-base-content/70 w-[20px] h-[20px]" name="plus" />
+          <span class="uppercase">
+            
+            Add
+</span>
         </button>
       </div>
 

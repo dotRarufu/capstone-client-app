@@ -30,15 +30,16 @@ import { ScheduledConsultationModalComponent } from './modal/scheduled-modal.com
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
-        <h1 class="text-[32px] text-base-content hidden min-[998px]:block">Consultation</h1>
+        <h1 class="text-2xl text-base-content hidden min-[998px]:block">Consultation</h1>
         <button
           *ngIf="role === 's'"
           onclick="scheduleConsultation.showModal()"
-          class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+          class="btn-ghost btn-sm gap-2 flex flex-row items-center font-[500] rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
         >
           <i-feather class="text-base-content/70" name="plus" />
-
-          Schedule
+          <span class="uppercase">
+            Schedule
+          </span>
         </button>
       </div>
 

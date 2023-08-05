@@ -17,11 +17,12 @@ import { CommonModule } from '@angular/common';
         class="flex w-full flex-col gap-[1rem] sm2:w-[840px] md:w-full lg:w-full "
       >
         <div
-          class="flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
+          
+          class="hidden md:flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
         >
-          <h2 class="text-[24px] sm1:text-[32px]">Profile</h2>
+          <h2 class="text-2xl ">Profile</h2>
         </div>
-        <div class="h-[2px] w-full bg-base-content/10"></div>
+        <div class="hidden md:block h-[2px] w-full bg-base-content/10"></div>
 
         <div class="flex w-full flex-col gap-4">
           <div class="flex gap-4">
@@ -66,17 +67,17 @@ import { CommonModule } from '@angular/common';
     </ng-container>
     <ng-container *ngIf="sideColumn">
       <div
-        class="flex w-full flex-col gap-[1rem] sm2:w-[840px] md:w-full lg:w-full"
+        class="hidden md:flex w-full flex-col gap-[1rem] sm2:w-[840px] md:w-full lg:w-full"
       >
         <div
           class="flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
         >
-          <h2 class="text-[24px] sm1:text-[32px]">Projects</h2>
+          <h2 class="text-2xl ">Projects</h2>
           <div
             class="input-group rounded-[3px] border border-base-content/50 sm1:max-w-[371px]"
           ></div>
         </div>
-        <div class="h-[2px] w-full bg-base-content/10"></div>
+        <div class="hidden md:block h-[2px] w-full bg-base-content/10"></div>
         <div
           class="flex w-full flex-col justify-items-center gap-[24px] py-[1rem]"
         >

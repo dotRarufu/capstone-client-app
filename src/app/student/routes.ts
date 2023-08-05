@@ -15,7 +15,7 @@ import { ConsultationsComponent } from '../components/consultations.component';
 import { participantGuard } from '../guards/participant.guard';
 import { ProjectPageComponent } from '../pages/project/project.component';
 import { ProjectLayoutComponent } from 'src/app/layouts/project.component';
-import { MilestonesComponent } from './components/milestones.component';
+import { MilestonesComponent } from '../components/milestones.component';
 import { GeneralComponent } from '../components/project/general.component';
 import { DangerZoneComponent } from '../components/project/danger-zone.component';
 import { MilestoneInfoComponent } from '../components/milestone/info.component';
@@ -58,36 +58,35 @@ const routes: Routes = [
           {
             path: 'tasks',
             component: TasksComponent,
-            data: { role: 's', breadcrumb: "Tasks" },
-
+            data: { role: 's', breadcrumb: 'Tasks' },
           },
           {
             path: 'project',
             component: ProjectComponent,
-            data: {  breadcrumb: "Project" },
+            data: { breadcrumb: 'Project' },
 
             children: [
               {
                 path: 'general',
-                data: {  breadcrumb: "General" },
+                data: { breadcrumb: 'General' },
 
                 component: GeneralComponent,
               },
               {
                 path: 'reports',
-                data: {  breadcrumb: "Reports" },
+                data: { breadcrumb: 'Reports' },
 
                 component: ReportsComponent,
               },
               {
                 path: 'danger-zone',
-                data: {  breadcrumb: "Danger Zone" },
+                data: { breadcrumb: 'Danger Zone' },
 
                 component: DangerZoneComponent,
               },
               {
                 path: 'forms',
-                data: { role: 's', breadcrumb: "Forms" },
+                data: { role: 's', breadcrumb: 'Forms' },
 
                 component: FormGeneratorComponent,
                 children: [
@@ -107,7 +106,6 @@ const routes: Routes = [
                     path: '4',
                     component: FormComponent,
                   },
-                  
                 ],
               },
               {
@@ -120,20 +118,20 @@ const routes: Routes = [
           {
             path: 'consultations',
             component: ConsultationsComponent,
-            data: { role: 's', breadcrumb: "Consultations" },
+            data: { role: 's', breadcrumb: 'Consultations' },
           },
           {
             path: 'milestones',
-            data: { breadcrumb: "Milestones" },
+            data: { breadcrumb: 'Milestones' },
             component: MilestonesComponent,
             children: [
               {
                 path: ':milestoneId',
                 // todo: do this in :projectId
-                data: { breadcrumb: { alias: "milestoneId" } },
-                component: MilestoneInfoComponent
-              }
-            ]
+                data: { breadcrumb: { alias: 'milestoneId' } },
+                component: MilestoneInfoComponent,
+              },
+            ],
           },
 
           {

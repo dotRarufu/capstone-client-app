@@ -10,9 +10,9 @@ import { CommonModule } from '@angular/common';
   imports: [NgChartsModule, CommonModule],
   template: `
     <ng-container *ngIf="!sideColumn">
-      <div class="flex h-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible">
-       
-
+      <div
+        class="flex h-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible"
+      >
         <!-- todo: replace other dividers with this -->
         <div class="h-[2px] w-full bg-base-content/10"></div>
 
@@ -108,7 +108,7 @@ import { CommonModule } from '@angular/common';
     <ng-container *ngIf="sideColumn">
       <div class="flex h-full flex-col gap-[16px] ">
         <div class="flex justify-between ">
-          <h1 class="text-[32px] text-base-content ">Reports</h1>
+          <h1 class="text-2xl text-base-content ">Reports</h1>
           <!-- <label
           for="schedule-consultation"
           class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
@@ -267,5 +267,5 @@ export class ReportsComponent {
   pieChartPlugins = [DataLabelsPlugin];
   @Input() sideColumn = false;
 
-  // todo: should accept data to what to render 
+  // todo: should accept data to what to render
 }

@@ -63,7 +63,7 @@ interface InformationalDataItem {
             [score]="data.value"
             [heading]="data.heading"
           >
-            <div class="p-4 pt-[32px] text-base-content">
+            <div class="pt-[16px] text-base-content">
               {{ data.content }}
             </div>
           </Accordion>
@@ -121,11 +121,12 @@ interface InformationalDataItem {
           </h1>
           <button
             (click)="handleBackButtonClick()"
-            class="btn-ghost btn hidden gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30 md:flex"
+            class="btn-ghost btn-sm gap-2 flex flex-row items-center font-[500] rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
-            <i-feather class="text-base-content/70" name="arrow-left" />
-
-            Back
+            <i-feather class="text-base-content/70 w-[20px] h-[20px]" name="arrow-left" />
+            <span class="uppercase">
+              Back
+</span>
           </button>
           <!-- <button
             class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
@@ -144,7 +145,7 @@ interface InformationalDataItem {
           [score]="data.value"
           [heading]="data.heading"
         >
-          <div class="p-4 pt-[32px] text-base-content">
+          <div class="pt-[16px] text-base-content">
             {{ data.content }}
           </div>
         </Accordion>

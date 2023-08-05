@@ -16,14 +16,13 @@ import { getRolePath } from '../utils/getRolePath';
       <div
         class=" flex  w-full flex-row  items-center justify-between text-primary-content   sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"
       >
-        <h1 class="text-2xl ">{{ activePath }}</h1>
+        <h1 class="text-xl ">{{ activePath }}</h1>
 
         <div class="dropdown-end dropdown ">
           <label tabindex="0"
             ><div
               class="btn-ghost btn flex flex-row items-center gap-2 text-base"
             >
-              <!-- todo: fetch data from user service -->
               {{ name }}
               <div class="avatar">
                 <div class="w-[40px] rounded-full">
@@ -35,8 +34,6 @@ import { getRolePath } from '../utils/getRolePath';
             tabindex="0"
             class="dropdown-content menu z-[999] w-52 rounded-[3px] bg-base-100 p-2 shadow"
           >
-            <!-- <li><a class="">Profile</a></li> -->
-
             <a
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
               (click)="navigateHome()"
@@ -59,14 +56,6 @@ import { getRolePath } from '../utils/getRolePath';
         </div>
       </div>
     </div>
-    <ngx-spinner
-      bdColor="rgba(0, 0, 0, 0.8)"
-      size="default"
-      color="#fff"
-      type="square-loader"
-      [fullScreen]="true"
-      ><p style="color: white">Loading...</p></ngx-spinner
-    >
   `,
 })
 export class TopAppBarComponent implements OnInit {

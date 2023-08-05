@@ -18,7 +18,7 @@ import { ProjectService } from 'src/app/services/project.service';
       <div class="flex w-full flex-col gap-[16px] bg-base-100 p-6">
         <ng-container *ngIf="alreadyHaveTitle">
           <h1
-            class="text-center text-[24px] text-base-content min-[444px]:text-left"
+            class="text-center text-2xl text-base-content min-[444px]:text-left"
           >
             Enter your capstone project title
           </h1>
@@ -37,7 +37,10 @@ import { ProjectService } from 'src/app/services/project.service';
 
           <div class="flex">
             <!-- todo: maybe we can set the default border in daisy ui config -->
-            <button class="btn-ghost btn grow rounded-[3px] text-base-content">
+            <button
+              class="btn-ghost btn grow rounded-[3px] text-base-content"
+              (click)="handleCancelClick()"
+            >
               Cancel
             </button>
             <button
@@ -100,11 +103,16 @@ export class TitleAnalyzerModalComponent {
     this.alreadyHaveTitleEvent.emit(this.alreadyHaveTitle);
   }
 
+  handleCancelClick() {
+    this.alreadyHaveTitle = false;
+  }
+
   async navigateTo(path: string) {
     this.spinner.show();
 
     await this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle);
     this.spinner.hide();
+    console.log('thj');
     this.router.navigate(['s', 'home', path], {});
   }
 

@@ -32,7 +32,7 @@ type Action =
               class="mx-auto flex w-full flex-col gap-[16px] sm2:w-[840px] md:w-full  "
             >
               <div class="flex justify-between ">
-                <h1 class="text-[24px] text-base-content sm2:text-[32px]">
+                <h1 class="text-xl text-base-content sm2:text-2xl">
                   Are you planning to do a project with development and
                   evaluation?
                 </h1>
@@ -52,28 +52,29 @@ type Action =
                   dolore eu fugiat nulla pariatur. Excepteur sint occaec.
                 </p>
                 <div
-                  class="flex shrink-0 basis-[223px] flex-row gap-2   sm1:flex-col sm1:justify-between"
+                  class="flex shrink-0 basis-[223px] flex-row gap-2 sm1:flex-col sm1:justify-between"
                 >
                   <button
                     (click)="navigateToHome()"
-                    class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
+                    class="btn-ghost btn flex flex-row gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
                     <i-feather class="text-base-content/70" name="x-circle" />
-                    cancel
+                    <span class="uppercase"> cancel </span>
                   </button>
                   <button
                     (click)="nextStep(2)"
-                    class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
+                    class="btn-ghost btn flex flex-row gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather class="text-base-content/70" name="slash" /> no
+                    <i-feather class="text-base-content/70" name="slash" />
+                    <span class="uppercase"> no </span>
                   </button>
-                  <div class="h-full w-full"></div>
+                  <div class=" w-full"></div>
                   <button
                     (click)="nextStep(3, 'defaultPrefix')"
-                    class="btn-primary btn flex h-fit w-full flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
+                    class="btn-primary btn flex flex-row gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
                     <i-feather class="text-primary-content/70" name="check" />
-                    yes
+                    <span class="uppercase"> Yes </span>
                   </button>
                 </div>
               </div>
@@ -85,7 +86,7 @@ type Action =
               class="mx-auto flex w-full flex-col gap-[16px] sm2:w-[840px] md:w-full  "
             >
               <div class="flex justify-between ">
-                <h1 class="text-[24px] text-base-content sm2:text-[32px]">
+                <h1 class="text-xl text-base-content sm2:text-2xl">
                   What kind of project are you doing?
                 </h1>
               </div>
@@ -118,23 +119,23 @@ type Action =
                 >
                   <button
                     (click)="nextStep(1)"
-                    class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
+                    class="btn-ghost btn flex flex-row gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
                     <i-feather
                       class="text-base-content/70"
                       name="chevron-left"
                     />
-                    back
+                    <span class="uppercase"> back </span>
                   </button>
                   <button
                     (click)="nextStep(3, 'customPrefix', customPrefix.value)"
-                    class="btn-primary btn flex h-fit w-full flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
+                    class="btn-primary btn flex flex-row gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
                     <i-feather
                       class="text-primary-content/70"
                       name="chevron-right"
                     />
-                    next
+                    <span class="uppercase"> next </span>
                   </button>
                 </div>
               </div>
@@ -146,7 +147,7 @@ type Action =
               class="mx-auto flex w-full flex-col gap-[16px] sm2:w-[840px] md:w-full  "
             >
               <div class="flex justify-between ">
-                <h1 class="text-[24px] text-base-content sm2:text-[32px]">
+                <h1 class="text-xl text-base-content sm2:text-2xl">
                   Does your project have an application name?
                 </h1>
               </div>
@@ -178,27 +179,28 @@ type Action =
                 >
                   <button
                     (click)="nextStep(2)"
-                    class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
+                    class="btn-ghost btn flex flex-row gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
                     <i-feather
                       class="text-base-content/70"
                       name="chevron-left"
                     />
-                    back
+                    <span class="uppercase"> back </span>
                   </button>
                   <button
                     (click)="nextStep(4, 'noAppName')"
-                    class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
+                    class="btn-ghost btn flex flex-row gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
-                    <i-feather class="text-base-content/70" name="slash" /> no
+                    <i-feather class="text-base-content/70" name="slash" />
+                    <span class="uppercase"> no </span>
                   </button>
                   <div class="grow-1 h-full w-full"></div>
                   <button
                     (click)="nextStep(4, 'appName', appName.value)"
-                    class="btn-primary btn flex h-fit w-full flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
+                    class="btn-primary btn flex flex-row gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
                     <i-feather class="text-primary-content/70" name="check" />
-                    yes
+                    <span class="uppercase"> Yes </span>
                   </button>
                 </div>
               </div>
@@ -210,7 +212,7 @@ type Action =
               class="mx-auto flex w-full flex-col gap-[16px] sm2:w-[840px] md:w-full  "
             >
               <div class="flex justify-between ">
-                <h1 class="text-[24px] text-base-content sm2:text-[32px]">
+                <h1 class="text-xl text-base-content sm2:text-2xl">
                   Describe your system that set it apart from others
                 </h1>
               </div>
@@ -242,25 +244,25 @@ type Action =
                 >
                   <button
                     (click)="nextStep(3)"
-                    class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
+                    class="btn-ghost btn flex flex-row gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
                     <i-feather
                       class="text-base-content/70"
                       name="chevron-left"
                     />
-                    back
+                    <span class="uppercase"> back </span>
                   </button>
 
                   <div class="grow-1 h-full w-full"></div>
                   <button
                     (click)="nextStep(5, 'setApart', setApart.value)"
-                    class="btn-primary btn flex h-fit w-full flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
+                    class="btn-primary btn flex flex-row gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
                     <i-feather
                       class="text-primary-content/70"
                       name="chevron-right"
                     />
-                    next
+                    <span class="uppercase"> next </span>
                   </button>
                 </div>
               </div>
@@ -272,7 +274,7 @@ type Action =
               class="mx-auto flex w-full flex-col gap-[16px] sm2:w-[840px] md:w-full  "
             >
               <div class="flex justify-between ">
-                <h1 class="text-[24px] text-base-content sm2:text-[32px]">
+                <h1 class="text-xl text-base-content sm2:text-2xl">
                   Who is the client of the project?
                 </h1>
               </div>
@@ -304,25 +306,25 @@ type Action =
                 >
                   <button
                     (click)="nextStep(4)"
-                    class="btn-ghost btn flex h-fit flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
+                    class="btn-ghost btn flex flex-row gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
                     <i-feather
                       class="text-base-content/70"
                       name="chevron-left"
                     />
-                    back
+                    <span class="uppercase"> back </span>
                   </button>
 
                   <div class="grow-1 h-full w-full"></div>
                   <button
                     (click)="nextStep(6, 'clientName', clientName.value)"
-                    class="btn-primary btn flex h-fit w-full flex-1 justify-center gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
+                    class="btn-primary btn flex flex-row gap-2 rounded-[3px] sm1:flex-initial sm1:justify-start"
                   >
                     <i-feather
                       class="text-primary-content/70"
                       name="chevron-right"
                     />
-                    next
+                    <span class="uppercase"> next </span>
                   </button>
                 </div>
               </div>
@@ -331,8 +333,6 @@ type Action =
         </div>
       </div>
     </div>
-
-  
   `,
 })
 export class TitleBuilderComponent {

@@ -15,14 +15,16 @@ import { ProjectService } from 'src/app/services/project.service';
     <div class="w-full ">
       <div class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full ">
         <div class="flex justify-between ">
-          <h1 class="text-[32px] text-base-content">Title Analysis</h1>
+          <h1 class="text-2xl text-base-content">Title Analysis</h1>
           <button
             onclick="titleAnalyzer.showModal()"
             (click)="analyzeTitle()"
-            class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+            class="btn-ghost btn-sm gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content font-[500] flex items-center hover:border-base-content/30"
           >
-            <i-feather class="text-base-content/70" name="zap" />
-            Analyze
+            <i-feather class="text-base-content/70 w-[20px] h-[20px]" name="zap" />
+            <span class="uppercase">
+              Analyze
+</span>
           </button>
         </div>
 
