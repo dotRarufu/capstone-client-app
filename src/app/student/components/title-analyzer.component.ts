@@ -19,12 +19,13 @@ import { ProjectService } from 'src/app/services/project.service';
           <button
             onclick="titleAnalyzer.showModal()"
             (click)="analyzeTitle()"
-            class="btn-ghost btn-sm gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content font-[500] flex items-center hover:border-base-content/30"
+            class="btn-ghost btn-sm flex items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
           >
-            <i-feather class="text-base-content/70 w-[20px] h-[20px]" name="zap" />
-            <span class="uppercase">
-              Analyze
-</span>
+            <i-feather
+              class="h-[20px] w-[20px] text-base-content/70"
+              name="zap"
+            />
+            <span class="uppercase"> Analyze </span>
           </button>
         </div>
 
@@ -33,6 +34,15 @@ import { ProjectService } from 'src/app/services/project.service';
         <Accordion *ngFor="let content of contents" [heading]="content.heading">
           <div class=" w-full pt-[16px] text-base-content">
             {{ content.content }}
+            <ng-container *ngIf="content.images && content.images.length > 0">
+              <div class="flex flex-wrap gap-[8px]">
+              <img
+                *ngFor="let image of content.images"
+                [src]="image"
+                class="max-h-[260px] w-full object-contain"
+              />
+              </div>
+            </ng-container>
           </div>
         </Accordion>
       </div>
@@ -43,22 +53,26 @@ import { ProjectService } from 'src/app/services/project.service';
 // todo: add ability to change renderer in docx viewer (form generator)
 export class TitleAnalyzerComponent implements OnInit {
   projects: Project[] = [];
-  contents: { heading: string; content: string }[] = [
+  contents: { heading: string; content: string; images?: string[] }[] = [
     {
       heading: 'Substantive Word Count',
       content:
-        // todo: use image of actual scores then explain it
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea.',
+        'Substantive words are counted based on their meaning and significance in a sentence. These are words that carry essential information, rather than just serving as connectors or modifiers. For instance, nouns like "cat," "house," and "book" are substantive words because they represent tangible objects. Verbs like "run," "eat," and "write" are also substantive words as they convey actions. ',
     },
     {
       heading: 'Title Uniqueness',
       content:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea.',
+        'Title uniqueness is computed using Levenshtein distance, which measures the similarity between two strings by counting the minimum number of single-character edits (insertions, deletions, or substitutions) needed to transform one string into the other. In the context of titles, a lower Levenshtein distance indicates higher similarity and, therefore, lower uniqueness.',
+        images: ['assets/levenshtein-distance-example.png']
     },
     {
       heading: 'Readability',
       content:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea.',
+        'Title readability is computed using the Coleman-Liau index, which measures the ease of understanding a title based on its average word length and the number of characters per 100 words. The formula is as in the image, where L is the average number of characters per 100 words, and S is the average number of sentences per 100 words. The higher the Coleman-Liau index score, the more readable the title.',
+      images: [
+        'assets/readability-formula.png',
+        'assets/readability-scores.PNG',
+      ],
     },
   ];
   @Output() analyzeClicked = new EventEmitter<void>();
@@ -72,7 +86,6 @@ export class TitleAnalyzerComponent implements OnInit {
   navigateToProject(uid: number) {
     return () => {
       this.router.navigate(['s', 'p', uid]);
-       
     };
   }
 
