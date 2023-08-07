@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
-import { ChartConfiguration, ChartData } from 'chart.js';
+import { Chart, ChartConfiguration, ChartData } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
 import { CommonModule } from '@angular/common';
 
@@ -10,23 +10,21 @@ import { CommonModule } from '@angular/common';
   imports: [NgChartsModule, CommonModule],
   template: `
     <ng-container *ngIf="!sideColumn">
-      <div
-        class="flex h-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible"
-      >
-        <!-- todo: replace other dividers with this -->
-        <div class="h-[2px] w-full bg-base-content/10"></div>
+      <!-- <div
+        class="flex h-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible border border-red-500"
+      > -->
 
         <div
-          class="flex flex-col items-center gap-4 sm2:grid sm2:grid-flow-col sm2:grid-rows-3 sm2:place-content-center   sm2:items-start "
+          class="flex flex-col items-center  gap-4"
         >
           <div
-            class=" h-full min-h-[329px] w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50"
+            class=" h-full  w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50 "
           >
             <div class="bg-primary p-4 text-primary-content">
               <h1 class="text-[20px] ">Tasks by Status</h1>
             </div>
 
-            <div class="flex h-full w-full justify-center p-4">
+            <div class="flex justify-center p-4">
               <canvas
                 baseChart
                 class="h-full w-full"
@@ -40,15 +38,15 @@ import { CommonModule } from '@angular/common';
           </div>
 
           <div
-            class="row-span-2 flex h-full min-h-[329px] w-full min-w-[229px] max-w-[429px] flex-col justify-center rounded-[3px] border border-base-content/50"
+          class=" h-fit w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50"
           >
             <div class="bg-primary p-4 text-primary-content">
               <h1 class="text-[20px] ">Accomplished Milestones</h1>
             </div>
-            <div class="flex h-full w-full justify-center p-4">
+            <div class="flex justify-center p-4">
               <canvas
                 baseChart
-                class="h-full w-full"
+                class=""
                 [data]="accomplishedMilestones"
                 type="pie"
                 [options]="pieChartOptions"
@@ -87,7 +85,7 @@ import { CommonModule } from '@angular/common';
             class="h-full min-h-[329px] w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50"
           >
             <div class="bg-primary p-4 text-primary-content ">
-              <h1 class="text-[20px] ">Tasks by Status 2</h1>
+              <h1 class="text-[20px] ">Consultations by Category</h1>
             </div>
             <div class="flex h-full w-full justify-center p-4">
               <canvas
@@ -102,21 +100,14 @@ import { CommonModule } from '@angular/common';
             </div>
           </div>
         </div>
-      </div>
+      <!-- </div> -->
     </ng-container>
 
     <ng-container *ngIf="sideColumn">
       <div class="flex h-full flex-col gap-[16px] ">
         <div class="flex justify-between ">
           <h1 class="text-2xl text-base-content ">Reports</h1>
-          <!-- <label
-          for="schedule-consultation"
-          class="btn-ghost btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
-        >
-          <i-feather class="text-base-content/70"name="plus"></i-feather>
-
-          button
-        </label> -->
+          
         </div>
 
         <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -128,10 +119,10 @@ import { CommonModule } from '@angular/common';
             <div class="bg-primary p-4 text-primary-content">
               <h1 class="text-[20px] ">Tasks by Status</h1>
             </div>
-            <div class="flex justify-center p-4">
+            <div class="flex justify-center p-4 ">
               <canvas
                 baseChart
-                class=" w-full"
+                class="h-full w-full "
                 [options]="barChartOptions"
                 [data]="taskByStatus"
                 [plugins]="barChartPlugins"
@@ -194,7 +185,7 @@ import { CommonModule } from '@angular/common';
             <div class="flex justify-center p-4">
               <canvas
                 baseChart
-                class=" w-full"
+                class="w-full"
                 [options]="barChartOptions"
                 [data]="taskByStatus"
                 [plugins]="barChartPlugins"
@@ -213,6 +204,7 @@ export class ReportsComponent {
     labels: ['To Do', 'Done', 'Doing'],
     datasets: [
       {
+        // minBarLength: 
         data: [1, 4, 2],
         label: 'Tasks',
         borderRadius: 3,
@@ -243,14 +235,9 @@ export class ReportsComponent {
   barChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     plugins: {
-      legend: {
-        display: true,
-      },
-      datalabels: {
-        anchor: 'end',
-        align: 'end',
-      },
-    },
+     datalabels: {color: '#ff0000'}
+
+    } 
   };
   barChartPlugins = [DataLabelsPlugin];
   pieChartOptions: ChartConfiguration['options'] = {
@@ -268,4 +255,8 @@ export class ReportsComponent {
   @Input() sideColumn = false;
 
   // todo: should accept data to what to render
+
+  constructor() {
+    Chart.defaults.color = '#000';
+  }
 }

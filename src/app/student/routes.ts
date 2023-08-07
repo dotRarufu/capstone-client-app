@@ -19,6 +19,7 @@ import { MilestonesComponent } from '../components/milestones.component';
 import { GeneralComponent } from '../components/project/general.component';
 import { DangerZoneComponent } from '../components/project/danger-zone.component';
 import { MilestoneInfoComponent } from '../components/milestone/info.component';
+import { ProjectReportsComponent } from '../components/project/reports.component';
 
 const routes: Routes = [
   {
@@ -33,11 +34,6 @@ const routes: Routes = [
         path: 'projects',
         component: ProjectsComponent,
       },
-      // {
-      //   path: 'title-analyzer-result',
-      //   component: ResultComponent,
-      // },
-
       { path: '', redirectTo: '/s/home/title-analyzer', pathMatch: 'full' },
     ],
   },
@@ -76,7 +72,7 @@ const routes: Routes = [
                 path: 'reports',
                 data: { breadcrumb: 'Reports' },
 
-                component: ReportsComponent,
+                component: ProjectReportsComponent,
               },
               {
                 path: 'danger-zone',

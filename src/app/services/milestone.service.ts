@@ -117,17 +117,20 @@ export class MilestoneService {
       .select('*')
       .eq('project_id', projectId);
     const req$ = this.updateMilestones$.pipe(
+      tap(() => console.log('runs')),
       switchMap((_) => req),
       map((res) => {
         const { data } = errorFilter(res);
         return data;
       }),
       map((milestones) => milestones.map((m) => m.id)),
+      tap((a) => console.log('runs2 | ids:', a)),
+
       switchMap((ids) => {
         const a = ids.map((id) => this.getMilestoneData(id));
-        console.log('ids:', ids);
         return forkJoin(a);
-      })
+      }),
+      tap((a) => console.log('runs3'))
     );
 
     return req$;

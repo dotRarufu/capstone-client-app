@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import {
   createClient,
   SupabaseClient,
@@ -21,6 +21,7 @@ import errorFilter from '../utils/errorFilter';
 import supabaseClient from '../lib/supabase';
 import { AuthService } from './auth.service';
 import { ProjectService } from './project.service';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root',
@@ -29,6 +30,8 @@ export class TaskService {
   private readonly client = supabaseClient;
   private readonly taskUpdateSubject = new BehaviorSubject<number>(0);
   // activeTaskId = signal<number | null>(null);
+
+  userService = inject(UserService);
 
   constructor(
     private authService: AuthService,
@@ -185,6 +188,26 @@ export class TaskService {
     return request$;
   }
 
+  getAllTasks(projectId: number) {
+    const request$ = this.taskUpdateSubject.pipe(
+      switchMap(() => {
+        const request = this.client
+          .from('task')
+          .select('*')
+          .eq('project_id', projectId);
+        return from(request);
+      }),
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      }),
+      
+    );
+
+    return request$;
+  }
+
   getAccompishedTasks(consultationId: number) {
     const taskIds = this.client
       .from('accomplished_task')
@@ -205,6 +228,53 @@ export class TaskService {
     );
 
     return tasks$;
+  }
+
+  getTaskCountByAdviser(statusId: number, projectId: number) {
+    const req = this.client
+      .from('task')
+      .select('assigner_id')
+      .eq('project_id', projectId)
+      .eq('status_id', statusId);
+
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      }),
+      map((data) => {
+        const assigners = new Set<string>();
+        data.forEach((d) => assigners.add(d.assigner_id));
+
+        const res = [...assigners].map((a) => ({
+          id: a,
+          count: data.filter((d) => d.assigner_id === a).length,
+        }));
+
+        return res;
+      }),
+      switchMap(async (d) => {
+        const a = await Promise.all(
+          d.map(async (a) => ({
+            role_id: (await this.userService.getUser(a.id)).role_id,
+            count: a.count,
+          }))
+        );
+
+        return a;
+      }),
+      map((a) => {
+        const res = a.map((b) => ({
+          role: b.role_id === 1 ? 'Capstone Adviser' : 'Technical Adviser',
+          count: b.count,
+        }));
+
+        return res;
+      })
+    );
+
+    return req$;
   }
 
   private getTask(id: number) {
