@@ -512,6 +512,7 @@ export class ProjectService {
           sectionName: section,
           members: memberNames,
           title: p.full_title,
+          isDone: p.is_done
         };
       })
     );

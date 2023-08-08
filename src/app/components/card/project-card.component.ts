@@ -53,6 +53,7 @@ export class ProjectCardComponent implements OnInit {
     name: 'default',
     id: -1,
     sectionName: '',
+    isDone: false
   };
   @Input() role = '';
   @Output() removeProjectId: EventEmitter<number> = new EventEmitter<number>();

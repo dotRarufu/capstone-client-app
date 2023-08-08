@@ -13,6 +13,7 @@ import { ProjectsAccordionComponent } from 'src/app/components/accordion/project
 import { ProjectCardComponent } from 'src/app/components/card/project-card.component';
 import { ProjectsComponent } from '../components/projects.component';
 import { ReportsComponent } from 'src/app/components/reports.component';
+import { AdviserReportsComponent } from '../components/reports.component';
 
 @Component({
   standalone: true,
@@ -23,6 +24,7 @@ import { ReportsComponent } from 'src/app/components/reports.component';
     ProjectCardComponent,
     ReportsComponent,
     ProjectsComponent,
+    AdviserReportsComponent,
   ],
   selector: 'Home',
   template: `
@@ -50,9 +52,9 @@ import { ReportsComponent } from 'src/app/components/reports.component';
 
         <ng-container *ngIf="active === 'reports' || isDesktop">
           <div
-            class="w-full sm2:flex sm2:justify-center md:flex-shrink-0  md:basis-[357px]"
+            class="border border-red-500 w-full sm2:flex sm2:justify-center md:flex-shrink-0  md:basis-[357px]"
           >
-            <Reports [sideColumn]="true" />
+            <adviser-reports [sideColumn]="true" />
           </div>
         </ng-container>
       </div>

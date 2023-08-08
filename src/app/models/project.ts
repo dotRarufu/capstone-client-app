@@ -4,4 +4,5 @@ export interface Project {
   title: string;
   sectionName: string;
   members: string[];
+  isDone: boolean;
 }
