@@ -10,13 +10,19 @@ import { UserService } from 'src/app/services/user.service';
 import { Task } from 'src/app/types/collection';
 import { from, switchMap } from 'rxjs';
 import { TotalTaskAssignmentReportComponent } from './total-task-assignment-report.component';
+import { ConsultationByCategoryReportComponent } from './consultation-by-category-report.component';
 
 @Component({
   selector: 'project-reports',
   standalone: true,
-  imports: [NgChartsModule, CommonModule, TotalTaskAssignmentReportComponent],
+  imports: [
+    NgChartsModule,
+    CommonModule,
+    TotalTaskAssignmentReportComponent,
+    ConsultationByCategoryReportComponent,
+  ],
   template: `
-    <div class="flex flex-col items-center  gap-4">
+    <div class="flex flex-col items-center  gap-4 border border-green-500">
       <div
         class=" h-full  w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50 "
       >
@@ -56,25 +62,10 @@ import { TotalTaskAssignmentReportComponent } from './total-task-assignment-repo
         </div>
       </div>
 
-     <total-task-assignment-report />
+      <total-task-assignment-report />
 
-      <div
-        class="h-full min-h-[329px] w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50"
-      >
-        <div class="bg-primary p-4 text-primary-content ">
-          <h1 class="text-[20px] ">Consultations by Category</h1>
-        </div>
-        <div class="flex h-full w-full justify-center p-4">
-          <canvas
-            baseChart
-            class=" h-full w-full"
-            [options]="barChartOptions"
-            [data]="taskByStatus"
-            [plugins]="barChartPlugins"
-            type="bar"
-          >
-          </canvas>
-        </div>
+      <div class="w-full min-w-[229px] max-w-[429px]">
+        <consultation-by-category-report />
       </div>
     </div>
   `,

@@ -100,6 +100,29 @@ export class ConsultationService {
     return res;
   }
 
+  getAllConsultations(projectId: number) {
+    const res = this.newConsultationSignal$.pipe(
+      switchMap(() => {
+        const request$ = from(
+          this.client
+            .from('consultation')
+            .select('*')
+            .eq('project_id', projectId)
+        );
+
+        return request$;
+      }),
+      map((response) => {
+        if (response.error)
+          throw new Error(`error while fetching tasks 2: ${response.error}`);
+
+        return response.data;
+      })
+    );
+
+    return res;
+  }
+
   cancelInvitation(id: number) {
     // todo: fix foreign key violation
     const deleteReq = this.client.from('consultation').delete().eq('id', id);
