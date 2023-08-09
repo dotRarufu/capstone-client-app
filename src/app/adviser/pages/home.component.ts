@@ -52,7 +52,7 @@ import { AdviserReportsComponent } from '../components/reports.component';
 
         <ng-container *ngIf="active === 'reports' || isDesktop">
           <div
-            class="border border-red-500 w-full sm2:flex sm2:justify-center md:flex-shrink-0  md:basis-[357px]"
+            class="w-full sm2:flex sm2:justify-center md:flex-shrink-0  md:basis-[357px]"
           >
             <adviser-reports [sideColumn]="true" />
           </div>

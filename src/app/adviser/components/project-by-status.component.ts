@@ -32,19 +32,20 @@ export class ProjectsByStatusComponent {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   constructor() {
+    // todo: refactor, make only 1 call of this, together with other chart
     this.projectService.getProjects().subscribe({
       next: (projects) => {
         if (projects === null) return;
 
         const done = projects.filter((p) => p.isDone).length;
         const notDone = projects.length - done;
-        console.log("tmits:",  [done, notDone]);
+        console.log('tmits:', [done, notDone]);
 
         const newData = {
           labels: ['Done', 'Not Done'],
           datasets: [
             {
-              data:  [done, notDone],
+              data: [done, notDone],
               backgroundColor: ['#0b874b', '#3127b4'],
             },
           ],
@@ -71,9 +72,7 @@ export class ProjectsByStatusComponent {
       legend: {
         // display: true',
       },
-      datalabels: {
-        color: '#C9C5FF',
-      },
+      datalabels: { color: '#dad0f1', font: { size: 15, weight: 'bold' } },
     },
   };
   pieChartPlugins = [DataLabelsPlugin];
