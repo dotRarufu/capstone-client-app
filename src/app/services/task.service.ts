@@ -207,6 +207,25 @@ export class TaskService {
 
     return request$;
   }
+  getAllTasksBy(userId: string) {
+    const request$ = this.taskUpdateSubject.pipe(
+      switchMap(() => {
+        const request = this.client
+          .from('task')
+          .select('*')
+          .eq('assigner_id', userId);
+        return from(request);
+      }),
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      }),
+      
+    );
+
+    return request$;
+  }
 
   getAccompishedTasks(consultationId: number) {
     const taskIds = this.client

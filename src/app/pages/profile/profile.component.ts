@@ -7,7 +7,7 @@ import { Tab } from 'src/app/models/tab';
 import { ProfileViewComponent } from './profile-view.component';
 import { ReportsComponent } from 'src/app/components/reports.component';
 import { TabsService } from 'src/app/services/tabs.service';
-
+import { AdviserProfileReportsComponent } from 'src/app/adviser/components/profile-reports.component';
 
 @Component({
   standalone: true,
@@ -17,6 +17,7 @@ import { TabsService } from 'src/app/services/tabs.service';
     RouterModule,
     ReportsComponent,
     ProfileViewComponent,
+    AdviserProfileReportsComponent,
   ],
   template: `
     <div class="flex flex-col gap-[1rem]">
@@ -39,7 +40,7 @@ import { TabsService } from 'src/app/services/tabs.service';
           </div>
 
           <div class=" w-[357px] shrink-0  basis-[357px] ">
-            <Reports [sideColumn]="true" />
+            <adviser-profile-reports [sideColumn]="true" />
           </div>
         </div>
       </div>
@@ -62,7 +63,11 @@ export class ProfileComponent implements OnInit {
   ];
   projects: Project[] = [];
 
-  constructor(private router: Router, private route: ActivatedRoute, private tabsService: TabsService) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private tabsService: TabsService
+  ) {}
 
   handlerFactory(path: string) {
     return () => {
@@ -81,8 +86,7 @@ export class ProfileComponent implements OnInit {
 
     const active = child1.url[0].path;
     const route = ['profile'];
-   
+
     this.tabsService.setTabs(this.tabs, route, active);
   }
-
 }

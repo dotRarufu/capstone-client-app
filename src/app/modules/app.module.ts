@@ -14,6 +14,7 @@ import { LandingComponent } from '../pages/landing/landing.component';
 import { ProfileViewComponent } from '../pages/profile/profile-view.component';
 import { Component } from '@angular/core';
 import { ReportsComponent } from '../components/reports.component';
+import { AdviserProfileReportsComponent } from '../adviser/components/profile-reports.component';
 
 @Component({
   selector: 'app-root',
@@ -38,7 +39,7 @@ const routes: Routes = [
     children: [
       {
         path: 'reports',
-        component: ReportsComponent,
+        component: AdviserProfileReportsComponent,
       },
       {
         path: 'view',
