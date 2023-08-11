@@ -353,6 +353,48 @@ export class ProjectService {
     );
     return req$;
   }
+  getArchived() {
+    const user$ = from(this.authService.getAuthenticatedUser());
+    return user$.pipe(
+      map((res) => {
+        if (res === null) throw new Error('im,podsai');
+
+        return res;
+      }),
+      switchMap((user) => {
+        const adviser =
+          user.role_id === 1 ? 'capstone_adviser_id' : 'technical_adviser_id';
+        const req = this.client
+          .from('project')
+          .select('*')
+          .eq(adviser, user.uid)
+          .eq('is_done', true);
+        const req$ = from(req);
+
+        return req$;
+      }),
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      }),
+      switchMap(async (projectRows) => await this.getProject(projectRows))
+    );
+  }
+
+  // getProjectsReport(userId: string, role: number) {
+  //   const a = role === 1 ? "capstone_adviser_id" : "technical_adviser_id";
+  //   const b = role !== 1 ? "capstone_adviser_id" : "technical_adviser_id";
+
+  //   const req = this.client.from("project").select(b).eq(a, userId);
+  //   const req$ = from(req).pipe(map(r => {
+  //     const {data} = errorFilter(r)
+
+  //     return data;
+  //   }));
+
+  //   return req$;
+  // }
 
   async getProjectsFromCategory(categoryId: number) {
     const projectIds = (
@@ -389,6 +431,7 @@ export class ProjectService {
     const request = this.client
       .from('project')
       .select('*')
+      .eq("is_done", false)
       .eq('capstone_adviser_id', userUid);
 
     const projects$ = from(request).pipe(
@@ -432,6 +475,7 @@ export class ProjectService {
     const request = this.client
       .from('project')
       .select('id')
+      .eq("is_done", false)
       .eq('technical_adviser_id', userUid);
 
     const projects$ = from(request).pipe(
@@ -512,7 +556,7 @@ export class ProjectService {
           sectionName: section,
           members: memberNames,
           title: p.full_title,
-          isDone: p.is_done
+          isDone: p.is_done,
         };
       })
     );

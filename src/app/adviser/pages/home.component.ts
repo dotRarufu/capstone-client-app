@@ -14,6 +14,7 @@ import { ProjectCardComponent } from 'src/app/components/card/project-card.compo
 import { ProjectsComponent } from '../components/projects.component';
 import { ReportsComponent } from 'src/app/components/reports.component';
 import { AdviserReportsComponent } from '../components/reports.component';
+import { Project } from 'src/app/models/project';
 
 @Component({
   standalone: true,
@@ -42,6 +43,14 @@ import { AdviserReportsComponent } from '../components/reports.component';
                 <ProjectCard
                   (removeProjectId)="removeProjectId($event)"
                   *ngFor="let project of section.projects"
+                  [project]="project"
+                  [role]="role"
+                />
+              </ProjectsAccordion>
+
+              <ProjectsAccordion heading="Archived">
+                <ProjectCard
+                  *ngFor="let project of archived()"
                   [project]="project"
                   [role]="role"
                 />
@@ -77,6 +86,7 @@ export class HomeComponent implements OnInit {
     },
   ];
   role = this.route.snapshot.data['role'];
+  archived: WritableSignal<Project[]> = signal([]);
 
   constructor(
     private router: Router,
@@ -94,6 +104,15 @@ export class HomeComponent implements OnInit {
     this.watchWindowSize();
     this.watchActivePath();
     this.setupProjects();
+    this.setupArchivedProjects();
+  }
+
+  setupArchivedProjects() {
+    this.projectService.getArchived().subscribe({
+      next: (projects) => {
+        this.archived.set(projects);
+      }
+    })
   }
 
   setupProjects() {
