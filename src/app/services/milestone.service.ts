@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import supabaseClient from '../lib/supabase';
 import {
   BehaviorSubject,
@@ -19,6 +19,7 @@ import {
 } from 'rxjs';
 import errorFilter from '../utils/errorFilter';
 import { dateToDateString } from '../utils/dateToDateString';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,8 +28,11 @@ export class MilestoneService {
   private readonly client = supabaseClient;
   private updateMilestonesSubject = new BehaviorSubject('');
   updateMilestones$ = this.updateMilestonesSubject.asObservable();
+  private updateMilestoneTemplatesSubject = new BehaviorSubject('');
+  updateMilestonetemplatess$ =
+    this.updateMilestoneTemplatesSubject.asObservable();
 
-  constructor() {}
+  authService = inject(AuthService);
 
   add(
     projectId: number,
@@ -155,8 +159,113 @@ export class MilestoneService {
     return req$;
   }
 
+  getMilestoneTemplateData(id: number) {
+    const req = this.client
+      .from('milestone_template_data')
+      .select('*')
+      .eq('id', id);
+    const req$ = from(req).pipe(
+      take(1),
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        if (data.length === 0)
+          throw new Error('milestone template data does not exist');
+
+        return data[0];
+      })
+    );
+
+    return req$;
+  }
+
+  getMilestoneTemplates(userId: string) {
+    const req = this.client
+      .from('milestone_template_data')
+      .select('*')
+      .eq('user_uid', userId);
+    const req$ = from(req);
+    const res =this.updateMilestonetemplatess$.pipe(
+      switchMap(_ => req$),
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      })
+    );
+
+    return res;
+  }
+
+  deleteTemplate(templateId: number) {
+    const req = this.client
+      .from('milestone_template_data')
+      .delete()
+      .eq('id', templateId);
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      }),
+      tap((_) => this.signalMilestoneTemplatesUpdate())
+    );
+
+    return req$;
+  }
+
+  updateTemplate(templateId: number, data: {}) {
+    const req = this.client
+      .from('milestone_template_data')
+      .update(data)
+      .eq('id', templateId)
+      .select('*');
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        if (data.length === 0)
+          throw new Error('error updating milestone template data');
+
+        return data[0];
+      }),
+      tap((_) => this.signalMilestoneTemplatesUpdate())
+    );
+
+    return req$;
+  }
+
+  addTemplate(
+    userUid: string,
+    data: { title: string; description: string; dueDate: string }
+  ) {
+    const { title, description, dueDate } = data;
+
+    const res$ = from(
+      this.client.from('milestone_template_data').insert({
+        title,
+        description,
+        due_date: dueDate,
+        user_uid: userUid,
+      })
+    ).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      }),
+      tap((_) => this.signalMilestoneTemplatesUpdate())
+    );
+
+    return res$;
+  }
+
   private signalMilestonesUpdate() {
     const old = this.updateMilestonesSubject.getValue();
     this.updateMilestonesSubject.next(old + 1);
+  }
+  private signalMilestoneTemplatesUpdate() {
+    const old = this.updateMilestoneTemplatesSubject.getValue();
+    this.updateMilestoneTemplatesSubject.next(old + 1);
   }
 }

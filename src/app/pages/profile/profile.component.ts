@@ -8,6 +8,8 @@ import { ProfileViewComponent } from './profile-view.component';
 import { ReportsComponent } from 'src/app/components/reports.component';
 import { TabsService } from 'src/app/services/tabs.service';
 import { AdviserProfileReportsComponent } from 'src/app/adviser/components/profile-reports.component';
+import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milestone.component';
+import { AddMilestoneTemplateModalComponent } from 'src/app/adviser/components/capstone-adviser/add-milestone-template.component';
 
 @Component({
   standalone: true,
@@ -18,8 +20,10 @@ import { AdviserProfileReportsComponent } from 'src/app/adviser/components/profi
     ReportsComponent,
     ProfileViewComponent,
     AdviserProfileReportsComponent,
+    AddMilestoneTemplateModalComponent,
   ],
   template: `
+  <add-milestone-template-modal />
     <div class="flex flex-col gap-[1rem]">
       <div>
         <TopAppBar activePath="Profile" />
@@ -36,7 +40,7 @@ import { AdviserProfileReportsComponent } from 'src/app/adviser/components/profi
         <!-- desktop -->
         <div class="hidden w-full gap-[1rem]  md:flex lg:flex lg:w-[1040px] ">
           <div class="w-full  ">
-            <ProfileView />
+            <ProfileView [sideColumn]="true" />
           </div>
 
           <div class=" w-[357px] shrink-0  basis-[357px] ">

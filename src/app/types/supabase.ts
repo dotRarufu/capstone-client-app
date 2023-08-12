@@ -491,6 +491,59 @@ export interface Database {
           }
         ]
       }
+      milestone_template: {
+        Row: {
+          id: number
+          user_id: string | null
+        }
+        Insert: {
+          id?: number
+          user_id?: string | null
+        }
+        Update: {
+          id?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestone_template_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          }
+        ]
+      }
+      milestone_template_data: {
+        Row: {
+          description: string
+          due_date: string
+          id: number
+          title: string
+          user_uid: string
+        }
+        Insert: {
+          description: string
+          due_date: string
+          id?: number
+          title: string
+          user_uid: string
+        }
+        Update: {
+          description?: string
+          due_date?: string
+          id?: number
+          title?: string
+          user_uid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestone_template_data_user_uid_fkey"
+            columns: ["user_uid"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          }
+        ]
+      }
       next_deliverable: {
         Row: {
           consultation_id: number

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { NavigationRailComponent } from '../components/nav-rail.component';
 import { FeatherIconsModule } from '../modules/feather-icons.module';
 import { CommonModule } from '@angular/common';
@@ -28,21 +28,37 @@ import { fromEvent, map } from 'rxjs';
       <div class="hidden min-[998px]:block">
         <NavigationRail />
       </div>
-      <div class="hidden min-[998px]:block z-[99999] absolute bottom-[32px] right-[32px]">
-      <div class="alert alert-info rounded-[5px] ">
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-  <span>This project is in archived</span>
-</div>
 
-      </div>
-
-      <div class="basis-[48px] min-[998px]:hidden">
-        <div class="w-full h-full flex justify-center items-center  bg-info">
-          <span class="text-base text-info-content">
-            This project is in archived
-</span>
+      <ng-container *ngIf="isInArchive()">
+        <div
+          class="absolute bottom-[32px] right-[32px] z-[99999] hidden min-[998px]:block"
+        >
+          <div class="alert alert-info rounded-[5px] ">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              class="h-6 w-6 shrink-0 stroke-current"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            <span>This project is in archived</span>
+          </div>
         </div>
-      </div>
+
+        <div class="basis-[48px] min-[998px]:hidden">
+          <div class="flex h-full w-full items-center justify-center  bg-info">
+            <span class="text-base text-info-content">
+              This project is in archived
+            </span>
+          </div>
+        </div>
+      </ng-container>
 
       <div class="basis-[64px] min-[998px]:hidden">
         <mobile-header />
@@ -74,12 +90,13 @@ import { fromEvent, map } from 'rxjs';
     </div>
   `,
 })
-export class ProjectLayoutComponent implements OnDestroy {
+export class ProjectLayoutComponent {
   urls: string[] = [];
   toastrService = inject(ToastrService);
   projectService = inject(ProjectService);
   toastId: number | null = null;
   isDesktop = false;
+  isInArchive = signal(false);
 
   constructor(private router: Router, private route: ActivatedRoute) {
     this.watchWindowSize();
@@ -87,22 +104,7 @@ export class ProjectLayoutComponent implements OnDestroy {
     console.log('projet id from project layout:', projectId);
     this.projectService.getProjectInfo(projectId).subscribe({
       next: (p) => {
-        if (!p.is_done) return;
-
-        if (this.isDesktop) {
-          const toast = this.toastrService.info(
-            'This project is in archive',
-            undefined,
-            {
-              tapToDismiss: false,
-              disableTimeOut: true,
-              closeButton: false,
-              positionClass: 'toast-bottom-right',
-            }
-          );
-
-          this.toastId = toast.toastId;
-        }
+        this.isInArchive.set(p.is_done);
       },
     });
 
@@ -111,10 +113,6 @@ export class ProjectLayoutComponent implements OnDestroy {
         this.urls = url.map((u) => u.path);
       },
     });
-  }
-
-  ngOnDestroy() {
-    if (this.toastId !== null) this.toastrService.remove(this.toastId);
   }
 
   watchWindowSize() {

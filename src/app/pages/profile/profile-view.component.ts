@@ -6,23 +6,29 @@ import { User } from 'src/app/types/collection';
 import { from, map } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
+import { MilestonesComponent } from 'src/app/components/milestones.component';
+import { MilestonesTemplateComponent } from 'src/app/adviser/components/capstone-adviser/milestones-template.component';
+import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milestone.component';
 
 @Component({
   selector: 'ProfileView',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    MilestonesTemplateComponent,
+    AddMilestoneModalComponent,
+  ],
   template: `
     <ng-container *ngIf="!sideColumn">
       <div
         class="flex w-full flex-col gap-[1rem] sm2:w-[840px] md:w-full lg:w-full "
       >
         <div
-          
-          class="hidden md:flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
+          class="hidden flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between md:flex"
         >
           <h2 class="text-2xl ">Profile</h2>
         </div>
-        <div class="hidden md:block h-[2px] w-full bg-base-content/10"></div>
+        <div class="hidden h-[2px] w-full bg-base-content/10 md:block"></div>
 
         <div class="flex w-full flex-col gap-4">
           <div class="flex gap-4">
@@ -62,26 +68,63 @@ import { CommonModule } from '@angular/common';
               </button>
             </li>
           </ul>
+
+          <milestones-template *ngIf="user.role_id === 1" />
         </div>
       </div>
     </ng-container>
+
     <ng-container *ngIf="sideColumn">
       <div
-        class="hidden md:flex w-full flex-col gap-[1rem] sm2:w-[840px] md:w-full lg:w-full"
+        class="hidden w-full flex-col gap-[1rem] sm2:w-[840px] md:flex md:w-full lg:w-full"
       >
         <div
           class="flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
         >
-          <h2 class="text-2xl ">Projects</h2>
-          <div
-            class="input-group rounded-[3px] border border-base-content/50 sm1:max-w-[371px]"
-          ></div>
+          <h2 class="text-2xl ">Profile</h2>
         </div>
-        <div class="hidden md:block h-[2px] w-full bg-base-content/10"></div>
-        <div
-          class="flex w-full flex-col justify-items-center gap-[24px] py-[1rem]"
-        >
-          test
+        <div class="hidden h-[2px] w-full bg-base-content/30 md:block"></div>
+
+        <div class="flex w-full flex-col gap-4">
+          <div class="flex gap-4">
+            <div class="avatar">
+              <div class="w-24 rounded-xl">
+                <img src="https://api.multiavatar.com/test.png" />
+              </div>
+            </div>
+            <div class="flex flex-col justify-center gap-1">
+              <h1 class="text-[24px]">{{ user.name }}</h1>
+              <p class="text-base text-base-content/70">ID: {{ user.uid }}</p>
+            </div>
+          </div>
+
+          <ul>
+            <li class="form-control w-full">
+              <label class="label flex cursor-pointer items-center">
+                <span class="label-text text-[20px]">Notifications</span>
+                <input type="checkbox" class="toggle-primary toggle" checked />
+              </label>
+            </li>
+            <li class="form-control w-full">
+              <label class="label flex cursor-pointer items-center">
+                <span class="label-text text-[20px]">Dark Mode</span>
+                <input
+                  (change)="changeTheme()"
+                  type="checkbox"
+                  class="toggle-primary toggle"
+                  checked
+                />
+              </label>
+            </li>
+            <li class="flex w-full items-center justify-between px-1 py-2">
+              <span class="label-text text-[20px]">Add to Home Screen</span>
+              <button (click)="installPwa()" class="btn-primary btn-sm btn">
+                Install
+              </button>
+            </li>
+          </ul>
+
+          <milestones-template *ngIf="user.role_id === 1" [sideColumn]="true" />
         </div>
       </div>
     </ng-container>
