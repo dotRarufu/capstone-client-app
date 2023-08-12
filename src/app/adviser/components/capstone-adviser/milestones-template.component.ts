@@ -34,107 +34,121 @@ import { from, map, switchMap } from 'rxjs';
   ],
   template: `
     <ng-container *ngIf="!sideColumn">
-      <h1 class="hidden text-xl text-base-content min-[998px]:block">
-        Milestones Template
-      </h1>
-
       <div
-        class="flex h-full flex-col justify-start gap-x-[16px] sm1:grid sm1:grid-cols-[1fr_3fr] md:grid-cols-[1fr_3fr]"
+        class="rounded-[5px] border border-base-content/50 bg-base-100 p-[16px] "
       >
-        <ul class="steps steps-vertical pt-0 sm1:block">
-          <li
-            *ngFor="let milestone of milestones"
-            class="step"
-            [class.step-primary]="false"
-          >
-            <div class="flex w-full items-center justify-between">
-              <span
-                class="btn-link btn px-0 text-left text-base-content no-underline"
-                (click)="handleMilestoneClick(milestone.id)"
-                [class.text-primary]="selectedMilestoneId() === milestone.id"
-              >
-                {{ milestone.title }}
-              </span>
-              <div class="badge badge-secondary sm1:hidden">
-                {{ milestone.dueDate }}
-              </div>
-            </div>
-          </li>
+        <h1 class="text-[18px] font-semibold ">Milestones Template</h1>
 
-          <li
+        <div
+          class="flex h-full flex-col justify-start gap-x-[16px] sm1:grid sm1:grid-cols-[1fr_3fr] md:grid-cols-[1fr_3fr]"
+        >
+          <ul class="steps steps-vertical pt-0 sm1:block">
+            <li
+              *ngFor="let milestone of milestones"
+              class="step"
+              [class.step-primary]="false"
+            >
+              <div class="flex w-full items-center justify-between">
+                <span
+                  class="btn-link btn px-0 text-left text-base-content no-underline"
+                  (click)="handleMilestoneClick(milestone.id)"
+                  [class.text-primary]="selectedMilestoneId() === milestone.id"
+                >
+                  {{ milestone.title }}
+                </span>
+                <div class="badge badge-secondary sm1:hidden">
+                  {{ milestone.dueDate }}
+                </div>
+              </div>
+            </li>
+
+            <li
+              onclick="addMilestone.showModal()"
+              class="btn-ghost btn-sm flex flex-row items-center justify-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+            >
+              <i-feather
+                class="h-[20px] w-[20px] text-base-content/70"
+                name="plus"
+              />
+              <span class="uppercase"> Add </span>
+            </li>
+          </ul>
+
+          <div class="pt-[20px]">
+            <milestone-template-info
+              *ngIf="selectedMilestoneId() !== null; else empty"
+              [milestoneId]="selectedMilestoneId()"
+              (closed)="selectedMilestoneId.set(null)"
+            />
+
+            <ng-template #empty>
+            <div class=" flex text-base-content/50 flex-col items-center justify-center gap-[8px]">
+                <i-feather name="flag" class=""/>
+                <span class="text-base"
+                  >Select a milestone</span
+                >
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="sideColumn">
+      <div
+        class="rounded-[5px] border border-base-content/50 bg-base-100 p-[16px]"
+      >
+        <div class="flex w-full justify-between">
+          <h1 class="text-[18px] font-semibold">Milestones Template</h1>
+          <button
             onclick="addMilestone.showModal()"
-            class="btn-ghost btn-sm flex flex-row items-center justify-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+            class="btn-ghost btn-sm flex w-fit flex-row items-center justify-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
           >
             <i-feather
               class="h-[20px] w-[20px] text-base-content/70"
               name="plus"
             />
             <span class="uppercase"> Add </span>
-          </li>
-        </ul>
-
-        <div class="rounded-[5px] border bg-base-300 p-[16px] pt-[20px]">
-          <milestone-template-info
-            *ngIf="selectedMilestoneId() !== null; else empty"
-            [milestoneId]="selectedMilestoneId()"
-            (closed)="selectedMilestoneId.set(null)"
-          />
-
-          <ng-template #empty>
-            <div class="text-base text-base-content/50 ">
-              Select a milestone
-            </div>
-          </ng-template>
+          </button>
         </div>
-      </div>
-    </ng-container>
-    <ng-container *ngIf="sideColumn">
-      <div class="flex w-full justify-between">
-        <h1 class="text-xl text-base-content">Milestones Template</h1>
-        <button
-          onclick="addMilestone.showModal()"
-          class="btn-ghost btn-sm flex w-fit flex-row items-center justify-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
-        >
-          <i-feather
-            class="h-[20px] w-[20px] text-base-content/70"
-            name="plus"
-          />
-          <span class="uppercase"> Add </span>
-        </button>
-      </div>
 
-      <div class="flex h-full flex-col justify-start gap-x-[16px] ">
-        <ul class="steps steps-vertical sm1:block ">
-          <li
-            *ngFor="let milestone of milestones"
-            class="step"
-            [class.step-primary]="false"
-          >
-            <div class="flex w-full items-center justify-between">
-              <span
-                class="btn-link btn px-0 text-left text-base-content no-underline"
-                (click)="handleMilestoneClick(milestone.id)"
-                [class.text-primary]="selectedMilestoneId() === milestone.id"
-              >
-                {{ milestone.title }}
-              </span>
-              <div class="badge badge-secondary">
-                {{ milestone.dueDate }}
+        <div class="flex h-full flex-col justify-start gap-x-[16px] ">
+          <ul class="steps steps-vertical sm1:block ">
+            <li
+              *ngFor="let milestone of milestones"
+              class="step"
+              [class.step-primary]="false"
+            >
+              <div class="flex w-full items-center justify-between">
+                <span
+                  class="btn-link btn px-0 text-left text-base-content no-underline"
+                  (click)="handleMilestoneClick(milestone.id)"
+                  [class.text-primary]="selectedMilestoneId() === milestone.id"
+                >
+                  {{ milestone.title }}
+                </span>
+                <div class="badge badge-secondary">
+                  {{ milestone.dueDate }}
+                </div>
               </div>
-            </div>
-          </li>
-        </ul>
+            </li>
+          </ul>
 
-        <div class="rounded-[5px] border bg-base-300 p-[16px]">
-          <milestone-template-info
-            *ngIf="selectedMilestoneId() !== null; else empty"
-            [milestoneId]="selectedMilestoneId()"
-            (closed)="selectedMilestoneId.set(null)"
-          />
+          <div class="rounded-[5px] border p-[16px]">
+            <milestone-template-info
+              *ngIf="selectedMilestoneId() !== null; else empty"
+              [milestoneId]="selectedMilestoneId()"
+              (closed)="selectedMilestoneId.set(null)"
+            />
 
-          <ng-template #empty>
-            <div class="text-base text-base-content/50">Select a milestone</div>
-          </ng-template>
+            <ng-template #empty>
+              <div class=" flex text-base-content/50 flex-col items-center justify-center gap-[8px]">
+                <i-feather name="flag" class=""/>
+                <span class="text-base"
+                  >Select a milestone</span
+                >
+              </div>
+            </ng-template>
+          </div>
         </div>
       </div>
     </ng-container>

@@ -22,7 +22,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
   standalone: true,
   imports: [BreadcrumbModule, FormsModule],
   template: `
-    <div class=" flex flex-col gap-[16px]">
+    <div class=" flex flex-col gap-[16px] pt-[20px]">
       <div class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Title</div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -32,7 +32,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
           [(ngModel)]="title"
           (change)="handleTitleChange()"
           placeholder="Type here"
-          class="input-bordered input input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
+          class="input-bordered input bg-base-300/80 input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
         />
       </div>
 
@@ -45,7 +45,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
           [disabled]="!isCapstoneAdviser"
           (change)="handleDescriptionChange()"
           placeholder="Type here"
-          class="textarea-bordered textarea input-md h-[144px] w-full rounded-[3px] focus:textarea-primary focus:outline-0"
+          class="textarea-bordered bg-base-300/80 textarea input-md h-[144px] w-full rounded-[3px] focus:textarea-primary focus:outline-0"
         ></textarea>
       </div>
 
@@ -83,7 +83,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
         </div>
         <button
           (click)="handleDeleteMilestone()"
-          class="btn-sm btn gap-2 rounded-[3px] text-error hover:btn-error"
+          class="btn-sm btn btn-error rounded-[5px] gap-2 hover:btn-error"
         >
           Delete
         </button>

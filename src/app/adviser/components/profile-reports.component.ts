@@ -36,10 +36,10 @@ import { TotalTasksByCategoryReportComponent } from './total-tasks-by-category.c
     <ng-container *ngIf="sideColumn">
       <div class="flex h-full flex-col gap-[16px] ">
         <div class="flex justify-between ">
-          <h1 class="text-2xl text-base-content ">Reports</h1>
+          <h1 class="text-[24px] text-base-content ">Reports</h1>
         </div>
 
-        <div class="h-[2px] w-full bg-base-content/10"></div>
+        <div class="h-[2px] w-full bg-base-content/20"></div>
 
         <div class="flex flex-col items-center gap-4  ">
           <div class="w-full min-w-[229px] max-w-[429px]">

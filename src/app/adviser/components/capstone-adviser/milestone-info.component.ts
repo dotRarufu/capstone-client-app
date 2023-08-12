@@ -40,7 +40,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
           [(ngModel)]="title"
           (change)="handleTitleChange()"
           placeholder="Type here"
-          class="input-bordered input input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
+          class="input-bordered bg-base-300/80 input input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
         />
       </div>
 
@@ -52,7 +52,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
           [(ngModel)]="description"
           (change)="handleDescriptionChange()"
           placeholder="Type here"
-          class="textarea-bordered textarea input-md h-[144px] w-full rounded-[3px] focus:textarea-primary focus:outline-0"
+          class="textarea-bordered bg-base-300/80 textarea input-md h-[144px] w-full rounded-[3px] focus:textarea-primary focus:outline-0"
         ></textarea>
       </div>
 
@@ -63,15 +63,11 @@ import { getRolePath } from 'src/app/utils/getRolePath';
           type="date"
           [formControl]="dueDate"
           (change)="handleDueDateChange()"
-          class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-base-100 px-3 py-2 text-[20px] text-base text-base-content/70 placeholder:text-[20px] placeholder:text-base-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+          class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-base-300/80 px-3 py-2 text-[20px] text-base text-base-content/70 placeholder:text-[20px] placeholder:text-base-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
         />
       </div>
 
-      <div class="flex flex-col gap-[4px]">
-        <div class="text-base font-semibold">Mark as Achieved</div>
-        <div class="h-[2px] w-full bg-base-content/10"></div>
-      </div>
-
+     
       <div class="flex items-center justify-between ">
         <div class="flex flex-col gap-[4px]">
           <div class="text-base font-semibold">Delete</div>

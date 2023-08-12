@@ -64,10 +64,15 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
       <div>
         <router-outlet #myOutlet="outlet" />
         <div
-          class="hidden pt-[16px] text-base text-base-content/50 sm1:block"
+          class="hidden sm1:block pt-[20px]"
           *ngIf="!myOutlet.isActivated"
         >
-          Select a milestone
+        <div class=" flex text-base-content/50 flex-col items-center justify-center gap-[8px]">
+                <i-feather name="flag" class=""/>
+                <span class="text-base"
+                  >Select a milestone</span
+                >
+              </div>
         </div>
       </div>
     </div>

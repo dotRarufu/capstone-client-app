@@ -26,7 +26,7 @@ import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milesto
         <div
           class="hidden flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between md:flex"
         >
-          <h2 class="text-2xl ">Profile</h2>
+          <h2 class="text-[24px] text-base-content sm1:text-[32px]">Profile</h2>
         </div>
         <div class="hidden h-[2px] w-full bg-base-content/10 md:block"></div>
 
@@ -46,13 +46,13 @@ import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milesto
           <ul>
             <li class="form-control w-full">
               <label class="label flex cursor-pointer items-center">
-                <span class="label-text text-[20px]">Notifications</span>
+                <span class="label-text text-[18px] sm2:text-[20px]">Notifications</span>
                 <input type="checkbox" class="toggle-primary toggle" checked />
               </label>
             </li>
             <li class="form-control w-full">
               <label class="label flex cursor-pointer items-center">
-                <span class="label-text text-[20px]">Dark Mode</span>
+                <span class="label-text text-[18px] sm2:text-[20px]">Dark Mode</span>
                 <input
                   (change)="changeTheme()"
                   type="checkbox"
@@ -62,7 +62,7 @@ import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milesto
               </label>
             </li>
             <li class="flex w-full items-center justify-between px-1 py-2">
-              <span class="label-text text-[20px]">Add to Home Screen</span>
+              <span class="label-text text-[18px] sm2:text-[20px]">Add to Home Screen</span>
               <button (click)="installPwa()" class="btn-primary btn-sm btn">
                 Install
               </button>
@@ -81,9 +81,9 @@ import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milesto
         <div
           class="flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
         >
-          <h2 class="text-2xl ">Profile</h2>
+          <h2 class="text-[24px] text-base-content">Profile</h2>
         </div>
-        <div class="hidden h-[2px] w-full bg-base-content/30 md:block"></div>
+        <div class="hidden h-[2px] w-full bg-base-content/20 md:block"></div>
 
         <div class="flex w-full flex-col gap-4">
           <div class="flex gap-4">
@@ -101,13 +101,13 @@ import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milesto
           <ul>
             <li class="form-control w-full">
               <label class="label flex cursor-pointer items-center">
-                <span class="label-text text-[20px]">Notifications</span>
+                <span class="label-text text-[18px] sm2:text-[20px]">Notifications</span>
                 <input type="checkbox" class="toggle-primary toggle" checked />
               </label>
             </li>
             <li class="form-control w-full">
               <label class="label flex cursor-pointer items-center">
-                <span class="label-text text-[20px]">Dark Mode</span>
+                <span class="label-text text-[18px] sm2:text-[20px]">Dark Mode</span>
                 <input
                   (change)="changeTheme()"
                   type="checkbox"
@@ -117,7 +117,7 @@ import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milesto
               </label>
             </li>
             <li class="flex w-full items-center justify-between px-1 py-2">
-              <span class="label-text text-[20px]">Add to Home Screen</span>
+              <span class="label-text text-[18px] sm2:text-[20px]">Add to Home Screen</span>
               <button (click)="installPwa()" class="btn-primary btn-sm btn">
                 Install
               </button>
