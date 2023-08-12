@@ -34,6 +34,8 @@ import {
   ChevronLeft,
   CheckCircle,
   Minus,
+  Save
+
 } from 'angular-feather/icons';
 
 const icons = {
@@ -70,6 +72,7 @@ const icons = {
   ChevronLeft,
   CheckCircle,
   Minus,
+  Save
 };
 
 @NgModule({

@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import supabaseClient from '../lib/supabase';
-import { from, map } from 'rxjs';
+import { from, map, switchMap } from 'rxjs';
 import errorFilter from '../utils/errorFilter';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +10,6 @@ import errorFilter from '../utils/errorFilter';
 export class UserService {
   private readonly client = supabaseClient;
 
-  constructor() {}
 
   // todo: refactor,  turn to observable
   async getUser(uid: string) {

@@ -1,4 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+  ViewChildren,
+  inject,
+} from '@angular/core';
 import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
 import { AuthService } from 'src/app/services/auth.service';
@@ -9,6 +17,10 @@ import { CommonModule } from '@angular/common';
 import { MilestonesComponent } from 'src/app/components/milestones.component';
 import { MilestonesTemplateComponent } from 'src/app/adviser/components/capstone-adviser/milestones-template.component';
 import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milestone.component';
+import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FormsModule } from '@angular/forms';
+import { UserService } from 'src/app/services/user.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'ProfileView',
@@ -17,6 +29,8 @@ import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milesto
     CommonModule,
     MilestonesTemplateComponent,
     AddMilestoneModalComponent,
+    FeatherIconsModule,
+    FormsModule,
   ],
   template: `
     <ng-container *ngIf="!sideColumn">
@@ -46,13 +60,17 @@ import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milesto
           <ul>
             <li class="form-control w-full">
               <label class="label flex cursor-pointer items-center">
-                <span class="label-text text-[18px] sm2:text-[20px]">Notifications</span>
+                <span class="label-text text-[18px] sm2:text-[20px]"
+                  >Notifications</span
+                >
                 <input type="checkbox" class="toggle-primary toggle" checked />
               </label>
             </li>
             <li class="form-control w-full">
               <label class="label flex cursor-pointer items-center">
-                <span class="label-text text-[18px] sm2:text-[20px]">Dark Mode</span>
+                <span class="label-text text-[18px] sm2:text-[20px]"
+                  >Dark Mode</span
+                >
                 <input
                   (change)="changeTheme()"
                   type="checkbox"
@@ -62,7 +80,9 @@ import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milesto
               </label>
             </li>
             <li class="flex w-full items-center justify-between px-1 py-2">
-              <span class="label-text text-[18px] sm2:text-[20px]">Add to Home Screen</span>
+              <span class="label-text text-[18px] sm2:text-[20px]"
+                >Add to Home Screen</span
+              >
               <button (click)="installPwa()" class="btn-primary btn-sm btn">
                 Install
               </button>
@@ -92,8 +112,29 @@ import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milesto
                 <img src="https://api.multiavatar.com/test.png" />
               </div>
             </div>
-            <div class="flex flex-col justify-center gap-1">
-              <h1 class="text-[24px]">{{ user.name }}</h1>
+            <div class="flex w-full flex-col justify-center gap-1">
+              <div class="flex items-center justify-between">
+                <input
+                  *ngIf="nameIsInEdit"
+                  type="text"
+                  id="nameInput"
+                  [(ngModel)]="newName"
+                  placeholder="Name"
+                  class="input-bordered input input-md w-full rounded-[3px] bg-base-300/80 text-[24px] focus:input-primary focus:outline-0"
+                />
+                <h1 *ngIf="!nameIsInEdit" class="text-[24px]">
+                  {{ user.name }}
+                </h1>
+
+                <label
+                  for="nameInput"
+                  (click)="handleNameButton()"
+                  class="btn-ghost btn-square btn-sm btn text-base-content"
+                >
+                  <i-feather *ngIf="!nameIsInEdit" name="edit" />
+                  <i-feather *ngIf="nameIsInEdit" name="save" />
+                </label>
+              </div>
               <p class="text-base text-base-content/70">ID: {{ user.uid }}</p>
             </div>
           </div>
@@ -101,13 +142,17 @@ import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milesto
           <ul>
             <li class="form-control w-full">
               <label class="label flex cursor-pointer items-center">
-                <span class="label-text text-[18px] sm2:text-[20px]">Notifications</span>
+                <span class="label-text text-[18px] sm2:text-[20px]"
+                  >Notifications</span
+                >
                 <input type="checkbox" class="toggle-primary toggle" checked />
               </label>
             </li>
             <li class="form-control w-full">
               <label class="label flex cursor-pointer items-center">
-                <span class="label-text text-[18px] sm2:text-[20px]">Dark Mode</span>
+                <span class="label-text text-[18px] sm2:text-[20px]"
+                  >Dark Mode</span
+                >
                 <input
                   (change)="changeTheme()"
                   type="checkbox"
@@ -117,7 +162,9 @@ import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milesto
               </label>
             </li>
             <li class="flex w-full items-center justify-between px-1 py-2">
-              <span class="label-text text-[18px] sm2:text-[20px]">Add to Home Screen</span>
+              <span class="label-text text-[18px] sm2:text-[20px]"
+                >Add to Home Screen</span
+              >
               <button (click)="installPwa()" class="btn-primary btn-sm btn">
                 Install
               </button>
@@ -137,11 +184,38 @@ export class ProfileViewComponent implements OnInit {
   theme: string = 'original';
   @Input() sideColumn? = false;
   user: User = { name: 'Unloggedin User', role_id: -1, uid: '1231-232as-ddaf' };
+  nameIsInEdit = false;
+  newName = this.user.name;
+  userService = inject(UserService);
+  spinner = inject(NgxSpinnerService);
+  toastr = inject(ToastrService);
 
   constructor(
     private authService: AuthService,
-    private spinner: NgxSpinnerService
+ 
   ) {}
+
+  handleNameButton() {
+    if (this.nameIsInEdit) {
+      this.nameIsInEdit = false;
+      console.log('name saved:', this.newName);
+      
+      this.spinner.show();
+      this.authService.updateName(this.newName).subscribe({
+        next: (status) => {
+          this.toastr.success("successfully updated name");
+          this.spinner.hide();
+          this.user.name = this.newName
+        }
+      });
+
+      return;
+    }
+
+    console.log('edit name:');
+
+    this.nameIsInEdit = true;
+  }
 
   ngOnInit() {
     // use loading while getCurrentUser is not loaded
@@ -160,6 +234,7 @@ export class ProfileViewComponent implements OnInit {
       .subscribe({
         next: (user) => {
           this.user = user;
+          this.newName = user.name;
           this.spinner.hide();
         },
       });

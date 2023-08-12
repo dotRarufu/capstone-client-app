@@ -5,12 +5,14 @@ import { DatabaseService } from './database.service';
 import { User } from '../types/collection';
 import { UserService } from './user.service';
 import supabaseClient from '../lib/supabase';
+import errorFilter from '../utils/errorFilter';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
+  private readonly client = supabaseClient;
   user$ = this.userSubject.asObservable();
 
   constructor(
@@ -128,5 +130,29 @@ export class AuthService {
     if (user == null) return null;
 
     return user;
+  }
+
+  updateName(name: string) {
+    const user$ = from(this.getAuthenticatedUser());
+    return user$.pipe(
+      map(user => {
+        if (user === null) throw new Error("asdsad ");
+
+        return user.uid;
+      }),
+      switchMap((uid) =>
+        this.client
+          .from('user')
+          .update({
+            name,
+          })
+          .eq('uid', uid).select("*")
+      ),
+      map(res => {
+        const {statusText, data} = errorFilter(res);
+        console.log("new", data);
+        return statusText;
+      })
+    );
   }
 }
