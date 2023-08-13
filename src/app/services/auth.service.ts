@@ -206,7 +206,7 @@ export class AuthService {
 
         return forkJoin([avatarLastUpdate$, upload$]).pipe(
 
-          tap((_) => {console.log("new date from uploadAvatar:",date);this.signalUpdateUserProfile();})
+          tap((_) => this.signalUpdateUserProfile())
         );
       })
     
@@ -217,6 +217,21 @@ export class AuthService {
 
     return req$;
   }
+
+deleteAvatar(path: string) {
+  // todo: run this on new avatar upload, or learn the cdn bust cache
+  const req = this.client.storage.from("avatars").remove([path]);
+  const req$ = from(req).pipe(
+    map(res => {
+      if (res.error !== null) throw new Error("failed to delete image")
+console.log("path",path)
+      return res.data
+    }),
+    tap((_) => this.signalUpdateUserProfile())
+  );
+
+  return req$;
+}
 
   private signalUpdateUserProfile() {
     const old = this.updateUserProfileSubject.getValue();

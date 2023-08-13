@@ -26,7 +26,7 @@ import { User } from 'src/app/types/collection';
 
       <button
         *ngIf="showRemoveButton"
-        (click)="handleClick && handleClick()"
+        (click)="handleClick()"
         class="btn-ghost btn-xs btn gap-2 rounded-[3px] text-[14px] font-normal text-base-content hover:text-error  "
       >
         Remove
@@ -35,7 +35,7 @@ import { User } from 'src/app/types/collection';
   `,
 })
 export class ParticipantCardComponent {
-  @Input() user: User = { name: '', role_id: -1, uid: '' };
+  @Input() user: User = { name: '', role_id: -1, uid: '',avatar_last_update: 0 };
   @Input({ required: true }) showRemoveButton!: boolean;
   @Output() removeButtonClicked = new EventEmitter<string>();
 
