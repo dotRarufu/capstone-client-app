@@ -5,14 +5,17 @@ import {
   OnInit,
   ViewChild,
   ViewChildren,
+  WritableSignal,
+  computed,
   inject,
+  signal,
 } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
 import { AuthService } from 'src/app/services/auth.service';
 import { User } from 'src/app/types/collection';
-import { from, map } from 'rxjs';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { from, map, switchMap } from 'rxjs';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
 import { MilestonesComponent } from 'src/app/components/milestones.component';
 import { MilestonesTemplateComponent } from 'src/app/adviser/components/capstone-adviser/milestones-template.component';
@@ -21,16 +24,19 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { FormsModule } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
 import { ToastrService } from 'ngx-toastr';
+import { ImgFallbackModule } from 'ngx-img-fallback';
 
 @Component({
   selector: 'ProfileView',
   standalone: true,
   imports: [
     CommonModule,
+    ImgFallbackModule,
     MilestonesTemplateComponent,
     AddMilestoneModalComponent,
     FeatherIconsModule,
     FormsModule,
+    NgxSpinnerModule
   ],
   template: `
     <ng-container *ngIf="!sideColumn">
@@ -46,14 +52,35 @@ import { ToastrService } from 'ngx-toastr';
 
         <div class="flex w-full flex-col gap-4">
           <div class="flex gap-4">
-            <div class="avatar">
-              <div class="w-24 rounded-xl">
-                <img src="https://api.multiavatar.com/test.png" />
+          <div class="relative">
+              <div class="avatar">
+                <div class="w-24 overflow-clip rounded-full">
+                  <img
+                  [src]="userAvatarUrl()"
+                    src-fallback="{{ fallbackAvatar }}"
+                  />
+                </div>
+              </div>
+              <div class="dropdown bottom-0 absolute left-0 z-[999]">
+                <label
+                  tabindex="0"
+                  class=" btn-square btn-sm btn flex rounded-[5px] border border-transparent bg-base-300/80 p-[4px] hover:btn-primary hover:outline-none"
+                  ><i-feather name="edit"
+                /></label>
+                <ul
+                  tabindex="0"
+                  class="dropdown-content menu rounded-[5px] z-[1] w-52 bg-base-300/80 p-0 shadow"
+                >
+                  <li (click)="handleUploadClick()"><a>Upload a photo</a></li>
+                  <li><a>Remove photo</a></li>
+                </ul>
               </div>
             </div>
-            <div class="flex flex-col justify-center gap-1">
-              <h1 class="text-[24px]">{{ user.name }}</h1>
-              <p class="text-base text-base-content/70">ID: {{ user.uid }}</p>
+            <div class="flex flex-col justify-center gap-0">
+              <h1 class="text-[24px]">{{ user().name }}</h1>
+              <p class="text-base text-base-content/70">{{user().email}}</p>
+
+              <p class="text-base text-base-content/70">ID: {{ user().uid }}</p>
             </div>
           </div>
 
@@ -89,7 +116,7 @@ import { ToastrService } from 'ngx-toastr';
             </li>
           </ul>
 
-          <milestones-template *ngIf="user.role_id === 1" />
+          <milestones-template *ngIf="user().role_id === 1" />
         </div>
       </div>
     </ng-container>
@@ -107,12 +134,31 @@ import { ToastrService } from 'ngx-toastr';
 
         <div class="flex w-full flex-col gap-4">
           <div class="flex gap-4">
-            <div class="avatar">
-              <div class="w-24 rounded-xl">
-                <img src="https://api.multiavatar.com/test.png" />
+            <div class="relative">
+              <div class="avatar">
+                <div class="w-24 overflow-clip rounded-full">
+                  <img
+                    [src]="userAvatarUrl()"
+                    src-fallback="{{ fallbackAvatar }}"
+                  />
+                </div>
+              </div>
+              <div class="dropdown bottom-0 absolute left-0 z-[999]">
+                <label
+                  tabindex="0"
+                  class=" btn-square btn-sm btn flex rounded-[5px] border border-transparent bg-base-300/80 p-[4px] hover:btn-primary hover:outline-none"
+                  ><i-feather name="edit"
+                /></label>
+                <ul
+                  tabindex="0"
+                  class="dropdown-content menu rounded-[5px] z-[1] w-52 bg-base-300/80 p-0 shadow"
+                >
+                  <li (click)="handleUploadClick()"><a>Upload a photo</a></li>
+                  <li><a>Remove photo</a></li>
+                </ul>
               </div>
             </div>
-            <div class="flex w-full flex-col justify-center gap-1">
+            <div class="flex w-full flex-col justify-center gap-0">
               <div class="flex items-center justify-between">
                 <input
                   *ngIf="nameIsInEdit"
@@ -123,7 +169,7 @@ import { ToastrService } from 'ngx-toastr';
                   class="input-bordered input input-md w-full rounded-[3px] bg-base-300/80 text-[24px] focus:input-primary focus:outline-0"
                 />
                 <h1 *ngIf="!nameIsInEdit" class="text-[24px]">
-                  {{ user.name }}
+                  {{ user().name }}
                 </h1>
 
                 <label
@@ -135,7 +181,8 @@ import { ToastrService } from 'ngx-toastr';
                   <i-feather *ngIf="nameIsInEdit" name="save" />
                 </label>
               </div>
-              <p class="text-base text-base-content/70">ID: {{ user.uid }}</p>
+              <p class="text-base text-base-content/70">{{user().email}}</p>
+              <p class="text-base text-base-content/70">{{ user().uid }}</p>
             </div>
           </div>
 
@@ -171,10 +218,20 @@ import { ToastrService } from 'ngx-toastr';
             </li>
           </ul>
 
-          <milestones-template *ngIf="user.role_id === 1" [sideColumn]="true" />
+          <milestones-template *ngIf="user().role_id === 1" [sideColumn]="true" />
         </div>
       </div>
     </ng-container>
+
+    <input (change)="handleFileInputChange()" #fileInput type="file" class="hidden" /> <ngx-spinner
+      bdColor="rgba(0, 0, 0, 0.8)"
+      size="default"
+      color="#fff"
+      type="square-loader"
+      [fullScreen]="true"
+      ><p style="color: white">Loading...</p></ngx-spinner
+    >
+
   `,
 })
 export class ProfileViewComponent implements OnInit {
@@ -183,57 +240,101 @@ export class ProfileViewComponent implements OnInit {
   projects: Project[] = [];
   theme: string = 'original';
   @Input() sideColumn? = false;
-  user: User = { name: 'Unloggedin User', role_id: -1, uid: '1231-232as-ddaf' };
+  user: WritableSignal<User & {
+    email?: string; 
+    avatar: string
+  }> = signal({
+    avatar: '',
+    name: 'Unloggedin User',
+    role_id: -1,
+    uid: '1231-232as-ddaf',
+    email: 'user@email.com',
+    avatar_last_update: 0
+  });
   nameIsInEdit = false;
-  newName = this.user.name;
+  newName = this.user().name;
   userService = inject(UserService);
   spinner = inject(NgxSpinnerService);
   toastr = inject(ToastrService);
+  fallbackAvatar = `https://api.multiavatar.com/${this.user().name}.png`;
+  @ViewChild("fileInput") fileInput!: ElementRef<HTMLInputElement>; 
 
-  constructor(
-    private authService: AuthService,
- 
-  ) {}
+  constructor(private authService: AuthService) {}
 
   handleNameButton() {
     if (this.nameIsInEdit) {
       this.nameIsInEdit = false;
-      console.log('name saved:', this.newName);
-      
+
       this.spinner.show();
       this.authService.updateName(this.newName).subscribe({
         next: (status) => {
-          this.toastr.success("successfully updated name");
+          this.toastr.success('successfully updated name');
           this.spinner.hide();
-          this.user.name = this.newName
-        }
+          // this.user().name = this.newName;
+        },
       });
 
       return;
     }
 
-    console.log('edit name:');
-
     this.nameIsInEdit = true;
+  }
+  userAvatarUrl = computed(() => { 
+
+    
+    const{avatar_last_update,avatar} = this.user();
+    const time =avatar_last_update;
+
+    if (time === null) {
+  
+      return avatar;
+    }
+    const base = avatar.slice(0, avatar.indexOf('.png'));
+    const newUrl = `${base}-t-${time}.png`
+
+    return newUrl;
+  })
+
+  handleUploadClick() {
+    console.log("fileInpuit:",this.fileInput);
+    this.fileInput.nativeElement.click();
+  }
+
+  handleFileInputChange() {
+    const file = this.fileInput.nativeElement.files![0];
+    this.spinner.show()
+    
+    this.authService.uploadAvatar(file, this.user().uid).subscribe({
+      next: () => {
+        this.spinner.hide()
+        this.toastr.success("photo uploaded successfully")
+      }
+      ,error: () => {
+        this.spinner.hide()
+        this.toastr.error("photo not uploaded ")
+      }
+    })
+    
+    
   }
 
   ngOnInit() {
-    // use loading while getCurrentUser is not loaded
     this.spinner.show();
 
     const user$ = from(this.authService.getAuthenticatedUser());
-
     user$
       .pipe(
         map((user) => {
           if (user === null) throw new Error('user cant be null');
 
           return user;
-        })
+        }),
+        switchMap((user) => this.authService.getUserProfile(user.uid))
       )
       .subscribe({
         next: (user) => {
-          this.user = user;
+          this.user.set(user);
+          console.log("user:", user)
           this.newName = user.name;
           this.spinner.hide();
         },

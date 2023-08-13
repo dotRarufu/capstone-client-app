@@ -71,6 +71,7 @@ export class TotalTasksByCategoryReportComponent {
             name: string;
             role_id: number;
             uid: string;
+            avatar_last_update: number | null;
           } => !!user
         ),
         switchMap((user) => this.taskService.getAllTasksBy(user.uid))

@@ -112,7 +112,7 @@ export class DatabaseService {
     const userUid = userId;
     const userRow = await this.client
       .from('user')
-      .select('name, role_id')
+      .select('*')
       .eq('uid', userUid)
       .single();
 
@@ -121,12 +121,12 @@ export class DatabaseService {
         `no found row for user id ${userUid} even though user was able to log in`
       );
     
-    const { name, role_id } = userRow.data;
+    const { name, role_id,avatar_last_update  } = userRow.data;
 
     if (!name) throw new Error('wip, name is undefined');
     if (role_id === null) throw new Error('wip, roleId is undefined');
 
-    const res: User = { role_id, name, uid: userUid };
+    const res: User = { avatar_last_update,role_id, name, uid: userUid };
 
     return res;
   }

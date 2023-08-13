@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, map, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, from, map, merge, of, switchMap, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { DatabaseService } from './database.service';
 import { User } from '../types/collection';
@@ -14,6 +14,8 @@ export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
   private readonly client = supabaseClient;
   user$ = this.userSubject.asObservable();
+  private readonly updateUserProfileSubject = new BehaviorSubject(0);
+  updateUserProfile$ = this.updateUserProfileSubject.asObservable();
 
   constructor(
     private databaseService: DatabaseService,
@@ -40,12 +42,29 @@ export class AuthService {
     return user;
   }
 
+  getUserProfile(uid: string) {
+    const user$ = this.updateUserProfile$.pipe(switchMap(__ => this.userService.getUser(uid)));
+    const email$ = from(this.client.auth.getUser()).pipe(
+      map((res) => {
+        if (res.error !== null) throw new Error('error getting user email');
+
+        return res.data.user.email;
+      })
+    );
+
+    return this.updateUserProfile$.pipe(
+      switchMap((_) => combineLatest([user$, email$])),
+      map(([user, email]) => ({ ...user, email }))
+    );
+  }
+
   async updateCurrentUser(id: string) {
     const userDetails = await this.userService.getUser(id);
     const loggedInUser: User = {
       name: userDetails.name,
       role_id: userDetails.role_id,
       uid: id,
+      avatar_last_update: userDetails.avatar_last_update
     };
 
     this.userSubject.next(loggedInUser);
@@ -135,8 +154,8 @@ export class AuthService {
   updateName(name: string) {
     const user$ = from(this.getAuthenticatedUser());
     return user$.pipe(
-      map(user => {
-        if (user === null) throw new Error("asdsad ");
+      map((user) => {
+        if (user === null) throw new Error('asdsad ');
 
         return user.uid;
       }),
@@ -146,13 +165,61 @@ export class AuthService {
           .update({
             name,
           })
-          .eq('uid', uid).select("*")
+          .eq('uid', uid)
+          .select('*')
       ),
-      map(res => {
-        const {statusText, data} = errorFilter(res);
-        console.log("new", data);
+      map((res) => {
+        const { statusText, data } = errorFilter(res);
+        console.log('new', data);
         return statusText;
-      })
+      }),
+      tap((_) => this.signalUpdateUserProfile())
     );
+  }
+
+  uploadAvatar(photo: File, uid: string) {
+   
+ 
+    const req$ = of(Math.floor(new Date().getTime() / 1000)).pipe(
+      switchMap(date => {
+      
+        const upload$ = from(this.client.storage
+          .from('avatars')
+          .upload(`${uid}-t-${date}.png`, photo, {
+            cacheControl: '3600',
+            upsert: true,
+          })).pipe( map((res) => {
+            if (res.error !== null) throw new Error('failed to upload photo');
+    
+            return ;
+          }));
+        
+          const avatarLastUpdate$ = from(this.client.from("user").update({
+            avatar_last_update: date
+          }).eq("uid", uid)).pipe(
+            map(res => {
+              const {statusText} = errorFilter(res);
+      
+              return statusText;
+            })
+          )
+
+        return forkJoin([avatarLastUpdate$, upload$]).pipe(
+
+          tap((_) => {console.log("new date from uploadAvatar:",date);this.signalUpdateUserProfile();})
+        );
+      })
+    
+      
+    );
+
+   
+
+    return req$;
+  }
+
+  private signalUpdateUserProfile() {
+    const old = this.updateUserProfileSubject.getValue();
+    this.updateUserProfileSubject.next(old + 1);
   }
 }

@@ -491,28 +491,6 @@ export interface Database {
           }
         ]
       }
-      milestone_template: {
-        Row: {
-          id: number
-          user_id: string | null
-        }
-        Insert: {
-          id?: number
-          user_id?: string | null
-        }
-        Update: {
-          id?: number
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "milestone_template_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "user"
-            referencedColumns: ["uid"]
-          }
-        ]
-      }
       milestone_template_data: {
         Row: {
           description: string
@@ -971,16 +949,19 @@ export interface Database {
       }
       user: {
         Row: {
+          avatar_last_update: number | null
           name: string
           role_id: number
           uid: string
         }
         Insert: {
+          avatar_last_update?: number | null
           name: string
           role_id: number
           uid: string
         }
         Update: {
+          avatar_last_update?: number | null
           name?: string
           role_id?: number
           uid?: string
