@@ -6,7 +6,7 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 @Component({
   standalone: true,
   imports: [CommonModule, FeatherIconsModule, FormsModule],
-  selector: 'Outcome',
+  selector: 'outcome',
   template: `
     <div class="flex flex-col gap-2">
       <div class="flex items-center justify-between ">

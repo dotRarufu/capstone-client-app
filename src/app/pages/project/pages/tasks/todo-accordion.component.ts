@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'TodoAccordion',
+  selector: 'todo-accordion',
   standalone: true,
   imports: [],
   template: `

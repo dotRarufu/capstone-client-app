@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -7,13 +7,12 @@ import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { ConsultationData } from 'src/app/models/consultationData';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ConsultationService } from 'src/app/services/consultation.service';
-import { ProjectService } from 'src/app/services/project.service';
 import { TaskService } from 'src/app/services/task.service';
 import { Task } from 'src/app/types/collection';
 import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
 
 @Component({
-  selector: 'ScheduleConsultationModal',
+  selector: 'schedule-consultation-modal',
   standalone: true,
   imports: [ModalComponent, FormsModule, FeatherIconsModule, CommonModule],
   template: `
@@ -139,13 +138,10 @@ export class ScheduleConsultationModalComponent implements OnInit {
   doneTasks: Task[] = [];
   selectedTasks: Task[] = [];
 
-  constructor(
-    private consultationService: ConsultationService,
-    private projectService: ProjectService,
-    private toastr: ToastrService,
-    private taskService: TaskService,
-    private route: ActivatedRoute
-  ) {}
+  consultationService = inject(ConsultationService)
+  toastr = inject(ToastrService)
+  taskService = inject(TaskService)
+  route = inject(ActivatedRoute)
 
   ngOnInit(): void {
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
@@ -168,7 +164,6 @@ export class ScheduleConsultationModalComponent implements OnInit {
     };
 
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
-    console.log('consultation projectId:', projectId);
     const request$ = this.consultationService.scheduleConsultation(
       data,
       projectId

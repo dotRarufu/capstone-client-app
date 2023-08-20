@@ -3,20 +3,19 @@ import { NotFoundComponent } from '../pages/not-found/not-found.component';
 import { authGuard } from '../guards/auth.guard';
 import { roleGuard } from '../guards/role.guard';
 import { participantGuard } from '../guards/participant.guard';
-import { ParticipantsPageComponent } from './components/participants.component';
 import { RedirectComponent } from '../components/redirect.component';
 import { FormGeneratorComponent } from '../components/form/form-generator.component';
 import { FormComponent } from '../components/form/form.component';
-import { TasksComponent } from '../components/tasks.component';
+import { TasksPageComponent } from '../pages/project/pages/tasks/tasks.component';
 import { ReportsComponent } from '../components/reports.component';
-import { ConsultationsComponent } from '../components/consultations.component';
-import { HomeComponent } from './pages/home.component';
+import { ConsultationsComponent } from '../pages/project/pages/consultations/consultations.component';
 import { ProjectPageComponent } from '../pages/project/project.component';
 import { MilestonesComponent } from '../components/milestones.component';
 import { GeneralComponent } from '../components/project/general.component';
 import { DangerZoneComponent } from '../components/project/danger-zone.component';
 import { ProjectComponent } from '../student/components/project.component';
 import { MilestoneInfoComponent } from '../components/milestone/info.component';
+import { HomePageComponent } from '../pages/home/home.component';
 
 const routes: Routes = [
   {
@@ -27,7 +26,7 @@ const routes: Routes = [
       {
         path: 'home',
         data: { role: 'c' },
-        component: HomeComponent,
+        component: HomePageComponent,
         children: [
           {
             path: 'projects',
@@ -56,7 +55,7 @@ const routes: Routes = [
             children: [
               {
                 path: 'tasks',
-                component: TasksComponent,
+                component: TasksPageComponent,
                 data: { role: 'c', breadcrumb: 'Tasks' },
               },
               {
@@ -157,7 +156,7 @@ const routes: Routes = [
     children: [
       {
         path: 'home',
-        component: HomeComponent,
+        component: HomePageComponent,
         data: { role: 't' },
         children: [
           {
@@ -188,7 +187,7 @@ const routes: Routes = [
             children: [
               {
                 path: 'tasks',
-                component: TasksComponent,
+                component: TasksPageComponent,
                 data: { role: 't', breadcrumb: 'Tasks' },
               },
               {

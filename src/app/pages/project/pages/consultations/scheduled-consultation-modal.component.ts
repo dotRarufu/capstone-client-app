@@ -15,9 +15,9 @@ import { TaskService } from 'src/app/services/task.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ToastrService } from 'ngx-toastr';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
-import { AccomplishmentsComponent } from 'src/app/components/modal/accomplishments.component';
+import { AccomplishmentsComponent } from 'src/app/pages/project/pages/consultations/accomplishments.component';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
-import { OutcomeComponent } from 'src/app/components/outcome.component';
+import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outcome.component';
 
 @Component({
   standalone: true,
@@ -27,7 +27,7 @@ import { OutcomeComponent } from 'src/app/components/outcome.component';
     AccomplishmentsComponent,
     OutcomeComponent,
   ],
-  selector: 'ScheduledConsultationModal',
+  selector: 'scheduled-consultation-modal',
   template: `
     <Modal inputId="scheduledConsultationsModal">
       <div
@@ -63,14 +63,20 @@ import { OutcomeComponent } from 'src/app/components/outcome.component';
 
             <Accomplishments [data]="accomplishedTasks" />
 
-            <Outcome
+            <outcome
               heading="Actual Accomplishments"
               [dataSignal]="actualAccomplishments"
             />
 
-            <Outcome heading="Proposed Next Steps" [dataSignal]="proposedNextSteps" />
+            <outcome
+              heading="Proposed Next Steps"
+              [dataSignal]="proposedNextSteps"
+            />
 
-            <Outcome heading="Next Deliverables" [dataSignal]="nextDeliverables" />
+            <outcome
+              heading="Next Deliverables"
+              [dataSignal]="nextDeliverables"
+            />
           </div>
 
           <ul

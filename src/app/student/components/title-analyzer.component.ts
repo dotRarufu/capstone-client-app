@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { AccordionComponent } from 'src/app/components/accordion/accordion.component';
+import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { Project } from 'src/app/models/project';
 import { Tab } from 'src/app/models/tab';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
@@ -31,7 +31,7 @@ import { ProjectService } from 'src/app/services/project.service';
 
         <div class="h-[2px] w-full bg-base-content/10"></div>
 
-        <Accordion *ngFor="let content of contents" [heading]="content.heading">
+        <accordion *ngFor="let content of contents" [heading]="content.heading">
           <div class=" w-full pt-[16px] text-base-content">
             {{ content.content }}
             <ng-container *ngIf="content.images && content.images.length > 0">
@@ -44,7 +44,7 @@ import { ProjectService } from 'src/app/services/project.service';
               </div>
             </ng-container>
           </div>
-        </Accordion>
+        </accordion>
       </div>
     </div>
   `,

@@ -27,11 +27,11 @@ import { ProjectsAccordionComponent } from './projects-accordion.component';
     CommonModule,
     ProjectCardComponent,
   ],
-  providers: [HomeStateService],
+  // providers: [HomeStateService],
   template: `
     <div class="w-full">
       <Projects>
-        <ProjectsAccordion
+        <projects-accordion
           *ngFor="let section of sections()"
           [heading]="section.section"
         >
@@ -41,15 +41,15 @@ import { ProjectsAccordionComponent } from './projects-accordion.component';
             [project]="project"
             [role]="role"
           />
-        </ProjectsAccordion>
+        </projects-accordion>
 
-        <ProjectsAccordion heading="Archived">
+        <projects-accordion heading="Archived">
           <ProjectCard
             *ngFor="let project of archived()"
             [project]="project"
             [role]="role"
           />
-        </ProjectsAccordion>
+        </projects-accordion>
       </Projects>
     </div>
   `,

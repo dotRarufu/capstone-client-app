@@ -6,7 +6,7 @@ import { Consultation } from 'src/app/types/collection';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 
 @Component({
-  selector: 'ConsultationCard',
+  selector: 'consultation-card',
   standalone: true,
   imports: [CommonModule, FeatherIconsModule],
   template: `

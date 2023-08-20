@@ -1,9 +1,13 @@
-import { Component, OnInit, WritableSignal, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  signal,
+  inject,
+} from '@angular/core';
 import { ProjectService } from 'src/app/services/project.service';
 import {
   CdkDragDrop,
   DragDropModule,
-  moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { AuthService } from 'src/app/services/auth.service';
@@ -12,16 +16,16 @@ import { Task } from 'src/app/types/collection';
 import { from, map } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
-import { TodoAccordionComponent } from 'src/app/components/accordion/todo.component';
-import { TaskDetailsModalComponent } from 'src/app/components/modal/task-details.component';
+import { TodoAccordionComponent } from 'src/app/pages/project/pages/tasks/todo-accordion.component';
+import { TaskDetailsModalComponent } from 'src/app/pages/project/pages/tasks/task-details-modal.component';
 import { TaskCardComponent } from 'src/app/components/card/task-card.component';
-import { AddTaskModalComponent } from 'src/app/components/modal/add-task.component';
+import { AddTaskModalComponent } from 'src/app/pages/project/pages/tasks/add-task-modal.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'Tasks',
+  selector: 'tasks-page',
   standalone: true,
   imports: [
     CommonModule,
@@ -35,17 +39,19 @@ import { ActivatedRoute } from '@angular/router';
   template: `
     <div class="flex h-full flex-col gap-[16px] ">
       <div class="flex justify-between ">
-        <h1 class="text-2xl text-base-content hidden min-[998px]:block">Tasks</h1>
+        <h1 class="hidden text-2xl text-base-content min-[998px]:block">
+          Tasks
+        </h1>
         <button
           *ngIf="!isStudent"
           onclick="addTask.showModal()"
-          class="btn-ghost btn-sm gap-2 flex flex-row items-center font-[500] rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+          class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
         >
-          <i-feather class="text-base-content/70 w-[20px] h-[20px]" name="plus" />
-          <span class="uppercase">
-            
-            Add
-</span>
+          <i-feather
+            class="h-[20px] w-[20px] text-base-content/70"
+            name="plus"
+          />
+          <span class="uppercase"> Add </span>
         </button>
       </div>
 
@@ -59,7 +65,7 @@ import { ActivatedRoute } from '@angular/router';
           *ngFor="let category of categories"
           class="w-[294px] shrink-0 py-[16px]"
         >
-          <TodoAccordion
+          <todo-accordion
             [withArrow]="false"
             [forcedOpen]="true"
             [heading]="category.title"
@@ -81,17 +87,16 @@ import { ActivatedRoute } from '@angular/router';
                 (click)="setActiveTask(item)"
               />
             </div>
-          </TodoAccordion>
+          </todo-accordion>
         </div>
       </div>
 
-      <TaskDetailsModal [task]="activeTask()" />
-
-      <AddTaskModal *ngIf="!isStudent" />
+      <task-details-modal [task]="activeTask()" />
+      <add-task-modal *ngIf="!isStudent" />
     </div>
   `,
 })
-export class TasksComponent implements OnInit {
+export class TasksPageComponent implements OnInit {
   categories: { title: string; statusId: number; tasks: Task[] }[] = [
     {
       title: 'Todo',
@@ -110,20 +115,21 @@ export class TasksComponent implements OnInit {
     },
   ];
   isStudent = true;
-  activeTask: WritableSignal<Task | null>;
+  activeTask = signal<Task | null>(null);
 
-  constructor(
-    private authService: AuthService,
-    public taskService: TaskService,
-    public projectService: ProjectService,
-    public spinner: NgxSpinnerService,
-    private toastr: ToastrService,
-    private route: ActivatedRoute
-  ) {
+  authService = inject(AuthService);
+  taskService = inject(TaskService);
+  projectService = inject(ProjectService);
+  spinner = inject(NgxSpinnerService);
+  toastr = inject(ToastrService);
+  route = inject(ActivatedRoute);
+
+  setActiveTask(task: Task) {
+    this.activeTask.set(task);
+  }
+
+  ngOnInit(): void {
     this.spinner.show();
-
-    this.activeTask = signal<Task | null>(null);
-    console.log('active task test:', this.activeTask());
 
     const user$ = from(this.authService.getAuthenticatedUser());
     user$
@@ -144,13 +150,7 @@ export class TasksComponent implements OnInit {
           this.spinner.hide();
         },
       });
-  }
 
-  setActiveTask(task: Task) {
-    this.activeTask.set(task);
-  }
-
-  ngOnInit(): void {
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
 
     // todo: make this observable complete

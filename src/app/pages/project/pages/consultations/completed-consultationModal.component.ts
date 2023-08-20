@@ -5,7 +5,7 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core';
-import { BehaviorSubject, Observable, filter, switchMap, tap } from 'rxjs';
+import {  Observable, filter, switchMap, tap } from 'rxjs';
 import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
 import { isNotNull } from 'src/app/student/utils/isNotNull';
 import { Consultation, Task } from 'src/app/types/collection';
@@ -14,8 +14,8 @@ import { TaskService } from 'src/app/services/task.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
-import { AccomplishmentsComponent } from 'src/app/components/modal/accomplishments.component';
-import { OutcomeComponent } from 'src/app/components/outcome.component';
+import { AccomplishmentsComponent } from 'src/app/pages/project/pages/consultations/accomplishments.component';
+import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outcome.component';
 
 @Component({
   standalone: true,
@@ -25,7 +25,7 @@ import { OutcomeComponent } from 'src/app/components/outcome.component';
     AccomplishmentsComponent,
     FeatherIconsModule,
   ],
-  selector: 'CompletedConsultationModal',
+  selector: 'completed-consultation-modal',
   template: `
     <Modal inputId="completedConsultationsModal">
       <div
@@ -61,15 +61,23 @@ import { OutcomeComponent } from 'src/app/components/outcome.component';
 
             <Accomplishments [hideInput]="true" [data]="accomplishedTasks" />
 
-            <Outcome
+            <outcome
               heading="Actual Accomplishments"
               [hideInput]="true"
               [data]="actualAccomplishments"
             />
 
-            <Outcome heading="Proposed Next Steps" [hideInput]="true" [data]="proposedNextSteps" />
+            <outcome
+              heading="Proposed Next Steps"
+              [hideInput]="true"
+              [data]="proposedNextSteps"
+            />
 
-            <Outcome heading="Next Deliverables" [hideInput]="true" [data]="nextDeliverables" />
+            <outcome
+              heading="Next Deliverables"
+              [hideInput]="true"
+              [data]="nextDeliverables"
+            />
           </div>
 
           <ul

@@ -8,7 +8,7 @@ import { ProjectService } from '../../services/project.service';
 @Component({
   selector: 'student-title-analyzer',
   standalone: true,
-  providers: [HomeStateService],
+  // providers: [HomeStateService],
   imports: [TitleAnalyzerComponent, CommonModule, ResultComponent],
   template: `
     <div class="flex flex-col gap-4 ">

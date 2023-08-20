@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { TabDefinition } from 'src/app/models/tab';
 import { fromEvent, map } from 'rxjs';
 import { TabsService } from 'src/app/services/tabs.service';
-import { HomeLayoutComponent } from 'src/app/layouts/home.component';
 import { CommonModule } from '@angular/common';
 import { ResultComponent } from './result.component';
 import { ProjectsComponent } from './projects.component';
@@ -27,7 +26,6 @@ import { ProjectsAccordionComponent } from './projects-accordion.component';
   selector: 'home-page',
   standalone: true,
   imports: [
-    HomeLayoutComponent,
     CommonModule,
     ResultComponent,
     ProjectsComponent,
@@ -46,7 +44,7 @@ import { ProjectsAccordionComponent } from './projects-accordion.component';
     SpinnerComponent,
     RemoveProjectModalComponent,
   ],
-  providers: [HomeStateService],
+  // providers: [HomeStateService],
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>

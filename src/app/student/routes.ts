@@ -1,30 +1,28 @@
-import { RouterModule, Routes } from '@angular/router';
-import { StudentHomeComponent } from './pages/home.component';
+import { Routes } from '@angular/router';
 import { TitleAnalyzerComponent } from './components/title-analyzer.component';
 import { ProjectsComponent } from './components/projects.component';
-import { ResultComponent } from './pages/result.component';
 import { TitleBuilderComponent } from './components/title-builder.component';
-import { TasksComponent } from '../components/tasks.component';
+import { TasksPageComponent } from '../pages/project/pages/tasks/tasks.component';
 import { ProjectComponent } from './components/project.component';
 import { RedirectComponent } from '../components/redirect.component';
 import { NotFoundComponent } from '../pages/not-found/not-found.component';
 import { FormGeneratorComponent } from '../components/form/form-generator.component';
 import { FormComponent } from '../components/form/form.component';
-import { ReportsComponent } from '../components/reports.component';
-import { ConsultationsComponent } from '../components/consultations.component';
+import { ConsultationsComponent } from '../pages/project/pages/consultations/consultations.component';
 import { participantGuard } from '../guards/participant.guard';
-import { ProjectPageComponent } from '../pages/project/project.component';
-import { ProjectLayoutComponent } from 'src/app/layouts/project.component';
 import { MilestonesComponent } from '../components/milestones.component';
 import { GeneralComponent } from '../components/project/general.component';
 import { DangerZoneComponent } from '../components/project/danger-zone.component';
 import { MilestoneInfoComponent } from '../components/milestone/info.component';
 import { ProjectReportsComponent } from '../components/project/reports.component';
+import { HomePageComponent } from '../pages/home/home.component';
+import { ProjectPageComponent } from '../pages/project/project.component';
 
 const routes: Routes = [
   {
     path: 'home',
-    component: StudentHomeComponent,
+    component: HomePageComponent,
+    data: { role: 's' },
     children: [
       {
         path: 'title-analyzer',
@@ -48,12 +46,12 @@ const routes: Routes = [
     children: [
       {
         path: ':projectId',
-        component: ProjectLayoutComponent,
+        component: ProjectPageComponent,
         data: { breadcrumb: { skip: true } },
         children: [
           {
             path: 'tasks',
-            component: TasksComponent,
+            component: TasksPageComponent,
             data: { role: 's', breadcrumb: 'Tasks' },
           },
           {

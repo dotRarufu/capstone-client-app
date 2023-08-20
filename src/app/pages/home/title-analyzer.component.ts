@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AccordionComponent } from 'src/app/components/accordion/accordion.component';
+import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { Project } from 'src/app/models/project';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
@@ -29,7 +29,7 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
         <div class="h-[2px] w-full bg-base-content/10"></div>
 
-        <Accordion *ngFor="let content of contents" [heading]="content.heading">
+        <accordion *ngFor="let content of contents" [heading]="content.heading">
           <div class=" w-full pt-[16px] text-base-content">
             {{ content.content }}
             <ng-container *ngIf="content.images && content.images.length > 0">
@@ -42,7 +42,7 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
               </div>
             </ng-container>
           </div>
-        </Accordion>
+        </accordion>
       </div>
     </div>
   `,

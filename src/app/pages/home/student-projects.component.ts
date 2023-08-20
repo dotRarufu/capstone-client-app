@@ -1,11 +1,6 @@
 import { ProjectsComponent } from './projects.component';
 import { ProjectCardComponent } from 'src/app/components/ui/project-card.component';
-import {
-  Component,
-  WritableSignal,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, WritableSignal, inject, signal } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -16,7 +11,7 @@ import { HomeStateService } from './data-access/home-state.service';
   selector: 'student-projects',
   standalone: true,
   imports: [ProjectsComponent, ProjectCardComponent, CommonModule],
-  providers: [HomeStateService],
+  // providers: [HomeStateService],
   template: ` <div
     class="w-full sm2:w-[840px] md:w-[294px]  md:flex-shrink-0 md:basis-[294px] lg:w-[1040px]"
   >
@@ -67,7 +62,7 @@ export class StudentProjectsComponent {
   }
 
   removeProjectId(id: number) {
+    console.log('id:', id);
     this.homeStateService.setActiveProjectId(id);
   }
-
 }

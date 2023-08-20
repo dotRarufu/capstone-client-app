@@ -1,7 +1,4 @@
-import {
-  Component,
-  inject,
-} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { ProjectService } from 'src/app/services/project.service';
 import { HomeStateService } from './data-access/home-state.service';
@@ -12,7 +9,7 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'remove-project-modal',
   standalone: true,
   imports: [ModalComponent],
-  providers: [HomeStateService],
+  // providers: [HomeStateService],
   template: `
     <Modal inputId="removeProjectModal">
       <div
@@ -42,6 +39,7 @@ export class RemoveProjectModalComponent {
   removeProjectCard() {
     const removeProject$ = this.homeStateService.activeProjectId$.pipe(
       map((id) => {
+        console.log('passed:', id);
         if (id === null) throw new Error('No project id passed');
 
         return id;
@@ -50,9 +48,9 @@ export class RemoveProjectModalComponent {
     );
 
     removeProject$.subscribe({
-      next: (res) => console.log('remove project:', res),
-      complete: () => console.log('remove project complete 1'),
-      error: (err) => console.log('removeProject error:', err),
+      next: (res) => this.toastr.success('Project removed successfully'),
+
+      error: (err) => this.toastr.error('Failed to remove project'),
     });
   }
 }

@@ -1,15 +1,14 @@
-import { Component } from '@angular/core';
-import { ModalComponent } from './modal.component';
+import { Component, inject } from '@angular/core';
+import { ModalComponent } from '../../../../components/modal/modal.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { FormsModule } from '@angular/forms';
 import { TaskService } from 'src/app/services/task.service';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { map, switchMap } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'AddTaskModal',
+  selector: 'add-task-modal',
   standalone: true,
   imports: [ModalComponent, FeatherIconsModule, FormsModule],
   template: `
@@ -74,12 +73,9 @@ export class AddTaskModalComponent {
   title = '';
   description = '';
 
-  constructor(
-    private taskService: TaskService,
-    private toastr: ToastrService,
-    private spinner: NgxSpinnerService,
-    private route: ActivatedRoute
-  ) {}
+  taskService = inject(TaskService);
+  toastr = inject(ToastrService);
+  route = inject(ActivatedRoute);
 
   handleDoneClick() {
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
@@ -89,19 +85,15 @@ export class AddTaskModalComponent {
       this.description,
       projectId
     );
-    console.log('clicked');
+
     status$.subscribe({
       next: (status) => {
-        console.log('runs 123');
         this.toastr.success(status);
       },
       error: (err) => {
-        console.log('runs error');
         this.toastr.error(err);
       },
-      complete: () => {
-        console.log('completed');
-      },
+      complete: () => {},
     });
   }
 }

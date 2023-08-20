@@ -8,7 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 import { formatStringArray } from '../../student/utils/formatStringArray';
 import { getReadabilityScoreMeaning } from '../../student/utils/getReadabilityScoreMeaning';
 import { CommonModule } from '@angular/common';
-import { AccordionComponent } from 'src/app/components/accordion/accordion.component';
+import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { filter, from, switchMap, tap } from 'rxjs';
 
@@ -49,7 +49,7 @@ interface AnalysesDataItem {
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <Accordion
+      <accordion
         *ngFor="let data of analysesData"
         [isResult]="true"
         [score]="data.value"
@@ -58,7 +58,7 @@ interface AnalysesDataItem {
         <div class="pt-[16px] text-base-content">
           {{ data.content }}
         </div>
-      </Accordion>
+      </accordion>
 
       <div
         class="flex w-full flex-shrink-0  basis-[294px] flex-col gap-[16px]"
@@ -89,18 +89,14 @@ export class ResultComponent implements OnInit {
   
   ngOnInit(): void {
     this.projectService.analyzerResult$.pipe(
-      filter((v): v is TitleAnalyzerResult => v !== undefined)),
+      filter((v): v is TitleAnalyzerResult => v !== undefined),
       tap(data => this.title = data.title),
-      switchMap(v => {
-        return from(this.prepareAnalysesData(v));
-
-       
-      })
-    ).subscribe({
+      switchMap(v => this.prepareAnalysesData(v)))    
+    .subscribe({
       next: (v) => {
         this.analysesData = v;
       },
-      error: (err) => {
+      error: () => {
         this.toastr.error('Error occured while analyzing title');
       },
       complete: () => {

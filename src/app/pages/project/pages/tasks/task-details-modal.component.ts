@@ -1,13 +1,5 @@
-import {
-  Component,
-  Input,
-  WritableSignal,
-  signal,
-  effect,
-  OnChanges,
-  OnInit,
-} from '@angular/core';
-import { ModalComponent } from './modal.component';
+import { Component, Input, signal, OnChanges, OnInit } from '@angular/core';
+import { ModalComponent } from '../../../../components/modal/modal.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -17,7 +9,7 @@ import { Task } from 'src/app/types/collection';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'TaskDetailsModal',
+  selector: 'task-details-modal',
   standalone: true,
   imports: [ModalComponent, FeatherIconsModule, CommonModule, FormsModule],
   template: `

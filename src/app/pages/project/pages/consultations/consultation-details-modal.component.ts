@@ -1,16 +1,16 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { Observable, filter, switchMap, tap } from 'rxjs';
 import { TaskService } from 'src/app/services/task.service';
 import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
 import { isNotNull } from 'src/app/student/utils/isNotNull';
 import { Consultation, Task } from 'src/app/types/collection';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
-import { ModalComponent } from './modal.component';
+import { ModalComponent } from '../../../../components/modal/modal.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { AccomplishmentsComponent } from './accomplishments.component';
 
 @Component({
-  selector: 'ConsultationDetailsModal',
+  selector: 'consultation-details-modal',
   standalone: true,
   imports: [ModalComponent, FeatherIconsModule, AccomplishmentsComponent],
   template: `
@@ -73,8 +73,7 @@ export class ConsultationDetailsModalComponent implements OnChanges {
   consultation: Consultation | null = null;
   @Input() id = 'consultationModal';
 
-  constructor(private taskService: TaskService) {
-  }
+  taskService = inject(TaskService)
 
   clearAccomplishedTasks() {
     this.accomplishedTasks = [];

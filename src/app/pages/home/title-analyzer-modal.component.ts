@@ -11,7 +11,7 @@ import { HomeStateService } from './data-access/home-state.service';
   selector: 'title-analyzer-modal',
   standalone: true,
   imports: [CommonModule, ModalComponent, FormsModule],
-  providers: [HomeStateService],
+  // providers: [HomeStateService],
   template: `
     <Modal
       inputId="titleAnalyzer"

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'ProjectsAccordion',
+  selector: 'projects-accordion',
   standalone: true,
   imports: [CommonModule],
   template: `

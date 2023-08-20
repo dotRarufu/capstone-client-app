@@ -1,15 +1,92 @@
-import { Component } from '@angular/core';
-import { SideBarComponent } from 'src/app/components/sidebar.component';
-import { ProjectLayoutComponent } from 'src/app/layouts/project.component';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { ProjectService } from '../../services/project.service';
+import { fromEvent, map } from 'rxjs';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { NavigationRailComponent } from 'src/app/components/nav-rail.component';
+import { CommonModule } from '@angular/common';
+import { MobileHeaderComponent } from 'src/app/components/mobile-header.component';
+import { SpinnerComponent } from 'src/app/components/spinner.component';
+import { BottomNavComponent } from 'src/app/components/bottom-nav.component';
+import { ArchivedMarkComponent } from './archived-mark.component';
 
 @Component({
   standalone: true,
-  imports: [ProjectLayoutComponent, SideBarComponent],
-  selector: 'Project',
+  imports: [
+    NavigationRailComponent,
+    CommonModule,
+    MobileHeaderComponent,
+    SpinnerComponent,
+    BottomNavComponent,
+    RouterModule,
+    ArchivedMarkComponent,
+  ],
+  selector: 'project-page',
   template: `
-    <ProjectLayout>
-      <SideBar />
-    </ProjectLayout>
+    <div class="flex h-full flex-col min-[998px]:flex-row">
+      <div class="hidden min-[998px]:block">
+        <NavigationRail />
+      </div>
+
+      <archived-mark *ngIf="isInArchive()" />
+
+      <div class="basis-[64px] min-[998px]:hidden">
+        <mobile-header />
+      </div>
+
+      <div
+        class="w-screen flex-1  overflow-y-scroll p-4 px-[16px] sm1:px-[32px] sm2:w-full sm2:px-0 md:px-[200px] lg:px-0"
+      >
+        <div
+          class="h-full w-full sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"
+        >
+          <router-outlet />
+        </div>
+      </div>
+
+      <div class="basis-[64px] min-[998px]:hidden">
+        <bottom-nav />
+      </div>
+    </div>
+
+    <spinner />
   `,
 })
-export class ProjectPageComponent {}
+export class ProjectPageComponent implements OnInit {
+  urls: string[] = [];
+  toastId: number | null = null;
+  isDesktop = false;
+  isInArchive = signal(false);
+
+  toastrService = inject(ToastrService);
+  projectService = inject(ProjectService);
+  router = inject(Router);
+  route = inject(ActivatedRoute);
+
+  ngOnInit() {
+    this.watchWindowSize();
+    
+    const projectId = Number(this.route.snapshot.url[0].path);
+    this.projectService.getProjectInfo(projectId).subscribe({
+      next: (p) => {
+        this.isInArchive.set(p.is_done);
+      },
+    });
+
+    this.route.url.subscribe({
+      next: (url) => {
+        this.urls = url.map((u) => u.path);
+      },
+    });
+  }
+
+  watchWindowSize() {
+    const windowResize$ = fromEvent(window, 'resize');
+    this.isDesktop = window.innerWidth >= 1240;
+    windowResize$.pipe(map((_) => window.innerWidth)).subscribe({
+      next: (width) => {
+        this.isDesktop = width >= 1240;
+      },
+    });
+  }
+}
