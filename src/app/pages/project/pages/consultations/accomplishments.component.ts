@@ -4,7 +4,7 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { Task } from 'src/app/types/collection';
 
 @Component({
-  selector: 'Accomplishments',
+  selector: 'accomplishments',
   standalone: true,
   imports: [CommonModule, FeatherIconsModule],
   template: `

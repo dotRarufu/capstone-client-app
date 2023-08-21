@@ -1,12 +1,9 @@
 import {
   Component,
-  Input,
-  OnChanges,
-  SimpleChanges,
-  WritableSignal,
-  signal,
+  OnInit,
+  inject,
 } from '@angular/core';
-import { Observable, filter, switchMap, tap } from 'rxjs';
+import {  filter, switchMap, tap } from 'rxjs';
 import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
 import { isNotNull } from 'src/app/student/utils/isNotNull';
 import { Consultation, Task } from 'src/app/types/collection';
@@ -18,6 +15,7 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { AccomplishmentsComponent } from 'src/app/pages/project/pages/consultations/accomplishments.component';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outcome.component';
+import { ConsultationStateService } from './data-access/consultations-state.service';
 
 @Component({
   standalone: true,
@@ -61,21 +59,27 @@ import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outc
               {{ consultation?.location }}
             </div>
 
-            <Accomplishments [data]="accomplishedTasks" />
+            <accomplishments [data]="accomplishedTasks" />
 
             <outcome
               heading="Actual Accomplishments"
-              [dataSignal]="actualAccomplishments"
+              (addItem)="addActualAccomplishment($event)"
+              (deleteItem)="deleteActualAccomplishment($event)"
+              [data]="actualAccomplishments"
             />
 
             <outcome
               heading="Proposed Next Steps"
-              [dataSignal]="proposedNextSteps"
+              (addItem)="addProposedNextStep($event)"
+              (deleteItem)="deleteProposedNextStep($event)"
+              [data]="proposedNextSteps"
             />
 
             <outcome
               heading="Next Deliverables"
-              [dataSignal]="nextDeliverables"
+              (addItem)="addNextDeliverable($event)"
+              (deleteItem)="deleteNextDeliverable($event)"
+              [data]="nextDeliverables"
             />
           </div>
 
@@ -103,32 +107,52 @@ import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outc
     </Modal>
   `,
 })
-export class ScheduledConsultationModalComponent implements OnChanges {
-  @Input() consultation$?: Observable<Consultation | null>;
+export class ScheduledConsultationModalComponent implements OnInit {
   accomplishedTasks: Task[] = [];
   consultation: Consultation | null = null;
-  actualAccomplishments: WritableSignal<string[]> = signal([]);
-  proposedNextSteps: WritableSignal<string[]> = signal([]);
-  nextDeliverables: WritableSignal<string[]> = signal([]);
+  actualAccomplishments: string[] = [];
+  proposedNextSteps: string[] = [];
+  nextDeliverables: string[] = [];
 
-  constructor(
-    private taskService: TaskService,
-    private consultationService: ConsultationService,
-    private toastr: ToastrService
-  ) {}
+  taskService = inject(TaskService);
+  consultationService = inject(ConsultationService);
+  toastr = inject(ToastrService);
+  consultationStateService = inject(ConsultationStateService);
+
+  addNextDeliverable(value: string) {
+    const old = [...this.nextDeliverables];
+    this.nextDeliverables = [...old, value];
+  }
+  addProposedNextStep(value: string) {
+    const old = [...this.proposedNextSteps];
+    this.proposedNextSteps = [...old, value];
+  }
+  addActualAccomplishment(value: string) {
+    const old = [...this.actualAccomplishments];
+    this.actualAccomplishments = [...old, value];
+  }
+  deleteNextDeliverable(value: string) {
+    const newVal = this.nextDeliverables.filter((v) => v !== value);
+    this.nextDeliverables = newVal;
+  }
+  deleteProposedNextStep(value: string) {
+    const newVal = this.proposedNextSteps.filter((v) => v !== value);
+    this.proposedNextSteps = newVal;
+  }
+  deleteActualAccomplishment(value: string) {
+    const newVal = this.actualAccomplishments.filter((v) => v !== value);
+    this.actualAccomplishments = newVal;
+  }
 
   handleCompleteClick() {
     if (this.consultation === null) throw new Error('cant do this without id');
 
     const id = this.consultation.id;
-    console.log(' this.actualAccomplishments():', this.actualAccomplishments());
-    console.log('this.proposedNextSteps():', this.proposedNextSteps());
-    console.log('this.nextDeliverables():', this.nextDeliverables());
     const completeScheduled = this.consultationService.completeScheduled(
       id,
-      this.actualAccomplishments(),
-      this.proposedNextSteps(),
-      this.nextDeliverables()
+      this.actualAccomplishments,
+      this.proposedNextSteps,
+      this.nextDeliverables
     );
     completeScheduled.subscribe({
       next: (res) => {
@@ -139,9 +163,25 @@ export class ScheduledConsultationModalComponent implements OnChanges {
       },
     });
 
-    this.actualAccomplishments.set([]);
-    this.proposedNextSteps.set([]);
-    this.nextDeliverables.set([]);
+    this.actualAccomplishments = [];
+    this.proposedNextSteps = [];
+    this.nextDeliverables = [];
+  }
+
+  ngOnInit(): void {
+    console.log('i run:', this.actualAccomplishments);
+
+    this.consultationStateService.consultation$
+      .pipe(
+        filter(isNotNull),
+        tap((c) => {
+          this.consultation = c;
+        }),
+        switchMap((c) => this.taskService.getAccompishedTasks(c.id))
+      )
+      .subscribe({
+        next: (tasks) => (this.accomplishedTasks = tasks),
+      });
   }
 
   epochToDate(epoch: number) {
@@ -154,32 +194,5 @@ export class ScheduledConsultationModalComponent implements OnChanges {
 
   clearAccomplishedTasks() {
     this.accomplishedTasks = [];
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    this.handleConsultation$Changes(changes);
-  }
-
-  handleConsultation$Changes(changes: SimpleChanges) {
-    if (changes['consultation$'] === undefined) return;
-
-    const consultation$ = changes['consultation$'].currentValue as
-      | Observable<Consultation | null>
-      | undefined;
-
-    if (consultation$ !== undefined) {
-      consultation$
-        .pipe(
-          filter(isNotNull),
-          tap((c) => {
-            console.log('c:', c);
-            this.consultation = c;
-          }),
-          switchMap((c) => this.taskService.getAccompishedTasks(c.id))
-        )
-        .subscribe({
-          next: (tasks) => (this.accomplishedTasks = tasks),
-        });
-    }
   }
 }

@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { BehaviorSubject } from 'rxjs';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { ConsultationCardComponent } from 'src/app/pages/project/pages/consultations/card.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
@@ -9,9 +8,10 @@ import { Consultation } from 'src/app/types/collection';
 import { ConsultationDetailsModalComponent } from 'src/app/pages/project/pages/consultations/consultation-details-modal.component';
 import { CommonModule } from '@angular/common';
 import { ScheduleConsultationModalComponent } from './schedule-consultation-modal.component';
-import { CompletedConsultationModalComponent } from './completed-consultationModal.component';
+import { CompletedConsultationModalComponent } from './completed-consultation-modal.component';
 import { ActivatedRoute } from '@angular/router';
 import { ScheduledConsultationModalComponent } from './scheduled-consultation-modal.component';
+import { ConsultationStateService } from './data-access/consultations-state.service';
 
 @Component({
   selector: 'consultations',
@@ -32,6 +32,7 @@ import { ScheduledConsultationModalComponent } from './scheduled-consultation-mo
         <h1 class="hidden text-2xl text-base-content min-[998px]:block">
           Consultation
         </h1>
+
         <button
           *ngIf="role === 's'"
           onclick="scheduleConsultation.showModal()"
@@ -44,48 +45,13 @@ import { ScheduledConsultationModalComponent } from './scheduled-consultation-mo
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <accordion heading="Pending">
+      <accordion *ngFor="let c of consultations" [heading]="c.category">
         <div class="flex flex-wrap justify-start gap-[24px]">
           <consultation-card
-            *ngFor="let data of consultations[0].items"
+            *ngFor="let data of c.items"
             [data]="data"
             (click)="handleCardClick(data)"
-            [buttonId]="getButtonIdForPendingAccordion()"
-          >
-            <!-- todo: add slot for controls -->
-          </consultation-card>
-        </div>
-      </accordion>
-      <accordion heading="Scheduled">
-        <div class="flex flex-wrap justify-start gap-[24px]">
-          <consultation-card
-            *ngFor="let data of consultations[1].items"
-            [data]="data"
-            (click)="handleCardClick(data)"
-            [buttonId]="role === 't' ? 'techAdScheduled' : ''"
-          >
-            <!-- todo: add slot for controls -->
-          </consultation-card>
-        </div>
-      </accordion>
-      <accordion heading="Completed">
-        <div class="flex flex-wrap justify-start gap-[24px]">
-          <consultation-card
-            *ngFor="let data of consultations[2].items"
-            [data]="data"
-            (click)="handleCardClick(data)"
-            [buttonId]="role === 't' ? 'techAdCompleted' : ''"
-          >
-            <!-- todo: add slot for controls -->
-          </consultation-card>
-        </div>
-      </accordion>
-      <accordion heading="Declined">
-        <div class="flex flex-wrap justify-start gap-[24px] ">
-          <consultation-card
-            *ngFor="let data of consultations[3].items"
-            [data]="data"
-            (click)="handleCardClick(data)"
+            [buttonId]="c.buttonId"
           >
             <!-- todo: add slot for controls -->
           </consultation-card>
@@ -93,20 +59,10 @@ import { ScheduledConsultationModalComponent } from './scheduled-consultation-mo
       </accordion>
     </div>
 
-    <schedule-consultation-modal
-      *ngIf="role === 's'"
-      [dateTime]="dateTime"
-      [description]="description"
-      [location]="location"
-    />
-
-    <consultation-details-modal [consultation$]="activeConsultation$" />
-
+    <schedule-consultation-modal *ngIf="role === 's'" />
+    <consultation-details-modal />
     <!-- todo: find out why id has  to be wrapped -->
-    <consultation-details-modal
-      [consultation$]="activeConsultation$"
-      [id]="'pendingConsultationsModal'"
-    >
+    <consultation-details-modal [id]="'pendingConsultationsModal'">
       <button
         *ngIf="role === 's'"
         (click)="cancelInvitation()"
@@ -115,21 +71,11 @@ import { ScheduledConsultationModalComponent } from './scheduled-consultation-mo
         <i-feather class="text-base-content/70" name="x" /> cancel
       </button>
     </consultation-details-modal>
-
-    <completed-consultation-modal
-      *ngIf="['c', 't'].includes(role)"
-      [consultation$]="activeConsultation$"
-    />
-
-    <scheduled-consultation-modal
-      *ngIf="role === 't'"
-      [consultation$]="activeConsultation$"
-    />
-
+    <completed-consultation-modal *ngIf="['c', 't'].includes(role)" />
+    <scheduled-consultation-modal *ngIf="role === 't'" />
     <consultation-details-modal
       *ngIf="role === 't'"
       [id]="'techAdPendingConsultationsModal'"
-      [consultation$]="activeConsultation$"
     >
       <button
         (click)="handleInvitation(true)"
@@ -147,27 +93,39 @@ import { ScheduledConsultationModalComponent } from './scheduled-consultation-mo
   `,
 })
 export class ConsultationsComponent {
-  consultationService = inject(ConsultationService)
-  toastr = inject(ToastrService)
-  route = inject(ActivatedRoute)
+  consultationService = inject(ConsultationService);
+  toastr = inject(ToastrService);
+  route = inject(ActivatedRoute);
+  consultationStateService = inject(ConsultationStateService);
 
-  consultations: { category: string; items: Consultation[] }[] = [
-    { category: 'Pending', items: [] },
-    { category: 'Scheduled', items: [] },
-    { category: 'Completed', items: [] },
-    { category: 'Declined', items: [] },
-  ];
-  dateTime = '';
-  description = '';
-  location = '';
-  activeConsultationSubject = new BehaviorSubject<Consultation | null>(null);
-  activeConsultation$ = this.activeConsultationSubject.asObservable();
   role = this.route.snapshot.data['role'];
 
+  consultations: {
+    category: string;
+    items: Consultation[];
+    buttonId?: string;
+  }[] = [
+    {
+      category: 'Pending',
+      items: [],
+      buttonId: this.getButtonIdForPendingAccordion(),
+    },
+    {
+      category: 'Scheduled',
+      items: [],
+      buttonId: this.role === 't' ? 'techAdScheduled' : '',
+    },
+    {
+      category: 'Completed',
+      items: [],
+      buttonId: this.role === 't' ? 'techAdCompleted' : '',
+    },
+    { category: 'Declined', items: [] },
+  ];
 
- 
   handleInvitation(decision: boolean) {
-    const activeConsultation = this.activeConsultationSubject.getValue();
+    const activeConsultation =
+      this.consultationStateService.getActiveConsultation();
 
     if (activeConsultation === null)
       throw new Error('should be nmpossible, no consultation is selected');
@@ -185,7 +143,8 @@ export class ConsultationsComponent {
   }
 
   cancelInvitation() {
-    const consultation = this.activeConsultationSubject.getValue();
+    const consultation = this.consultationStateService.getActiveConsultation();
+
     if (consultation === null)
       throw new Error('cant cancel invitation without an active one');
     this.consultationService.cancelInvitation(consultation.id).subscribe({
@@ -233,7 +192,7 @@ export class ConsultationsComponent {
   }
 
   handleCardClick(data: Consultation) {
-    this.activeConsultationSubject.next(data);
+    this.consultationStateService.setActiveConsultation(data);
   }
 
   getButtonIdForPendingAccordion() {

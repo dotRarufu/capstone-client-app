@@ -126,15 +126,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
   `,
 })
 export class ConsultationCardComponent {
-  @Input() data: Consultation = {
-    date_time: 1,
-    description: '',
-    id: -1,
-    location: '',
-    organizer_id: '',
-    project_id: -1,
-    category_id: 3,
-  };
+  @Input({ required: true }) data!: Consultation;
   @Input() buttonId?: string;
 
   epochToDateString(unixEpoch: number) {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, WritableSignal } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
@@ -10,7 +10,7 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
   template: `
     <div class="flex flex-col gap-2">
       <div class="flex items-center justify-between ">
-        <h1 class="text-[20px] text-base-content"> {{heading}}</h1>
+        <h1 class="text-[20px] text-base-content">{{ heading }}</h1>
       </div>
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -25,7 +25,7 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
           />
           <label
             tabindex="0"
-            (click)="addItem()"
+            (click)="handleAddItem()"
             class="btn-ghost btn-sm join-item btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
             <i-feather class="text-base-content/70" name="plus" />
@@ -37,14 +37,15 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 
       <ul class="flex h-fit  flex-col gap-2">
         <li
-          *ngFor="let item of dataSignal?.() || data || []"
+          *ngFor="let item of data || []"
           class="flex items-center justify-between rounded-[3px] border border-base-content/20 px-4 py-2 text-base text-base-content "
         >
           <p class="line-clamp-1 w-full">
             {{ item }}
           </p>
           <label
-            (click)="deleteItem(item)"
+            *ngIf="!hideInput"
+            (click)="handleDeleteItem(item)"
             tabindex="0"
             class="btn-ghost btn-sm btn rounded-[3px]"
           >
@@ -57,17 +58,22 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 })
 export class OutcomeComponent {
   inputField = '';
+  // todo: rename to isDisplay
   @Input() hideInput? = false;
-  @Input() dataSignal: WritableSignal<string[]> | null = null;
-  @Input() data?: string[] = [];
-  @Input() heading = "";
+  @Input() heading = '';
+  @Input({ required: true }) data!: string[];
+  @Output() addItem = new EventEmitter<string>();
+  @Output() deleteItem = new EventEmitter<string>();
 
-  addItem() {
-    this.dataSignal?.update((old) =>  [...old, this.inputField]);
+  handleAddItem() {
+    if (this.addItem === undefined) return;
+    this.addItem.emit(this.inputField);
     this.inputField = '';
   }
 
-  deleteItem(item: string) {
-    this.dataSignal?.update((old) => old.filter((c) => c !== item));
+  handleDeleteItem(item: string) {
+    if (this.deleteItem === undefined) return;
+
+    this.deleteItem.emit(item);
   }
 }

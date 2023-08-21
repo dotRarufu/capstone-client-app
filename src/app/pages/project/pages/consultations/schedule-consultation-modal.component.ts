@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -69,7 +69,6 @@ import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
                   tabindex="0"
                   class="dropdown-content menu z-[999] w-52 rounded-[3px] bg-base-100 p-2 shadow-md"
                 >
-                  <!-- <li><a class="">Profile</a></li> -->
                   <li *ngFor="let task of doneTasks">
                     <a
                       (click)="addTask(task.id)"
@@ -132,9 +131,9 @@ import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
   `,
 })
 export class ScheduleConsultationModalComponent implements OnInit {
-  @Input() dateTime = '';
-  @Input() description = '';
-  @Input() location = '';
+  dateTime = '';
+  description = '';
+  location = '';
   doneTasks: Task[] = [];
   selectedTasks: Task[] = [];
 

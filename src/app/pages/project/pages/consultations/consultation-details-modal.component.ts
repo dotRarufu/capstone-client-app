@@ -1,5 +1,10 @@
-import { Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
-import { Observable, filter, switchMap, tap } from 'rxjs';
+import {
+  Component,
+  Input,
+  OnInit,
+  inject,
+} from '@angular/core';
+import { filter, switchMap, tap } from 'rxjs';
 import { TaskService } from 'src/app/services/task.service';
 import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
 import { isNotNull } from 'src/app/student/utils/isNotNull';
@@ -8,6 +13,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { ModalComponent } from '../../../../components/modal/modal.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { AccomplishmentsComponent } from './accomplishments.component';
+import { ConsultationStateService } from './data-access/consultations-state.service';
 
 @Component({
   selector: 'consultation-details-modal',
@@ -46,7 +52,7 @@ import { AccomplishmentsComponent } from './accomplishments.component';
               {{ consultation?.location }}
             </div>
 
-           <Accomplishments [data]="accomplishedTasks" [hideInput]="true"/>
+            <accomplishments [data]="accomplishedTasks" [hideInput]="true" />
           </div>
           <ul
             class="flex h-full w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
@@ -67,51 +73,31 @@ import { AccomplishmentsComponent } from './accomplishments.component';
     </Modal>
   `,
 })
-export class ConsultationDetailsModalComponent implements OnChanges {
-  @Input() consultation$?: Observable<Consultation | null>;
-  accomplishedTasks: Task[] = [];
-  consultation: Consultation | null = null;
+export class ConsultationDetailsModalComponent implements OnInit {
   @Input() id = 'consultationModal';
 
-  taskService = inject(TaskService)
+  accomplishedTasks: Task[] = [];
+  consultation: Consultation | null = null;
+
+  taskService = inject(TaskService);
+  consultationStateService = inject(ConsultationStateService);
 
   clearAccomplishedTasks() {
     this.accomplishedTasks = [];
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.handleIdChanges(changes);
-    this.handleConsultation$Changes(changes);
-  }
-
-  handleIdChanges(changes: SimpleChanges) {
-    if (changes['id'] === undefined) return;
-
-    const id = changes['id'].currentValue as string;
-
-    this.id = id;
-  }
-
-  handleConsultation$Changes(changes: SimpleChanges) {
-    if (changes['consultation$'] === undefined) return;
-
-    const consultation$ = changes['consultation$'].currentValue as
-      | Observable<Consultation | null>
-      | undefined;
-
-    if (consultation$ !== undefined) {
-      consultation$
-        .pipe(
-          filter(isNotNull),
-          tap((c) => {
-            this.consultation = c;
-          }),
-          switchMap((c) => this.taskService.getAccompishedTasks(c.id))
-        )
-        .subscribe({
-          next: (tasks) => (this.accomplishedTasks = tasks),
-        });
-    }
+  ngOnInit(): void {
+    this.consultationStateService.consultation$
+      .pipe(
+        filter(isNotNull),
+        tap((c) => {
+          this.consultation = c;
+        }),
+        switchMap((c) => this.taskService.getAccompishedTasks(c.id))
+      )
+      .subscribe({
+        next: (tasks) => (this.accomplishedTasks = tasks),
+      });
   }
 
   epochToDate(epoch: number) {

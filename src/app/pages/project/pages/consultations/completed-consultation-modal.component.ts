@@ -1,11 +1,9 @@
 import {
   Component,
-  Input,
-  OnChanges,
   OnInit,
-  SimpleChanges,
+  inject,
 } from '@angular/core';
-import {  Observable, filter, switchMap, tap } from 'rxjs';
+import { filter, switchMap, tap } from 'rxjs';
 import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
 import { isNotNull } from 'src/app/student/utils/isNotNull';
 import { Consultation, Task } from 'src/app/types/collection';
@@ -16,6 +14,7 @@ import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { AccomplishmentsComponent } from 'src/app/pages/project/pages/consultations/accomplishments.component';
 import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outcome.component';
+import { ConsultationStateService } from './data-access/consultations-state.service';
 
 @Component({
   standalone: true,
@@ -59,12 +58,10 @@ import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outc
               {{ consultation?.location }}
             </div>
 
-            <Accomplishments [hideInput]="true" [data]="accomplishedTasks" />
+            <accomplishments [hideInput]="true" [data]="accomplishedTasks" />
 
-            <outcome
-              heading="Actual Accomplishments"
-              [hideInput]="true"
-              [data]="actualAccomplishments"
+            <outcome heading="Actual Accomplishments" [hideInput]="true" 
+            [data]="actualAccomplishments"
             />
 
             <outcome
@@ -73,10 +70,8 @@ import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outc
               [data]="proposedNextSteps"
             />
 
-            <outcome
-              heading="Next Deliverables"
-              [hideInput]="true"
-              [data]="nextDeliverables"
+            <outcome heading="Next Deliverables" [hideInput]="true"
+            [data]="nextDeliverables"
             />
           </div>
 
@@ -97,18 +92,16 @@ import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outc
     </Modal>
   `,
 })
-export class CompletedConsultationModalComponent implements OnChanges, OnInit {
-  @Input() consultation$?: Observable<Consultation | null>;
+export class CompletedConsultationModalComponent implements OnInit {
   accomplishedTasks: Task[] = [];
   consultation: Consultation | null = null;
   actualAccomplishments: string[] = [];
   proposedNextSteps: string[] = [];
   nextDeliverables: string[] = [];
 
-  constructor(
-    private taskService: TaskService,
-    private consultationService: ConsultationService
-  ) {}
+  consultationStateService = inject(ConsultationStateService);
+  taskService = inject(TaskService);
+  consultationService = inject(ConsultationService);
 
   epochToDate(epoch: number) {
     return convertUnixEpochToDateString(epoch);
@@ -122,47 +115,33 @@ export class CompletedConsultationModalComponent implements OnChanges, OnInit {
     this.accomplishedTasks = [];
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.handleConsultation$Changes(changes);
-  }
+  ngOnInit(): void {
+    this.consultationStateService.consultation$
+      .pipe(
+        filter(isNotNull),
+        tap((c) => {
+          console.log('c:', c);
+          this.consultation = c;
+        }),
+        switchMap((c) => this.taskService.getAccompishedTasks(c.id))
+      )
+      .subscribe({
+        next: (tasks) => (this.accomplishedTasks = tasks),
+      });
 
-  ngOnInit(): void {}
-
-  handleConsultation$Changes(changes: SimpleChanges) {
-    if (changes['consultation$'] === undefined) return;
-
-    const consultation$ = changes['consultation$'].currentValue as
-      | Observable<Consultation | null>
-      | undefined;
-
-    if (consultation$ !== undefined) {
-      consultation$
-        .pipe(
-          filter(isNotNull),
-          tap((c) => {
-            console.log('c:', c);
-            this.consultation = c;
-          }),
-          switchMap((c) => this.taskService.getAccompishedTasks(c.id))
+    this.consultationStateService.consultation$
+      .pipe(
+        filter(isNotNull),
+        switchMap(({ id }) =>
+          this.consultationService.getConsultationOutcomes(id)
         )
-        .subscribe({
-          next: (tasks) => (this.accomplishedTasks = tasks),
-        });
-
-      consultation$
-        .pipe(
-          filter(isNotNull),
-          switchMap(({ id }) =>
-            this.consultationService.getConsultationOutcomes(id)
-          )
-        )
-        .subscribe({
-          next: (res) => {
-            this.actualAccomplishments = res.actualAccomplishments;
-            this.proposedNextSteps = res.proposedNextSteps;
-            this.nextDeliverables = res.nextDeliverables;
-          },
-        });
-    }
+      )
+      .subscribe({
+        next: (res) => {
+          this.actualAccomplishments = res.actualAccomplishments;
+          this.proposedNextSteps = res.proposedNextSteps;
+          this.nextDeliverables = res.nextDeliverables;
+        },
+      });
   }
 }
