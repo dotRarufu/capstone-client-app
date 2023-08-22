@@ -1,13 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { FormsModule } from '@angular/forms';
-import { TaskService } from 'src/app/services/task.service';
 import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
 import { from, map, switchMap } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
 import { MilestoneService } from 'src/app/services/milestone.service';
-import { dateToDateString } from 'src/app/utils/dateToDateString';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -91,13 +87,8 @@ export class AddMilestoneTemplateModalComponent {
   description = '';
   dueDate = '';
   authService = inject(AuthService);
-
-  constructor(
-    private milestoneService: MilestoneService,
-    private toastr: ToastrService,
-
-    private route: ActivatedRoute
-  ) {}
+  milestoneService = inject(MilestoneService)
+  toastr = inject(ToastrService)
 
   handleDoneClick() {
     const user = this.authService.getAuthenticatedUser();

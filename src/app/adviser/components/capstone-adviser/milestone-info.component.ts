@@ -6,8 +6,8 @@ import {
   OnInit,
   Output,
   SimpleChanges,
+  inject,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import {
   BehaviorSubject,
@@ -15,16 +15,11 @@ import {
   debounceTime,
   distinctUntilChanged,
   filter,
-  from,
-  map,
   switchMap,
-  tap,
 } from 'rxjs';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from 'src/app/services/auth.service';
-import { getRolePath } from 'src/app/utils/getRolePath';
 
 @Component({
   selector: 'milestone-template-info',
@@ -87,6 +82,8 @@ import { getRolePath } from 'src/app/utils/getRolePath';
   `,
 })
 export class MilestoneTemplateInfoComponent implements OnInit, OnChanges {
+  @Input({ required: true }) milestoneId!: number | null;
+  @Output() closed = new EventEmitter();
   id = -1;
   title = '';
   description = '';
@@ -94,18 +91,11 @@ export class MilestoneTemplateInfoComponent implements OnInit, OnChanges {
   newTitle$ = new Subject<string>();
   newDescription$ = new Subject<string>();
   newDueDate$ = new Subject<string>();
-  @Input({ required: true }) milestoneId!: number | null;
   milestoneId$ = new BehaviorSubject(this.milestoneId);
-  @Output() closed = new EventEmitter();
 
-  constructor(
-    private breadcrumb: BreadcrumbService,
-    private milestoneService: MilestoneService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private toastr: ToastrService,
-    private authService: AuthService
-  ) {}
+  breadcrumb = inject(BreadcrumbService)
+  milestoneService = inject(MilestoneService)
+  toastr = inject(ToastrService)
 
   ngOnInit(): void {
     this.newTitle$
@@ -201,13 +191,13 @@ export class MilestoneTemplateInfoComponent implements OnInit, OnChanges {
   handleTitleChange() {
     this.newTitle$.next(this.title);
   }
+
   handleDueDateChange() {
     if (this.dueDate.value === null) return;
     this.newDueDate$.next(this.dueDate.value);
   }
 
   handleDeleteMilestone() {
-    console.log('delete click: ', this.id);
     this.milestoneService.deleteTemplate(this.id).subscribe({
       next: () => {
         this.toastr.success('successfully deleted a template');
@@ -219,7 +209,6 @@ export class MilestoneTemplateInfoComponent implements OnInit, OnChanges {
     });
   }
   
-
   ngOnChanges(changes: SimpleChanges): void {
     this.handleMilestoneIdChanges(changes);
   }

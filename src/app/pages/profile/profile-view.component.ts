@@ -14,12 +14,20 @@ import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
 import { AuthService } from 'src/app/services/auth.service';
 import { User } from 'src/app/types/collection';
-import { BehaviorSubject, filter, from, fromEventPattern, map, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  filter,
+  from,
+  fromEventPattern,
+  map,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
-import { MilestonesComponent } from 'src/app/components/milestones.component';
+import { MilestonesComponent } from 'src/app/pages/project/pages/milestones/milestones.component';
 import { MilestonesTemplateComponent } from 'src/app/adviser/components/capstone-adviser/milestones-template.component';
-import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milestone.component';
+import { AddMilestoneModalComponent } from 'src/app/pages/project/pages/milestones/add-milestone.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
@@ -37,7 +45,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
     FeatherIconsModule,
     FormsModule,
     NgxSpinnerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   template: `
     <ng-container *ngIf="!sideColumn">
@@ -70,44 +78,42 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
                   ><i-feather name="edit"
                 /></label>
                 <div class="dropdown-content bg-base-100">
-                <ul
-                  tabindex="0"
-                  class="menu z-[1] w-52 rounded-[5px] bg-base-300/80 p-0 shadow"
-                >
-                  <li (click)="handleUploadClick()"><a>Upload a photo</a></li>
-                  <li (click)="handleDeletePhotoClick()"><a>Remove photo</a></li>
-                </ul>
-              </div>
+                  <ul
+                    tabindex="0"
+                    class="menu z-[1] w-52 rounded-[5px] bg-base-300/80 p-0 shadow"
+                  >
+                    <li (click)="handleUploadClick()"><a>Upload a photo</a></li>
+                    <li (click)="handleDeletePhotoClick()">
+                      <a>Remove photo</a>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
- 
 
-        
-            <div class="flex flex-col gap-[4px]">
-              <div class="text-base font-semibold">Name</div>
-              <div class="flex justify-between gap-4">
+          <div class="flex flex-col gap-[4px]">
+            <div class="text-base font-semibold">Name</div>
+            <div class="flex justify-between gap-4">
               <input
-              #nameInput
-              
+                #nameInput
                 type="text"
                 [defaultValue]="user().name"
-              [(ngModel)]="newName"
+                [(ngModel)]="newName"
                 (input)="handleNameChange(nameInput.value)"
                 placeholder="Type here"
-                class="input-bordered input input-sm w-full max-w-sm rounded-[5px] bg-base-300/80 p-[8px] focus:input-primary text-base focus:outline-0"
+                class="input-bordered input input-sm w-full max-w-sm rounded-[5px] bg-base-300/80 p-[8px] text-base focus:input-primary focus:outline-0"
               />
               <label
-              *ngIf="showSaveButton | async "
-                  (click)="handleNameButton()"
-                  class="btn-primary  btn-sm btn"
-                >
-                <i-feather  name="save" />
+                *ngIf="showSaveButton | async"
+                (click)="handleNameButton()"
+                class="btn-primary  btn-sm btn"
+              >
+                <i-feather name="save" />
                 Save
-                </label>
+              </label>
             </div>
-            </div>
-      
+          </div>
 
           <div class="flex items-center justify-between ">
             <div class="flex flex-col gap-[4px]">
@@ -176,7 +182,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
         <div class="hidden h-[2px] w-full bg-base-content/20 md:block"></div>
 
         <div class="flex w-full flex-col gap-4">
-        <div class="flex flex-col gap-[4px]">
+          <div class="flex flex-col gap-[4px]">
             <div class="text-base font-semibold">Profile Picture</div>
             <div class="relative w-fit">
               <div class="avatar">
@@ -198,35 +204,35 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
                   class="dropdown-content menu z-[1] w-52 rounded-[5px] bg-base-300/80 p-0 shadow"
                 >
                   <li (click)="handleUploadClick()"><a>Upload a photo</a></li>
-                  <li (click)="handleDeletePhotoClick()"><a>Remove photo</a></li>
+                  <li (click)="handleDeletePhotoClick()">
+                    <a>Remove photo</a>
+                  </li>
                 </ul>
               </div>
             </div>
           </div>
           <div class="flex flex-col gap-[4px]">
-              <div class="text-base font-semibold">Name</div>
-              <div class="flex justify-between gap-4">
+            <div class="text-base font-semibold">Name</div>
+            <div class="flex justify-between gap-4">
               <input
                 type="text"
                 [defaultValue]="user().name"
-              #nameInput
+                #nameInput
                 [(ngModel)]="newName"
                 (input)="handleNameChange(nameInput.value)"
                 placeholder="Type here"
-                class="input-bordered input input-sm w-full max-w-sm rounded-[5px] bg-base-300/80 p-[8px] focus:input-primary text-base focus:outline-0"
+                class="input-bordered input input-sm w-full max-w-sm rounded-[5px] bg-base-300/80 p-[8px] text-base focus:input-primary focus:outline-0"
               />
               <label
-              *ngIf="showSaveButton | async"
-
-                  (click)="handleNameButton()"
-                  class="btn-primary  btn-sm btn"
-                >
-                <i-feather  name="save" />
+                *ngIf="showSaveButton | async"
+                (click)="handleNameButton()"
+                class="btn-primary  btn-sm btn"
+              >
+                <i-feather name="save" />
                 Save
-                </label>
+              </label>
             </div>
-            </div>
-      
+          </div>
 
           <div class="flex items-center justify-between ">
             <div class="flex flex-col gap-[4px]">
@@ -332,22 +338,16 @@ export class ProfileViewComponent implements OnInit {
   constructor(private authService: AuthService) {}
 
   handleNameButton() {
-   
-
-      this.spinner.show();
-      this.authService.updateName(this.newName).subscribe({
-        next: (status) => {
-          this.toastr.success('successfully updated name');
-          this.spinner.hide();
-          // this.user().name = this.newName;
-          this.showSaveButtonSubject.next(this.newName)
-        },
-      });
-
-   
+    this.spinner.show();
+    this.authService.updateName(this.newName).subscribe({
+      next: (status) => {
+        this.toastr.success('successfully updated name');
+        this.spinner.hide();
+        // this.user().name = this.newName;
+        this.showSaveButtonSubject.next(this.newName);
+      },
+    });
   }
-
-
 
   userAvatarUrl = computed(() => {
     const { avatar_last_update, avatar } = this.user();
@@ -362,14 +362,15 @@ export class ProfileViewComponent implements OnInit {
     return newUrl;
   });
   showSaveButtonSubject = new BehaviorSubject('');
-  showSaveButton = this.showSaveButtonSubject.asObservable().pipe( map(v => v !== this.user().name))
+  showSaveButton = this.showSaveButtonSubject
+    .asObservable()
+    .pipe(map((v) => v !== this.user().name));
 
   handleNameChange(value: string) {
-    this.showSaveButtonSubject.next(value)
+    this.showSaveButtonSubject.next(value);
   }
 
   handleUploadClick() {
-  
     this.fileInput.nativeElement.click();
   }
 
@@ -382,12 +383,10 @@ export class ProfileViewComponent implements OnInit {
       next: (status) => {
         this.toastr.success('successfully removed photo');
         this.spinner.hide();
- 
       },
       error: (status) => {
         this.toastr.error('failed to removed photo');
         this.spinner.hide();
- 
       },
     });
   }
@@ -424,9 +423,9 @@ export class ProfileViewComponent implements OnInit {
       .subscribe({
         next: (user) => {
           this.user.set(user);
-          console.log("user:", user)
+          console.log('user:', user);
           this.newName = user.name;
-          this.showSaveButtonSubject.next(this.newName)
+          this.showSaveButtonSubject.next(this.newName);
           this.spinner.hide();
         },
       });

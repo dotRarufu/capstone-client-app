@@ -10,7 +10,7 @@ import { TasksPageComponent } from '../pages/project/pages/tasks/tasks.component
 import { ReportsComponent } from '../components/reports.component';
 import { ConsultationsComponent } from '../pages/project/pages/consultations/consultations.component';
 import { ProjectPageComponent } from '../pages/project/project.component';
-import { MilestonesComponent } from '../components/milestones.component';
+import { MilestonesComponent } from '../pages/project/pages/milestones/milestones.component';
 import { GeneralComponent } from '../components/project/general.component';
 import { DangerZoneComponent } from '../components/project/danger-zone.component';
 import { ProjectComponent } from '../student/components/project.component';
@@ -129,11 +129,7 @@ const routes: Routes = [
                 component: ConsultationsComponent,
                 data: { role: 'c', breadcrumb: 'Consultations' },
               },
-              {
-                path: 'milestones',
-                component: MilestonesComponent,
-                data: { breadcrumb: 'Milestones' },
-              },
+          
               {
                 path: '',
                 component: RedirectComponent,

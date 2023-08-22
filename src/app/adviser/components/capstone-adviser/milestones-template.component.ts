@@ -13,7 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 import { MilestoneCardComponent } from 'src/app/components/milestone/card.component';
 import { MilestoneInfoComponent } from 'src/app/components/milestone/info.component';
 import { MilestoneListItemComponent } from 'src/app/components/milestone/list-item.component';
-import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milestone.component';
+import { AddMilestoneModalComponent } from 'src/app/pages/project/pages/milestones/add-milestone.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
@@ -82,11 +82,11 @@ import { from, map, switchMap } from 'rxjs';
             />
 
             <ng-template #empty>
-            <div class=" flex text-base-content/50 flex-col items-center justify-center gap-[8px]">
-                <i-feather name="flag" class=""/>
-                <span class="text-base"
-                  >Select a milestone</span
-                >
+              <div
+                class=" flex flex-col items-center justify-center gap-[8px] text-base-content/50"
+              >
+                <i-feather name="flag" class="" />
+                <span class="text-base">Select a milestone</span>
               </div>
             </ng-template>
           </div>
@@ -141,11 +141,11 @@ import { from, map, switchMap } from 'rxjs';
             />
 
             <ng-template #empty>
-              <div class=" flex text-base-content/50 flex-col items-center justify-center gap-[8px]">
-                <i-feather name="flag" class=""/>
-                <span class="text-base"
-                  >Select a milestone</span
-                >
+              <div
+                class=" flex flex-col items-center justify-center gap-[8px] text-base-content/50"
+              >
+                <i-feather name="flag" class="" />
+                <span class="text-base">Select a milestone</span>
               </div>
             </ng-template>
           </div>

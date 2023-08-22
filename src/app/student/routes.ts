@@ -10,7 +10,7 @@ import { FormGeneratorComponent } from '../components/form/form-generator.compon
 import { FormComponent } from '../components/form/form.component';
 import { ConsultationsComponent } from '../pages/project/pages/consultations/consultations.component';
 import { participantGuard } from '../guards/participant.guard';
-import { MilestonesComponent } from '../components/milestones.component';
+import { MilestonesComponent } from '../pages/project/pages/milestones/milestones.component';
 import { GeneralComponent } from '../components/project/general.component';
 import { DangerZoneComponent } from '../components/project/danger-zone.component';
 import { MilestoneInfoComponent } from '../components/milestone/info.component';

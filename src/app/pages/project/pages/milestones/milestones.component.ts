@@ -1,27 +1,34 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { MilestoneCardComponent } from 'src/app/components/milestone/card.component';
-import { MilestoneListItemComponent } from 'src/app/components/milestone/list-item.component';
-import { AddMilestoneModalComponent } from 'src/app/components/modal/add-milestone.component';
+import { AddMilestoneModalComponent } from 'src/app/pages/project/pages/milestones/add-milestone.component';
 import { MilestoneService } from 'src/app/services/milestone.service';
-import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
-import { FeatherIconsModule } from '../modules/feather-icons.module';
+import { FeatherIconsModule } from '../../../../modules/feather-icons.module';
+import { AuthService } from 'src/app/services/auth.service';
+import { from } from 'rxjs';
+import { getRolePath } from 'src/app/utils/getRolePath';
+
+type Milestone = {
+  title: string;
+  isAchieved: boolean;
+  dueDate: string;
+  id: number;
+};
 
 @Component({
   selector: 'milestones',
   standalone: true,
   imports: [
-    MilestoneCardComponent,
     CommonModule,
     RouterModule,
-    MilestoneListItemComponent,
     AddMilestoneModalComponent,
-    FeatherIconsModule
+    FeatherIconsModule,
   ],
   template: `
-    <h1 class="text-2xl text-base-content hidden min-[998px]:block">Milestones</h1>
+    <h1 class="hidden text-2xl text-base-content min-[998px]:block">
+      Milestones
+    </h1>
 
     <div
       class="flex h-full flex-col justify-start gap-x-[16px] sm1:grid sm1:grid-cols-[auto_1fr] md:grid-cols-[1fr_3fr]"
@@ -48,31 +55,29 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
             </div>
           </div>
         </li>
-        
-       
+
         <li
+          *ngIf="isCapstoneAdviser"
           onclick="addMilestone.showModal()"
-          class="btn-ghost btn-sm gap-2 flex flex-row justify-center items-center font-[500] rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+          class="btn-ghost btn-sm flex flex-row items-center justify-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
         >
-          <i-feather class="text-base-content/70 w-[20px] h-[20px]" name="plus" />
-          <span class="uppercase">
-            Add
-          </span>
-</li>
+          <i-feather
+            class="h-[20px] w-[20px] text-base-content/70"
+            name="plus"
+          />
+          <span class="uppercase"> Add </span>
+        </li>
       </ul>
 
       <div>
         <router-outlet #myOutlet="outlet" />
-        <div
-          class="hidden sm1:block pt-[20px]"
-          *ngIf="!myOutlet.isActivated"
-        >
-        <div class=" flex text-base-content/50 flex-col items-center justify-center gap-[8px]">
-                <i-feather name="flag" class=""/>
-                <span class="text-base"
-                  >Select a milestone</span
-                >
-              </div>
+        <div class="hidden pt-[20px] sm1:block" *ngIf="!myOutlet.isActivated">
+          <div
+            class=" flex flex-col items-center justify-center gap-[8px] text-base-content/50"
+          >
+            <i-feather name="flag" class="" />
+            <span class="text-base">Select a milestone</span>
+          </div>
         </div>
       </div>
     </div>
@@ -82,20 +87,24 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
 })
 export class MilestonesComponent implements OnInit {
   data = [0, 1, 2];
-  milestones: {
-    title: string;
-    isAchieved: boolean;
-    dueDate: string;
-    id: number;
-  }[] = [];
+  milestones: Milestone[] = [];
 
-  constructor(
-    private milestoneService: MilestoneService,
-    private route: ActivatedRoute,
-    private toastr: ToastrService
-  ) {}
+  milestoneService = inject(MilestoneService);
+  route = inject(ActivatedRoute);
+  toastr = inject(ToastrService);
+  authService = inject(AuthService);
+  isCapstoneAdviser = false;
 
   ngOnInit(): void {
+    const user$ = from(this.authService.getAuthenticatedUser());
+    user$.subscribe({
+      next: (u) => {
+        if (u === null) return;
+
+        this.isCapstoneAdviser = getRolePath(u.role_id) === 'c';
+      },
+    });
+
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
 
     this.milestoneService.getMilestones(projectId).subscribe({

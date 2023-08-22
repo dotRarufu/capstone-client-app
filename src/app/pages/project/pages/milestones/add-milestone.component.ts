@@ -1,14 +1,10 @@
-import { Component } from '@angular/core';
-import { ModalComponent } from './modal.component';
+import { Component, inject } from '@angular/core';
+import { ModalComponent } from '../../../../components/modal/modal.component';
 import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
 import { FormsModule } from '@angular/forms';
-import { TaskService } from 'src/app/services/task.service';
 import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { map, switchMap } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { MilestoneService } from 'src/app/services/milestone.service';
-import { dateToDateString } from 'src/app/utils/dateToDateString';
 
 @Component({
   selector: 'add-milestone-modal',
@@ -88,28 +84,21 @@ import { dateToDateString } from 'src/app/utils/dateToDateString';
 export class AddMilestoneModalComponent {
   title = '';
   description = '';
-  dueDate = "";
+  dueDate = '';
 
-  constructor(
-    private milestoneService: MilestoneService,
-    private toastr: ToastrService,
-    private spinner: NgxSpinnerService,
-    private route: ActivatedRoute
-  ) {}
+  milestoneService = inject(MilestoneService);
+  toastr = inject(ToastrService);
+  route = inject(ActivatedRoute);
 
   handleDoneClick() {
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
-    console.log('projectId:', projectId);
-    console.log('title:', this.title);
-    console.log('description:', this.description);
-    console.log('dueDate:', this.dueDate);
 
     const status$ = this.milestoneService.add(projectId, {
       title: this.title,
       description: this.description,
       dueDate: this.dueDate,
     });
-    console.log('clicked');
+
     status$.subscribe({
       next: (status) => {
         console.log('runs 123');
