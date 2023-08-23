@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({

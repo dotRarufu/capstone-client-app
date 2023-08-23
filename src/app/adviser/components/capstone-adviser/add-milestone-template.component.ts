@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { from, map, switchMap } from 'rxjs';
@@ -87,8 +87,8 @@ export class AddMilestoneTemplateModalComponent {
   description = '';
   dueDate = '';
   authService = inject(AuthService);
-  milestoneService = inject(MilestoneService)
-  toastr = inject(ToastrService)
+  milestoneService = inject(MilestoneService);
+  toastr = inject(ToastrService);
 
   handleDoneClick() {
     const user = this.authService.getAuthenticatedUser();

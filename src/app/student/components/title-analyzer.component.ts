@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { Project } from 'src/app/models/project';
 import { Tab } from 'src/app/models/tab';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({

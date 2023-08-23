@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AddMilestoneModalComponent } from 'src/app/pages/project/pages/milestones/add-milestone.component';
 import { MilestoneService } from 'src/app/services/milestone.service';
-import { FeatherIconsModule } from '../../../../modules/feather-icons.module';
+import { FeatherIconsModule } from '../../../../components/icons/feather-icons.module';
 import { AuthService } from 'src/app/services/auth.service';
 import { from } from 'rxjs';
 import { getRolePath } from 'src/app/utils/getRolePath';

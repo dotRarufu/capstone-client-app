@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { BreadcrumbModule } from 'xng-breadcrumb';
 import { AuthService } from '../services/auth.service';
 import { getRolePath } from '../utils/getRolePath';

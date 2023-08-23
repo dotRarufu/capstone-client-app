@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 
 @Component({
   standalone: true,

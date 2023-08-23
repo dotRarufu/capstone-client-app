@@ -11,7 +11,7 @@ import { isNotNull } from 'src/app/student/utils/isNotNull';
 import { Consultation, Task } from 'src/app/types/collection';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { ModalComponent } from '../../../../components/modal/modal.component';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { AccomplishmentsComponent } from './accomplishments.component';
 import { ConsultationStateService } from './data-access/consultations-state.service';
 

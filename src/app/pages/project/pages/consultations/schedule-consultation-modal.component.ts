@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { ConsultationData } from 'src/app/models/consultationData';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { TaskService } from 'src/app/services/task.service';
 import { Task } from 'src/app/types/collection';

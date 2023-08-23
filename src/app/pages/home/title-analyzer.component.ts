@@ -3,7 +3,7 @@ import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { Project } from 'src/app/models/project';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 
 @Component({
   selector: 'title-analyzer',

@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ParticipantCardComponent } from 'src/app/components/card/participant-card.component';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
 import { User } from 'src/app/types/collection';
 import { AddParticipantModalComponent } from './modals/addParticipant.component';

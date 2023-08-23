@@ -11,7 +11,7 @@ import { FeatherModule } from 'angular-feather';
 import { CommonModule } from '@angular/common';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { TaskService } from 'src/app/services/task.service';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 
 interface AnalysesDataItem {
   heading: string;

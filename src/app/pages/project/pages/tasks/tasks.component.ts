@@ -20,7 +20,7 @@ import { TodoAccordionComponent } from 'src/app/pages/project/pages/tasks/todo-a
 import { TaskDetailsModalComponent } from 'src/app/pages/project/pages/tasks/task-details-modal.component';
 import { TaskCardComponent } from 'src/app/components/card/task-card.component';
 import { AddTaskModalComponent } from 'src/app/pages/project/pages/tasks/add-task-modal.component';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute } from '@angular/router';
 

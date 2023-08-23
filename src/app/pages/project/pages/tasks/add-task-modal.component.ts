@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ModalComponent } from '../../../../components/modal/modal.component';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { FormsModule } from '@angular/forms';
 import { TaskService } from 'src/app/services/task.service';
 import { ToastrService } from 'ngx-toastr';

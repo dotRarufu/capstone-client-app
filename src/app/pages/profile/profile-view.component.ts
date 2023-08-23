@@ -28,7 +28,7 @@ import { CommonModule } from '@angular/common';
 import { MilestonesComponent } from 'src/app/pages/project/pages/milestones/milestones.component';
 import { MilestonesTemplateComponent } from 'src/app/adviser/components/capstone-adviser/milestones-template.component';
 import { AddMilestoneModalComponent } from 'src/app/pages/project/pages/milestones/add-milestone.component';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
 import { ToastrService } from 'ngx-toastr';

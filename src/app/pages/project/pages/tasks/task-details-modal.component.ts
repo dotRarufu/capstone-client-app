@@ -1,6 +1,6 @@
 import { Component, Input, signal, OnChanges, OnInit } from '@angular/core';
 import { ModalComponent } from '../../../../components/modal/modal.component';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TaskService } from 'src/app/services/task.service';

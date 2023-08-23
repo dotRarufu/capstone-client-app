@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
-import { FeatherIconsModule } from '../modules/feather-icons.module';
+import { FeatherIconsModule } from './icons/feather-icons.module';
 
 @Component({
   selector: 'NavigationRail',
@@ -32,7 +32,7 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
             <i-feather name="trello" />
             Tasks
           </button>
-        
+
           <button
             (click)="navigateTo('consultations')"
             class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
@@ -47,7 +47,7 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
             <i-feather name="users" />
             Milestones
           </button>
-         
+
         </div>
 
         <button

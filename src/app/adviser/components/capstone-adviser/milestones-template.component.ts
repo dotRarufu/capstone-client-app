@@ -14,7 +14,7 @@ import { MilestoneCardComponent } from 'src/app/components/milestone/card.compon
 import { MilestoneInfoComponent } from 'src/app/components/milestone/info.component';
 import { MilestoneListItemComponent } from 'src/app/components/milestone/list-item.component';
 import { AddMilestoneModalComponent } from 'src/app/pages/project/pages/milestones/add-milestone.component';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
 import { MilestoneTemplateInfoComponent } from './milestone-info.component';

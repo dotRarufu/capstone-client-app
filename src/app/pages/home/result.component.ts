@@ -9,7 +9,7 @@ import { formatStringArray } from '../../student/utils/formatStringArray';
 import { getReadabilityScoreMeaning } from '../../student/utils/getReadabilityScoreMeaning';
 import { CommonModule } from '@angular/common';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { filter, from, switchMap, tap } from 'rxjs';
 
 interface AnalysesDataItem {
@@ -86,12 +86,12 @@ export class ResultComponent implements OnInit {
   toastr = inject(ToastrService)
 
 
-  
+
   ngOnInit(): void {
     this.projectService.analyzerResult$.pipe(
       filter((v): v is TitleAnalyzerResult => v !== undefined),
       tap(data => this.title = data.title),
-      switchMap(v => this.prepareAnalysesData(v)))    
+      switchMap(v => this.prepareAnalysesData(v)))
     .subscribe({
       next: (v) => {
         this.analysesData = v;

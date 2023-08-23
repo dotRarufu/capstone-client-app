@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { ConsultationCardComponent } from 'src/app/pages/project/pages/consultations/card.component';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { Consultation } from 'src/app/types/collection';
 import { ConsultationDetailsModalComponent } from 'src/app/pages/project/pages/consultations/consultation-details-modal.component';

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 
 @Component({
   selector: 'Projects',

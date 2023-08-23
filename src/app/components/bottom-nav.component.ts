@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { FeatherIconsModule } from '../modules/feather-icons.module';
+import { FeatherIconsModule } from './icons/feather-icons.module';
 
 @Component({
   selector: 'bottom-nav',
@@ -13,7 +13,7 @@ import { FeatherIconsModule } from '../modules/feather-icons.module';
 >
   <i-feather name="trello" />
   </button>
-  <button 
+  <button
   [routerLink]="['consultations']"  routerLinkActive="active text-primary "
   >
   <i-feather name="clipboard" />

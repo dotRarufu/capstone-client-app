@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 
 @Component({
   standalone: true,
@@ -16,7 +16,7 @@ import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
         <!-- <div
           class="btn-ghost btn flex justify-between  rounded-[3px] border border-base-content/50 sm1:w-[222px]"
         >
-         
+
           <span class="font-normal normal-case"> Search project... </span>
 
           <i-feather class="text-base-content/70" name="search" />

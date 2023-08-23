@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Project } from 'src/app/models/project';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'ProjectCard',
-    standalone: true,
+  standalone: true,
   imports: [FeatherIconsModule],
   template: `
     <div
@@ -53,7 +53,7 @@ export class ProjectCardComponent implements OnInit {
     name: 'default',
     id: -1,
     sectionName: '',
-    isDone: false
+    isDone: false,
   };
   @Input() role = '';
   @Output() removeProjectId: EventEmitter<number> = new EventEmitter<number>();

@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TabDefinition } from 'src/app/models/tab';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
 import { TabsService } from 'src/app/services/tabs.service';
 import { TabsComponent } from '../tabs.component';
@@ -24,12 +24,12 @@ import { CommonModule } from '@angular/common';
         class="btn-ghost btn absolute bottom-0 right-0 gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
       >
         <i-feather class="text-base-content/70" name="download" />
-       
+
       </button>
       </div>
 
-     
-      
+
+
     </div>
 
     <a

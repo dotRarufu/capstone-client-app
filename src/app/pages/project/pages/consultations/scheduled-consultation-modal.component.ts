@@ -11,7 +11,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { TaskService } from 'src/app/services/task.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ToastrService } from 'ngx-toastr';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { AccomplishmentsComponent } from 'src/app/pages/project/pages/consultations/accomplishments.component';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outcome.component';

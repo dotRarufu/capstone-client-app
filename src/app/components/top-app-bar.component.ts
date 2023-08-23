@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
-import { FeatherIconsModule } from '../modules/feather-icons.module';
+import { FeatherIconsModule } from './icons/feather-icons.module';
 import { getRolePath } from '../utils/getRolePath';
 
 @Component({

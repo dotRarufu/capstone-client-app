@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ParticipantCardComponent } from '../card/participant-card.component';
 import { CommonModule } from '@angular/common';
 import { AddParticipantModalComponent } from 'src/app/student/components/modals/addParticipant.component';
@@ -55,7 +55,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
             <div class="text-base font-semibold">Full Title</div>
             <div class="h-[2px] w-full bg-base-content/10"></div>
             <textarea
-            
+
               [(ngModel)]="title"
               (change)="handleTitleChange()"
               [disabled]="!isStudent"

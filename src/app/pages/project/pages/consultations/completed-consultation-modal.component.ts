@@ -11,7 +11,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { TaskService } from 'src/app/services/task.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
-import { FeatherIconsModule } from 'src/app/modules/feather-icons.module';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { AccomplishmentsComponent } from 'src/app/pages/project/pages/consultations/accomplishments.component';
 import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outcome.component';
 import { ConsultationStateService } from './data-access/consultations-state.service';
@@ -60,7 +60,7 @@ import { ConsultationStateService } from './data-access/consultations-state.serv
 
             <accomplishments [hideInput]="true" [data]="accomplishedTasks" />
 
-            <outcome heading="Actual Accomplishments" [hideInput]="true" 
+            <outcome heading="Actual Accomplishments" [hideInput]="true"
             [data]="actualAccomplishments"
             />
 
