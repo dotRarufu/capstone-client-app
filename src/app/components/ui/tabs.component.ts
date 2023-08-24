@@ -4,7 +4,7 @@ import { Tab } from 'src/app/models/tab';
 import { TabsService } from 'src/app/services/tabs.service';
 
 @Component({
-  selector: 'Tabs',
+  selector: 'tabs',
   standalone: true,
   imports: [CommonModule],
   template: `

@@ -1,4 +1,4 @@
-import { ProjectsComponent } from './projects.component';
+import { ProjectsComponent } from './projects-container.component';
 import { ProjectCardComponent } from 'src/app/components/ui/project-card.component';
 import { Component, WritableSignal, inject, signal } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
@@ -15,7 +15,7 @@ import { HomeStateService } from './data-access/home-state.service';
   template: ` <div
     class="w-full sm2:w-[840px] md:w-[294px]  md:flex-shrink-0 md:basis-[294px] lg:w-[1040px]"
   >
-    <Projects>
+    <projects>
       <div
         class="grid grid-flow-row grid-cols-1 items-center justify-items-center gap-[24px]  sm1:grid-cols-2 sm1:justify-start sm2:grid-cols-3 md:flex md:flex-col md:items-center md:justify-center"
       >
@@ -26,7 +26,7 @@ import { HomeStateService } from './data-access/home-state.service';
           [role]="'s'"
         />
       </div>
-    </Projects>
+    </projects>
   </div>`,
 })
 export class StudentProjectsComponent {

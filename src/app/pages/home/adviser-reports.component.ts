@@ -3,8 +3,8 @@ import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { Chart, ChartConfiguration, ChartData } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
 import { CommonModule } from '@angular/common';
-import { ProjectsBySectionComponent } from '../../adviser/components/projects-by-section.component';
-import { ProjectsByStatusComponent } from '../../adviser/components/project-by-status.component';
+import { ProjectsBySectionComponent } from './projects-by-section.component';
+import { ProjectsByStatusComponent } from './project-by-status.component';
 
 @Component({
   selector: 'adviser-reports',

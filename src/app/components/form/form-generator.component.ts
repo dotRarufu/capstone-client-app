@@ -4,8 +4,8 @@ import { TabDefinition } from 'src/app/models/tab';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
 import { TabsService } from 'src/app/services/tabs.service';
-import { TabsComponent } from '../tabs.component';
 import { CommonModule } from '@angular/common';
+import { TabsComponent } from '../ui/tabs.component';
 
 @Component({
   standalone: true,
@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   template: `
     <div class="flex h-full w-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible">
       <div class="w-full">
-        <Tabs [isResponsive]="false" />
+        <tabs [isResponsive]="false" />
       </div>
 
       <div class="h-[calc(100vh-60px)] overflow-x-scroll relative">

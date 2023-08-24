@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
-
 import { NgChartsModule } from 'ng2-charts';
 import { CommonModule } from '@angular/common';
-import { ProjectsBySectionComponent } from './projects-by-section.component';
-import { ProjectsByStatusComponent } from './project-by-status.component';
+
+import { ProjectsBySectionComponent } from '../home/projects-by-section.component';
+import { ProjectsByStatusComponent } from '../home/project-by-status.component';
 import { TotalTasksAssignedReportComponent } from './total-task-assigned-reports.component';
 import { TotalTasksByCategoryReportComponent } from './total-tasks-by-category.component';
 

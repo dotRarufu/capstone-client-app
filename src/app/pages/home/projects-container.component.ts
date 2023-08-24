@@ -4,7 +4,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 @Component({
   standalone: true,
   imports: [FeatherIconsModule],
-  selector: 'Projects',
+  selector: 'projects',
   template: `
     <div
       class="flex w-full flex-col gap-[1rem] sm2:w-[840px] md:w-full lg:w-full "

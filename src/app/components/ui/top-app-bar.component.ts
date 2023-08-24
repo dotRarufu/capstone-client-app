@@ -6,7 +6,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 import { getRolePath } from 'src/app/utils/getRolePath';
 
 @Component({
-  selector: 'TopAppBar',
+  selector: 'top-app-bar',
   standalone: true,
   imports: [FeatherIconsModule, NgxSpinnerModule],
   template: `

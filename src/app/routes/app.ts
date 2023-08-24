@@ -6,7 +6,7 @@ import { authGuard } from '../guards/auth.guard';
 import { roleGuard } from '../guards/role.guard';
 import { UnauthorizedComponent } from '../pages/unauthorized/unauthorized.component';
 import { NotFoundComponent } from '../pages/not-found/not-found.component';
-import { AdviserProfileReportsComponent } from '../adviser/components/profile-reports.component';
+import { AdviserProfileReportsComponent } from '../pages/profile/profile-reports.component';
 
 export const app: Routes = [
   {
@@ -43,7 +43,7 @@ export const app: Routes = [
     path: 'a',
     // data: { breadcrumb: "Home" },
     data: { breadcrumb: { skip: true } },
-    loadChildren: () => import('../adviser/routes'),
+    loadChildren: () => import('./adviser'),
   },
   {
     path: 'unauthorized',

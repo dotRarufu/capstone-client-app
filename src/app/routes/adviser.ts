@@ -17,7 +17,7 @@ import { ProjectComponent } from '../student/components/project.component';
 import { MilestoneInfoComponent } from '../components/milestone/info.component';
 import { HomePageComponent } from '../pages/home/home.component';
 
-const routes: Routes = [
+const adviser: Routes = [
   {
     path: 'c',
     canActivate: [authGuard, roleGuard('c')],
@@ -274,4 +274,4 @@ const routes: Routes = [
   },
 ];
 
-export default routes;
+export default adviser;

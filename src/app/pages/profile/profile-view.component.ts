@@ -4,38 +4,32 @@ import {
   Input,
   OnInit,
   ViewChild,
-  ViewChildren,
   WritableSignal,
   computed,
   inject,
   signal,
 } from '@angular/core';
-import { ProjectService } from '../../services/project.service';
 import { Project } from 'src/app/models/project';
 import { AuthService } from 'src/app/services/auth.service';
 import { User } from 'src/app/types/collection';
 import {
   BehaviorSubject,
-  filter,
   from,
-  fromEventPattern,
   map,
   switchMap,
-  tap,
 } from 'rxjs';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
-import { MilestonesComponent } from 'src/app/pages/project/pages/milestones/milestones.component';
-import { MilestonesTemplateComponent } from 'src/app/adviser/components/capstone-adviser/milestones-template.component';
+import { MilestonesTemplateComponent } from 'src/app/pages/profile/milestones-template.component';
 import { AddMilestoneModalComponent } from 'src/app/pages/project/pages/milestones/add-milestone.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {  FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
 import { ToastrService } from 'ngx-toastr';
 import { ImgFallbackModule } from 'ngx-img-fallback';
 
 @Component({
-  selector: 'ProfileView',
+  selector: 'profile-view',
   standalone: true,
   imports: [
     CommonModule,
@@ -44,7 +38,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
     AddMilestoneModalComponent,
     FeatherIconsModule,
     FormsModule,
-    NgxSpinnerModule,
+ 
     ReactiveFormsModule,
   ],
   template: `
@@ -298,14 +292,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
       type="file"
       class="hidden"
     />
-    <ngx-spinner
-      bdColor="rgba(0, 0, 0, 0.8)"
-      size="default"
-      color="#fff"
-      type="square-loader"
-      [fullScreen]="true"
-      ><p style="color: white">Loading...</p></ngx-spinner
-    >
+  
   `,
 })
 export class ProfileViewComponent implements OnInit {

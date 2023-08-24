@@ -5,7 +5,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { ProjectsComponent } from './projects.component';
+import { ProjectsComponent } from './projects-container.component';
 
 import { CommonModule } from '@angular/common';
 import { ProjectCardComponent } from 'src/app/components/ui/project-card.component';
@@ -30,7 +30,7 @@ import { ProjectsAccordionComponent } from './projects-accordion.component';
   // providers: [HomeStateService],
   template: `
     <div class="w-full">
-      <Projects>
+      <projects>
         <projects-accordion
           *ngFor="let section of sections()"
           [heading]="section.section"
@@ -50,7 +50,7 @@ import { ProjectsAccordionComponent } from './projects-accordion.component';
             [role]="role"
           />
         </projects-accordion>
-      </Projects>
+      </projects>
     </div>
   `,
 })

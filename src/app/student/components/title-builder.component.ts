@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
-import { TopAppBarComponent } from 'src/app/components/top-app-bar.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
+import { TopAppBarComponent } from 'src/app/components/ui/top-app-bar.component';
 import { ProjectService } from 'src/app/services/project.service';
 
 type Action =
@@ -25,7 +25,7 @@ type Action =
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
-        <TopAppBar activePath="Title Builder" />
+        <top-app-bar activePath="Title Builder" />
       </div>
 
       <div

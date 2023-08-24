@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { TabsComponent } from 'src/app/components/tabs.component';
-import { TopAppBarComponent } from 'src/app/components/top-app-bar.component';
 import { Project } from 'src/app/models/project';
 import { Tab } from 'src/app/models/tab';
 import { ProfileViewComponent } from './profile-view.component';
-import { ReportsComponent } from 'src/app/components/reports.component';
 import { TabsService } from 'src/app/services/tabs.service';
-import { AdviserProfileReportsComponent } from 'src/app/adviser/components/profile-reports.component';
-import { AddMilestoneTemplateModalComponent } from '../../adviser/components/capstone-adviser/add-milestone-template.component';
+import { AdviserProfileReportsComponent } from 'src/app/pages/profile/profile-reports.component';
+import { AddMilestoneTemplateModalComponent } from './add-milestone-template.component';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { TabsComponent } from 'src/app/components/ui/tabs.component';
+import { TopAppBarComponent } from 'src/app/components/ui/top-app-bar.component';
 
 @Component({
   standalone: true,
@@ -16,17 +16,17 @@ import { AddMilestoneTemplateModalComponent } from '../../adviser/components/cap
     TopAppBarComponent,
     TabsComponent,
     RouterModule,
-    ReportsComponent,
     ProfileViewComponent,
     AdviserProfileReportsComponent,
     AddMilestoneTemplateModalComponent,
+    NgxSpinnerModule,
   ],
   template: `
     <add-milestone-template-modal />
     <div class="flex flex-col gap-[1rem]">
       <div>
-        <TopAppBar activePath="Profile" />
-        <Tabs />
+        <top-app-bar activePath="Profile" />
+        <tabs />
       </div>
 
       <div
@@ -39,7 +39,7 @@ import { AddMilestoneTemplateModalComponent } from '../../adviser/components/cap
         <!-- desktop -->
         <div class="hidden w-full gap-[1rem]  md:flex lg:flex lg:w-[1040px] ">
           <div class="w-full  ">
-            <ProfileView [sideColumn]="true" />
+            <profile-view [sideColumn]="true" />
           </div>
 
           <div class=" w-[357px] shrink-0  basis-[357px] ">
@@ -48,6 +48,15 @@ import { AddMilestoneTemplateModalComponent } from '../../adviser/components/cap
         </div>
       </div>
     </div>
+
+    <ngx-spinner
+      bdColor="rgba(0, 0, 0, 0.8)"
+      size="default"
+      color="#fff"
+      type="square-loader"
+      [fullScreen]="true"
+      ><p style="color: white">Loading...</p></ngx-spinner
+    >
   `,
 })
 export class ProfileComponent implements OnInit {

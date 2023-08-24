@@ -4,7 +4,7 @@ import { fromEvent, map } from 'rxjs';
 import { TabsService } from 'src/app/services/tabs.service';
 import { CommonModule } from '@angular/common';
 import { ResultComponent } from './result.component';
-import { ProjectsComponent } from './projects.component';
+import { ProjectsComponent } from './projects-container.component';
 import { ProjectCardComponent } from 'src/app/components/ui/project-card.component';
 import { AddProjectModalComponent } from './add-project-modal.component';
 import { TitleAnalyzerModalComponent } from './title-analyzer-modal.component';
@@ -19,7 +19,6 @@ import { StudentProjectsComponent } from './student-projects.component';
 import { SpinnerComponent } from 'src/app/components/spinner.component';
 import { RemoveProjectModalComponent } from './remove-project-modal.component';
 import { AdviserReportsComponent } from './adviser-reports.component';
-import { HomeStateService } from './data-access/home-state.service';
 import { ProjectsAccordionComponent } from './projects-accordion.component';
 
 @Component({
@@ -44,12 +43,11 @@ import { ProjectsAccordionComponent } from './projects-accordion.component';
     SpinnerComponent,
     RemoveProjectModalComponent,
   ],
-  // providers: [HomeStateService],
   template: `
     <div class="flex flex-col gap-[1rem]">
       <div>
-        <TopAppBar />
-        <Tabs />
+        <top-app-bar />
+        <tabs />
       </div>
       <div
         class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
