@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { ResultComponent } from './result.component';
 import { ProjectsComponent } from './projects-container.component';
 import { ProjectCardComponent } from 'src/app/components/ui/project-card.component';
-import { AddProjectModalComponent } from './add-project-modal.component';
 import { TitleAnalyzerModalComponent } from './title-analyzer-modal.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { TopAppBarComponent } from 'src/app/components/ui/top-app-bar.component';
@@ -20,6 +19,7 @@ import { SpinnerComponent } from 'src/app/components/spinner.component';
 import { RemoveProjectModalComponent } from './remove-project-modal.component';
 import { AdviserReportsComponent } from './adviser-reports.component';
 import { ProjectsAccordionComponent } from './projects-accordion.component';
+import { AddProjectModalComponent } from './add-project-modal.component';
 
 @Component({
   selector: 'home-page',
@@ -29,7 +29,6 @@ import { ProjectsAccordionComponent } from './projects-accordion.component';
     ResultComponent,
     ProjectsComponent,
     ProjectCardComponent,
-    AddProjectModalComponent,
     TitleAnalyzerModalComponent,
     NgxSpinnerModule,
     TopAppBarComponent,
@@ -42,6 +41,7 @@ import { ProjectsAccordionComponent } from './projects-accordion.component';
     AdviserReportsComponent,
     SpinnerComponent,
     RemoveProjectModalComponent,
+    AddProjectModalComponent
   ],
   template: `
     <div class="flex flex-col gap-[1rem]">

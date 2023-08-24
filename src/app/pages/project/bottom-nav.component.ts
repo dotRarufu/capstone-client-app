@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { FeatherIconsModule } from './icons/feather-icons.module';
+import { FeatherIconsModule } from '../../components/icons/feather-icons.module';
 
 @Component({
   selector: 'bottom-nav',

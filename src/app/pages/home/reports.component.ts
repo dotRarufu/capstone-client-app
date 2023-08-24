@@ -5,7 +5,7 @@ import { NgChartsModule } from 'ng2-charts';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'Reports',
+  selector: 'reports',
   standalone: true,
   imports: [NgChartsModule, CommonModule],
   template: `
@@ -107,7 +107,7 @@ import { CommonModule } from '@angular/common';
       <div class="flex h-full flex-col gap-[16px] ">
         <div class="flex justify-between ">
           <h1 class="text-2xl text-base-content ">Reports</h1>
-          
+
         </div>
 
         <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -204,7 +204,7 @@ export class ReportsComponent {
     labels: ['To Do', 'Done', 'Doing'],
     datasets: [
       {
-        // minBarLength: 
+        // minBarLength:
         data: [1, 4, 2],
         label: 'Tasks',
         borderRadius: 3,
@@ -237,7 +237,7 @@ export class ReportsComponent {
     plugins: {
      datalabels: {color: '#ff0000'}
 
-    } 
+    }
   };
   barChartPlugins = [DataLabelsPlugin];
   pieChartOptions: ChartConfiguration['options'] = {

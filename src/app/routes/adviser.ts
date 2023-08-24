@@ -4,20 +4,20 @@ import { authGuard } from '../guards/auth.guard';
 import { roleGuard } from '../guards/role.guard';
 import { participantGuard } from '../guards/participant.guard';
 import { RedirectComponent } from '../components/redirect.component';
-import { FormGeneratorComponent } from '../components/form/form-generator.component';
-import { FormComponent } from '../components/form/form.component';
+import { FormGeneratorComponent } from '../pages/forms/form-generator.component';
 import { TasksPageComponent } from '../pages/project/pages/tasks/tasks.component';
-import { ReportsComponent } from '../components/reports.component';
 import { ConsultationsComponent } from '../pages/project/pages/consultations/consultations.component';
 import { ProjectPageComponent } from '../pages/project/project.component';
 import { MilestonesComponent } from '../pages/project/pages/milestones/milestones.component';
-import { GeneralComponent } from '../components/project/general.component';
-import { DangerZoneComponent } from '../components/project/danger-zone.component';
-import { ProjectComponent } from '../student/components/project.component';
-import { MilestoneInfoComponent } from '../components/milestone/info.component';
+import { GeneralComponent } from '../pages/project/pages/project/general.component';
+import { DangerZoneComponent } from '../pages/project/pages/project/danger-zone.component';
+import { ProjectComponent } from '../pages/project/pages/project/project.component';
+import { MilestoneInfoComponent } from '../pages/project/pages/milestones/info.component';
 import { HomePageComponent } from '../pages/home/home.component';
+import { ReportsComponent } from '../pages/home/reports.component';
+import { FormComponent } from '../pages/forms/form.component';
 
-const adviser: Routes = [
+const routes: Routes = [
   {
     path: 'c',
     canActivate: [authGuard, roleGuard('c')],
@@ -129,7 +129,7 @@ const adviser: Routes = [
                 component: ConsultationsComponent,
                 data: { role: 'c', breadcrumb: 'Consultations' },
               },
-          
+
               {
                 path: '',
                 component: RedirectComponent,
@@ -274,4 +274,4 @@ const adviser: Routes = [
   },
 ];
 
-export default adviser;
+export default routes;

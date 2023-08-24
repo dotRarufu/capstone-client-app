@@ -36,7 +36,7 @@ export const app: Routes = [
     path: 's',
     canActivate: [authGuard, roleGuard('s')],
     data: { breadcrumb: 'Home' },
-    loadChildren: () => import('../student/routes'),
+    loadChildren: () => import('./student'),
   },
 
   {

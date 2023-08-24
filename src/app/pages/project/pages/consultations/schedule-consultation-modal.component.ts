@@ -3,20 +3,20 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { ConsultationData } from 'src/app/models/consultationData';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { TaskService } from 'src/app/services/task.service';
 import { Task } from 'src/app/types/collection';
 import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
+import { ModalComponent } from 'src/app/components/ui/modal.component';
 
 @Component({
   selector: 'schedule-consultation-modal',
   standalone: true,
   imports: [ModalComponent, FormsModule, FeatherIconsModule, CommonModule],
   template: `
-    <Modal inputId="scheduleConsultation">
+    <modal inputId="scheduleConsultation">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -127,7 +127,7 @@ import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
           </ul>
         </div>
       </div>
-    </Modal>
+    </modal>
   `,
 })
 export class ScheduleConsultationModalComponent implements OnInit {

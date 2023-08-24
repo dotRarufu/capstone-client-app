@@ -5,13 +5,13 @@ import { TitleAnalyzerResult } from 'src/app/models/titleAnalyzerResult';
 import { DatabaseService } from 'src/app/services/database.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { formatStringArray } from '../utils/formatStringArray';
-import { getReadabilityScoreMeaning } from '../utils/getReadabilityScoreMeaning';
 import { FeatherModule } from 'angular-feather';
 import { CommonModule } from '@angular/common';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { TaskService } from 'src/app/services/task.service';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
+import { formatStringArray } from 'src/app/utils/formatStringArray';
+import { getReadabilityScoreMeaning } from 'src/app/utils/getReadabilityScoreMeaning';
 
 interface AnalysesDataItem {
   heading: string;
@@ -61,7 +61,7 @@ interface InformationalDataItem {
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <Accordion
+      <accordion
         *ngFor="let data of analysesData"
         [isResult]="true"
         [score]="data.value"
@@ -70,7 +70,7 @@ interface InformationalDataItem {
         <div class="pt-[16px] text-base-content">
           {{ data.content }}
         </div>
-      </Accordion>
+      </accordion>
 
       <div
         class="flex w-full flex-shrink-0  basis-[294px] flex-col gap-[16px]"

@@ -11,7 +11,7 @@ import { ToastrService } from 'ngx-toastr';
   imports: [ModalComponent],
   // providers: [HomeStateService],
   template: `
-    <Modal inputId="removeProjectModal">
+    <modal inputId="removeProjectModal">
       <div
         class="sm1:w-sm flex w-full flex-col items-center gap-6 rounded-[3px] border border-base-content/10 bg-base-100 p-4"
       >
@@ -28,7 +28,7 @@ import { ToastrService } from 'ngx-toastr';
           </button>
         </div>
       </div>
-    </Modal>
+    </modal>
   `,
 })
 export class RemoveProjectModalComponent {

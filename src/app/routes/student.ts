@@ -1,22 +1,21 @@
 import { Routes } from '@angular/router';
-import { TitleAnalyzerComponent } from './components/title-analyzer.component';
-import { ProjectsComponent } from './components/projects.component';
-import { TitleBuilderComponent } from './components/title-builder.component';
+import { TitleAnalyzerComponent } from '../pages/home/title-analyzer.component';
+import { TitleBuilderComponent } from '../pages/title-builder/title-builder.component';
 import { TasksPageComponent } from '../pages/project/pages/tasks/tasks.component';
-import { ProjectComponent } from './components/project.component';
+import { ProjectComponent } from '../pages/project/pages/project/project.component';
 import { RedirectComponent } from '../components/redirect.component';
 import { NotFoundComponent } from '../pages/not-found/not-found.component';
-import { FormGeneratorComponent } from '../components/form/form-generator.component';
-import { FormComponent } from '../components/form/form.component';
+import { FormGeneratorComponent } from '../pages/forms/form-generator.component';
 import { ConsultationsComponent } from '../pages/project/pages/consultations/consultations.component';
 import { participantGuard } from '../guards/participant.guard';
 import { MilestonesComponent } from '../pages/project/pages/milestones/milestones.component';
-import { GeneralComponent } from '../components/project/general.component';
-import { DangerZoneComponent } from '../components/project/danger-zone.component';
-import { MilestoneInfoComponent } from '../components/milestone/info.component';
-import { ProjectReportsComponent } from '../components/project/reports.component';
+import { GeneralComponent } from '../pages/project/pages/project/general.component';
+import { DangerZoneComponent } from '../pages/project/pages/project/danger-zone.component';
+import { MilestoneInfoComponent } from '../pages/project/pages/milestones/info.component';
+import { ProjectReportsComponent } from '../pages/project/pages/project/reports.component';
 import { HomePageComponent } from '../pages/home/home.component';
 import { ProjectPageComponent } from '../pages/project/project.component';
+import { FormComponent } from '../pages/forms/form.component';
 
 const routes: Routes = [
   {
@@ -30,7 +29,7 @@ const routes: Routes = [
       },
       {
         path: 'projects',
-        component: ProjectsComponent,
+        component: ProjectPageComponent,
       },
       { path: '', redirectTo: '/s/home/title-analyzer', pathMatch: 'full' },
     ],

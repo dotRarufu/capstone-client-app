@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
-import { ParticipantCardComponent } from '../card/participant-card.component';
+import { ParticipantCardComponent } from './participant-card.component';
 import { CommonModule } from '@angular/common';
-import { AddParticipantModalComponent } from 'src/app/student/components/modals/addParticipant.component';
+import { AddParticipantModalComponent } from 'src/app/pages/project/pages/project/add-participant-modal.component';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ProjectService } from 'src/app/services/project.service';
 import { ActivatedRoute } from '@angular/router';
@@ -87,7 +87,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
           </button>
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-        <ParticipantCard
+        <participant-card
           *ngFor="let participant of participants"
           [user]="participant"
           [showRemoveButton]="shouldShowParticipant(participant)"
@@ -118,7 +118,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
         </div>
       </div>
     </div>
-    <AddParticipantModal />
+    <add-participant-modal />
   `,
 })
 export class GeneralComponent implements OnInit {

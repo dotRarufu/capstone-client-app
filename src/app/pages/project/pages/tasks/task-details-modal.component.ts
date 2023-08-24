@@ -1,5 +1,4 @@
 import { Component, Input, signal, OnChanges, OnInit } from '@angular/core';
-import { ModalComponent } from '../../../../components/modal/modal.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -7,13 +6,14 @@ import { TaskService } from 'src/app/services/task.service';
 import { ToastrService } from 'ngx-toastr';
 import { Task } from 'src/app/types/collection';
 import { FormsModule } from '@angular/forms';
+import { ModalComponent } from 'src/app/components/ui/modal.component';
 
 @Component({
   selector: 'task-details-modal',
   standalone: true,
   imports: [ModalComponent, FeatherIconsModule, CommonModule, FormsModule],
   template: `
-    <Modal inputId="taskDetails">
+    <modal inputId="taskDetails">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -108,7 +108,7 @@ import { FormsModule } from '@angular/forms';
           </ul>
         </div>
       </div>
-    </Modal>
+    </modal>
   `,
 })
 export class TaskDetailsModalComponent implements OnInit, OnChanges {

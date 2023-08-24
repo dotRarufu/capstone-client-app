@@ -5,7 +5,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 import { ProjectService } from 'src/app/services/project.service';
 import { TabsService } from 'src/app/services/tabs.service';
 import { CommonModule } from '@angular/common';
-import { TabsComponent } from '../ui/tabs.component';
+import { TabsComponent } from '../../components/ui/tabs.component';
 
 @Component({
   standalone: true,

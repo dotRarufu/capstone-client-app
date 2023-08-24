@@ -4,10 +4,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
-import { FeatherIconsModule } from './icons/feather-icons.module';
+import { FeatherIconsModule } from '../../components/icons/feather-icons.module';
 
 @Component({
-  selector: 'NavigationRail',
+  selector: 'navigation-rail',
   standalone: true,
   imports: [CommonModule, FeatherIconsModule],
   template: `

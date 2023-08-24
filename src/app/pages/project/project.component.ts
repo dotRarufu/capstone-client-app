@@ -3,11 +3,11 @@ import { ToastrService } from 'ngx-toastr';
 import { ProjectService } from '../../services/project.service';
 import { fromEvent, map } from 'rxjs';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { NavigationRailComponent } from 'src/app/components/nav-rail.component';
+import { NavigationRailComponent } from 'src/app/pages/project/nav-rail.component';
 import { CommonModule } from '@angular/common';
-import { MobileHeaderComponent } from 'src/app/components/mobile-header.component';
+import { MobileHeaderComponent } from 'src/app/pages/project/mobile-header.component';
 import { SpinnerComponent } from 'src/app/components/spinner.component';
-import { BottomNavComponent } from 'src/app/components/bottom-nav.component';
+import { BottomNavComponent } from 'src/app/pages/project/bottom-nav.component';
 import { ArchivedMarkComponent } from './archived-mark.component';
 
 @Component({
@@ -25,7 +25,7 @@ import { ArchivedMarkComponent } from './archived-mark.component';
   template: `
     <div class="flex h-full flex-col min-[998px]:flex-row">
       <div class="hidden min-[998px]:block">
-        <NavigationRail />
+        <navigation-rail />
       </div>
 
       <archived-mark *ngIf="isInArchive()" />
@@ -65,7 +65,7 @@ export class ProjectPageComponent implements OnInit {
 
   ngOnInit() {
     this.watchWindowSize();
-    
+
     const projectId = Number(this.route.snapshot.url[0].path);
     this.projectService.getProjectInfo(projectId).subscribe({
       next: (p) => {

@@ -12,7 +12,7 @@ import {
 } from 'rxjs';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
-import { MilestoneData } from '../../types/collection';
+import { MilestoneData } from '../../../../types/collection';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { getRolePath } from 'src/app/utils/getRolePath';

@@ -7,8 +7,8 @@ import { ToastrService } from 'ngx-toastr';
 import { filter, from, switchMap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
-import { isNotNull } from 'src/app/student/utils/isNotNull';
 import { getRolePath } from 'src/app/utils/getRolePath';
+import { isNotNull } from 'src/app/utils/isNotNull';
 
 @Component({
   selector: 'Login',

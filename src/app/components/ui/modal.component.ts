@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'Modal',
+  selector: 'modal',
   standalone: true,
   imports: [],
   template: `

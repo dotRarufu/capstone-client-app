@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { Project } from 'src/app/models/project';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'title-analyzer',
@@ -34,11 +35,11 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
             {{ content.content }}
             <ng-container *ngIf="content.images && content.images.length > 0">
               <div class="flex flex-wrap gap-[8px]">
-                <img
-                  *ngFor="let image of content.images"
-                  [src]="image"
-                  class="max-h-[260px] w-full object-contain"
-                />
+              <img
+                *ngFor="let image of content.images"
+                [src]="image"
+                class="max-h-[260px] w-full object-contain"
+              />
               </div>
             </ng-container>
           </div>
@@ -49,7 +50,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 })
 //   todo: create a constant file, or fetch data from database. Maybe we can create an interface to edit the constants
 // todo: add ability to change renderer in docx viewer (form generator)
-export class TitleAnalyzerComponent {
+export class TitleAnalyzerComponent implements OnInit {
   projects: Project[] = [];
   contents: { heading: string; content: string; images?: string[] }[] = [
     {
@@ -61,7 +62,7 @@ export class TitleAnalyzerComponent {
       heading: 'Title Uniqueness',
       content:
         'Title uniqueness is computed using Levenshtein distance, which measures the similarity between two strings by counting the minimum number of single-character edits (insertions, deletions, or substitutions) needed to transform one string into the other. In the context of titles, a lower Levenshtein distance indicates higher similarity and, therefore, lower uniqueness.',
-      images: ['assets/levenshtein-distance-example.png'],
+        images: ['assets/levenshtein-distance-example.png']
     },
     {
       heading: 'Readability',
@@ -74,7 +75,12 @@ export class TitleAnalyzerComponent {
     },
   ];
   @Output() analyzeClicked = new EventEmitter<void>();
-  router = inject(Router);
+
+  constructor(private router: Router, private projectService: ProjectService) {}
+
+  ngOnInit(): void {
+    // this.projects = this.projectService.getProjects();
+  }
 
   navigateToProject(uid: number) {
     return () => {

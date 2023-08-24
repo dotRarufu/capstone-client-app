@@ -13,7 +13,7 @@ import { HomeStateService } from './data-access/home-state.service';
   imports: [CommonModule, ModalComponent, FormsModule],
   // providers: [HomeStateService],
   template: `
-    <Modal
+    <modal
       inputId="titleAnalyzer"
       (checkboxChanged)="handleCheckboxChange($event)"
     >
@@ -81,7 +81,7 @@ import { HomeStateService } from './data-access/home-state.service';
           </div>
         </ng-container>
       </div>
-    </Modal>
+    </modal>
   `,
 })
 export class TitleAnalyzerModalComponent {

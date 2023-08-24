@@ -1,18 +1,17 @@
 import { Component, inject } from '@angular/core';
-import { ModalComponent } from '../../../../components/modal/modal.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { FormsModule } from '@angular/forms';
 import { TaskService } from 'src/app/services/task.service';
 import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
 import { ActivatedRoute } from '@angular/router';
+import { ModalComponent } from 'src/app/components/ui/modal.component';
 
 @Component({
   selector: 'add-task-modal',
   standalone: true,
   imports: [ModalComponent, FeatherIconsModule, FormsModule],
   template: `
-    <Modal inputId="addTask">
+    <modal inputId="addTask">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -66,7 +65,7 @@ import { ActivatedRoute } from '@angular/router';
           </ul>
         </div>
       </div>
-    </Modal>
+    </modal>
   `,
 })
 export class AddTaskModalComponent {

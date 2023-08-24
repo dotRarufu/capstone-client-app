@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { ParticipantCardComponent } from 'src/app/components/card/participant-card.component';
+import { ParticipantCardComponent } from 'src/app/pages/project/pages/project/participant-card.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
 import { User } from 'src/app/types/collection';
-import { AddParticipantModalComponent } from './modals/addParticipant.component';
+import { AddParticipantModalComponent } from './add-participant-modal.component';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 
 @Component({
@@ -20,13 +20,15 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
     RouterModule,
   ],
   template: `
-    <div
-      class="flex h-fit sm1:h-full  flex-col gap-[16px] overflow-y-clip"
-    >
-      <h1 class="text-[24px] text-base-content sm1:text-[32px] hidden min-[998px]:block">Project</h1>
+    <div class="flex h-fit flex-col  gap-[16px] overflow-y-clip sm1:h-full">
+      <h1
+        class="hidden text-[24px] text-base-content sm1:text-[32px] min-[998px]:block"
+      >
+        Project
+      </h1>
 
       <div
-        class="flex  flex-col gap-[16px] sm1:grid sm1:grid-cols-[auto_1fr] sm1:flex-1 overflow-y-scroll md:grid-cols-[1fr_3fr] pb-[16px] sm1:pb-0"
+        class="flex  flex-col gap-[16px] overflow-y-scroll pb-[16px] sm1:grid sm1:flex-1 sm1:grid-cols-[auto_1fr] sm1:pb-0 md:grid-cols-[1fr_3fr]"
       >
         <ul class="flex w-full flex-col gap-[4px] overflow-y-scroll">
           <a
@@ -60,17 +62,17 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
         </ul>
 
         <div
-          class="h-full overflow-y-scroll w-full overflow-x-scroll sm1:pr-[32px] min-[998px]:h-full"
+          class="h-full w-full overflow-x-scroll overflow-y-scroll sm1:pr-[32px] min-[998px]:h-full"
         >
           <router-outlet />
         </div>
       </div>
     </div>
-    <AddParticipantModal />
+    <add-participant-modal />
   `,
 })
 export class ProjectComponent {
   constructor() {
-    console.log("project omponent renders");
+    console.log('project omponent renders');
   }
 }

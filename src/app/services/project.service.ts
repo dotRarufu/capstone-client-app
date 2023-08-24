@@ -26,9 +26,9 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { UserService } from './user.service';
 import { getObjectValues } from '../utils/getObjectValues';
 import errorFilter from '../utils/errorFilter';
-import { isNotNull } from '../student/utils/isNotNull';
 import supabaseClient from '../lib/supabase';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { isNotNull } from '../utils/isNotNull';
 
 @Injectable({
   providedIn: 'root',

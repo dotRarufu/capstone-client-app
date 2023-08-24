@@ -4,8 +4,6 @@ import {
   inject,
 } from '@angular/core';
 import {  filter, switchMap, tap } from 'rxjs';
-import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
-import { isNotNull } from 'src/app/student/utils/isNotNull';
 import { Consultation, Task } from 'src/app/types/collection';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { TaskService } from 'src/app/services/task.service';
@@ -13,9 +11,11 @@ import { ConsultationService } from 'src/app/services/consultation.service';
 import { ToastrService } from 'ngx-toastr';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { AccomplishmentsComponent } from 'src/app/pages/project/pages/consultations/accomplishments.component';
-import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outcome.component';
 import { ConsultationStateService } from './data-access/consultations-state.service';
+import { ModalComponent } from 'src/app/components/ui/modal.component';
+import { isNotNull } from 'src/app/utils/isNotNull';
+import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
 
 @Component({
   standalone: true,
@@ -27,7 +27,7 @@ import { ConsultationStateService } from './data-access/consultations-state.serv
   ],
   selector: 'scheduled-consultation-modal',
   template: `
-    <Modal inputId="scheduledConsultationsModal">
+    <modal inputId="scheduledConsultationsModal">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -104,7 +104,7 @@ import { ConsultationStateService } from './data-access/consultations-state.serv
           </ul>
         </div>
       </div>
-    </Modal>
+    </modal>
   `,
 })
 export class ScheduledConsultationModalComponent implements OnInit {

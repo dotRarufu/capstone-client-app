@@ -18,7 +18,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
 import { TodoAccordionComponent } from 'src/app/pages/project/pages/tasks/todo-accordion.component';
 import { TaskDetailsModalComponent } from 'src/app/pages/project/pages/tasks/task-details-modal.component';
-import { TaskCardComponent } from 'src/app/components/card/task-card.component';
+import { TaskCardComponent } from 'src/app/pages/project/pages/tasks/task-card.component';
 import { AddTaskModalComponent } from 'src/app/pages/project/pages/tasks/add-task-modal.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ToastrService } from 'ngx-toastr';

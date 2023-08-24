@@ -11,7 +11,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
   standalone: true,
   imports: [FormsModule, ModalComponent, FeatherModule],
   template: `
-    <Modal inputId="addProject">
+    <modal inputId="addProject">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -63,7 +63,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
           </ul>
         </div>
       </div>
-    </Modal>
+    </modal>
   `,
 })
 export class AddProjectModalComponent {

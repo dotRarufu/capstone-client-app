@@ -6,21 +6,21 @@ import {
 } from '@angular/core';
 import { filter, switchMap, tap } from 'rxjs';
 import { TaskService } from 'src/app/services/task.service';
-import { convertUnixEpochToDateString } from 'src/app/student/utils/convertUnixEpochToDateString';
-import { isNotNull } from 'src/app/student/utils/isNotNull';
 import { Consultation, Task } from 'src/app/types/collection';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
-import { ModalComponent } from '../../../../components/modal/modal.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { AccomplishmentsComponent } from './accomplishments.component';
 import { ConsultationStateService } from './data-access/consultations-state.service';
+import { ModalComponent } from 'src/app/components/ui/modal.component';
+import { isNotNull } from 'src/app/utils/isNotNull';
+import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
 
 @Component({
   selector: 'consultation-details-modal',
   standalone: true,
   imports: [ModalComponent, FeatherIconsModule, AccomplishmentsComponent],
   template: `
-    <Modal [inputId]="id || 'consultationModal'">
+    <modal [inputId]="id || 'consultationModal'">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -70,7 +70,7 @@ import { ConsultationStateService } from './data-access/consultations-state.serv
           </ul>
         </div>
       </div>
-    </Modal>
+    </modal>
   `,
 })
 export class ConsultationDetailsModalComponent implements OnInit {

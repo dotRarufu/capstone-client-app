@@ -2,17 +2,17 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
-import {ActivatedRoute} from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { ModalComponent } from 'src/app/components/ui/modal.component';
 
 @Component({
-  selector: 'AddParticipantModal',
+  selector: 'add-participant-modal',
   standalone: true,
   imports: [FormsModule, ModalComponent, FeatherIconsModule],
   template: `
-    <Modal inputId="addParticipant">
+    <modal inputId="addParticipant">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -77,7 +77,7 @@ import {ActivatedRoute} from '@angular/router';
           </ul>
         </div>
       </div>
-    </Modal>
+    </modal>
   `,
 })
 export class AddParticipantModalComponent {

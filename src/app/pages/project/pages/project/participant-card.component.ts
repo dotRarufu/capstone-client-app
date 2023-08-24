@@ -4,7 +4,7 @@ import { FeatherModule } from 'angular-feather';
 import { User } from 'src/app/types/collection';
 
 @Component({
-  selector: 'ParticipantCard',
+  selector: 'participant-card',
   standalone: true,
   imports: [FeatherModule, CommonModule],
   template: `

@@ -4,15 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { from, map, switchMap } from 'rxjs';
 import { MilestoneService } from 'src/app/services/milestone.service';
-import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { AuthService } from 'src/app/services/auth.service';
+import { ModalComponent } from 'src/app/components/ui/modal.component';
 
 @Component({
   selector: 'add-milestone-template-modal',
   standalone: true,
   imports: [ModalComponent, FeatherIconsModule, FormsModule],
   template: `
-    <Modal inputId="addMilestone">
+    <modal inputId="addMilestone">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -79,7 +79,7 @@ import { AuthService } from 'src/app/services/auth.service';
           </ul>
         </div>
       </div>
-    </Modal>
+    </modal>
   `,
 })
 export class AddMilestoneTemplateModalComponent {

@@ -5,12 +5,12 @@ import { TitleAnalyzerResult } from 'src/app/models/titleAnalyzerResult';
 import { DatabaseService } from 'src/app/services/database.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { formatStringArray } from '../../student/utils/formatStringArray';
-import { getReadabilityScoreMeaning } from '../../student/utils/getReadabilityScoreMeaning';
 import { CommonModule } from '@angular/common';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { filter, from, switchMap, tap } from 'rxjs';
+import { formatStringArray } from 'src/app/utils/formatStringArray';
+import { getReadabilityScoreMeaning } from 'src/app/utils/getReadabilityScoreMeaning';
 
 interface AnalysesDataItem {
   heading: string;
