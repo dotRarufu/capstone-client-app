@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import {
   BehaviorSubject,
-  filter,
   from,
   map,
   merge,
@@ -9,21 +8,14 @@ import {
   switchMap,
   tap,
   zip,
-  forkJoin,
-  retry,
-  Observable,
   throwError,
-  first,
-  Subject,
   catchError,
 } from 'rxjs';
 import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
-import { ToastrService } from 'ngx-toastr';
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 import { ProjectRow } from '../types/collection';
 import { Project } from '../models/project';
-import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from './user.service';
 import { getObjectValues } from '../utils/getObjectValues';
 import errorFilter from '../utils/errorFilter';
@@ -32,8 +24,10 @@ import { isNotNull } from '../utils/isNotNull';
 import { checkObjectHasKeys } from '../utils/checkObjectHasKeys';
 
 export type AError = {
-  name: string, message: string, isError: true 
-}
+  name: string;
+  message: string;
+  isError: true;
+};
 
 @Injectable({
   providedIn: 'root',
@@ -49,6 +43,7 @@ export class ProjectService {
   authService = inject(AuthService);
   userService = inject(UserService);
 
+  // Todo: add takeUntilDestroyed pipe for users of this method
   getProjects() {
     const user$ = from(this.authService.getAuthenticatedUser());
 
@@ -137,64 +132,78 @@ export class ProjectService {
     return insertRequest$;
   }
 
+  // Todo: add takeUntilDestroyed pipe for users of this method
   getParticipants(projectId: number) {
     // used observables so participants can be immediately updated when  new participant is added.
     // only for student,fort he add participant button
     // not intended for realtime sync with db
 
-    const advisers = this.client
-      .from('project')
-      .select('capstone_adviser_id, technical_adviser_id')
-      .eq('id', projectId);
-    const students = this.client
-      .from('member')
-      .select('student_uid')
-      .eq('project_id', projectId);
-
-    const advisers$ = from(advisers).pipe(
-      tap((a) => {
-        console.log('a:', a);
+    const res = this.newParticipant$.pipe(
+      map((_) => {
+        if (projectId < 0) throw new Error('Invalid project id');
       }),
-      map((a) => {
-        const { data } = errorFilter(a);
+      switchMap(() => {
+        const advisers = this.client
+          .from('project')
+          .select('capstone_adviser_id, technical_adviser_id')
+          .eq('id', projectId);
+        const students = this.client
+          .from('member')
+          .select('student_uid')
+          .eq('project_id', projectId);
 
-        return data[0];
-      }),
-      switchMap(async (advisers) => {
-        const ids = [];
+        const advisers$ = from(advisers).pipe(
+          map((a) => {
+            const { data } = errorFilter(a);
 
-        if (advisers.capstone_adviser_id !== null)
-          ids.push(advisers.capstone_adviser_id);
+            return data[0];
+          }),
+          switchMap(async (advisers) => {
+            const ids = [];
 
-        if (advisers.technical_adviser_id !== null)
-          ids.push(advisers.technical_adviser_id);
+            if (advisers.capstone_adviser_id !== null)
+              ids.push(advisers.capstone_adviser_id);
 
-        return await Promise.all(ids.map((id) => this.userService.getUser(id)));
+            if (advisers.technical_adviser_id !== null)
+              ids.push(advisers.technical_adviser_id);
+
+            return await Promise.all(
+              ids.map((id) => this.userService.getUser(id))
+            );
+          })
+        );
+        const students$ = from(students).pipe(
+          map((a) => {
+            const { data } = errorFilter(a);
+
+            return data;
+          }),
+          switchMap(
+            async (ids) =>
+              await Promise.all(
+                ids.map(({ student_uid }) =>
+                  this.userService.getUser(student_uid)
+                )
+              )
+          )
+        );
+
+        return merge(
+          of(null),
+          zip(students$, advisers$).pipe(map((a) => a.flat()))
+        );
       })
     );
 
-    const students$ = from(students).pipe(
-      map((a) => {
-        const { data } = errorFilter(a);
-
-        return data;
-      }),
-      switchMap(
-        async (ids) =>
-          await Promise.all(
-            ids.map(({ student_uid }) => this.userService.getUser(student_uid))
-          )
-      )
-    );
-
-    return this.newParticipant$.pipe(
-      switchMap((_) =>
-        merge(of(null), zip(students$, advisers$).pipe(map((a) => a.flat())))
-      )
-    );
+    return res;
   }
 
   checkProjectParticipant(userUid: string, projectId: number) {
+    if (userUid === '') return throwError(() => new Error('User uid is empty'));
+
+    if (projectId < 0)
+      return throwError(() => new Error('Project id is invalid'));
+
     const adviser = this.client
       .from('project')
       .select('capstone_adviser_id, technical_adviser_id')
@@ -224,7 +233,6 @@ export class ProjectService {
 
     const isUserParticipant$ = zip(studentIds$, advisersId$).pipe(
       map((a) => a.flat()),
-
       map((ids) => ids.includes(userUid))
     );
 
@@ -274,6 +282,11 @@ export class ProjectService {
     projectId: number,
     isLeave?: boolean
   ) {
+    if (userUid === '') return throwError(() => new Error('User uid is empty'));
+
+    if (projectId < 0)
+      return throwError(() => new Error('Project id is invalid'));
+
     const user$ = from(this.userService.getUser(userUid));
 
     return user$.pipe(
@@ -308,6 +321,9 @@ export class ProjectService {
   }
 
   removeProject(projectId: number) {
+    if (projectId < 0)
+      return throwError(() => new Error('Project id is invalid'));
+
     const user$ = from(this.authService.getAuthenticatedUser());
     const request$ = user$.pipe(
       map((user) => {
@@ -327,9 +343,8 @@ export class ProjectService {
     const req$ = of('').pipe(
       map((_) => {
         if (!checkObjectHasKeys(data)) throw new Error('empty data');
-        if (data.full_title === "") throw new Error('empty full title');
-        if (data.name === "") throw new Error('empty name');
-
+        if (data.full_title === '') throw new Error('empty full title');
+        if (data.name === '') throw new Error('empty name');
 
         return _;
       }),
@@ -349,7 +364,11 @@ export class ProjectService {
       }),
       catchError((value) => {
         const err = value as Error;
-        const res: AError = { name: err.name, message: err.message, isError: true }
+        const res: AError = {
+          name: err.name,
+          message: err.message,
+          isError: true,
+        };
         return of(res);
       })
     );
@@ -358,6 +377,9 @@ export class ProjectService {
   }
 
   getProjectInfo(projectId: number) {
+    if (projectId < 0)
+      return throwError(() => new Error('Project id is invalid'));
+
     const req = this.client.from('project').select('*').eq('id', projectId);
     const req$ = from(req).pipe(
       map((res) => {
@@ -371,6 +393,9 @@ export class ProjectService {
   }
 
   deleteProject(projectId: number) {
+    if (projectId < 0)
+      return throwError(() => new Error('Project id is invalid'));
+
     const req = this.client.from('project').delete().eq('id', projectId);
     const req$ = from(req).pipe(
       map((res) => {

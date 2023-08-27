@@ -20,6 +20,7 @@ import {
   tap,
   map,
   catchError,
+  EMPTY,
 } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
@@ -250,24 +251,31 @@ export class GeneralComponent {
       },
     });
 
-  participants$ = this.projectService.getParticipants(this.projectId).pipe(
-    tap((p) => {
-      if (p === null) {
-        this.spinner.show();
+  participants$ = this.projectService
+    .getParticipants(this.projectId)
+    .pipe(
+      tap((p) => {
+        if (p === null) {
+          this.spinner.show();
 
-        return;
-      }
+          return;
+        }
 
-      this.spinner.hide();
-    }),
-    map((p) => {
-      if (p === null) {
-        return [];
-      }
+        this.spinner.hide();
+      }),
+      map((p) => {
+        if (p === null) {
+          return [];
+        }
 
-      return p;
-    })
-  );
+        return p;
+      }),
+      catchError((err) => {
+        this.toastr.error('Error getting participants');
+
+        return EMPTY;
+      })
+    );
 
   handleRemoveButtonClick(userUid: string) {
     this.projectService
