@@ -27,8 +27,8 @@ import { AuthService } from './auth.service';
 export class MilestoneService {
   private readonly client = supabaseClient;
   private updateMilestonesSubject = new BehaviorSubject('');
-  updateMilestones$ = this.updateMilestonesSubject.asObservable();
   private updateMilestoneTemplatesSubject = new BehaviorSubject('');
+  updateMilestones$ = this.updateMilestonesSubject.asObservable();
   updateMilestonetemplatess$ =
     this.updateMilestoneTemplatesSubject.asObservable();
 
@@ -38,6 +38,15 @@ export class MilestoneService {
     projectId: number,
     data: { title: string; description: string; dueDate: string }
   ) {
+    if (projectId < 0)
+      return throwError(() => new Error('Project id is invalid'));
+    if (data.title === '')
+      return throwError(() => new Error('title is invalid'));
+    if (data.description === '')
+      return throwError(() => new Error('description is invalid'));
+    if (data.dueDate === '')
+      return throwError(() => new Error('due date is invalid'));
+
     const req = this.client
       .from('milestone')
       .insert({ project_id: projectId })
@@ -50,7 +59,6 @@ export class MilestoneService {
 
         return data[0].id;
       }),
-      tap((_) => console.log('this runs:', data)),
       switchMap((id) => this.createMilestoneData(id, data)),
       map((res) => {
         const { statusText } = errorFilter(res);
@@ -79,6 +87,9 @@ export class MilestoneService {
   }
 
   delete(milestoneDataId: number) {
+    if (milestoneDataId < 0)
+      return throwError(() => new Error('milestone data id is invalid'));
+
     const req = this.client
       .from('milestone')
       .delete()
@@ -95,7 +106,11 @@ export class MilestoneService {
     return req$;
   }
 
+  // todo: add type for data param
   update(milestoneDataId: number, data: {}) {
+    if (milestoneDataId < 0)
+      return throwError(() => new Error('milestone data id is invalid'));
+
     const req = this.client
       .from('milestone_data')
       .update(data)
@@ -116,31 +131,32 @@ export class MilestoneService {
   }
 
   getMilestones(projectId: number) {
+    if (projectId < 0)
+      return throwError(() => new Error('projectId is invalid'));
+
     const req = this.client
       .from('milestone')
       .select('*')
       .eq('project_id', projectId);
     const req$ = this.updateMilestones$.pipe(
-      tap(() => console.log('runs')),
       switchMap((_) => req),
       map((res) => {
         const { data } = errorFilter(res);
         return data;
       }),
       map((milestones) => milestones.map((m) => m.id)),
-      tap((a) => console.log('runs2 | ids:', a)),
-
       switchMap((ids) => {
         const a = ids.map((id) => this.getMilestoneData(id));
         return forkJoin(a);
-      }),
-      tap((a) => console.log('runs3'))
+      })
     );
 
     return req$;
   }
 
   getMilestoneData(id: number) {
+    if (id < 0) return throwError(() => new Error('id is invalid'));
+
     const req = this.client
       .from('milestone_data')
       .select('*')
@@ -160,6 +176,8 @@ export class MilestoneService {
   }
 
   getMilestoneTemplateData(id: number) {
+    if (id < 0) return throwError(() => new Error('id is invalid'));
+
     const req = this.client
       .from('milestone_template_data')
       .select('*')
@@ -179,14 +197,17 @@ export class MilestoneService {
     return req$;
   }
 
-  getMilestoneTemplates(userId: string) {
+  getMilestoneTemplates(userUid: string) {
+    if (userUid === '')
+      return throwError(() => new Error('userUid is invalid'));
+
     const req = this.client
       .from('milestone_template_data')
       .select('*')
-      .eq('user_uid', userId);
+      .eq('user_uid', userUid);
     const req$ = from(req);
-    const res =this.updateMilestonetemplatess$.pipe(
-      switchMap(_ => req$),
+    const res = this.updateMilestonetemplatess$.pipe(
+      switchMap((_) => req$),
       map((res) => {
         const { data } = errorFilter(res);
 
@@ -198,6 +219,9 @@ export class MilestoneService {
   }
 
   deleteTemplate(templateId: number) {
+    if (templateId < 0)
+      return throwError(() => new Error('templateId is invalid'));
+
     const req = this.client
       .from('milestone_template_data')
       .delete()
@@ -214,7 +238,11 @@ export class MilestoneService {
     return req$;
   }
 
+  // todo: add type for data param
   updateTemplate(templateId: number, data: {}) {
+    if (templateId < 0)
+      return throwError(() => new Error('templateId is invalid'));
+
     const req = this.client
       .from('milestone_template_data')
       .update(data)
@@ -235,10 +263,14 @@ export class MilestoneService {
     return req$;
   }
 
+    // todo: add type for data param
   addTemplate(
     userUid: string,
     data: { title: string; description: string; dueDate: string }
   ) {
+    if (userUid === '')
+      return throwError(() => new Error('userUid is invalid'));
+
     const { title, description, dueDate } = data;
 
     const res$ = from(

@@ -1,26 +1,16 @@
-import { Injectable, inject, signal } from '@angular/core';
-import {
-  createClient,
-  SupabaseClient,
-  AuthResponse,
-} from '@supabase/supabase-js';
+import { Injectable, inject } from '@angular/core';
 import {
   BehaviorSubject,
-  combineLatest,
   forkJoin,
   from,
   map,
-  merge,
-  mergeMap,
   switchMap,
-  take,
   tap,
+  throwError,
 } from 'rxjs';
-import { Task, User } from '../types/collection';
 import errorFilter from '../utils/errorFilter';
 import supabaseClient from '../lib/supabase';
 import { AuthService } from './auth.service';
-import { ProjectService } from './project.service';
 import { UserService } from './user.service';
 
 @Injectable({
@@ -29,16 +19,17 @@ import { UserService } from './user.service';
 export class TaskService {
   private readonly client = supabaseClient;
   private readonly taskUpdateSubject = new BehaviorSubject<number>(0);
-  // activeTaskId = signal<number | null>(null);
 
   userService = inject(UserService);
-
-  constructor(
-    private authService: AuthService,
-    private projectService: ProjectService
-  ) {}
+  authService = inject(AuthService);
 
   add(title: string, description: string, projectId: number) {
+    if (title === '') return throwError(() => new Error('title is invalid'));
+    if (description === '')
+      return throwError(() => new Error('description is invalid'));
+    if (projectId < 0)
+      return throwError(() => new Error('projectId is invalid'));
+
     // todo: separate in another function
     // todo: add check if usser is not a student
     const userUid$ = from(this.authService.getAuthenticatedUser()).pipe(
@@ -95,6 +86,10 @@ export class TaskService {
   }
 
   delete(taskId: number, assignerUid: string) {
+    if (taskId < 0) return throwError(() => new Error('taskId is invalid'));
+    if (assignerUid === '')
+      return throwError(() => new Error('assignerUid is invalid'));
+
     const request = this.client.from('task').delete().eq('id', taskId);
     const request$ = from(request);
     const userCheck$ = from(this.authService.getAuthenticatedUser()).pipe(
@@ -124,6 +119,11 @@ export class TaskService {
   }
 
   edit(id: number, title: string, description: string) {
+    if (title === '') return throwError(() => new Error('title is invalid'));
+    if (description === '')
+      return throwError(() => new Error('description is invalid'));
+    if (id < 0) return throwError(() => new Error('id is invalid'));
+
     const data = {
       title,
       description,
@@ -144,6 +144,10 @@ export class TaskService {
   }
 
   changeStatus(id: number, statusId: number) {
+    if (statusId < 0)
+      return throwError(() => new Error('status id is invalid'));
+    if (id < 0) return throwError(() => new Error('id is invalid'));
+
     const data = {
       status_id: statusId,
     };
@@ -163,6 +167,11 @@ export class TaskService {
   }
 
   getTasks(statusId: number, projectId: number) {
+    if (statusId < 0)
+      return throwError(() => new Error('status id is invalid'));
+    if (projectId < 0)
+      return throwError(() => new Error('projectId is invalid'));
+
     const request$ = this.taskUpdateSubject.pipe(
       switchMap(() => {
         const request = this.client
@@ -189,6 +198,9 @@ export class TaskService {
   }
 
   getAllTasks(projectId: number) {
+    if (projectId < 0)
+      return throwError(() => new Error('projectId is invalid'));
+
     const request$ = this.taskUpdateSubject.pipe(
       switchMap(() => {
         const request = this.client
@@ -201,33 +213,37 @@ export class TaskService {
         const { data } = errorFilter(res);
 
         return data;
-      }),
-      
+      })
     );
 
     return request$;
   }
-  getAllTasksBy(userId: string) {
+  getAllTasksBy(userUid: string) {
+    if (userUid === '')
+      return throwError(() => new Error('user uid is invalid'));
+
     const request$ = this.taskUpdateSubject.pipe(
       switchMap(() => {
         const request = this.client
           .from('task')
           .select('*')
-          .eq('assigner_id', userId);
+          .eq('assigner_id', userUid);
         return from(request);
       }),
       map((res) => {
         const { data } = errorFilter(res);
 
         return data;
-      }),
-      
+      })
     );
 
     return request$;
   }
 
   getAccompishedTasks(consultationId: number) {
+    if (consultationId < 0)
+      return throwError(() => new Error('consultationId is invalid'));
+
     const taskIds = this.client
       .from('accomplished_task')
       .select('task_id')
@@ -250,6 +266,10 @@ export class TaskService {
   }
 
   getTaskCountByAdviser(statusId: number, projectId: number) {
+    if (projectId < 0)
+      return throwError(() => new Error('projectId is invalid'));
+    if (statusId < 0) return throwError(() => new Error('statusId is invalid'));
+
     const req = this.client
       .from('task')
       .select('assigner_id')

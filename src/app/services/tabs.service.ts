@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Tab, TabDefinition } from '../models/tab';
 import { Router } from '@angular/router';
@@ -12,7 +12,7 @@ export class TabsService {
   tabs$ = this.tabsSubject.asObservable();
   activeId$ = this.activeIdSubject.asObservable();
 
-  constructor(private router: Router) {}
+  router = inject(Router)
 
   private setActive(id: string) {
     const tabs = this.tabsSubject.getValue();

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, map, switchMap } from 'rxjs';
+import { from, map, switchMap, throwError } from 'rxjs';
 import { User } from '../types/collection';
 import errorFilter from '../utils/errorFilter';
 import { ConsultationData } from '../models/consultationData';
@@ -10,13 +10,15 @@ import supabaseClient from '../lib/supabase';
 })
 export class DatabaseService {
   readonly client = supabaseClient;
-  constructor() {}
 
   updateUserData(
     userId: string,
     //todo: create interface for this, name it UserRow
     user: { name: string; roleId: number }
   ) {
+    if (userId === "")
+    return throwError(() => new Error('user id is invalid'));
+
     const query = this.client
       .from('user')
       .upsert({

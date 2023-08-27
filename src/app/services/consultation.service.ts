@@ -1,11 +1,18 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, from, map, switchMap, tap } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import {
+  BehaviorSubject,
+  forkJoin,
+  from,
+  map,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 import { ConsultationData } from '../models/consultationData';
 import { AuthService } from './auth.service';
 import errorFilter from '../utils/errorFilter';
 import { DatabaseService } from './database.service';
 import supabaseClient from '../lib/supabase';
-import { ProjectService } from './project.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,13 +21,20 @@ export class ConsultationService {
   private readonly client = supabaseClient;
   private newConsultationSignal$ = new BehaviorSubject(0);
 
-  constructor(
-    private authService: AuthService,
-    private databaseService: DatabaseService,
-    private projectService: ProjectService
-  ) {}
+  authService = inject(AuthService);
+  databaseService = inject(DatabaseService);
 
   scheduleConsultation(data: ConsultationData, projectId: number) {
+    if (projectId < 0)
+      return throwError(() => new Error('Project id is invalid'));
+
+    if (data.dateTime < 0)
+      return throwError(() => new Error('date time is invalid'));
+    if (data.description === '')
+      return throwError(() => new Error('description is invalid'));
+    if (data.location === '')
+      return throwError(() => new Error('location is invalid'));
+
     const user$ = from(this.authService.getAuthenticatedUser()).pipe(
       map((user) => {
         if (user === null) throw new Error('must be impossible');
@@ -45,6 +59,8 @@ export class ConsultationService {
     proposedNextSteps: string[],
     nextDeliverables: string[]
   ) {
+    if (id < 0) return throwError(() => new Error('Id is invalid'));
+
     const request$ = this.markAsComplete(id).pipe(
       switchMap((_) =>
         this.insertConsultationOutcome(0, actualAccomplishments, id)
@@ -60,6 +76,8 @@ export class ConsultationService {
   }
 
   handleInvitation(id: number, decision: boolean) {
+    if (id < 0) return throwError(() => new Error('Id is invalid'));
+
     const data = {
       category_id: decision ? 1 : 3,
     };
@@ -76,7 +94,13 @@ export class ConsultationService {
     return request$;
   }
 
+  // todo: add takeUntilDestroyed for method's users
   getConsultations(categoryId: number, projectId: number) {
+    if (projectId < 0)
+      return throwError(() => new Error('Project id is invalid'));
+    if (categoryId < 0)
+      return throwError(() => new Error('category id is invalid'));
+
     const res = this.newConsultationSignal$.pipe(
       switchMap(() => {
         const request$ = from(
@@ -100,7 +124,11 @@ export class ConsultationService {
     return res;
   }
 
+  // todo: add takeUntilDestroyed for method's users
   getAllConsultations(projectId: number) {
+    if (projectId < 0)
+      return throwError(() => new Error('Project id is invalid'));
+
     const res = this.newConsultationSignal$.pipe(
       switchMap(() => {
         const request$ = from(
@@ -124,6 +152,9 @@ export class ConsultationService {
   }
 
   cancelInvitation(id: number) {
+    if (id < 0)
+      return throwError(() => new Error('consultation id is invalid'));
+
     // todo: fix foreign key violation
     const deleteReq = this.client.from('consultation').delete().eq('id', id);
     const deleteReq$ = from(deleteReq).pipe(
@@ -139,6 +170,9 @@ export class ConsultationService {
   }
 
   getConsultationOutcomes(id: number) {
+    if (id < 0)
+      return throwError(() => new Error('consultation id is invalid'));
+
     const actualAccomplishments = this.client
       .from('actual_accomplishment')
       .select('content')
