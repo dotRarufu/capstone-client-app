@@ -1,4 +1,4 @@
-import { Injectable, WritableSignal, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   BehaviorSubject,
   filter,
@@ -15,6 +15,7 @@ import {
   throwError,
   first,
   Subject,
+  catchError,
 } from 'rxjs';
 import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
 import { ToastrService } from 'ngx-toastr';
@@ -22,13 +23,17 @@ import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 import { ProjectRow } from '../types/collection';
 import { Project } from '../models/project';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from './user.service';
 import { getObjectValues } from '../utils/getObjectValues';
 import errorFilter from '../utils/errorFilter';
 import supabaseClient from '../lib/supabase';
-import { toObservable } from '@angular/core/rxjs-interop';
 import { isNotNull } from '../utils/isNotNull';
+import { checkObjectHasKeys } from '../utils/checkObjectHasKeys';
+
+export type AError = {
+  name: string, message: string, isError: true 
+}
 
 @Injectable({
   providedIn: 'root',
@@ -40,14 +45,9 @@ export class ProjectService {
   private newParticipant$ = new BehaviorSubject<number>(0);
   formUrl$ = this.formUrlSubject.asObservable();
 
-  constructor(
-    private databaseService: DatabaseService,
-    private toastr: ToastrService,
-    private authService: AuthService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private userService: UserService
-  ) {}
+  databaseService = inject(DatabaseService);
+  authService = inject(AuthService);
+  userService = inject(UserService);
 
   getProjects() {
     const user$ = from(this.authService.getAuthenticatedUser());
@@ -84,6 +84,12 @@ export class ProjectService {
 
   createProject(name: string, fullTitle: string) {
     const user$ = from(this.authService.getAuthenticatedUser()).pipe(
+      map((_) => {
+        if (name === '' || fullTitle === '')
+          throw new Error('You passed an empty string');
+
+        return _;
+      }),
       map((user) => {
         if (user === null) throw new Error('no logged in user');
 
@@ -228,30 +234,37 @@ export class ProjectService {
   addParticipant(userUid: string, projectId: number) {
     // todo: if the adviser already exist, notify user that they are replacing the adviser by adding new adviser
 
-    const role$ = from(this.userService.getUser(userUid));
+    return of(userUid).pipe(
+      map((v) => {
+        if (v === '') throw new Error('No user uid passed');
 
-    const newParticipant$ = role$.pipe(
-      switchMap(({ role_id }) => {
-        if (role_id === 0)
-          return from(this.userService.getUser(userUid)).pipe(
-            switchMap((_) => this.addStudentMember(projectId, userUid)),
-            tap((_) => this.signalNewParticipant())
-          );
-
-        if (![1, 2].includes(role_id)) throw new Error('unknon role');
-
-        return this.addProjectAdviser(userUid, projectId, role_id as 1 | 2);
-      })
-    );
-
-    return of('').pipe(
+        return v;
+      }),
       switchMap((_) => this.checkProjectParticipant(userUid, projectId)),
       map((isParticipant) => {
         if (isParticipant) throw new Error('participant already exists');
 
         return isParticipant;
       }),
-      switchMap((_) => newParticipant$),
+      switchMap((_) => {
+        const role$ = from(this.userService.getUser(userUid));
+
+        const newParticipant$ = role$.pipe(
+          switchMap(({ role_id }) => {
+            if (role_id === 0)
+              return from(this.userService.getUser(userUid)).pipe(
+                switchMap((_) => this.addStudentMember(projectId, userUid)),
+                tap((_) => this.signalNewParticipant())
+              );
+
+            if (![1, 2].includes(role_id)) throw new Error('unknon role');
+
+            return this.addProjectAdviser(userUid, projectId, role_id as 1 | 2);
+          })
+        );
+
+        return newParticipant$;
+      }),
       tap((_) => this.signalNewParticipant())
     );
   }
@@ -310,19 +323,34 @@ export class ProjectService {
     return request$;
   }
 
-  updateGeneralInfo(projectId: number, data: {}) {
-    console.log('update with data:', data);
-    const req = this.client
-      .from('project')
-      .update(data)
-      .eq('id', projectId)
-      .select('*');
+  updateGeneralInfo(projectId: number, data: Partial<ProjectRow>) {
+    const req$ = of('').pipe(
+      map((_) => {
+        if (!checkObjectHasKeys(data)) throw new Error('empty data');
+        if (data.full_title === "") throw new Error('empty full title');
+        if (data.name === "") throw new Error('empty name');
 
-    const req$ = from(req).pipe(
+
+        return _;
+      }),
+      switchMap((_) => {
+        const req = this.client
+          .from('project')
+          .update(data)
+          .eq('id', projectId)
+          .select('*');
+
+        return req;
+      }),
       map((res) => {
         const { data } = errorFilter(res);
 
         return data[0];
+      }),
+      catchError((value) => {
+        const err = value as Error;
+        const res: AError = { name: err.name, message: err.message, isError: true }
+        return of(res);
       })
     );
 
@@ -382,20 +410,6 @@ export class ProjectService {
     );
   }
 
-  // getProjectsReport(userId: string, role: number) {
-  //   const a = role === 1 ? "capstone_adviser_id" : "technical_adviser_id";
-  //   const b = role !== 1 ? "capstone_adviser_id" : "technical_adviser_id";
-
-  //   const req = this.client.from("project").select(b).eq(a, userId);
-  //   const req$ = from(req).pipe(map(r => {
-  //     const {data} = errorFilter(r)
-
-  //     return data;
-  //   }));
-
-  //   return req$;
-  // }
-
   async getProjectsFromCategory(categoryId: number) {
     const projectIds = (
       await this.client
@@ -431,7 +445,7 @@ export class ProjectService {
     const request = this.client
       .from('project')
       .select('*')
-      .eq("is_done", false)
+      .eq('is_done', false)
       .eq('capstone_adviser_id', userUid);
 
     const projects$ = from(request).pipe(
@@ -475,7 +489,7 @@ export class ProjectService {
     const request = this.client
       .from('project')
       .select('id')
-      .eq("is_done", false)
+      .eq('is_done', false)
       .eq('technical_adviser_id', userUid);
 
     const projects$ = from(request).pipe(

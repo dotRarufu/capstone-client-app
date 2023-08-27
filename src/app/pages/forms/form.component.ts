@@ -1,11 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { map, switchMap, tap } from 'rxjs';
 import { FormGeneratorService } from 'src/app/services/form-generator.service';
-import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   standalone: true,
@@ -30,16 +28,16 @@ import { ProjectService } from 'src/app/services/project.service';
     >
   `,
 })
-export class FormComponent {
-  src = "";
+export class FormComponent implements OnInit {
+  src = '';
   formNumber = -1;
 
-  constructor(
-    private formGeneratorService: FormGeneratorService,
-    private spinner: NgxSpinnerService,
-    private route: ActivatedRoute,
-    private toastr: ToastrService
-  ) {
+  formGeneratorService = inject(FormGeneratorService);
+  spinner = inject(NgxSpinnerService);
+  route = inject(ActivatedRoute);
+  toastr = inject(ToastrService);
+
+  ngOnInit() {
     const projectId = Number(
       this.route.parent!.parent!.parent!.snapshot.url[0].path
     );
@@ -48,45 +46,14 @@ export class FormComponent {
     this.formGeneratorService.generateForm(projectId, formNumber).subscribe({
       next: (url) => {
         this.src = url;
-        console.log("successfully generated form:", url)
+        console.log('successfully generated form:', url);
         this.toastr.success('successfullyedgenerated form');
       },
       error: (err) => {
         this.toastr.error('error generating form:', err);
         this.spinner.hide();
-      }
-    })
-
-    // this.route.url
-    //   .pipe(
-    //     tap(_ => {
-    //       this.spinner.show();
-    //       console.log("runs change");
-    //     }),
-    //     map((url) => {
-    //       const formNumber = Number(url[0].path);
-          
-    //       return formNumber;
-    //     }),
-    //     tap(url => console.log("request form:", url)),
-    //     switchMap((formNumber) =>
-    //       this.formGeneratorService.generateForm(projectId, formNumber)
-    //     )
-    //   )
-    //   .subscribe({
-    //     next: (url) => {
-    //       if (url === undefined || url === null) {
-    //         this.toastr.error('error generating form:', url);
-    //         this.spinner.hide();
-    //         return;
-    //       }
-
-    //       this.src = url;
-    //       this.toastr.success('successfullyedgenerated form');
-
-    //       console.log('generated form res:', url);
-    //     },
-    //   });
+      },
+    });
   }
 
   finishedLoading() {

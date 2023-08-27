@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ParticipantCardComponent } from './participant-card.component';
 import { CommonModule } from '@angular/common';
 import { AddParticipantModalComponent } from 'src/app/pages/project/pages/project/add-participant-modal.component';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { ProjectService } from 'src/app/services/project.service';
+import { AError, ProjectService } from 'src/app/services/project.service';
 import { ActivatedRoute } from '@angular/router';
-import { User } from 'src/app/types/collection';
+import { ProjectRow, User } from 'src/app/types/collection';
 import { ProjectCardPreviewComponent } from './project-card-preview.component';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -14,12 +14,16 @@ import {
   Subject,
   debounceTime,
   distinctUntilChanged,
+  filter,
   switchMap,
   take,
   tap,
+  map,
+  catchError,
 } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'general',
@@ -43,8 +47,8 @@ import { getRolePath } from 'src/app/utils/getRolePath';
             <div class="h-[2px] w-full bg-base-content/10"></div>
             <input
               [(ngModel)]="name"
-              (change)="handleNameChange()"
-              [disabled]="!isStudent"
+              (change)="newNameSubject.next(this.name)"
+              [disabled]="!isStudent()"
               type="text"
               placeholder="Type here"
               class="input-bordered input input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
@@ -55,10 +59,9 @@ import { getRolePath } from 'src/app/utils/getRolePath';
             <div class="text-base font-semibold">Full Title</div>
             <div class="h-[2px] w-full bg-base-content/10"></div>
             <textarea
-
               [(ngModel)]="title"
-              (change)="handleTitleChange()"
-              [disabled]="!isStudent"
+              (change)="newTitleSubject.next(this.title)"
+              [disabled]="!isStudent()"
               type="text"
               placeholder="Type here"
               class="textarea-bordered textarea input-md h-[144px] w-full rounded-[3px] focus:textarea-primary focus:outline-0"
@@ -66,7 +69,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
           </div>
         </div>
 
-        <div *ngIf="isStudent" class="flex w-[320px] flex-col gap-[4px]">
+        <div *ngIf="isStudent()" class="flex w-[320px] flex-col gap-[4px]">
           <div class="text-base font-semibold">Preview</div>
           <project-card-preview [name]="name" [title]="title" />
         </div>
@@ -77,7 +80,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
           Participants
 
           <button
-          *ngIf="isStudent"
+            *ngIf="isStudent()"
             onclick="addParticipant.showModal()"
             class="btn-ghost btn-sm btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
@@ -88,7 +91,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <participant-card
-          *ngFor="let participant of participants"
+          *ngFor="let participant of participants$ | async"
           [user]="participant"
           [showRemoveButton]="shouldShowParticipant(participant)"
           (removeButtonClicked)="handleRemoveButtonClick($event)"
@@ -109,8 +112,8 @@ import { getRolePath } from 'src/app/utils/getRolePath';
             class="toggle-success toggle"
             [checked]="isDone"
             [(ngModel)]="isDone"
-            (change)="handleIsDoneChange()"
-            [disabled]="!isStudent"
+            (change)="newIsDoneSubject.next(this.isDone)"
+            [disabled]="!isStudent()"
           />
           <div class="text-base font-semibold">
             {{ isDone ? 'Done' : 'Not Done' }}
@@ -121,140 +124,152 @@ import { getRolePath } from 'src/app/utils/getRolePath';
     <add-participant-modal />
   `,
 })
-export class GeneralComponent implements OnInit {
-  participants: User[] = [];
+export class GeneralComponent {
+  projectService = inject(ProjectService);
+  spinner = inject(NgxSpinnerService);
+  route = inject(ActivatedRoute);
+  toastr = inject(ToastrService);
+  authService = inject(AuthService);
+
   name = '';
   title = '';
   isDone = false;
-  projectId = -1;
-  newName$ = new Subject<string>();
-  newTitle$ = new Subject<string>();
-  newIsDone$ = new Subject<boolean>();
-  // todo: initiate this
-  isStudent = false;
-  user: User | null = null;
+  projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
 
-  constructor(
-    private projectService: ProjectService,
-    private spinner: NgxSpinnerService,
-    private route: ActivatedRoute,
-    private toastr: ToastrService,
-    private authService: AuthService
-  ) {}
+  isStudent = computed(() => {
+    const user = this.user();
 
-  ngOnInit(): void {
-    const projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
-    this.projectId = projectId;
-    const participants$ = this.projectService.getParticipants(projectId);
+    if (user === null) return false;
 
-    participants$.subscribe({
-      next: (p) => {
-        if (p === null) {
-          this.participants = [];
-          this.spinner.show();
-
-          return;
+    return getRolePath(user.role_id) === 's';
+  });
+  user = toSignal(
+    this.authService.user$.pipe(
+      take(1),
+      map((u) => {
+        if (u === null) {
+          throw new Error('no logged in user');
         }
-        this.spinner.hide();
+        return u;
+      })
+    ),
+    { initialValue: null }
+  );
 
-        this.participants = p;
-      },
-      complete: () => console.log('getParticipants complete'),
-    });
+  project$ = this.projectService.getProjectInfo(this.projectId).subscribe({
+    next: (project) => {
+      this.name = project.name;
+      this.title = project.full_title;
+      this.isDone = project.is_done;
+    },
+    error: (err) => {
+      this.toastr.error('error fetching project info');
+    },
+  });
 
-    this.projectService.getProjectInfo(this.projectId).subscribe({
-      next: (project) => {
-        this.name = project.name;
-        this.title = project.full_title;
-        this.isDone = project.is_done;
-      },
-      error: (err) => {
-        this.toastr.error('error fetching project info');
-      },
-    });
-
-    this.newName$
-      .pipe(
-        debounceTime(3000),
-        distinctUntilChanged(),
-        switchMap((newName) =>
-          this.projectService.updateGeneralInfo(this.projectId, {
-            name: newName,
-          })
-        ),
-        tap(() => console.log('projhect name chagned'))
-      )
-      .subscribe({
-        next: (res) => {
-          this.toastr.success(
-            'successfully changed project name to ' + res.name
-          );
-        },
-        error: () => {
-          this.toastr.error('error changing project name');
-        },
-      });
-
-    this.newTitle$
-      .pipe(
-        debounceTime(3000),
-        distinctUntilChanged(),
-        switchMap((newTitle) =>
-          this.projectService.updateGeneralInfo(this.projectId, {
-            full_title: newTitle,
-          })
-        )
-      )
-      .subscribe({
-        next: (res) => {
-          this.toastr.success(
-            'successfully changed project title to ' + res.full_title
-          );
-        },
-        error: () => {
-          this.toastr.error('error changing project title');
-        },
-      });
-
-    this.newIsDone$
-      .pipe(
-        debounceTime(3000),
-        distinctUntilChanged(),
-        switchMap((newIsDone) =>
-          this.projectService.updateGeneralInfo(this.projectId, {
-            is_done: newIsDone,
-          })
-        )
-      )
-      .subscribe({
-        next: (res) => {
-          this.toastr.success(
-            'successfully changed project is done to ' + res.is_done
-          );
-        },
-        error: () => {
-          this.toastr.error('error changing project is done');
-        },
-      });
-
-    this.authService.user$.pipe(take(1)).subscribe({
-      next: (user) => {
-        console.log('user !:', user);
-        if (user === null) {
-          this.toastr.error('no loggedin user');
-          return;
-        }
-        this.user = user;
-        this.isStudent = getRolePath(user.role_id) === 's';
-      },
-      error: () => {
-        this.toastr.error('no loggedin user');
+  newTitleSubject = new Subject<string>();
+  newTitle$ = this.newTitleSubject.pipe(
+    takeUntilDestroyed(),
+    debounceTime(3000),
+    distinctUntilChanged(),
+    switchMap((newTitle) =>
+      this.projectService.updateGeneralInfo(this.projectId, {
+        full_title: newTitle,
+      })
+    )
+  );
+  newTitleSuccess$ = this.newTitle$
+    .pipe(filter((v): v is ProjectRow => !v.hasOwnProperty('isError')))
+    .subscribe({
+      next: (res) => {
+        this.toastr.success(
+          'successfully changed project title to ' + res.full_title
+        );
       },
     });
-  }
+  newTitleFailed$ = this.newTitle$
+    .pipe(filter((v): v is AError => v.hasOwnProperty('isError')))
+    .subscribe({
+      next: (res) => {
+        this.toastr.error('error changing title: ' + res.message);
+      },
+    });
+
+  newNameSubject = new Subject<string>();
+  newName$ = this.newNameSubject.pipe(
+    tap((v) => console.log('chagned:', v)),
+    takeUntilDestroyed(),
+    debounceTime(3000),
+    distinctUntilChanged(),
+    switchMap((newTitle) =>
+      this.projectService.updateGeneralInfo(this.projectId, {
+        name: newTitle,
+      })
+    )
+  );
+  newNameSuccess$ = this.newName$
+    .pipe(filter((v): v is ProjectRow => !v.hasOwnProperty('isError')))
+    .subscribe({
+      next: (res) => {
+        this.toastr.success('successfully changed project name to ' + res.name);
+      },
+    });
+  newNameFailed$ = this.newName$
+    .pipe(filter((v): v is AError => v.hasOwnProperty('isError')))
+    .subscribe({
+      next: (res) => {
+        this.toastr.error('error changing name: ' + res.message);
+      },
+    });
+
+  newIsDoneSubject = new Subject<boolean>();
+  newIsDone$ = this.newIsDoneSubject.pipe(
+    takeUntilDestroyed(),
+    debounceTime(3000),
+    distinctUntilChanged(),
+    switchMap((newIsDone) =>
+      this.projectService.updateGeneralInfo(this.projectId, {
+        is_done: newIsDone,
+      })
+    )
+  );
+  newIsDoneSuccess$ = this.newIsDone$
+    .pipe(filter((v): v is ProjectRow => !v.hasOwnProperty('isError')))
+    .subscribe({
+      next: (res) => {
+        this.toastr.success(
+          'successfully changed project is done to ' + res.is_done
+        );
+      },
+    });
+  newIsDoneFailed$ = this.newIsDone$
+    .pipe(filter((v): v is AError => v.hasOwnProperty('isError')))
+    .subscribe({
+      next: (res) => {
+        this.toastr.error('error changing is done property: ' + res.message);
+      },
+    });
+
+  participants$ = this.projectService.getParticipants(this.projectId).pipe(
+    tap((p) => {
+      if (p === null) {
+        this.spinner.show();
+
+        return;
+      }
+
+      this.spinner.hide();
+    }),
+    map((p) => {
+      if (p === null) {
+        return [];
+      }
+
+      return p;
+    })
+  );
 
   handleRemoveButtonClick(userUid: string) {
-    console.log('remove button clicked:' + userUid);
     this.projectService
       .removeProjectParticipant(userUid, this.projectId)
       .subscribe({
@@ -267,27 +282,17 @@ export class GeneralComponent implements OnInit {
       });
   }
 
-  handleNameChange() {
-    this.newName$.next(this.name);
-  }
-
-  handleTitleChange() {
-    this.newTitle$.next(this.title);
-  }
-
-  handleIsDoneChange() {
-    this.newIsDone$.next(this.isDone);
-  }
-
   shouldShowParticipant(participant: {
     name: string;
     role_id: number;
     uid: string;
   }) {
-    if (!this.isStudent) {
+    if (!this.isStudent()) {
       return false;
     }
 
-    return this.user !== null && participant.uid !== this.user.uid;
+    const user = this.user();
+
+    return user !== null && participant.uid !== user.uid;
   }
 }

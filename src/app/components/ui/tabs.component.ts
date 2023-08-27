@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Tab } from 'src/app/models/tab';
 import { TabsService } from 'src/app/services/tabs.service';
 
@@ -9,7 +10,7 @@ import { TabsService } from 'src/app/services/tabs.service';
   imports: [CommonModule],
   template: `
     <div
-      class="border-b border-base-content/20 px-[1rem] py-1 sm1:px-[32px] sm2:px-0 md:border-none  overflow-x-scroll"
+      class="overflow-x-scroll border-b border-base-content/20 px-[1rem] py-1 sm1:px-[32px] sm2:px-0  md:border-none"
     >
       <div
         [class.md:hidden]="isResponsive"
@@ -33,17 +34,15 @@ import { TabsService } from 'src/app/services/tabs.service';
     </div>
   `,
 })
-export class TabsComponent implements OnInit {
+export class TabsComponent {
   @Input() isResponsive?: boolean = true;
   tabs: Tab[] = [];
-  constructor(private tabsService: TabsService) {}
 
-  ngOnInit(): void {
-    console.log("tabs runs");
-    this.tabsService.tabs$.subscribe({
-      next: (tabs) => {
-        if (tabs !== null) this.tabs = tabs;
-      },
-    });
-  }
+  tabsService = inject(TabsService);
+
+  subscription = this.tabsService.tabs$.pipe(takeUntilDestroyed()).subscribe({
+    next: (tabs) => {
+      if (tabs !== null) this.tabs = tabs;
+    },
+  });
 }

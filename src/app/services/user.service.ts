@@ -18,15 +18,8 @@ export class UserService {
       .getPublicUrl(uid + '.png');
 
     if (res.error !== null) {
-      console.error('error while fetching user');
-
-      return {
-        name: 'unregistered user',
-        role_id: -1,
-        uid: '',
-        avatar: avatar.data.publicUrl || 'error getting avatar',
-        avatar_last_update: 0
-      };
+if (res.error.code === "PGRST116") throw new Error("User does not exist");
+     throw new Error("Error occured while fetching user")
     }
 
     const {name, role_id,avatar_last_update} = res.data;

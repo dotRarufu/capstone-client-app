@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TabDefinition } from 'src/app/models/tab';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
@@ -11,33 +11,31 @@ import { TabsComponent } from '../../components/ui/tabs.component';
   standalone: true,
   imports: [FeatherIconsModule, TabsComponent, CommonModule, RouterModule],
   template: `
-    <div class="flex h-full w-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible">
+    <div
+      class="flex h-full w-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible"
+    >
       <div class="w-full">
         <tabs [isResponsive]="false" />
       </div>
 
-      <div class="h-[calc(100vh-60px)] overflow-x-scroll relative">
-        <router-outlet #myOutlet="outlet"/>
+      <div class="relative h-[calc(100vh-60px)] overflow-x-scroll">
+        <router-outlet #myOutlet="outlet" />
         <button
-        [class.hidden]="!myOutlet.isActivated"
-        (click)="downloadFile(anchor)"
-        class="btn-ghost btn absolute bottom-0 right-0 gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
-      >
-        <i-feather class="text-base-content/70" name="download" />
-
-      </button>
+          [class.hidden]="!myOutlet.isActivated"
+          (click)="downloadFile(anchor)"
+          class="btn-ghost btn absolute bottom-0 right-0 gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+        >
+          <i-feather class="text-base-content/70" name="download" />
+        </button>
       </div>
-
-
-
     </div>
 
     <a
-        class="hidden"
-        #anchor
-        [href]="projectService.formUrl$ | async"
-        download
-      ></a>
+      class="hidden"
+      #anchor
+      [href]="projectService.formUrl$ | async"
+      download
+    ></a>
   `,
 })
 export class FormGeneratorComponent implements OnInit {
@@ -45,11 +43,9 @@ export class FormGeneratorComponent implements OnInit {
     'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_2_project_0.docx?t=2023-05-18T14%3A11%3A02.027Z'
   );
 
-  constructor(
-    public projectService: ProjectService,
-    private tabsService: TabsService,
-    private route: ActivatedRoute
-  ) {}
+  projectService = inject(ProjectService);
+  tabsService = inject(TabsService);
+  route = inject(ActivatedRoute);
 
   ngOnInit(): void {
     const tabs: TabDefinition[] = [

@@ -5,7 +5,6 @@ import { TabsService } from 'src/app/services/tabs.service';
 import { CommonModule } from '@angular/common';
 import { ResultComponent } from './result.component';
 import { ProjectsComponent } from './projects-container.component';
-import { ProjectCardComponent } from 'src/app/components/ui/project-card.component';
 import { TitleAnalyzerModalComponent } from './title-analyzer-modal.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { TopAppBarComponent } from 'src/app/components/ui/top-app-bar.component';
@@ -28,7 +27,6 @@ import { AddProjectModalComponent } from './add-project-modal.component';
     CommonModule,
     ResultComponent,
     ProjectsComponent,
-    ProjectCardComponent,
     TitleAnalyzerModalComponent,
     NgxSpinnerModule,
     TopAppBarComponent,

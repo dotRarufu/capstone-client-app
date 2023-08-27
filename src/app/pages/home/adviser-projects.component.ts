@@ -8,7 +8,6 @@ import {
 import { ProjectsComponent } from './projects-container.component';
 
 import { CommonModule } from '@angular/common';
-import { ProjectCardComponent } from 'src/app/components/ui/project-card.component';
 import { SectionProject } from 'src/app/models/sectionProject';
 import { Project } from 'src/app/models/project';
 import { ProjectService } from 'src/app/services/project.service';
@@ -17,6 +16,7 @@ import { groupBySection } from 'src/app/utils/groupBySection';
 import { ActivatedRoute } from '@angular/router';
 import { HomeStateService } from './data-access/home-state.service';
 import { ProjectsAccordionComponent } from './projects-accordion.component';
+import { ProjectCardComponent } from './project-card.component';
 
 @Component({
   selector: 'adviser-projects',
@@ -27,7 +27,6 @@ import { ProjectsAccordionComponent } from './projects-accordion.component';
     CommonModule,
     ProjectCardComponent,
   ],
-  // providers: [HomeStateService],
   template: `
     <div class="w-full">
       <projects>

@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
-  imports: [FeatherIconsModule],
+  imports: [FeatherIconsModule, CommonModule],
   selector: 'projects',
   template: `
     <div
@@ -13,14 +14,18 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
         class="flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
       >
         <h2 class="text-2xl">Projects</h2>
-        <!-- <div
-          class="btn-ghost btn flex justify-between  rounded-[3px] border border-base-content/50 sm1:w-[222px]"
+        <button
+        *ngIf="showAdd"
+          onclick="addProject.showModal()"
+          class="btn-ghost btn-sm gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content flex items-center hover:border-base-content/30"
         >
+          <i-feather
+            class="h-[20px] w-[20px] text-base-content/70"
+            name="plus"
+          />
 
-          <span class="font-normal normal-case"> Search project... </span>
-
-          <i-feather class="text-base-content/70" name="search" />
-        </div> -->
+          Add
+        </button>
       </div>
       <div class="h-[2px] w-full bg-base-content/10"></div>
       <ng-content />
@@ -29,6 +34,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 })
 export class ProjectsComponent {
   search: string = '';
+  @Input() showAdd? = false;
 
   constructor() {}
 }

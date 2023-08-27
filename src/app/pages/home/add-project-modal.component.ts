@@ -81,6 +81,10 @@ export class AddProjectModalComponent {
         this.spinner.hide();
         this.toastr.success('Project added successfully');
       },
+      error: (err) => {
+        this.spinner.hide();
+        this.toastr.error('Failed to add project');
+      }
     });
   }
 }

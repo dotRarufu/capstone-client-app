@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
@@ -63,12 +63,9 @@ export class TopAppBarComponent implements OnInit {
   name = '';
   @Input() activePath? = 'Home';
 
-  // watch for changes in
-  constructor(
-    private authService: AuthService,
-    private spinner: NgxSpinnerService,
-    private router: Router
-  ) {}
+  authService = inject(AuthService);
+  spinner = inject(NgxSpinnerService);
+  router = inject(Router);
 
   ngOnInit(): void {
     // call an async function here, user's profile does not have to be immediately visible
@@ -88,6 +85,7 @@ export class TopAppBarComponent implements OnInit {
 
   signOut() {
     this.spinner.show();
+    // Todo: test for completion
     this.authService.signOut().subscribe((v) => this.spinner.hide());
   }
 
@@ -96,7 +94,6 @@ export class TopAppBarComponent implements OnInit {
   }
 
   async navigateHome() {
-    console.log('navigateHome()');
     const user = await this.authService.getAuthenticatedUser();
 
     if (user !== null) {
