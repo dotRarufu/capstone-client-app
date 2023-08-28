@@ -104,7 +104,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <div>July 23, 2023</div>
       </div>
-      <div class="flex flex-col gap-[4px]">
+      <div *ngIf="isStudent()" class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Mark as Done</div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <div class="flex gap-[8px]">
@@ -114,7 +114,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
             [checked]="isDone"
             [(ngModel)]="isDone"
             (change)="newIsDoneSubject.next(this.isDone)"
-            [disabled]="!isStudent()"
+            
           />
           <div class="text-base font-semibold">
             {{ isDone ? 'Done' : 'Not Done' }}

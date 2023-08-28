@@ -52,6 +52,7 @@ export class MilestoneService {
       .insert({ project_id: projectId })
       .select('id');
     const req$ = from(req).pipe(
+      take(1),
       map((res) => {
         const { data } = errorFilter(res);
 
@@ -60,11 +61,6 @@ export class MilestoneService {
         return data[0].id;
       }),
       switchMap((id) => this.createMilestoneData(id, data)),
-      map((res) => {
-        const { statusText } = errorFilter(res);
-
-        return statusText;
-      }),
       tap((_) => this.signalMilestonesUpdate())
     );
 
@@ -81,7 +77,13 @@ export class MilestoneService {
       due_date: data.dueDate,
       milestone_id: milestoneId,
     });
-    const req$ = from(req);
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      })
+    );
 
     return req$;
   }
@@ -150,7 +152,7 @@ export class MilestoneService {
         const a = ids.map((id) => this.getMilestoneData(id));
 
         return forkJoin(a);
-      }),
+      })
     );
 
     return req$;
@@ -229,9 +231,10 @@ export class MilestoneService {
       .delete()
       .eq('id', templateId);
     const req$ = from(req).pipe(
+      take(1),
       map((res) => {
         const { statusText } = errorFilter(res);
-
+        console.log('delete templateid:', templateId);
         return statusText;
       }),
       tap((_) => this.signalMilestoneTemplatesUpdate())

@@ -27,6 +27,8 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
             tabindex="0"
             (click)="handleAddItem()"
             class="btn-ghost btn-sm join-item btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+            [class.btn-disabled]="inputField === ''"
+            [class.cursor-not-allowed]="inputField === ''"
           >
             <i-feather class="text-base-content/70" name="plus" />
 
@@ -48,6 +50,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
             (click)="handleDeleteItem(item)"
             tabindex="0"
             class="btn-ghost btn-sm btn rounded-[3px]"
+            
           >
             <i-feather class="text-base-content/70" name="minus" />
           </label>

@@ -10,6 +10,7 @@ import {
   zip,
   throwError,
   catchError,
+  forkJoin,
 } from 'rxjs';
 import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
 import { AuthService } from './auth.service';
@@ -22,6 +23,7 @@ import errorFilter from '../utils/errorFilter';
 import supabaseClient from '../lib/supabase';
 import { isNotNull } from '../utils/isNotNull';
 import { checkObjectHasKeys } from '../utils/checkObjectHasKeys';
+import { MilestoneService } from './milestone.service';
 
 export type AError = {
   name: string;
@@ -42,6 +44,7 @@ export class ProjectService {
   databaseService = inject(DatabaseService);
   authService = inject(AuthService);
   userService = inject(UserService);
+  milestoneService = inject(MilestoneService);
 
   // Todo: add takeUntilDestroyed pipe for users of this method
   getProjects() {
@@ -242,37 +245,33 @@ export class ProjectService {
   addParticipant(userUid: string, projectId: number) {
     // todo: if the adviser already exist, notify user that they are replacing the adviser by adding new adviser
 
-    return of(userUid).pipe(
-      map((v) => {
-        if (v === '') throw new Error('No user uid passed');
+    if (userUid === '')
+      return throwError(() => new Error('No user uid passed'));
+    if (projectId < 0) return throwError(() => new Error('Invalid project id'));
 
-        return v;
-      }),
-      switchMap((_) => this.checkProjectParticipant(userUid, projectId)),
+    const isParticipant$ = this.checkProjectParticipant(
+      userUid,
+      projectId
+    ).pipe(
       map((isParticipant) => {
         if (isParticipant) throw new Error('participant already exists');
 
         return isParticipant;
-      }),
-      switchMap((_) => {
-        const role$ = from(this.userService.getUser(userUid));
+      })
+    );
+    const role$ = from(this.userService.getUser(userUid));
+    const req$ = role$.pipe(
+      switchMap(({ role_id }) => {
+        if (role_id === 0) return this.addStudentMember(projectId, userUid);
 
-        const newParticipant$ = role$.pipe(
-          switchMap(({ role_id }) => {
-            if (role_id === 0)
-              return from(this.userService.getUser(userUid)).pipe(
-                switchMap((_) => this.addStudentMember(projectId, userUid)),
-                tap((_) => this.signalNewParticipant())
-              );
+        if (![1, 2].includes(role_id)) throw new Error('unknon role');
 
-            if (![1, 2].includes(role_id)) throw new Error('unknon role');
+        return this.addProjectAdviser(userUid, projectId, role_id as 1 | 2);
+      })
+    );
 
-            return this.addProjectAdviser(userUid, projectId, role_id as 1 | 2);
-          })
-        );
-
-        return newParticipant$;
-      }),
+    return isParticipant$.pipe(
+      switchMap((_) => req$),
       tap((_) => this.signalNewParticipant())
     );
   }
@@ -663,14 +662,15 @@ export class ProjectService {
   }
 
   private addProjectAdviser(userUid: string, projectId: number, role: 1 | 2) {
-    const data =
-      role === 1
-        ? {
-            capstone_adviser_id: userUid,
-          }
-        : {
-            technical_adviser_id: userUid,
-          };
+    let data: Partial<ProjectRow> = {
+      technical_adviser_id: userUid,
+    };
+
+    if (role === 1) {
+      data = {
+        capstone_adviser_id: userUid,
+      };
+    }
 
     const update = this.client.from('project').update(data).eq('id', projectId);
     const update$ = from(update).pipe(
@@ -681,9 +681,52 @@ export class ProjectService {
       })
     );
 
-    return from(this.userService.getUser(userUid)).pipe(
-      switchMap((_) => update$)
+    return update$.pipe(
+      switchMap((_) => this.applyCapstoneAdviserTemplate(userUid, projectId))
     );
+  }
+
+  private applyCapstoneAdviserTemplate(userUid: string, projectId: number) {
+    console.log('called!');
+    const templates$ = this.milestoneService.getMilestoneTemplates(userUid);
+    const milestoneIds$ = from(
+      this.client.from('milestone').select('id').eq('project_id', projectId)
+    ).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      }),
+      map((ids) => ids.map(({ id }) => id))
+    );
+
+    const deleteReq$ = milestoneIds$.pipe(
+      switchMap((ids) => {
+        const a = ids.map((id) => this.milestoneService.delete(id));
+
+        if (ids.length === 0) return of([]);
+
+        return forkJoin(a);
+      })
+    );
+    const addReq$ = templates$.pipe(
+      tap((_) => console.log('adds new milestones')),
+      switchMap((templates) => {
+        if (templates.length === 0) return of([]);
+
+        const reqs$ = templates.map((t) =>
+          this.milestoneService.add(projectId, {
+            title: t.title,
+            description: t.description,
+            dueDate: t.due_date,
+          })
+        );
+
+        return forkJoin(reqs$);
+      })
+    );
+
+    return deleteReq$.pipe(switchMap((_) => addReq$));
   }
 
   // todo: make the backend services automatically restart when something fails
