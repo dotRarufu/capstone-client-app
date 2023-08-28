@@ -6,8 +6,10 @@ import { AddMilestoneModalComponent } from 'src/app/pages/project/pages/mileston
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { FeatherIconsModule } from '../../../../components/icons/feather-icons.module';
 import { AuthService } from 'src/app/services/auth.service';
-import { from } from 'rxjs';
+import { catchError, from, map, tap } from 'rxjs';
 import { getRolePath } from 'src/app/utils/getRolePath';
+import { ProjectService } from 'src/app/services/project.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 type Milestone = {
   title: string;
@@ -32,13 +34,17 @@ type Milestone = {
 
     <div
       class="flex h-full flex-col justify-start gap-x-[16px] sm1:grid sm1:grid-cols-[auto_1fr] md:grid-cols-[1fr_3fr]"
+      *ngIf="{
+        milestones: milestones$ | async,
+        isCapstoneAdviser: isCapstoneAdviser$ | async
+      } as observables"
     >
       <ul
         [class.hidden]="myOutlet.isActivated"
         class="steps steps-vertical sm1:block "
       >
         <li
-          *ngFor="let milestone of milestones"
+          *ngFor="let milestone of observables.milestones"
           class="step"
           [class.step-primary]="milestone.isAchieved"
         >
@@ -57,7 +63,7 @@ type Milestone = {
         </li>
 
         <li
-          *ngIf="isCapstoneAdviser"
+          *ngIf="observables.isCapstoneAdviser"
           onclick="addMilestone.showModal()"
           class="btn-ghost btn-sm flex flex-row items-center justify-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
         >
@@ -76,61 +82,93 @@ type Milestone = {
             class=" flex flex-col items-center justify-center gap-[8px] text-base-content/50"
           >
             <i-feather name="flag" class="" />
-            <span class="text-base">Select a milestone</span>
+            <span
+              *ngIf="capstoneAdviser$ | async as capstoneAdviser"
+              class="text-base"
+            >
+              {{
+                getMessage(
+                  capstoneAdviser,
+                  observables.milestones || [],
+                  observables.isCapstoneAdviser || false
+                )
+              }}
+            </span>
           </div>
         </div>
       </div>
-    </div>
 
-    <add-milestone-modal />
+      <add-milestone-modal />
+    </div>
   `,
 })
-export class MilestonesComponent implements OnInit {
-  data = [0, 1, 2];
-  milestones: Milestone[] = [];
-
+export class MilestonesComponent {
   milestoneService = inject(MilestoneService);
   route = inject(ActivatedRoute);
   toastr = inject(ToastrService);
   authService = inject(AuthService);
-  isCapstoneAdviser = false;
+  projectService = inject(ProjectService);
 
-  ngOnInit(): void {
-    const user$ = from(this.authService.getAuthenticatedUser());
-    user$.subscribe({
-      next: (u) => {
-        if (u === null) return;
+  data = [0, 1, 2];
+  projectId = Number(this.route.parent!.snapshot.url[0].path);
 
-        this.isCapstoneAdviser = getRolePath(u.role_id) === 'c';
-      },
-    });
+  isCapstoneAdviser$ = from(this.authService.getAuthenticatedUser()).pipe(
+    map((u) => {
+      if (u === null) return false;
 
-    const projectId = Number(this.route.parent!.snapshot.url[0].path);
+      return getRolePath(u.role_id) === 'c';
+    })
+  );
+  milestones$ = this.milestoneService.getMilestones(this.projectId).pipe(
+    takeUntilDestroyed(),
+    map((milestones) => {
+      const a = milestones.map((m) => ({
+        dueDate: new Date(m.due_date),
+        title: m.title,
+        isAchieved: m.is_achieved,
+        id: m.milestone_id,
+      }));
 
-    this.milestoneService.getMilestones(projectId).subscribe({
-      next: (milestones) => {
-        const a = milestones.map((m) => {
-          return {
-            dueDate: new Date(m.due_date),
-            title: m.title,
-            isAchieved: m.is_achieved,
-            id: m.milestone_id,
-          };
-        });
+      const sorted = a
+        .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())
+        .map((a) => ({
+          ...a,
+          isAchieved: !!a.isAchieved,
+          dueDate: a.dueDate.toDateString(),
+        }));
 
-        const sorted = a
-          .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())
-          .map((a) => ({
-            ...a,
-            isAchieved: !!a.isAchieved,
-            dueDate: a.dueDate.toDateString(),
-          }));
+      return sorted;
+    }),
+    catchError((err) => {
+      this.toastr.error('error getting milestones:', err);
+      return [];
+    })
+  );
+  capstoneAdviser$ = this.projectService
+    .getProjectInfo(this.projectId)
+    .pipe(map((res) => res.capstone_adviser_id));
 
-        this.milestones = sorted;
-      },
-      error: (err) => {
-        this.toastr.error('error getting milestones:', err);
-      },
-    });
+  getMessage(
+    capstoneAdviser: string,
+    milestones: Milestone[],
+    isCapstoneAdviser: boolean
+  ) {
+    if (isCapstoneAdviser) {
+      if (milestones.length === 0) {
+        return "You haven't add milestones yet";
+      }
+
+      return 'Select a milestone';
+    }
+
+    if (capstoneAdviser === null) {
+      return 'Add a capstone adviser first';
+    }
+
+    if (milestones.length === 0) {
+      return "Capstone adviser haven't add milestones yet";
+    }
+
+    return 'Select a milestone';
   }
 }

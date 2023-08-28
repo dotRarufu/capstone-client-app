@@ -130,6 +130,9 @@ export class MilestoneService {
     return req$;
   }
 
+  
+
+  // todo: use takeUntilDestroyed for this method's users
   getMilestones(projectId: number) {
     if (projectId < 0)
       return throwError(() => new Error('projectId is invalid'));
