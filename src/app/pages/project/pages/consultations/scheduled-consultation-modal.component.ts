@@ -1,10 +1,5 @@
-import {
-  Component,
-  OnInit,
-  inject,
-} from '@angular/core';
-import {  filter, switchMap, tap } from 'rxjs';
-import { Consultation, Task } from 'src/app/types/collection';
+import { Component, inject, signal } from '@angular/core';
+import { filter, switchMap, tap } from 'rxjs';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { TaskService } from 'src/app/services/task.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
@@ -16,10 +11,12 @@ import { ConsultationStateService } from './data-access/consultations-state.serv
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
   imports: [
+    CommonModule,
     FeatherIconsModule,
     ModalComponent,
     AccomplishmentsComponent,
@@ -30,12 +27,13 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
     <modal inputId="scheduledConsultationsModal">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
+        *ngIf="{ consultation: consultation$ | async } as observables"
       >
         <div class="flex h-fit justify-between bg-primary p-[24px]">
           <div class="flex w-full flex-col justify-between gap-4">
             <h1 class="text-[20px] text-primary-content">
-              {{ epochToDate(consultation?.date_time || 0) }}
-              {{ epochToTime(consultation?.date_time || 0) }}
+              {{ epochToDate(observables.consultation?.date_time || 0) }}
+              {{ epochToTime(observables.consultation?.date_time || 0) }}
             </h1>
           </div>
         </div>
@@ -52,34 +50,34 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <div class="text-base text-base-content">
-              {{ consultation?.description }}
+              {{ observables.consultation?.description }}
             </div>
 
             <div class="text-base text-base-content">
-              {{ consultation?.location }}
+              {{ observables.consultation?.location }}
             </div>
 
-            <accomplishments [data]="accomplishedTasks" />
+            <accomplishments [data]="(accomplishedTasks$ | async) || []" />
 
             <outcome
               heading="Actual Accomplishments"
               (addItem)="addActualAccomplishment($event)"
               (deleteItem)="deleteActualAccomplishment($event)"
-              [data]="actualAccomplishments"
+              [data]="actualAccomplishments()"
             />
 
             <outcome
               heading="Proposed Next Steps"
               (addItem)="addProposedNextStep($event)"
               (deleteItem)="deleteProposedNextStep($event)"
-              [data]="proposedNextSteps"
+              [data]="proposedNextSteps()"
             />
 
             <outcome
               heading="Next Deliverables"
               (addItem)="addNextDeliverable($event)"
               (deleteItem)="deleteNextDeliverable($event)"
-              [data]="nextDeliverables"
+              [data]="nextDeliverables()"
             />
           </div>
 
@@ -97,7 +95,6 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
 
             <button
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
-              (click)="clearAccomplishedTasks()"
             >
               <i-feather class="text-base-content/70" name="x" /> close
             </button>
@@ -107,81 +104,63 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
     </modal>
   `,
 })
-export class ScheduledConsultationModalComponent implements OnInit {
-  accomplishedTasks: Task[] = [];
-  consultation: Consultation | null = null;
-  actualAccomplishments: string[] = [];
-  proposedNextSteps: string[] = [];
-  nextDeliverables: string[] = [];
-
+export class ScheduledConsultationModalComponent {
   taskService = inject(TaskService);
   consultationService = inject(ConsultationService);
   toastr = inject(ToastrService);
   consultationStateService = inject(ConsultationStateService);
 
-  addNextDeliverable(value: string) {
-    const old = [...this.nextDeliverables];
-    this.nextDeliverables = [...old, value];
-  }
-  addProposedNextStep(value: string) {
-    const old = [...this.proposedNextSteps];
-    this.proposedNextSteps = [...old, value];
-  }
-  addActualAccomplishment(value: string) {
-    const old = [...this.actualAccomplishments];
-    this.actualAccomplishments = [...old, value];
-  }
-  deleteNextDeliverable(value: string) {
-    const newVal = this.nextDeliverables.filter((v) => v !== value);
-    this.nextDeliverables = newVal;
-  }
-  deleteProposedNextStep(value: string) {
-    const newVal = this.proposedNextSteps.filter((v) => v !== value);
-    this.proposedNextSteps = newVal;
-  }
-  deleteActualAccomplishment(value: string) {
-    const newVal = this.actualAccomplishments.filter((v) => v !== value);
-    this.actualAccomplishments = newVal;
-  }
+  consultation$ = this.consultationStateService.consultation$.pipe(
+    filter(isNotNull)
+  );
+
+  accomplishedTasks$ = this.consultation$.pipe(
+    switchMap((c) => this.taskService.getAccompishedTasks(c.id))
+  );
+
+  actualAccomplishments = signal<string[]>([]);
+  proposedNextSteps = signal<string[]>([]);
+  nextDeliverables = signal<string[]>([]);
 
   handleCompleteClick() {
-    if (this.consultation === null) throw new Error('cant do this without id');
+    const consultation = this.consultationStateService.getActiveConsultation();
 
-    const id = this.consultation.id;
+    if (consultation === null) throw new Error('cant do this without id');
+
+    const id = consultation.id;
     const completeScheduled = this.consultationService.completeScheduled(
       id,
-      this.actualAccomplishments,
-      this.proposedNextSteps,
-      this.nextDeliverables
+      this.actualAccomplishments(),
+      this.proposedNextSteps(),
+      this.nextDeliverables()
     );
     completeScheduled.subscribe({
       next: (res) => {
         this.toastr.success('success');
       },
       error: (err) => {
-        this.toastr.error('err');
+        this.toastr.error(err);
       },
     });
-
-    this.actualAccomplishments = [];
-    this.proposedNextSteps = [];
-    this.nextDeliverables = [];
   }
 
-  ngOnInit(): void {
-    console.log('i run:', this.actualAccomplishments);
-
-    this.consultationStateService.consultation$
-      .pipe(
-        filter(isNotNull),
-        tap((c) => {
-          this.consultation = c;
-        }),
-        switchMap((c) => this.taskService.getAccompishedTasks(c.id))
-      )
-      .subscribe({
-        next: (tasks) => (this.accomplishedTasks = tasks),
-      });
+  addNextDeliverable(value: string) {
+    this.nextDeliverables.update((old) => [...old, value]);
+  }
+  addProposedNextStep(value: string) {
+    this.proposedNextSteps.update((old) => [...old, value]);
+  }
+  addActualAccomplishment(value: string) {
+    this.actualAccomplishments.update((old) => [...old, value]);
+  }
+  deleteNextDeliverable(value: string) {
+    this.nextDeliverables.update((old) => old.filter((v) => v !== value));
+  }
+  deleteProposedNextStep(value: string) {
+    this.proposedNextSteps.update((old) => old.filter((v) => v !== value));
+  }
+  deleteActualAccomplishment(value: string) {
+    this.actualAccomplishments.update((old) => old.filter((v) => v !== value));
   }
 
   epochToDate(epoch: number) {
@@ -190,9 +169,5 @@ export class ScheduledConsultationModalComponent implements OnInit {
 
   epochToTime(epoch: number) {
     return getTimeFromEpoch(epoch);
-  }
-
-  clearAccomplishedTasks() {
-    this.accomplishedTasks = [];
   }
 }

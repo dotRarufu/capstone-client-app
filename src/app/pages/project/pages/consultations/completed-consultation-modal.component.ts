@@ -1,10 +1,6 @@
-import {
-  Component,
-  OnInit,
-  inject,
-} from '@angular/core';
-import { filter, switchMap, tap } from 'rxjs';
-import { Consultation, Task } from 'src/app/types/collection';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { filter, map, switchMap, tap } from 'rxjs';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { TaskService } from 'src/app/services/task.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
@@ -19,6 +15,7 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
 @Component({
   standalone: true,
   imports: [
+    CommonModule,
     OutcomeComponent,
     ModalComponent,
     AccomplishmentsComponent,
@@ -29,12 +26,13 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
     <modal inputId="completedConsultationsModal">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
+        *ngIf="{ consultation: consultation$ | async } as observables"
       >
         <div class="flex h-fit justify-between bg-primary p-[24px]">
           <div class="flex w-full flex-col justify-between gap-4">
             <h1 class="text-[20px] text-primary-content">
-              {{ epochToDate(consultation?.date_time || 0) }}
-              {{ epochToTime(consultation?.date_time || 0) }}
+              {{ epochToDate(observables.consultation?.date_time || 0) }}
+              {{ epochToTime(observables.consultation?.date_time || 0) }}
             </h1>
           </div>
         </div>
@@ -51,27 +49,34 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <div class="text-base text-base-content">
-              {{ consultation?.description }}
+              {{ observables.consultation?.description }}
             </div>
 
             <div class="text-base text-base-content">
-              {{ consultation?.location }}
+              {{ observables.consultation?.location }}
             </div>
 
-            <accomplishments [hideInput]="true" [data]="accomplishedTasks" />
+            <accomplishments
+              [hideInput]="true"
+              [data]="(accomplishedTasks$ | async) || []"
+            />
 
-            <outcome heading="Actual Accomplishments" [hideInput]="true"
-            [data]="actualAccomplishments"
+            <outcome
+              heading="Actual Accomplishments"
+              [hideInput]="true"
+              [data]="(actualAccomplishments$ | async) || []"
             />
 
             <outcome
               heading="Proposed Next Steps"
               [hideInput]="true"
-              [data]="proposedNextSteps"
+              [data]="(proposedNextSteps$ | async) || []"
             />
 
-            <outcome heading="Next Deliverables" [hideInput]="true"
-            [data]="nextDeliverables"
+            <outcome
+              heading="Next Deliverables"
+              [hideInput]="true"
+              [data]="(nextDeliverables$ | async) || []"
             />
           </div>
 
@@ -82,7 +87,6 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
 
             <button
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
-              (click)="clearAccomplishedTasks()"
             >
               <i-feather class="text-base-content/70" name="x" /> close
             </button>
@@ -92,16 +96,28 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
     </modal>
   `,
 })
-export class CompletedConsultationModalComponent implements OnInit {
-  accomplishedTasks: Task[] = [];
-  consultation: Consultation | null = null;
-  actualAccomplishments: string[] = [];
-  proposedNextSteps: string[] = [];
-  nextDeliverables: string[] = [];
-
+export class CompletedConsultationModalComponent {
   consultationStateService = inject(ConsultationStateService);
   taskService = inject(TaskService);
   consultationService = inject(ConsultationService);
+
+  consultation$ = this.consultationStateService.consultation$.pipe(
+    filter(isNotNull)
+  );
+
+  accomplishedTasks$ = this.consultation$.pipe(
+    switchMap((c) => this.taskService.getAccompishedTasks(c.id))
+  );
+
+  res$ = this.consultation$.pipe(
+    switchMap(({ id }) => this.consultationService.getConsultationOutcomes(id))
+  );
+
+  actualAccomplishments$ = this.res$.pipe(
+    map((res) => res.actualAccomplishments)
+  );
+  proposedNextSteps$ = this.res$.pipe(map((res) => res.proposedNextSteps));
+  nextDeliverables$ = this.res$.pipe(map((res) => res.nextDeliverables));
 
   epochToDate(epoch: number) {
     return convertUnixEpochToDateString(epoch);
@@ -109,39 +125,5 @@ export class CompletedConsultationModalComponent implements OnInit {
 
   epochToTime(epoch: number) {
     return getTimeFromEpoch(epoch);
-  }
-
-  clearAccomplishedTasks() {
-    this.accomplishedTasks = [];
-  }
-
-  ngOnInit(): void {
-    this.consultationStateService.consultation$
-      .pipe(
-        filter(isNotNull),
-        tap((c) => {
-          console.log('c:', c);
-          this.consultation = c;
-        }),
-        switchMap((c) => this.taskService.getAccompishedTasks(c.id))
-      )
-      .subscribe({
-        next: (tasks) => (this.accomplishedTasks = tasks),
-      });
-
-    this.consultationStateService.consultation$
-      .pipe(
-        filter(isNotNull),
-        switchMap(({ id }) =>
-          this.consultationService.getConsultationOutcomes(id)
-        )
-      )
-      .subscribe({
-        next: (res) => {
-          this.actualAccomplishments = res.actualAccomplishments;
-          this.proposedNextSteps = res.proposedNextSteps;
-          this.nextDeliverables = res.nextDeliverables;
-        },
-      });
   }
 }

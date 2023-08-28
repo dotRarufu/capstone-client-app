@@ -5,7 +5,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   standalone: true,
   imports: [],
   template: `
-    <dialog [id]="inputId" class="modal modal-bottom sm2:modal-middle">
+    <dialog
+      [id]="inputId"
+      (close)="closed.emit()"
+      class="modal modal-bottom sm2:modal-middle"
+    >
       <form
         method="dialog"
         class="modal-box flex w-full justify-center rounded-[3px] bg-transparent p-0  sm2:max-w-[712px] sm2:rounded-[3px]"
@@ -16,12 +20,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   `,
 })
 export class ModalComponent {
-  @Output() checkboxChanged: EventEmitter<boolean> =
-    new EventEmitter<boolean>();
+  @Output() closed = new EventEmitter();
   @Input() inputId? = 'Modal';
-
-  handleChange(e: Event) {
-    const value = (e.currentTarget as HTMLInputElement).checked;
-    this.checkboxChanged.emit(value);
-  }
 }

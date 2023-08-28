@@ -9,7 +9,6 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'remove-project-modal',
   standalone: true,
   imports: [ModalComponent],
-  // providers: [HomeStateService],
   template: `
     <modal inputId="removeProjectModal">
       <div
@@ -39,7 +38,6 @@ export class RemoveProjectModalComponent {
   removeProjectCard() {
     const removeProject$ = this.homeStateService.activeProjectId$.pipe(
       map((id) => {
-        console.log('passed:', id);
         if (id === null) throw new Error('No project id passed');
 
         return id;

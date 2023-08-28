@@ -1,22 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { ProjectService } from 'src/app/services/project.service';
 import { HomeStateService } from './data-access/home-state.service';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'title-analyzer-modal',
   standalone: true,
-  imports: [CommonModule, ModalComponent, FormsModule],
-  // providers: [HomeStateService],
+  imports: [CommonModule, ModalComponent, ReactiveFormsModule],
   template: `
-    <modal
-      inputId="titleAnalyzer"
-      (checkboxChanged)="handleCheckboxChange($event)"
-    >
+    <modal inputId="titleAnalyzer" (closed)="this.homeStateService.setAlreadyHaveTitle(true)">
       <div class="flex w-full flex-col gap-[16px] bg-base-100 p-6">
         <ng-container *ngIf="homeStateService.alreadyHaveTitle$ | async">
           <h1
@@ -32,7 +28,7 @@ import { HomeStateService } from './data-access/home-state.service';
           </p>
 
           <textarea
-            [(ngModel)]="titleFromAlreadyHaveTitle"
+            [formControl]="titleFromAlreadyHaveTitle"
             class="textarea-bordered textarea h-[136px] rounded-[3px] border-base-content/50 text-base  text-base-content placeholder:text-base-content/70"
             placeholder="Development and Evaluation of ..."
           ></textarea>
@@ -41,7 +37,7 @@ import { HomeStateService } from './data-access/home-state.service';
             <!-- todo: maybe we can set the default border in daisy ui config -->
             <button
               class="btn-ghost btn grow rounded-[3px] text-base-content"
-              (click)="handleCancelClick()"
+              (click)="this.homeStateService.setAlreadyHaveTitle(false)"
             >
               Cancel
             </button>
@@ -68,12 +64,12 @@ import { HomeStateService } from './data-access/home-state.service';
             aliquip ex ea.
           </p>
           <div class="flex flex-col items-center gap-4 min-[444px]:items-end">
-            <button (click)="nextBlock()" class="btn-link btn w-fit">
+            <button (click)="this.homeStateService.setAlreadyHaveTitle(true)" class="btn-link btn w-fit">
               I already have a title
             </button>
             <button
               onclick="titleAnalyzer.showModal()"
-              (click)="toTitleBuilder()"
+              (click)="this.router.navigate(['s', 'title-builder'])"
               class="btn-link btn w-fit text-base-content no-underline"
             >
               I don't have a title yet
@@ -85,41 +81,27 @@ import { HomeStateService } from './data-access/home-state.service';
   `,
 })
 export class TitleAnalyzerModalComponent {
-  titleFromAlreadyHaveTitle = '';
+  titleFromAlreadyHaveTitle = new FormControl("", { nonNullable: true });
 
   homeStateService = inject(HomeStateService);
   projectService = inject(ProjectService);
   spinner = inject(NgxSpinnerService);
   router = inject(Router);
 
-  nextBlock() {
-    this.homeStateService.setAlreadyHaveTitle(true);
-  }
-
-  handleCheckboxChange(e: boolean) {
-    this.homeStateService.setAlreadyHaveTitle(!e);
-  }
-
-  handleCancelClick() {
-    this.homeStateService.setAlreadyHaveTitle(false);
-  }
-
   async analyzeTitle() {
     this.spinner.show();
 
-    await this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle);
+    await this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle.value);
     this.spinner.hide();
   }
   async navigateTo(path: string) {
     this.spinner.show();
 
-    await this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle);
+    await this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle.value);
     this.spinner.hide();
 
     this.router.navigate(['s', 'home', path], {});
   }
 
-  toTitleBuilder() {
-    this.router.navigate(['s', 'title-builder']);
-  }
+
 }

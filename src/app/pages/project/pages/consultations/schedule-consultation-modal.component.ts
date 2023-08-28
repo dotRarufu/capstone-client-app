@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ConsultationData } from 'src/app/models/consultationData';
@@ -10,13 +10,19 @@ import { TaskService } from 'src/app/services/task.service';
 import { Task } from 'src/app/types/collection';
 import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'schedule-consultation-modal',
   standalone: true,
-  imports: [ModalComponent, FormsModule, FeatherIconsModule, CommonModule],
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    FeatherIconsModule,
+    CommonModule,
+  ],
   template: `
-    <modal inputId="scheduleConsultation">
+    <modal inputId="scheduleConsultation" (closed)="handleClosedEvent()">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -24,7 +30,7 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
           <div class="flex w-full flex-col justify-between gap-4">
             <input
               type="datetime-local"
-              [(ngModel)]="dateTime"
+              [formControl]="dateTime"
               class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-transparent px-3 py-2 text-[20px] text-base text-primary-content/70 placeholder:text-[20px] placeholder:text-primary-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
             />
           </div>
@@ -44,14 +50,14 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
             <textarea
               class="textarea h-[117px] w-full shrink-0 rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 text-base leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0"
               placeholder="Description"
-              [(ngModel)]="description"
+              [formControl]="description"
             ></textarea>
 
             <input
               type="text"
               placeholder="Location"
               class="bg-base input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
-              [(ngModel)]="location"
+              [formControl]="location"
             />
 
             <div class="flex items-center justify-between ">
@@ -69,7 +75,7 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
                   tabindex="0"
                   class="dropdown-content menu z-[999] w-52 rounded-[3px] bg-base-100 p-2 shadow-md"
                 >
-                  <li *ngFor="let task of doneTasks">
+                  <li *ngFor="let task of doneTasks()">
                     <a
                       (click)="addTask(task.id)"
                       class="flex justify-start gap-2 rounded-[3px] font-normal text-base-content"
@@ -84,7 +90,7 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
 
             <ul class="flex h-fit  flex-col gap-2">
               <li
-                *ngFor="let task of selectedTasks"
+                *ngFor="let task of selectedTasks()"
                 class="flex justify-between rounded-[3px] border px-2 py-2 text-base text-base-content shadow"
               >
                 <div class="flex w-full items-center gap-2">
@@ -131,35 +137,41 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
   `,
 })
 export class ScheduleConsultationModalComponent implements OnInit {
-  dateTime = '';
-  description = '';
-  location = '';
-  doneTasks: Task[] = [];
-  selectedTasks: Task[] = [];
+  dateTime = new FormControl('', { nonNullable: true });
+  description = new FormControl('', { nonNullable: true });
+  location = new FormControl('', { nonNullable: true });
+  doneTasks = signal<Task[]>([]);
+  selectedTasks = signal<Task[]>([]);
 
-  consultationService = inject(ConsultationService)
-  toastr = inject(ToastrService)
-  taskService = inject(TaskService)
-  route = inject(ActivatedRoute)
+  consultationService = inject(ConsultationService);
+  toastr = inject(ToastrService);
+  taskService = inject(TaskService);
+  route = inject(ActivatedRoute);
 
   ngOnInit(): void {
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
 
     const doneTasks$ = this.taskService.getTasks(2, projectId);
-    doneTasks$.subscribe({
-      next: (tasks) => (this.doneTasks = tasks),
+    doneTasks$.pipe(take(1)).subscribe({
+      next: (tasks) => this.doneTasks.set(tasks),
       error: () => this.toastr.error('error getting done tasks'),
     });
   }
 
+  handleClosedEvent() {
+    this.dateTime.reset();
+    this.description.reset();
+    this.location.reset();
+  }
+
   scheduleConsultation() {
-    const epochDateTime = dateStringToEpoch(this.dateTime);
+    const epochDateTime = dateStringToEpoch(this.dateTime.value);
 
     const data: ConsultationData = {
       dateTime: epochDateTime,
-      description: this.description,
-      location: this.location,
-      taskIds: this.selectedTasks.map((t) => t.id),
+      description: this.description.value,
+      location: this.location.value,
+      taskIds: this.selectedTasks().map((t) => t.id),
     };
 
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
@@ -175,23 +187,23 @@ export class ScheduleConsultationModalComponent implements OnInit {
   }
 
   addTask(id: number) {
-    const selectedTasks = this.doneTasks.find((t) => t.id === id);
+    const selectedTasks = this.doneTasks().find((t) => t.id === id);
 
     if (selectedTasks === undefined) throw new Error('should be impossiobl;e');
 
-    this.doneTasks = this.doneTasks.filter((t) => t.id !== id);
-    this.selectedTasks.push(selectedTasks);
+    this.doneTasks.update((old) => old.filter((t) => t.id !== id));
+    this.selectedTasks.update((old) => [...old, selectedTasks]);
   }
 
   removeTask(id: number) {
     return () => {
-      const selectedTasks = this.selectedTasks.find((t) => t.id === id);
+      const selectedTasks = this.selectedTasks().find((t) => t.id === id);
 
       if (selectedTasks === undefined)
         throw new Error('should be impossiobl;e');
 
-      this.selectedTasks = this.selectedTasks.filter((t) => t.id !== id);
-      this.doneTasks.push(selectedTasks);
+      this.selectedTasks.update((old) => old.filter((t) => t.id !== id));
+      this.doneTasks.update((old) => [...old, selectedTasks]);
     };
   }
 }

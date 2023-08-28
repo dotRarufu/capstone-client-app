@@ -41,6 +41,7 @@ export class TaskService {
     const taskCount = this.client
       .from('task')
       .select('*', { count: 'exact', head: true })
+      .eq('project_id', projectId)
       .eq('status_id', 0);
     const taskCount$ = from(taskCount).pipe(
       map((res) => {

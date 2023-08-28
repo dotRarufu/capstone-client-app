@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnInit,
-  signal,
-  inject,
-} from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { ProjectService } from 'src/app/services/project.service';
 import {
   CdkDragDrop,
@@ -13,7 +8,7 @@ import {
 import { AuthService } from 'src/app/services/auth.service';
 import { TaskService } from 'src/app/services/task.service';
 import { Task } from 'src/app/types/collection';
-import { from, map } from 'rxjs';
+import { from, map, tap } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
 import { TodoAccordionComponent } from 'src/app/pages/project/pages/tasks/todo-accordion.component';
@@ -23,6 +18,7 @@ import { AddTaskModalComponent } from 'src/app/pages/project/pages/tasks/add-tas
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute } from '@angular/router';
+import { TaskStateService } from './data-access/tasks-state.service';
 
 @Component({
   selector: 'tasks-page',
@@ -37,13 +33,16 @@ import { ActivatedRoute } from '@angular/router';
     FeatherIconsModule,
   ],
   template: `
-    <div class="flex h-full flex-col gap-[16px] ">
+    <div
+      *ngIf="{isStudent: isStudent$ | async} as observables"
+      class="flex h-full flex-col gap-[16px]"
+    >
       <div class="flex justify-between ">
         <h1 class="hidden text-2xl text-base-content min-[998px]:block">
           Tasks
         </h1>
         <button
-          *ngIf="!isStudent"
+          *ngIf="!observables.isStudent"
           onclick="addTask.showModal()"
           class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
         >
@@ -70,53 +69,35 @@ import { ActivatedRoute } from '@angular/router';
             [forcedOpen]="true"
             [heading]="category.title"
             [isHeadingCentered]="true"
+            *ngIf="category.tasks | async as tasks"
           >
             <div
               class="flex w-full flex-col gap-[16px]  pt-[16px]"
               isTodo
               cdkDropList
-              [cdkDropListData]="category.tasks"
+              [cdkDropListData]="tasks"
               (cdkDropListDropped)="drop($event, category.statusId)"
             >
               <TaskCard
-                *ngFor="let item of category.tasks"
+                *ngFor="let item of tasks"
                 cdkDrag
                 [cdkDragData]="item"
-                [cdkDragDisabled]="!isStudent"
+                [cdkDragDisabled]="!observables.isStudent"
                 [task]="item"
-                (click)="setActiveTask(item)"
+                (click)="taskStateService.setActiveTask(item)"
               />
             </div>
           </todo-accordion>
         </div>
       </div>
 
-      <task-details-modal [task]="activeTask()" />
-      <add-task-modal *ngIf="!isStudent" />
+      <task-details-modal />
+      <add-task-modal *ngIf="!observables.isStudent" />
     </div>
   `,
 })
 export class TasksPageComponent implements OnInit {
-  categories: { title: string; statusId: number; tasks: Task[] }[] = [
-    {
-      title: 'Todo',
-      tasks: [],
-      statusId: 0,
-    },
-    {
-      title: 'Doing',
-      tasks: [],
-      statusId: 1,
-    },
-    {
-      title: 'Done',
-      tasks: [],
-      statusId: 2,
-    },
-  ];
-  isStudent = true;
-  activeTask = signal<Task | null>(null);
-
+  taskStateService = inject(TaskStateService);
   authService = inject(AuthService);
   taskService = inject(TaskService);
   projectService = inject(ProjectService);
@@ -124,45 +105,44 @@ export class TasksPageComponent implements OnInit {
   toastr = inject(ToastrService);
   route = inject(ActivatedRoute);
 
-  setActiveTask(task: Task) {
-    this.activeTask.set(task);
-  }
+  projectId = Number(this.route.parent!.snapshot.url[0].path);
+  categories = [
+    {
+      title: 'Todo',
+      tasks: this.taskService.getTasks(0, this.projectId),
+      statusId: 0,
+    },
+    {
+      title: 'Doing',
+      tasks: this.taskService.getTasks(1, this.projectId),
+      statusId: 1,
+    },
+    {
+      title: 'Done',
+      tasks: this.taskService.getTasks(2, this.projectId),
+      statusId: 2,
+    },
+  ];
+  isStudent$ = from(this.authService.getAuthenticatedUser()).pipe(
+    map((user) => {
+      if (user === null) {
+        throw new Error('user cant be null');
+      }
+
+      return user;
+    }),
+    map((user) => {
+      const isStudent = user.role_id === 0;
+
+      return isStudent;
+    }),
+    tap((_) => {
+      this.spinner.hide();
+    })
+  );
 
   ngOnInit(): void {
     this.spinner.show();
-
-    const user$ = from(this.authService.getAuthenticatedUser());
-    user$
-      .pipe(
-        map((user) => {
-          if (user === null) {
-            throw new Error('user cant be null');
-          }
-
-          return user;
-        })
-      )
-      .subscribe({
-        next: (user) => {
-          const isStudent = user.role_id === 0;
-          this.isStudent = isStudent;
-
-          this.spinner.hide();
-        },
-      });
-
-    const projectId = Number(this.route.parent!.snapshot.url[0].path);
-
-    // todo: make this observable complete
-    this.taskService
-      .getTasks(0, projectId)
-      .subscribe((tasks) => (this.categories[0].tasks = tasks));
-    this.taskService
-      .getTasks(1, projectId)
-      .subscribe((tasks) => (this.categories[1].tasks = tasks));
-    this.taskService
-      .getTasks(2, projectId)
-      .subscribe((tasks) => (this.categories[2].tasks = tasks));
   }
 
   drop(event: CdkDragDrop<Task[]>, statusId: number) {
