@@ -43,6 +43,7 @@ type Milestone = {
         [class.hidden]="myOutlet.isActivated"
         class="steps steps-vertical sm1:block "
       >
+      <!-- CSS messes up when extracted to component -->
         <li
           *ngFor="let milestone of observables.milestones"
           class="step"
@@ -155,7 +156,7 @@ export class MilestonesComponent {
   ) {
     if (isCapstoneAdviser) {
       if (milestones.length === 0) {
-        return "You haven't add milestones yet";
+        return "No milestones";
       }
 
       return 'Select a milestone';

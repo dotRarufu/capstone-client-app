@@ -26,8 +26,8 @@ import { AuthService } from './auth.service';
 })
 export class MilestoneService {
   private readonly client = supabaseClient;
-  private updateMilestonesSubject = new BehaviorSubject('');
-  private updateMilestoneTemplatesSubject = new BehaviorSubject('');
+  private updateMilestonesSubject = new BehaviorSubject(0);
+  private updateMilestoneTemplatesSubject = new BehaviorSubject(0);
   updateMilestones$ = this.updateMilestonesSubject.asObservable();
   updateMilestonetemplatess$ =
     this.updateMilestoneTemplatesSubject.asObservable();
@@ -130,28 +130,27 @@ export class MilestoneService {
     return req$;
   }
 
-  
-
   // todo: use takeUntilDestroyed for this method's users
   getMilestones(projectId: number) {
     if (projectId < 0)
       return throwError(() => new Error('projectId is invalid'));
 
-    const req = this.client
-      .from('milestone')
-      .select('*')
-      .eq('project_id', projectId);
     const req$ = this.updateMilestones$.pipe(
-      switchMap((_) => req),
+      switchMap((_) =>
+        this.client.from('milestone').select('*').eq('project_id', projectId)
+      ),
       map((res) => {
         const { data } = errorFilter(res);
         return data;
       }),
       map((milestones) => milestones.map((m) => m.id)),
       switchMap((ids) => {
+        if (ids.length === 0) return of([]);
+
         const a = ids.map((id) => this.getMilestoneData(id));
+
         return forkJoin(a);
-      })
+      }),
     );
 
     return req$;
@@ -266,7 +265,7 @@ export class MilestoneService {
     return req$;
   }
 
-    // todo: add type for data param
+  // todo: add type for data param
   addTemplate(
     userUid: string,
     data: { title: string; description: string; dueDate: string }
