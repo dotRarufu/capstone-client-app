@@ -165,7 +165,7 @@ export class MilestonesTemplateComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const user$ = from(this.authService.getAuthenticatedUser());
+    const user$ = this.authService.getAuthenticatedUser();
     user$
       .pipe(
         map((user) => {

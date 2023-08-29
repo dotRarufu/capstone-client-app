@@ -48,7 +48,7 @@ export class ProjectService {
 
   // Todo: add takeUntilDestroyed pipe for users of this method
   getProjects() {
-    const user$ = from(this.authService.getAuthenticatedUser());
+    const user$ = this.authService.getAuthenticatedUser();
 
     const projects$ = user$.pipe(
       map((user) => {
@@ -81,7 +81,7 @@ export class ProjectService {
   }
 
   createProject(name: string, fullTitle: string) {
-    const user$ = from(this.authService.getAuthenticatedUser()).pipe(
+    const user$ = this.authService.getAuthenticatedUser().pipe(
       map((_) => {
         if (name === '' || fullTitle === '')
           throw new Error('You passed an empty string');
@@ -323,7 +323,7 @@ export class ProjectService {
     if (projectId < 0)
       return throwError(() => new Error('Project id is invalid'));
 
-    const user$ = from(this.authService.getAuthenticatedUser());
+    const user$ = this.authService.getAuthenticatedUser();
     const request$ = user$.pipe(
       map((user) => {
         if (user === null) throw new Error('this should be impossible');
@@ -406,7 +406,7 @@ export class ProjectService {
     return req$;
   }
   getArchived() {
-    const user$ = from(this.authService.getAuthenticatedUser());
+    const user$ = this.authService.getAuthenticatedUser();
     return user$.pipe(
       map((res) => {
         if (res === null) throw new Error('im,podsai');

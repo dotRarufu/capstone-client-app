@@ -91,8 +91,7 @@ export class AddMilestoneTemplateModalComponent {
   toastr = inject(ToastrService);
 
   handleDoneClick() {
-    const user = this.authService.getAuthenticatedUser();
-    const user$ = from(user);
+    const user$ = this.authService.getAuthenticatedUser();
     const status$ = user$.pipe(
       map((user) => {
         if (user === null) throw new Error('asdasdsa');

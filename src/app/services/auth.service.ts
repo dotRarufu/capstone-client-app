@@ -1,11 +1,26 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, forkJoin, from, map, merge, of, switchMap, tap } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import {
+  BehaviorSubject,
+  combineLatest,
+  forkJoin,
+  from,
+  map,
+  filter,
+  merge,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { Router } from '@angular/router';
 import { DatabaseService } from './database.service';
 import { User } from '../types/collection';
 import { UserService } from './user.service';
 import supabaseClient from '../lib/supabase';
 import errorFilter from '../utils/errorFilter';
+import { getRolePath } from '../utils/getRolePath';
+import { isNotNull } from '../utils/isNotNull';
+import { ToastrService } from 'ngx-toastr';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Injectable({
   providedIn: 'root',
@@ -13,37 +28,107 @@ import errorFilter from '../utils/errorFilter';
 export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
   private readonly client = supabaseClient;
-  user$ = this.userSubject.asObservable();
   private readonly updateUserProfileSubject = new BehaviorSubject(0);
+  user$ = this.userSubject.asObservable();
   updateUserProfile$ = this.updateUserProfileSubject.asObservable();
+  // todo: should these use readonly?
+  private databaseService = inject(DatabaseService);
+  private userService = inject(UserService);
+  private router = inject(Router);
+  private spinner = inject(NgxSpinnerService);
+  private toastr = inject(ToastrService);
 
-  constructor(
-    private databaseService: DatabaseService,
-    private userService: UserService,
-    private router: Router
-  ) {
-    this.handleSignOutEvent();
-  }
+  authStateChange = this.client.auth.onAuthStateChange((event, session) => {
+    console.log('EVENT:', event);
 
-  async getAuthenticatedUser() {
-    const currentUser = this.getCurrentUser();
+    // todo: turn to switch
+    if (event === 'INITIAL_SESSION') {
+      console.log('User initial');
+      const user$ = this.getAuthenticatedUser();
+      user$.pipe(filter(isNotNull)).subscribe({
+        next: (user) => {
+          const role = getRolePath(user.role_id);
 
-    if (currentUser !== null) return currentUser;
+          if (role === 's') {
+            this.router.navigate(['s']);
 
-    const client = supabaseClient;
-    const response = await client.auth.getUser();
-    const user = response.data.user;
+            return;
+          }
 
-    if (user !== null) {
-      this.updateCurrentUser(user.id);
-      return await this.userService.getUser(user.id);
+          this.router.navigate(['a', role]);
+          this.toastr.success('Welcome back ' + user.name);
+        },
+      });
     }
 
-    return user;
+    if (event === 'SIGNED_OUT') {
+      console.log('User signed out');
+      this.userSubject.next(null);
+      this.router.navigate(['']);
+      this.spinner.hide();
+    }
+
+    if (event === 'SIGNED_IN') {
+      console.log('User signed in');
+
+      const user$ = this.getAuthenticatedUser();
+      user$
+        .pipe(
+          filter(isNotNull),
+          map((user) => getRolePath(user.role_id))
+        )
+        .subscribe({
+          next: (rolePath) => {
+            if (rolePath !== 's') {
+              this.router.navigate(['a', rolePath, 'home']);
+
+              return;
+            }
+
+            this.router.navigate([rolePath, 'home']);
+
+            this.spinner.hide();
+          },
+        });
+    }
+  });
+
+  getAuthenticatedUser() {
+    const currentUser = this.getCurrentUser();
+
+    if (currentUser !== null) return of(currentUser);
+
+    const authenticatedUser$ = from(this.client.auth.getUser()).pipe(
+      map((response) => response.data.user),
+      switchMap((user) => {
+        // todo: use iif operator
+        if (user !== null) {
+          this.updateCurrentUser(user.id);
+
+          const user$ = from(
+            this.client.from('user').select('*').eq('uid', user.id).single()
+          ).pipe(
+            map((res) => {
+              const { data } = errorFilter(res);
+
+              return data;
+            })
+          );
+
+          return user$;
+        }
+
+        return of(user);
+      })
+    );
+
+    return authenticatedUser$;
   }
 
   getUserProfile(uid: string) {
-    const user$ = this.updateUserProfile$.pipe(switchMap(__ => this.userService.getUser(uid)));
+    const user$ = this.updateUserProfile$.pipe(
+      switchMap((__) => this.userService.getUser(uid))
+    );
     const email$ = from(this.client.auth.getUser()).pipe(
       map((res) => {
         if (res.error !== null) throw new Error('error getting user email');
@@ -64,7 +149,7 @@ export class AuthService {
       name: userDetails.name,
       role_id: userDetails.role_id,
       uid: id,
-      avatar_last_update: userDetails.avatar_last_update
+      avatar_last_update: userDetails.avatar_last_update,
     };
 
     this.userSubject.next(loggedInUser);
@@ -132,17 +217,6 @@ export class AuthService {
     return signOut$;
   }
 
-  private handleSignOutEvent() {
-    const client = supabaseClient;
-    client.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out');
-        this.userSubject.next(null);
-        this.router.navigate(['']);
-      }
-    });
-  }
-
   private getCurrentUser() {
     const user = this.userSubject.getValue();
 
@@ -152,7 +226,7 @@ export class AuthService {
   }
 
   updateName(name: string) {
-    const user$ = from(this.getAuthenticatedUser());
+    const user$ = this.getAuthenticatedUser();
     return user$.pipe(
       map((user) => {
         if (user === null) throw new Error('asdsad ');
@@ -178,60 +252,61 @@ export class AuthService {
   }
 
   uploadAvatar(photo: File, uid: string) {
-   
- 
     const req$ = of(Math.floor(new Date().getTime() / 1000)).pipe(
-      switchMap(date => {
-      
-        const upload$ = from(this.client.storage
-          .from('avatars')
-          .upload(`${uid}-t-${date}.png`, photo, {
-            cacheControl: '3600',
-            upsert: true,
-          })).pipe( map((res) => {
-            if (res.error !== null) throw new Error('failed to upload photo');
-    
-            return ;
-          }));
-        
-          const avatarLastUpdate$ = from(this.client.from("user").update({
-            avatar_last_update: date
-          }).eq("uid", uid)).pipe(
-            map(res => {
-              const {statusText} = errorFilter(res);
-      
-              return statusText;
+      switchMap((date) => {
+        const upload$ = from(
+          this.client.storage
+            .from('avatars')
+            .upload(`${uid}-t-${date}.png`, photo, {
+              cacheControl: '3600',
+              upsert: true,
             })
-          )
+        ).pipe(
+          map((res) => {
+            if (res.error !== null) throw new Error('failed to upload photo');
+
+            return;
+          })
+        );
+
+        const avatarLastUpdate$ = from(
+          this.client
+            .from('user')
+            .update({
+              avatar_last_update: date,
+            })
+            .eq('uid', uid)
+        ).pipe(
+          map((res) => {
+            const { statusText } = errorFilter(res);
+
+            return statusText;
+          })
+        );
 
         return forkJoin([avatarLastUpdate$, upload$]).pipe(
-
           tap((_) => this.signalUpdateUserProfile())
         );
       })
-    
-      
     );
-
-   
 
     return req$;
   }
 
-deleteAvatar(path: string) {
-  // todo: run this on new avatar upload, or learn the cdn bust cache
-  const req = this.client.storage.from("avatars").remove([path]);
-  const req$ = from(req).pipe(
-    map(res => {
-      if (res.error !== null) throw new Error("failed to delete image")
-console.log("path",path)
-      return res.data
-    }),
-    tap((_) => this.signalUpdateUserProfile())
-  );
+  deleteAvatar(path: string) {
+    // todo: run this on new avatar upload, or learn the cdn bust cache
+    const req = this.client.storage.from('avatars').remove([path]);
+    const req$ = from(req).pipe(
+      map((res) => {
+        if (res.error !== null) throw new Error('failed to delete image');
+        console.log('path', path);
+        return res.data;
+      }),
+      tap((_) => this.signalUpdateUserProfile())
+    );
 
-  return req$;
-}
+    return req$;
+  }
 
   private signalUpdateUserProfile() {
     const old = this.updateUserProfileSubject.getValue();

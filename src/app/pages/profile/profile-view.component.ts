@@ -38,7 +38,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
     AddMilestoneModalComponent,
     FeatherIconsModule,
     FormsModule,
- 
+
     ReactiveFormsModule,
   ],
   template: `
@@ -292,7 +292,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
       type="file"
       class="hidden"
     />
-  
+
   `,
 })
 export class ProfileViewComponent implements OnInit {
@@ -397,7 +397,7 @@ export class ProfileViewComponent implements OnInit {
   ngOnInit() {
     this.spinner.show();
 
-    const user$ = from(this.authService.getAuthenticatedUser());
+    const user$ = this.authService.getAuthenticatedUser();
     user$
       .pipe(
         map((user) => {

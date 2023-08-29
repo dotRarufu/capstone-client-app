@@ -177,7 +177,7 @@ export class MilestoneInfoComponent implements OnInit {
         },
       });
 
-    const user$ = from(this.authService.getAuthenticatedUser());
+    const user$ = this.authService.getAuthenticatedUser();
     user$
       .pipe(
         map((user) => {

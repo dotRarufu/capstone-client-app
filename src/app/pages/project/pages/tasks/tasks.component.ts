@@ -123,7 +123,7 @@ export class TasksPageComponent implements OnInit {
       statusId: 2,
     },
   ];
-  isStudent$ = from(this.authService.getAuthenticatedUser()).pipe(
+  isStudent$ = this.authService.getAuthenticatedUser().pipe(
     map((user) => {
       if (user === null) {
         throw new Error('user cant be null');

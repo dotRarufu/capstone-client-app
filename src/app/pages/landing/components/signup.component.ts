@@ -1,14 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
+import { SpinnerComponent } from 'src/app/components/spinner.component';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
-  selector: 'SignUp',
+  selector: 'signup',
   standalone: true,
-  imports: [NgxSpinnerModule, FormsModule, CommonModule, FeatherIconsModule],
+  imports: [
+    SpinnerComponent,
+    CommonModule,
+    FeatherIconsModule,
+    ReactiveFormsModule,
+  ],
   template: `
     <ng-container *ngIf="!isInLastStep">
       <div
@@ -27,7 +34,7 @@ import { AuthService } from 'src/app/services/auth.service';
         <input
           type="text"
           placeholder="Full Name"
-          [(ngModel)]="fullName"
+          [formControl]="fullName"
           class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
         />
         <div class="form-control ">
@@ -38,9 +45,9 @@ import { AuthService } from 'src/app/services/auth.service';
               <!-- todo: make this dynamic -->
               <option disabled selected>What is your role?</option>
               <!-- todo: rename roles table to role -->
-              <option (click)="selectRole(0)">Student</option>
-              <option (click)="selectRole(1)">Subject Adviser</option>
-              <option (click)="selectRole(2)">Technical Adviser</option>
+              <option (click)="roleId.setValue(0)">Student</option>
+              <option (click)="roleId.setValue(1)">Subject Adviser</option>
+              <option (click)="roleId.setValue(2)">Technical Adviser</option>
             </select>
           </div>
         </div>
@@ -70,7 +77,7 @@ import { AuthService } from 'src/app/services/auth.service';
         <div class="flex-grow"></div>
         <div class="flex w-full flex-row items-center justify-center gap-2">
           <div class="opacity-75">Already have an account?</div>
-          <a class="btn-link btn no-underline " (click)="navigateToLogin()"
+          <a class="btn-link btn no-underline " (click)="toLogin.emit()"
             >LOGIN</a
           >
         </div>
@@ -100,29 +107,29 @@ import { AuthService } from 'src/app/services/auth.service';
 
         <!-- todo: error message for inputs -->
 
-        <input
+        <!-- <input
           type="number"
           placeholder="Section"
-          [(ngModel)]="section"
+          [formControl]="section"
           class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
           min="1"
-        />
+        /> -->
         <input
           type="text"
           placeholder="Student Number"
-          [(ngModel)]="studentNumber"
+          [formControl]="studentNumber"
           class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
         />
         <input
           type="email"
           placeholder="Email"
-          [(ngModel)]="email"
+          [formControl]="email"
           class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
         />
         <input
           type="password"
           placeholder="Password"
-          [(ngModel)]="password"
+          [formControl]="password"
           class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
         />
 
@@ -137,51 +144,47 @@ import { AuthService } from 'src/app/services/auth.service';
       </div>
     </ng-container>
 
-    <ngx-spinner
-      bdColor="rgba(0, 0, 0, 0.8)"
-      size="default"
-      color="#fff"
-      type="square-loader"
-      [fullScreen]="true"
-      ><p style="color: white">Loading...</p></ngx-spinner
-    >
+    <spinner />
   `,
 })
 export class SignupComponent {
-  @Output() toLogin: EventEmitter<void> = new EventEmitter<void>();
-  email = '';
-  password = '';
+  @Output() toLogin = new EventEmitter<void>();
+  email = new FormControl('', { nonNullable: true });
+  password = new FormControl('', { nonNullable: true });
+  studentNumber = new FormControl('', { nonNullable: true });
+  fullName = new FormControl('', { nonNullable: true });
+  roleId = new FormControl(0, { nonNullable: true });
+
   section = 1;
-  studentNumber = '';
-  fullName = '';
-  emailMessage = 'test message email';
-  passwordMessage = 'test message password';
-  roleId = -1;
+
   isInLastStep = false;
 
-  constructor(
-    private authService: AuthService,
-    private spinner: NgxSpinnerService
-  ) {}
+  authService = inject(AuthService);
+  spinner = inject(NgxSpinnerService);
+  toastr = inject(ToastrService);
 
   signUp() {
     this.spinner.show();
-    if (this.fullName.length === 0) throw Error('wip: name is empty');
 
-    const user = { name: this.fullName, roleId: this.roleId };
+    const user = { name: this.fullName.value, roleId: this.roleId.value };
     this.authService
-      .signUp(this.email, this.password, user, this.studentNumber, this.section)
-      .subscribe((v) => {
-        this.spinner.hide();
-        this.navigateToLogin();
+      // todo: maybe remove section, make it changeable in project settings, so there will be no conflict even when project members have different sections
+      .signUp(
+        this.email.value,
+        this.password.value,
+        user,
+        this.studentNumber.value,
+        this.section
+      )
+      .subscribe({
+        next: () => {
+          this.toastr.success('signup success');
+          this.spinner.hide();
+          this.toLogin.emit();
+        },
+        error: (err) => {
+          this.toastr.error('err');
+        },
       });
-  }
-
-  selectRole(id: number) {
-    this.roleId = id;
-  }
-
-  navigateToLogin() {
-    this.toLogin.emit();
   }
 }

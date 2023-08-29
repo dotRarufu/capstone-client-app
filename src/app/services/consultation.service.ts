@@ -35,7 +35,7 @@ export class ConsultationService {
     if (data.location === '')
       return throwError(() => new Error('location is invalid'));
 
-    const user$ = from(this.authService.getAuthenticatedUser()).pipe(
+    const user$ = this.authService.getAuthenticatedUser().pipe(
       map((user) => {
         if (user === null) throw new Error('must be impossible');
 

@@ -32,7 +32,7 @@ export class TaskService {
 
     // todo: separate in another function
     // todo: add check if usser is not a student
-    const userUid$ = from(this.authService.getAuthenticatedUser()).pipe(
+    const userUid$ = this.authService.getAuthenticatedUser().pipe(
       map((user) => {
         if (user === null) throw new Error('could not get authenticated user');
         return user.uid;
@@ -93,7 +93,7 @@ export class TaskService {
 
     const request = this.client.from('task').delete().eq('id', taskId);
     const request$ = from(request);
-    const userCheck$ = from(this.authService.getAuthenticatedUser()).pipe(
+    const userCheck$ = this.authService.getAuthenticatedUser().pipe(
       map((user) => {
         if (user === null) throw new Error('should be impossible4');
 

@@ -8,38 +8,47 @@ import {
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { getRolePath } from '../utils/getRolePath';
+import { map, switchMap, tap } from 'rxjs';
 
 export const roleGuard = (role: string) => {
-  const guard: CanActivateFn = async (
+  const guard: CanActivateFn = (
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ) => {
     const authService = inject(AuthService);
     const router = inject(Router);
     const userService = inject(UserService);
-  
-    let userRole: number | null = null;
-    const authenticatedUser = await authService.getAuthenticatedUser();
-  
-    if (authenticatedUser === null)
-      throw new Error('no current user and authenticated user');
-  
-    const userDetails = await userService.getUser(authenticatedUser.uid);
-    userRole = userDetails.role_id;
-  
-    if (userRole === null) throw new Error('wip, currentUser has no role id');
 
-    const userRolePath = getRolePath(userRole);
-  
-    if (role === userRolePath) return true;
- 
-    console.log('repelled by role guard:', "userRole:",  userRolePath, "path role:", role);
-    router.navigate(['/', 'unauthorized']);
-  
-    return false;
+    const authenticatedUser$ = authService.getAuthenticatedUser().pipe(
+      map((user) => {
+        if (user === null)
+          throw new Error('no current user and authenticated user');
+
+        return user;
+      }),
+      switchMap((user) => userService.getUser(user.uid)),
+      map((user) => user.role_id),
+      map((role) => {
+        if (role === null) throw new Error('wip, currentUser has no role id');
+
+        return role;
+      }),
+      map((role) => getRolePath(role)),
+      map((rolePath) => {
+        if (role === rolePath) return true;
+
+        return false;
+      }),
+      tap((dec) => {
+        if (dec) return;
+
+        console.log('repelled by role guard:', 'path role:', role);
+        router.navigate(['/', 'unauthorized']);
+      })
+    );
+
+    return authenticatedUser$;
   };
 
   return guard;
-}
-
-
+};

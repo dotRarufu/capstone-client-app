@@ -66,7 +66,7 @@ export class TotalTasksAssignedReportComponent {
   lineChartPlugins = [DataLabelsPlugin];
 
   constructor() {
-    from(this.authService.getAuthenticatedUser())
+    this.authService.getAuthenticatedUser()
       .pipe(
         map((user) => {
           if (user === null) throw new Error('{as');

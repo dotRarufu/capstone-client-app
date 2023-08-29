@@ -1,19 +1,27 @@
-import { CommonModule } from '@angular/common';
-import { EventEmitter, Output, Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  EventEmitter,
+  Output,
+  Component,
+  inject,
+  effect,
+  OnInit,
+} from '@angular/core';
 import { Router } from '@angular/router';
-import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { filter, from, switchMap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
 import { isNotNull } from 'src/app/utils/isNotNull';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { SpinnerComponent } from 'src/app/components/spinner.component';
 
 @Component({
-  selector: 'Login',
+  selector: 'login',
   standalone: true,
-  imports: [NgxSpinnerModule, FormsModule],
+  imports: [SpinnerComponent, ReactiveFormsModule],
   template: `
     <div
       class="flex h-fit max-h-[568px] w-full max-w-[387px] flex-col gap-4 rounded-[3px] bg-base-100 px-[2rem] py-8"
@@ -29,13 +37,13 @@ import { isNotNull } from 'src/app/utils/isNotNull';
       <input
         type="email"
         placeholder="Email"
-        [(ngModel)]="email"
+        [formControl]="email"
         class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
       />
       <input
         type="password"
         placeholder="Password"
-        [(ngModel)]="password"
+        [formControl]="password"
         class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
       />
 
@@ -66,84 +74,48 @@ import { isNotNull } from 'src/app/utils/isNotNull';
       <div class="flex-grow"></div>
       <div class="flex w-full flex-row items-center justify-center gap-2">
         <div class="opacity-75">Don't have an account?</div>
-        <a class="btn-link btn no-underline " (click)="navigateToSignUp()"
+        <a class="btn-link btn no-underline " (click)="toSignUp.emit()"
           >SIGN UP</a
         >
       </div>
     </div>
 
-    <ngx-spinner
-      bdColor="rgba(0, 0, 0, 0.8)"
-      size="default"
-      color="#fff"
-      type="square-loader"
-      [fullScreen]="true"
-      ><p style="color: white">Loading...</p></ngx-spinner
-    >
+    <spinner />
   `,
 })
 export class LoginComponent {
   @Output() toSignUp: EventEmitter<void> = new EventEmitter<void>();
-  email: string = '';
-  password: string = '';
+  email = new FormControl('', { nonNullable: true });
+  password = new FormControl('', { nonNullable: true });
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private spinner: NgxSpinnerService,
-    private toastr: ToastrService,
-    private userService: UserService
-  ) {
-    this.spinner.show();
-    const authenticatedUser = this.authService.getAuthenticatedUser();
-    from(authenticatedUser)
-      .pipe(
-        filter(isNotNull),
-        switchMap((user) => this.userService.getUser(user.uid))
-      )
-      .subscribe({
-        next: (user) => {
-          const role = getRolePath(user.role_id);
-          console.log('this runs:', role);
-          if (role === 's') {
-            this.router.navigate(['s']);
+  authService = inject(AuthService);
+  router = inject(Router);
+  spinner = inject(NgxSpinnerService);
+  toastr = inject(ToastrService);
+  userService = inject(UserService);
 
-            return;
-          }
-
-          this.router.navigate(['a', role]);
-          this.toastr.success('Welcome back ' + user.name);
-          this.spinner.hide();
-        },
-      });
-  }
+  authenticatedUser$ = this.authService.getAuthenticatedUser().pipe(
+    filter(isNotNull),
+    switchMap((user) => this.userService.getUser(user.uid))
+  );
+  authenticatedUser = toSignal(this.authenticatedUser$);
 
   handleButtonClick() {
     this.spinner.show();
-    const signIn$ = this.authService.login(this.email, this.password);
+
+    const signIn$ = this.authService.login(
+      this.email.value,
+      this.password.value
+    );
+
     signIn$.subscribe({
       next: (user) => {
-        // todo: refactor
-        const role = getRolePath(user.role_id);
-        this.spinner.hide();
-        // todo: make this a constant
-        console.log('role:', role);
-        if (role === 's') {
-          this.router.navigate(['s']);
-
-          return;
-        }
-
-        this.router.navigate(['a', role]);
+        console.log("sign in success")
       },
       error: () => {
         this.spinner.hide();
         this.toastr.error('Login failed');
       },
     });
-  }
-
-  navigateToSignUp() {
-    this.toSignUp.emit();
   }
 }

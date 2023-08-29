@@ -62,7 +62,7 @@ export class TotalTasksByCategoryReportComponent {
   barChartPlugins = [DataLabelsPlugin];
 
   constructor() {
-    from(this.authService.getAuthenticatedUser())
+    this.authService.getAuthenticatedUser()
       .pipe(
         filter(
           (
@@ -90,22 +90,5 @@ export class TotalTasksByCategoryReportComponent {
         },
       });
 
-    // from(this.authService.getAuthenticatedUser()).pipe(
-    //   filter((user): user is {
-    //     name: string;
-    //     role_id: number;
-    //     uid: string;
-    // } => !!user),
-    //   switchMap(user => this.projectService.getProjectsReport(user.uid, user.role_id))
-    // ).subscribe({
-    //   next: (projects) => {
-    //     if (projects === null) return;
-
-    //     const undoneProjects = projects.filter((p) => !p.isDone);
-    //     const advisers = new Set<string>();
-
-    //     undoneProjects.forEach(p => advisers.add(p.))
-    //   },
-    // });
-  }
+    }
 }

@@ -1,10 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
 import { FeatherIconsModule } from '../../components/icons/feather-icons.module';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
+import { isNotNull } from 'src/app/utils/isNotNull';
 
 @Component({
   selector: 'navigation-rail',
@@ -17,7 +27,7 @@ import { FeatherIconsModule } from '../../components/icons/feather-icons.module'
       >
         <div class="hidden h-[48px] lg:block"></div>
         <button
-        (click)="navigateTo('project')"
+          (click)="navigateTo('project')"
           class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] lg:hidden"
         >
           <i-feather name="list" />
@@ -47,7 +57,6 @@ import { FeatherIconsModule } from '../../components/icons/feather-icons.module'
             <i-feather name="users" />
             Milestones
           </button>
-
         </div>
 
         <button
@@ -66,7 +75,7 @@ import { FeatherIconsModule } from '../../components/icons/feather-icons.module'
       >
         <div class="hidden h-[48px] lg:block"></div>
         <button
-          (click)="handleMenuClick()"
+          (click)="toggleDrawer.emit()"
           class="btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] border-0 bg-base-100/70 px-[4px] py-[8px] text-[10px] text-base-content lg:hidden"
         >
           <i-feather name="sidebar" />
@@ -120,61 +129,64 @@ import { FeatherIconsModule } from '../../components/icons/feather-icons.module'
     </ng-container>
   `,
 })
-export class NavigationRailComponent implements OnInit {
-  search: string = '';
-  projectId: number | null = null;
-  @Output() toggleDrawer: EventEmitter<string> = new EventEmitter();
+export class NavigationRailComponent {
+  @Output() toggleDrawer = new EventEmitter();
   @Input() isFab = false;
 
-  constructor(
-    private router: Router,
-    private projectService: ProjectService,
-    private authService: AuthService,
-    private route: ActivatedRoute
-  ) {}
+  router = inject(Router);
+  authService = inject(AuthService);
+  route = inject(ActivatedRoute);
 
-  ngOnInit() {
-    this.route.url.subscribe({
-      next: (b) => {
-        const projectId = Number(b[0].path);
-        this.projectId = projectId;
-      },
-    });
+  search: string = '';
+  projectId = toSignal(
+    this.route.url.pipe(map((path) => Number(path[0].path))),
+    { initialValue: null }
+  );
+  user$ = this.authService.getAuthenticatedUser();
+
+  navigateTo(path: string) {
+    this.user$.pipe(
+      filter(isNotNull),
+      map(user => {
+        if (user.role_id === null) throw new Error('user has no role id');
+
+        return user;
+      }),
+      map(user => getRolePath(user.role_id)),
+      map(rolePath => {
+        if (rolePath === 's') {
+          this.router.navigate([rolePath, 'p', this.projectId, path]);
+          return;
+        }
+
+        this.router.navigate(['a', rolePath, 'p', this.projectId, path]);
+      })
+    ).subscribe({next: () => {}})
+
+
   }
 
-  async navigateTo(path: string) {
-    const user = await this.authService.getAuthenticatedUser();
+  navigateToHome() {
 
-    if (user != null) {
-      // move this inside a pipe
-      if (user.role_id === null) throw new Error('user has no role id');
+    this.user$.pipe(
+      filter(isNotNull),
+      map(user => {
+        if (user.role_id === null) throw new Error('user has no role id');
 
-      const rolePath = getRolePath(user.role_id);
-      if (rolePath === 's') {
-        this.router.navigate([rolePath, 'p', this.projectId, path]);
-        return;
-      }
+        return user;
+      }),
+      map(user => getRolePath(user.role_id)),
+      map(rolePath => {
+        if (rolePath === 's') {
+          this.router.navigate([rolePath, 'home']);
+          return;
+        }
 
-      this.router.navigate(['a', rolePath, 'p', this.projectId, path]);
-    }
+        this.router.navigate(['a', rolePath, 'home']);
+      })
+    ).subscribe({next: () => {}})
+
+
   }
 
-  async navigateToHome() {
-    const user = await this.authService.getAuthenticatedUser();
-
-    if (user != null) {
-      const rolePath = getRolePath(user.role_id);
-
-      if (rolePath === 's') {
-        this.router.navigate([rolePath, 'home']);
-        return;
-      }
-
-      this.router.navigate(['a', rolePath, 'home']);
-    }
-  }
-
-  handleMenuClick() {
-    this.toggleDrawer.emit();
-  }
 }

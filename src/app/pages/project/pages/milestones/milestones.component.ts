@@ -113,7 +113,7 @@ export class MilestonesComponent {
   data = [0, 1, 2];
   projectId = Number(this.route.parent!.snapshot.url[0].path);
 
-  isCapstoneAdviser$ = from(this.authService.getAuthenticatedUser()).pipe(
+  isCapstoneAdviser$ = this.authService.getAuthenticatedUser().pipe(
     map((u) => {
       if (u === null) return false;
 

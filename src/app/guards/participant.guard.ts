@@ -17,8 +17,7 @@ export const participantGuard = (route: ActivatedRouteSnapshot) => {
 
   //todo:   refactor
 
-  const authenticatedUser = authService.getAuthenticatedUser();
-  const authenticatedUser$ = from(authenticatedUser).pipe(
+  const authenticatedUser$ = authService.getAuthenticatedUser().pipe(
     map((res) => {
       if (res === null) throw new Error('no authenticated user');
 

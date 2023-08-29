@@ -1,9 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { from, map } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-import { getRolePath } from 'src/app/utils/getRolePath';
 import { LoginComponent } from './components/login.component';
 import { SignupComponent } from './components/signup.component';
 import { CommonModule } from '@angular/common';
@@ -24,12 +22,12 @@ import { CommonModule } from '@angular/common';
       <div
         class="mx-auto px-[1rem] sm1:px-[2rem] sm2:flex sm2:w-[840px] sm2:justify-center sm2:p-0 md:w-full md:flex-row md:px-[200px] lg:w-[1040px] lg:px-0"
       >
-        <ng-container *ngIf="isLogin">
-          <Login (toSignUp)="toSignUp()" />
+        <ng-container *ngIf="isLogin()">
+          <login (toSignUp)="isLogin.set(false)" />
         </ng-container>
 
-        <ng-container *ngIf="!isLogin">
-          <SignUp (toLogin)="toLogin()" />
+        <ng-container *ngIf="!isLogin()">
+          <signup (toLogin)="isLogin.set(true)" />
         </ng-container>
 
         <img
@@ -41,45 +39,6 @@ import { CommonModule } from '@angular/common';
     </div>
   `,
 })
-export class LandingComponent implements OnInit {
-  isLogin = true;
-
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private spinner: NgxSpinnerService
-  ) {
-  
-    // use loading while getCurrentUser is not loaded
-    this.spinner.show();
-
-    const user$ = from(this.authService.getAuthenticatedUser());
-    user$.pipe().subscribe({
-      next: (user) => {
-        if (user !== null) {
-          const rolePath = getRolePath(user.role_id);
-          
-          if (rolePath !== 's') {
-            this.router.navigate(['a', rolePath, 'home']);
-
-            return;
-          }
-
-          this.router.navigate([rolePath, 'home']);
-        }
-
-        this.spinner.hide();
-      },
-    });
-  }
-
-  ngOnInit(): void {}
-
-  toSignUp() {
-    this.isLogin = false;
-  }
-
-  toLogin() {
-    this.isLogin = true;
-  }
+export class LandingComponent {
+  isLogin = signal(true);
 }

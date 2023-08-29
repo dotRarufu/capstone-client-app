@@ -106,7 +106,7 @@ export class DangerZoneComponent implements OnInit {
   ngOnInit(): void {
     this.projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
 
-    from(this.authService.getAuthenticatedUser())
+    this.authService.getAuthenticatedUser()
       .pipe(
         map((user) => {
           if (user === null) throw new Error('no authenticated user');
