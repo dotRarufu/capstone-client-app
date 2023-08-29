@@ -5,20 +5,14 @@ import {
   filter,
   from,
   map,
-  merge,
   of,
   switchMap,
   tap,
-  zip,
   forkJoin,
-  retry,
-  Observable,
   throwError,
-  first,
   take,
 } from 'rxjs';
 import errorFilter from '../utils/errorFilter';
-import { dateToDateString } from '../utils/dateToDateString';
 import { AuthService } from './auth.service';
 
 @Injectable({

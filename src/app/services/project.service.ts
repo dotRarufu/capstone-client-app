@@ -14,10 +14,8 @@ import {
 } from 'rxjs';
 import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
 import { AuthService } from './auth.service';
-import { DatabaseService } from './database.service';
 import { ProjectRow } from '../types/collection';
 import { Project } from '../models/project';
-import { UserService } from './user.service';
 import { getObjectValues } from '../utils/getObjectValues';
 import errorFilter from '../utils/errorFilter';
 import supabaseClient from '../lib/supabase';
@@ -36,14 +34,12 @@ export type AError = {
 })
 export class ProjectService {
   readonly client = supabaseClient;
-  private formUrlSubject: BehaviorSubject<string> = new BehaviorSubject('');
-  private projectUpdate$ = new BehaviorSubject<number>(0);
-  private newParticipant$ = new BehaviorSubject<number>(0);
+  private formUrlSubject = new BehaviorSubject('');
+  private projectUpdate$ = new BehaviorSubject(0);
+  private newParticipant$ = new BehaviorSubject(0);
   formUrl$ = this.formUrlSubject.asObservable();
 
-  databaseService = inject(DatabaseService);
   authService = inject(AuthService);
-  userService = inject(UserService);
   milestoneService = inject(MilestoneService);
 
   // Todo: add takeUntilDestroyed pipe for users of this method
@@ -161,7 +157,7 @@ export class ProjectService {
 
             return data[0];
           }),
-          switchMap(async (advisers) => {
+          switchMap((advisers) => {
             const ids = [];
 
             if (advisers.capstone_adviser_id !== null)
@@ -170,9 +166,7 @@ export class ProjectService {
             if (advisers.technical_adviser_id !== null)
               ids.push(advisers.technical_adviser_id);
 
-            return await Promise.all(
-              ids.map((id) => this.userService.getUser(id))
-            );
+            return forkJoin(ids.map((id) => this.authService.getUser(id)));
           })
         );
         const students$ = from(students).pipe(
@@ -181,13 +175,12 @@ export class ProjectService {
 
             return data;
           }),
-          switchMap(
-            async (ids) =>
-              await Promise.all(
-                ids.map(({ student_uid }) =>
-                  this.userService.getUser(student_uid)
-                )
+          switchMap((ids) =>
+            forkJoin(
+              ids.map(({ student_uid }) =>
+                this.authService.getUser(student_uid)
               )
+            )
           )
         );
 
@@ -259,7 +252,7 @@ export class ProjectService {
         return isParticipant;
       })
     );
-    const role$ = from(this.userService.getUser(userUid));
+    const role$ = this.authService.getUser(userUid);
     const req$ = role$.pipe(
       switchMap(({ role_id }) => {
         if (role_id === 0) return this.addStudentMember(projectId, userUid);
@@ -286,7 +279,7 @@ export class ProjectService {
     if (projectId < 0)
       return throwError(() => new Error('Project id is invalid'));
 
-    const user$ = from(this.userService.getUser(userUid));
+    const user$ = from(this.authService.getUser(userUid));
 
     return user$.pipe(
       switchMap((user) => {
@@ -430,8 +423,28 @@ export class ProjectService {
 
         return data;
       }),
-      switchMap(async (projectRows) => await this.getProject(projectRows))
+      switchMap((projectRows) => this.getProject(projectRows))
     );
+  }
+
+  getProjectCount() {
+    const response$ = from(
+      this.client.from('capstone_projects').select('project_id')
+    );
+    const res$ = response$.pipe(
+      map((res) => {
+        const count = res.data?.length;
+
+        if (!count)
+          throw new Error(
+            'wip, seomthing wrong occured while fetching project count'
+          );
+
+        return count;
+      })
+    );
+
+    return res$;
   }
 
   async getProjectsFromCategory(categoryId: number) {
@@ -479,7 +492,7 @@ export class ProjectService {
         // return res.data.map((d) => d.id);
         return data;
       }),
-      switchMap(async (projectRows) => await this.getProject(projectRows))
+      switchMap((projectRows) => this.getProject(projectRows))
     );
 
     return projects$;
@@ -503,7 +516,7 @@ export class ProjectService {
         return data.map((d) => d.project_id);
       }),
       switchMap((projectIds) => from(this.getProjectRows(projectIds))),
-      switchMap((projectRows) => from(this.getProject(projectRows)))
+      switchMap((projectRows) => this.getProject(projectRows))
     );
 
     return projects$;
@@ -523,7 +536,7 @@ export class ProjectService {
         return data.map((d) => d.id);
       }),
       switchMap(async (projectIds) => await this.getProjectRows(projectIds)),
-      switchMap(async (projectRows) => await this.getProject(projectRows))
+      switchMap((projectRows) => this.getProject(projectRows))
     );
 
     return projects$;
@@ -565,41 +578,50 @@ export class ProjectService {
     return projectRows;
   }
 
-  private async getProject(projectRows: ProjectRow[]) {
-    const projects: Project[] = await Promise.all(
-      projectRows.map(async (p) => {
-        const projectMembers = await this.getProjectMembers(p.id);
-        const section = await this.databaseService.getSection(p.section_id);
-        const adviserIds = [];
+  private getProject(projectRows: ProjectRow[]) {
+    const projects = projectRows.map((p) => {
+      const projectMembers$ = from(this.getProjectMembers(p.id));
+      const adviserIds: string[] = [];
 
-        p.capstone_adviser_id !== null &&
-          adviserIds.push(p.capstone_adviser_id);
-        p.technical_adviser_id !== null &&
-          adviserIds.push(p.technical_adviser_id);
+      p.capstone_adviser_id !== null && adviserIds.push(p.capstone_adviser_id);
+      p.technical_adviser_id !== null &&
+        adviserIds.push(p.technical_adviser_id);
 
-        const userIds = [
-          ...projectMembers.map((d) => d.student_uid),
-          ...adviserIds,
-        ];
-        const members = await Promise.all(
-          userIds.map(async (id) => await this.userService.getUser(id))
-        );
-        const memberNames = members.map((m) => m.name);
+      return projectMembers$.pipe(
+        map((members) => [...members.map((d) => d.student_uid), ...adviserIds]),
+        switchMap((userIds) => {
+          const names$ = forkJoin(
+            userIds.map((id) => from(this.authService.getUser(id)))
+          ).pipe(map((members) => members.map((m) => m.name)));
+          const section$ = this.getSection(p.section_id);
 
-        // description -> full title
-        // name -> 'Capstool'
-        return {
+          return forkJoin({ names: names$, section: section$ });
+        }),
+        map(({ names, section }) => ({
           name: p.name,
           id: p.id,
           sectionName: section,
-          members: memberNames,
+          members: names,
           title: p.full_title,
           isDone: p.is_done,
-        };
+        }))
+      );
+    });
+
+    return forkJoin(projects);
+  }
+
+  private getSection(id: number) {
+    const res = this.client.from('section').select('name').eq('id', id);
+    const res$ = from(res).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data[0].name;
       })
     );
 
-    return projects;
+    return res$;
   }
 
   private getUserSection(uid: string) {

@@ -44,7 +44,7 @@ import { ProjectCardComponent } from './project-card.component';
 
         <projects-accordion heading="Archived">
           <ProjectCard
-            *ngFor="let project of archived()"
+            *ngFor="let project of archived | async"
             [project]="project"
             [role]="role"
           />
@@ -54,27 +54,18 @@ import { ProjectCardComponent } from './project-card.component';
   `,
 })
 export class AdviserProjectsComponent implements OnInit {
-  sections: WritableSignal<SectionProject[]> = signal([]);
-  archived: WritableSignal<Project[]> = signal([]);
-
   projectService = inject(ProjectService);
   spinner = inject(NgxSpinnerService);
   route = inject(ActivatedRoute);
   homeStateService = inject(HomeStateService);
 
+  sections: WritableSignal<SectionProject[]> = signal([]);
+  archived = this.projectService.getArchived();
+
   role = this.route.snapshot.data['role'];
 
   ngOnInit() {
-    this.setupArchived();
     this.setupSections();
-  }
-
-  setupArchived() {
-    this.projectService.getArchived().subscribe({
-      next: (projects) => {
-        this.archived.set(projects);
-      },
-    });
   }
 
   setupSections() {

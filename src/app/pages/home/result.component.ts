@@ -2,7 +2,6 @@ import { Component, Input, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { TitleAnalyzerResult } from 'src/app/models/titleAnalyzerResult';
-import { DatabaseService } from 'src/app/services/database.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
@@ -11,6 +10,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 import { filter, from, switchMap, tap } from 'rxjs';
 import { formatStringArray } from 'src/app/utils/formatStringArray';
 import { getReadabilityScoreMeaning } from 'src/app/utils/getReadabilityScoreMeaning';
+import { AuthService } from 'src/app/services/auth.service';
 
 interface AnalysesDataItem {
   heading: string;
@@ -79,29 +79,28 @@ export class ResultComponent implements OnInit {
     'Development and evaluation of Record Management System',
   ];
 
-  router = inject(Router)
-  projectService = inject(ProjectService)
-  databaseService = inject(DatabaseService)
-  spinner = inject(NgxSpinnerService)
-  toastr = inject(ToastrService)
-
-
+  router = inject(Router);
+  projectService = inject(ProjectService);
+  authService = inject(AuthService);
+  spinner = inject(NgxSpinnerService);
+  toastr = inject(ToastrService);
 
   ngOnInit(): void {
-    this.projectService.analyzerResult$.pipe(
-      filter((v): v is TitleAnalyzerResult => v !== undefined),
-      tap(data => this.title = data.title),
-      switchMap(v => this.prepareAnalysesData(v)))
-    .subscribe({
-      next: (v) => {
-        this.analysesData = v;
-      },
-      error: () => {
-        this.toastr.error('Error occured while analyzing title');
-      },
-      complete: () => {
-      },
-    });
+    this.projectService.analyzerResult$
+      .pipe(
+        filter((v): v is TitleAnalyzerResult => v !== undefined),
+        tap((data) => (this.title = data.title)),
+        switchMap((v) => this.prepareAnalysesData(v))
+      )
+      .subscribe({
+        next: (v) => {
+          this.analysesData = v;
+        },
+        error: () => {
+          this.toastr.error('Error occured while analyzing title');
+        },
+        complete: () => {},
+      });
   }
 
   handleBackButtonClick() {
@@ -111,33 +110,33 @@ export class ResultComponent implements OnInit {
 
   async prepareAnalysesData(data: TitleAnalyzerResult) {
     try {
-    const substantiveWordCount: AnalysesDataItem = {
-      heading: 'Substantive Word Count',
-      value: data.substantive_words.count,
-      content: `The title comprises ${
-        data.substantive_words.count
-      } significant words, specifically the following: ${formatStringArray(
-        data.substantive_words.words
-      )}`,
-    };
-    const titleCount = await this.databaseService.getProjectCount();
-    const titleUniqueness: AnalysesDataItem = {
-      heading: 'Title Uniqueness',
-      value: data.title_uniqueness,
-      content: `The provided title was compared to a set of ${titleCount} titles from previous projects in Pamantasan ng Lungsod ng Valenzuela. The analysis revealed that the title exhibits ${data.title_uniqueness}% uniqueness in relation to the existing titles.`,
-    };
-    const readability: AnalysesDataItem = {
-      heading: 'Readability',
-      value: data.readability,
-      content: `The title is easily comprehensible for a ${getReadabilityScoreMeaning(
-        data.readability
-      )}`,
-    };
+      const substantiveWordCount: AnalysesDataItem = {
+        heading: 'Substantive Word Count',
+        value: data.substantive_words.count,
+        content: `The title comprises ${
+          data.substantive_words.count
+        } significant words, specifically the following: ${formatStringArray(
+          data.substantive_words.words
+        )}`,
+      };
+      const titleCount = await this.projectService.getProjectCount();
+      const titleUniqueness: AnalysesDataItem = {
+        heading: 'Title Uniqueness',
+        value: data.title_uniqueness,
+        content: `The provided title was compared to a set of ${titleCount} titles from previous projects in Pamantasan ng Lungsod ng Valenzuela. The analysis revealed that the title exhibits ${data.title_uniqueness}% uniqueness in relation to the existing titles.`,
+      };
+      const readability: AnalysesDataItem = {
+        heading: 'Readability',
+        value: data.readability,
+        content: `The title is easily comprehensible for a ${getReadabilityScoreMeaning(
+          data.readability
+        )}`,
+      };
 
-    return [substantiveWordCount, titleUniqueness, readability];
-  } catch (err) {
-    console.error('error occured:', err);
-    throw new Error("error occuredasd")
-  }
+      return [substantiveWordCount, titleUniqueness, readability];
+    } catch (err) {
+      console.error('error occured:', err);
+      throw new Error('error occuredasd');
+    }
   }
 }

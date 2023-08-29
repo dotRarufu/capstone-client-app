@@ -11,7 +11,6 @@ import {
 import { ConsultationData } from '../models/consultationData';
 import { AuthService } from './auth.service';
 import errorFilter from '../utils/errorFilter';
-import { DatabaseService } from './database.service';
 import supabaseClient from '../lib/supabase';
 
 @Injectable({
@@ -22,7 +21,6 @@ export class ConsultationService {
   private newConsultationSignal$ = new BehaviorSubject(0);
 
   authService = inject(AuthService);
-  databaseService = inject(DatabaseService);
 
   scheduleConsultation(data: ConsultationData, projectId: number) {
     if (projectId < 0)
@@ -45,7 +43,7 @@ export class ConsultationService {
 
     const request$ = user$.pipe(
       switchMap((user) =>
-        this.databaseService.insertConsultation(user.uid, data, projectId)
+        this.insertConsultation(user.uid, data, projectId)
       ),
       tap(() => this.signalNewConsultation())
     );
@@ -94,7 +92,6 @@ export class ConsultationService {
     return request$;
   }
 
-  // todo: add takeUntilDestroyed for method's users
   getConsultations(categoryId: number, projectId: number) {
     if (projectId < 0)
       return throwError(() => new Error('Project id is invalid'));
@@ -124,7 +121,6 @@ export class ConsultationService {
     return res;
   }
 
-  // todo: add takeUntilDestroyed for method's users
   getAllConsultations(projectId: number) {
     if (projectId < 0)
       return throwError(() => new Error('Project id is invalid'));
@@ -275,6 +271,57 @@ export class ConsultationService {
     }
 
     return tableName;
+  }
+
+  private insertConsultation(
+    userUid: string,
+    data: ConsultationData,
+    projectId: number
+  ) {
+    const newData = {
+      organizer_id: userUid,
+      project_id: projectId,
+      date_time: data.dateTime,
+      location: data.location,
+      description: data.description,
+    };
+
+    const insertConsultation = this.client
+      .from('consultation')
+      .insert(newData)
+      .select('id');
+
+    return from(insertConsultation).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data[0].id;
+      }),
+
+      switchMap((id) => this.insertAccomplishedTasks(id, data.taskIds))
+    );
+  }
+
+
+  private insertAccomplishedTasks(consultationId: number, taskIds: number[]) {
+    const request = Promise.all(
+      taskIds.map(async (id) => {
+        const data = {
+          consultation_id: consultationId,
+          task_id: id,
+        };
+        const response = await this.client
+          .from('accomplished_task')
+          .insert(data)
+          .select('*');
+
+        const { statusText } = errorFilter(response);
+
+        return statusText;
+      })
+    );
+
+    return from(request);
   }
 
   private signalNewConsultation() {

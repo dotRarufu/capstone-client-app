@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { TitleAnalyzerResult } from 'src/app/models/titleAnalyzerResult';
-import { DatabaseService } from 'src/app/services/database.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { FeatherModule } from 'angular-feather';
@@ -94,7 +93,6 @@ export class ResultComponent implements OnInit {
   constructor(
     private router: Router,
     private projectService: ProjectService,
-    private databaseService: DatabaseService,
     private spinner: NgxSpinnerService,
     private toastr: ToastrService
   ) {}
@@ -143,7 +141,8 @@ export class ResultComponent implements OnInit {
         data.substantive_words.words
       )}`,
     };
-    const titleCount = await this.databaseService.getProjectCount();
+    // todo: convert obs to promise
+    const titleCount = await this.projectService.getProjectCount();
     const titleUniqueness: AnalysesDataItem = {
       heading: 'Title Uniqueness',
       value: data.title_uniqueness,

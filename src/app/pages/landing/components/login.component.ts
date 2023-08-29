@@ -9,9 +9,8 @@ import {
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { filter, from, switchMap } from 'rxjs';
+import { filter, from, tap, map, switchMap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-import { UserService } from 'src/app/services/user.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -92,11 +91,10 @@ export class LoginComponent {
   router = inject(Router);
   spinner = inject(NgxSpinnerService);
   toastr = inject(ToastrService);
-  userService = inject(UserService);
 
   authenticatedUser$ = this.authService.getAuthenticatedUser().pipe(
     filter(isNotNull),
-    switchMap((user) => this.userService.getUser(user.uid))
+    switchMap((user) => this.authService.getUser(user.uid))
   );
   authenticatedUser = toSignal(this.authenticatedUser$);
 
@@ -108,14 +106,45 @@ export class LoginComponent {
       this.password.value
     );
 
-    signIn$.subscribe({
-      next: (user) => {
-        console.log("sign in success")
-      },
-      error: () => {
-        this.spinner.hide();
-        this.toastr.error('Login failed');
-      },
-    });
+    signIn$
+      .pipe(
+        filter(isNotNull),
+        map((user) => getRolePath(user.role_id)),
+        tap((_) => this.spinner.hide())
+      )
+      .subscribe({
+        next: (rolePath) => {
+          if (rolePath !== 's') {
+            this.router.navigate(['a', rolePath, 'home']);
+
+            return;
+          }
+
+          this.router.navigate([rolePath, 'home']);
+        },
+        error: () => {
+          this.spinner.hide();
+          this.toastr.error('Login failed');
+        },
+      });
+    //   const user$ = this.getAuthenticatedUser();
+    //   user$
+    //     .pipe(
+    //       filter(isNotNull),
+    //       map((user) => getRolePath(user.role_id))
+    //     )
+    //     .subscribe({
+    //       next: (rolePath) => {
+    //         if (rolePath !== 's') {
+    //           this.router.navigate(['a', rolePath, 'home']);
+
+    //           return;
+    //         }
+
+    //         this.router.navigate([rolePath, 'home']);
+
+    //         this.spinner.hide();
+    //       },
+    //     });
   }
 }

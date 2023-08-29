@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { ConsultationCardComponent } from 'src/app/pages/project/pages/consultations/card.component';
@@ -12,6 +12,7 @@ import { CompletedConsultationModalComponent } from './completed-consultation-mo
 import { ActivatedRoute } from '@angular/router';
 import { ScheduledConsultationModalComponent } from './scheduled-consultation-modal.component';
 import { ConsultationStateService } from './data-access/consultations-state.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'consultations',
@@ -97,9 +98,9 @@ export class ConsultationsComponent {
   toastr = inject(ToastrService);
   route = inject(ActivatedRoute);
   consultationStateService = inject(ConsultationStateService);
+  destroyRef = inject(DestroyRef);
 
   role = this.route.snapshot.data['role'];
-
   consultations: {
     category: string;
     items: Consultation[];
@@ -156,10 +157,18 @@ export class ConsultationsComponent {
   ngOnInit() {
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
     // todo: refactor these
-    const scheduled$ = this.consultationService.getConsultations(1, projectId);
-    const pending$ = this.consultationService.getConsultations(0, projectId);
-    const completed$ = this.consultationService.getConsultations(2, projectId);
-    const rejected$ = this.consultationService.getConsultations(3, projectId);
+    const scheduled$ = this.consultationService
+      .getConsultations(1, projectId)
+      .pipe(takeUntilDestroyed(this.destroyRef));
+    const pending$ = this.consultationService
+      .getConsultations(0, projectId)
+      .pipe(takeUntilDestroyed(this.destroyRef));
+    const completed$ = this.consultationService
+      .getConsultations(2, projectId)
+      .pipe(takeUntilDestroyed(this.destroyRef));
+    const rejected$ = this.consultationService
+      .getConsultations(3, projectId)
+      .pipe(takeUntilDestroyed(this.destroyRef));
 
     scheduled$.subscribe({
       next: (consultations) => {

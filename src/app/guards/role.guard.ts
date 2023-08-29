@@ -6,7 +6,6 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { UserService } from '../services/user.service';
 import { getRolePath } from '../utils/getRolePath';
 import { map, switchMap, tap } from 'rxjs';
 
@@ -17,7 +16,6 @@ export const roleGuard = (role: string) => {
   ) => {
     const authService = inject(AuthService);
     const router = inject(Router);
-    const userService = inject(UserService);
 
     const authenticatedUser$ = authService.getAuthenticatedUser().pipe(
       map((user) => {
@@ -26,7 +24,7 @@ export const roleGuard = (role: string) => {
 
         return user;
       }),
-      switchMap((user) => userService.getUser(user.uid)),
+      switchMap((user) => authService.getUser(user.uid)),
       map((user) => user.role_id),
       map((role) => {
         if (role === null) throw new Error('wip, currentUser has no role id');

@@ -5,7 +5,6 @@ import { BaseChartDirective, NgChartsModule } from 'ng2-charts';
 import { filter, forkJoin, from, map, of, switchMap } from 'rxjs';
 import { ProjectService } from 'src/app/services/project.service';
 import { Project } from 'src/app/models/project';
-import { UserService } from 'src/app/services/user.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { TaskService } from 'src/app/services/task.service';
 
@@ -35,7 +34,6 @@ import { TaskService } from 'src/app/services/task.service';
 })
 export class TotalTasksByCategoryReportComponent {
   projectService = inject(ProjectService);
-  userService = inject(UserService);
   taskService = inject(TaskService);
   authService = inject(AuthService);
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;

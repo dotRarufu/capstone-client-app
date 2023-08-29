@@ -1,12 +1,21 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { DatabaseService } from 'src/app/services/database.service';
-import { TaskService } from 'src/app/services/task.service';
+import { CommonModule } from '@angular/common';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
+import { BehaviorSubject, filter, map, switchMap } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
 import { Task } from 'src/app/types/collection';
+import { isNotNull } from 'src/app/utils/isNotNull';
 
 @Component({
   selector: 'TaskCard',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   template: `
     <div
       onclick="taskDetails.showModal()"
@@ -20,7 +29,7 @@ import { Task } from 'src/app/types/collection';
       >
         <span class="text-[12px] text-base-content/70"> BY </span>
 
-        {{ adviserName }}
+        {{ adviserName$ | async }}
 
         <img
           class="avatar w-8 rounded-full bg-primary/50"
@@ -32,8 +41,9 @@ import { Task } from 'src/app/types/collection';
     </div>
   `,
 })
-export class TaskCardComponent implements OnInit {
-  @Input() task: Task = {
+export class TaskCardComponent implements OnChanges {
+  @Input() setActiveTask: null | ((t: Task) => void) = null;
+  @Input({ required: true }) task: Task = {
     assigner_id: '',
     description: '',
     id: 0,
@@ -42,19 +52,19 @@ export class TaskCardComponent implements OnInit {
     status_id: 0,
     title: '',
   };
-  @Input() setActiveTask: null | ((t: Task) => void) = null;
-  adviserName = '';
+  
+  taskSubject = new BehaviorSubject<Task | null>(null);
+ 
+  authService = inject(AuthService);
+  adviserName$ = this.taskSubject.pipe(
+    filter(isNotNull),
+    switchMap((task) => this.authService.getUserData(this.task.assigner_id)),
+    map((adviser) => adviser.name || 'unnamed')
+  );
 
-  constructor(private databaseService: DatabaseService) {}
+  ngOnChanges(changes: SimpleChanges): void {
+    const changed = changes['task'].currentValue;
 
-  ngOnInit(): void {
-    this.getAdviserName();
-  }
-
-  async getAdviserName() {
-    const adviser = await this.databaseService.getUserData(
-      this.task.assigner_id
-    );
-    this.adviserName = adviser.name || 'unnamed';
+    this.taskSubject.next(changed);
   }
 }

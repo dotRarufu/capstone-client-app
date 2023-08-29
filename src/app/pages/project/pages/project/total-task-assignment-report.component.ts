@@ -6,9 +6,10 @@ import { CommonModule } from '@angular/common';
 import { TaskService } from 'src/app/services/task.service';
 import { ActivatedRoute } from '@angular/router';
 import { MilestoneService } from 'src/app/services/milestone.service';
-import { UserService } from 'src/app/services/user.service';
 import { Task } from 'src/app/types/collection';
-import { from, switchMap } from 'rxjs';
+import { forkJoin, from, map, switchMap } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
+
 
 @Component({
   selector: 'total-task-assignment-report',
@@ -47,45 +48,49 @@ export class TotalTaskAssignmentReportComponent {
   taskService = inject(TaskService);
   route = inject(ActivatedRoute);
   milestoneService = inject(MilestoneService);
-  userService = inject(UserService);
+  authService = inject(AuthService);
 
-  async SetupTotalTaskAssigment(advisers: Set<string>, tasks: Task[]) {
-    const reqs = [...advisers].map(
-      async (a) => await this.userService.getUser(a)
+  SetupTotalTaskAssigment(advisers: Set<string>, tasks: Task[]) {
+    const reqs$ = [...advisers].map((a) => this.authService.getUser(a));
+
+    const roledAdvisers$ = forkJoin(reqs$);
+    const res$ = roledAdvisers$.pipe(
+      map((a) =>
+        a.map((b) => {
+          const role =
+            b.role_id === 1 ? 'Capstone Adviser' : 'Technical Adviser';
+          const count = tasks.filter((t) => t.assigner_id === b.uid).length;
+
+          return {
+            role,
+            count,
+          };
+        })
+      )
     );
-    console.log("adviseres:", advisers);
-    const roledAdvisers = await Promise.all(reqs);
 
-    const res = roledAdvisers.map((a) => {
-      const role = a.role_id === 1 ? 'Capstone Adviser' : 'Technical Adviser';
-      const count = tasks.filter((t) => t.assigner_id === a.uid).length;
-
-      return {
-        role,
-        count,
-      };
+    res$.subscribe({
+      next: (r) => {
+        r.forEach((a) => {
+          this.totalTaskAssigmentData.labels?.push(a.role);
+          this.totalTaskAssigmentData.datasets[0].data.push(a.count);
+        });
+        this.chart?.update();
+      },
     });
-
-    res.forEach((r) => {
-      this.totalTaskAssigmentData.labels?.push(r.role);
-      this.totalTaskAssigmentData.datasets[0].data.push(r.count);
-    });
-    this.chart?.update();
   }
 
   constructor() {
     const projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
 
-    this.taskService
-      .getAllTasks(projectId)
-      .subscribe({
-        next: (tasks) => {
-          const advisers = new Set<string>();
-          tasks.forEach((t) => advisers.add(t.assigner_id));
+    this.taskService.getAllTasks(projectId).subscribe({
+      next: (tasks) => {
+        const advisers = new Set<string>();
+        tasks.forEach((t) => advisers.add(t.assigner_id));
 
-          this.SetupTotalTaskAssigment(advisers, tasks);
-        },
-      });
+        this.SetupTotalTaskAssigment(advisers, tasks);
+      },
+    });
   }
 
   totalTaskAssigmentData: ChartData<'pie', number[], string | string[]> = {

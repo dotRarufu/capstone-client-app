@@ -1,10 +1,14 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, NgZone, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AuthService } from 'src/app/services/auth.service';
 import { LoginComponent } from './components/login.component';
 import { SignupComponent } from './components/signup.component';
 import { CommonModule } from '@angular/common';
+import { filter, tap } from 'rxjs';
+import { getRolePath } from 'src/app/utils/getRolePath';
+import { isNotNull } from 'src/app/utils/isNotNull';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'LandingPage',
@@ -39,6 +43,36 @@ import { CommonModule } from '@angular/common';
     </div>
   `,
 })
-export class LandingComponent {
+export class LandingComponent implements OnInit {
   isLogin = signal(true);
+  authService = inject(AuthService);
+  router = inject(Router);
+  toastr = inject(ToastrService);
+  ngZone = inject(NgZone);
+  spinner = inject(NgxSpinnerService);
+
+  user$ = this.authService.getAuthenticatedUser();
+
+  ngOnInit() {
+    this.spinner.show();
+    this.user$.pipe(
+      tap(_ => this.spinner.hide()),
+      filter(isNotNull)).subscribe({
+      next: (user) => {
+        const role = getRolePath(user.role_id);
+        console.log('role:', role);
+        if (role === 's') {
+          // this.ngZone.run(() => this.router.navigate(['s']));
+          this.router.navigate(['s'])
+
+          return;
+        }
+
+
+        this.router.navigate(['a', role]);
+        this.toastr.success('Welcome back ' + user.name);
+
+      },
+    });
+  }
 }

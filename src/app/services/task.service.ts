@@ -4,6 +4,7 @@ import {
   forkJoin,
   from,
   map,
+  of,
   switchMap,
   tap,
   throwError,
@@ -11,7 +12,6 @@ import {
 import errorFilter from '../utils/errorFilter';
 import supabaseClient from '../lib/supabase';
 import { AuthService } from './auth.service';
-import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +20,6 @@ export class TaskService {
   private readonly client = supabaseClient;
   private readonly taskUpdateSubject = new BehaviorSubject<number>(0);
 
-  userService = inject(UserService);
   authService = inject(AuthService);
 
   add(title: string, description: string, projectId: number) {
@@ -50,7 +49,6 @@ export class TaskService {
         return res.count || 0;
       }),
       map((c) => {
-        console.log('C:', c);
         if (c > 5) throw new Error('reached max amount of todo');
 
         return c;
@@ -294,19 +292,23 @@ export class TaskService {
 
         return res;
       }),
-      switchMap(async (d) => {
-        const a = await Promise.all(
-          d.map(async (a) => ({
-            role_id: (await this.userService.getUser(a.id)).role_id,
-            count: a.count,
-          }))
+      switchMap((d) => {
+        const roleIds$ = forkJoin(
+          d.map((b) =>
+            forkJoin({
+              roleId: this.authService
+                .getUser(b.id)
+                .pipe(map((c) => c.role_id)),
+              count: of(b.count),
+            })
+          )
         );
 
-        return a;
+        return roleIds$;
       }),
       map((a) => {
         const res = a.map((b) => ({
-          role: b.role_id === 1 ? 'Capstone Adviser' : 'Technical Adviser',
+          role: b.roleId === 1 ? 'Capstone Adviser' : 'Technical Adviser',
           count: b.count,
         }));
 

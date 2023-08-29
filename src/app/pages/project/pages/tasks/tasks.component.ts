@@ -69,17 +69,17 @@ import { TaskStateService } from './data-access/tasks-state.service';
             [forcedOpen]="true"
             [heading]="category.title"
             [isHeadingCentered]="true"
-            *ngIf="category.tasks | async as tasks"
+            *ngIf="{tasks: (category.tasks | async) || []} as taskObservables"
           >
             <div
               class="flex w-full flex-col gap-[16px]  pt-[16px]"
               isTodo
               cdkDropList
-              [cdkDropListData]="tasks"
+              [cdkDropListData]="taskObservables.tasks"
               (cdkDropListDropped)="drop($event, category.statusId)"
             >
               <TaskCard
-                *ngFor="let item of tasks"
+                *ngFor="let item of taskObservables.tasks"
                 cdkDrag
                 [cdkDragData]="item"
                 [cdkDragDisabled]="!observables.isStudent"

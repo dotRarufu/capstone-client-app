@@ -24,7 +24,6 @@ import { MilestonesTemplateComponent } from 'src/app/pages/profile/milestones-te
 import { AddMilestoneModalComponent } from 'src/app/pages/project/pages/milestones/add-milestone.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import {  FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { UserService } from 'src/app/services/user.service';
 import { ToastrService } from 'ngx-toastr';
 import { ImgFallbackModule } from 'ngx-img-fallback';
 
@@ -316,7 +315,6 @@ export class ProfileViewComponent implements OnInit {
   });
   nameIsInEdit = false;
   newName = this.user().name;
-  userService = inject(UserService);
   spinner = inject(NgxSpinnerService);
   toastr = inject(ToastrService);
   fallbackAvatar = `https://api.multiavatar.com/${this.user().name}.png`;

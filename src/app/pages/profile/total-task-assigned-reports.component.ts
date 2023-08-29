@@ -6,7 +6,6 @@ import { from, map, switchMap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { TaskService } from 'src/app/services/task.service';
-import { UserService } from 'src/app/services/user.service';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 
 @Component({
@@ -35,7 +34,6 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 })
 export class TotalTasksAssignedReportComponent {
   taskService = inject(TaskService);
-  userService = inject(UserService);
   authService = inject(AuthService);
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
   data: ChartConfiguration<'line'>['data'] = {

@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { TaskService } from 'src/app/services/task.service';
 import { ActivatedRoute } from '@angular/router';
 import { MilestoneService } from 'src/app/services/milestone.service';
-import { UserService } from 'src/app/services/user.service';
 import { Task } from 'src/app/types/collection';
 import { from, switchMap } from 'rxjs';
 import { TotalTaskAssignmentReportComponent } from './total-task-assignment-report.component';
@@ -77,7 +76,6 @@ export class ProjectReportsComponent {
   taskService = inject(TaskService);
   route = inject(ActivatedRoute);
   milestoneService = inject(MilestoneService);
-  userService = inject(UserService);
 
   accomplishedMilestones: ChartData<'pie', number[], string | string[]> = {
     labels: [],
