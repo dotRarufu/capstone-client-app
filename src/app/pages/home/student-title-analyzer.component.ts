@@ -8,16 +8,17 @@ import { ProjectService } from '../../services/project.service';
 @Component({
   selector: 'student-title-analyzer',
   standalone: true,
-  // providers: [HomeStateService],
   imports: [TitleAnalyzerComponent, CommonModule, ResultComponent],
   template: `
     <div class="flex flex-col gap-4 ">
       <ng-container *ngIf="!(projectService.analyzerResult$ | async)">
-        <title-analyzer (analyzeClicked)="handleAnalyzeClicked()" />
+        <title-analyzer
+          (analyzeClicked)="homeStateService.setAlreadyHaveTitle(true)"
+        />
       </ng-container>
 
       <ng-container *ngIf="projectService.analyzerResult$ | async">
-        <TitleAnalyzerResult />
+        <title-analyzer-result />
       </ng-container>
     </div>
   `,
@@ -25,8 +26,4 @@ import { ProjectService } from '../../services/project.service';
 export class StudentTitleAnalyzerComponent {
   projectService = inject(ProjectService);
   homeStateService = inject(HomeStateService);
-
-  handleAnalyzeClicked() {
-    this.homeStateService.setAlreadyHaveTitle(true);
-  }
 }

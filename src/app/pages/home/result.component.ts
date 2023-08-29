@@ -7,7 +7,16 @@ import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
-import { filter, from, switchMap, tap } from 'rxjs';
+import {
+  EMPTY,
+  catchError,
+  filter,
+  forkJoin,
+  from,
+  map,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { formatStringArray } from 'src/app/utils/formatStringArray';
 import { getReadabilityScoreMeaning } from 'src/app/utils/getReadabilityScoreMeaning';
 import { AuthService } from 'src/app/services/auth.service';
@@ -19,7 +28,7 @@ interface AnalysesDataItem {
 }
 
 @Component({
-  selector: 'TitleAnalyzerResult',
+  selector: 'title-analyzer-result',
   standalone: true,
   imports: [
     CommonModule,
@@ -33,7 +42,7 @@ interface AnalysesDataItem {
     >
       <div class="flex justify-between gap-2">
         <h1 class="text-[24px] text-base-content">
-          {{ title }}
+          {{ title$ | async }}
         </h1>
         <button
           (click)="handleBackButtonClick()"
@@ -50,7 +59,7 @@ interface AnalysesDataItem {
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
       <accordion
-        *ngFor="let data of analysesData"
+        *ngFor="let data of (analysesData$ | async) || []"
         [isResult]="true"
         [score]="data.value"
         [heading]="data.heading"
@@ -66,50 +75,30 @@ interface AnalysesDataItem {
     </div>
   `,
 })
-export class ResultComponent implements OnInit {
-  @Input() sideColumn? = false;
-  analysesData: AnalysesDataItem[] = [];
+export class ResultComponent {
   informationalData: { heading: string; content: string[] }[] = [];
-  title = '';
 
-  result?: TitleAnalyzerResult;
-  similarProjects: string[] = [
-    'Development and evaluation of Record Management System',
-    'Development and evaluation of Record Management System',
-    'Development and evaluation of Record Management System',
-  ];
+  @Input() sideColumn? = false;
 
   router = inject(Router);
   projectService = inject(ProjectService);
-  authService = inject(AuthService);
   spinner = inject(NgxSpinnerService);
   toastr = inject(ToastrService);
 
-  ngOnInit(): void {
-    this.projectService.analyzerResult$
-      .pipe(
-        filter((v): v is TitleAnalyzerResult => v !== undefined),
-        tap((data) => (this.title = data.title)),
-        switchMap((v) => this.prepareAnalysesData(v))
-      )
-      .subscribe({
-        next: (v) => {
-          this.analysesData = v;
-        },
-        error: () => {
-          this.toastr.error('Error occured while analyzing title');
-        },
-        complete: () => {},
-      });
-  }
+  result$ = this.projectService.analyzerResult$.pipe(
+    filter((res): res is TitleAnalyzerResult => res !== undefined),
+    catchError((err) => {
+      this.toastr.error('Error occured while analyzing title');
 
-  handleBackButtonClick() {
-    this.projectService.clearAnalyzerResult();
-    this.router.navigate(['s', 'home', 'title-analyzer']);
-  }
-
-  async prepareAnalysesData(data: TitleAnalyzerResult) {
-    try {
+      return EMPTY;
+    })
+  );
+  title$ = this.result$.pipe(map((d) => d.title));
+  analysesData$ = forkJoin({
+    data: this.result$,
+    titleCount: from(this.projectService.getProjectCount()),
+  }).pipe(
+    map(({ data, titleCount }) => {
       const substantiveWordCount: AnalysesDataItem = {
         heading: 'Substantive Word Count',
         value: data.substantive_words.count,
@@ -119,7 +108,7 @@ export class ResultComponent implements OnInit {
           data.substantive_words.words
         )}`,
       };
-      const titleCount = await this.projectService.getProjectCount();
+
       const titleUniqueness: AnalysesDataItem = {
         heading: 'Title Uniqueness',
         value: data.title_uniqueness,
@@ -134,9 +123,11 @@ export class ResultComponent implements OnInit {
       };
 
       return [substantiveWordCount, titleUniqueness, readability];
-    } catch (err) {
-      console.error('error occured:', err);
-      throw new Error('error occuredasd');
-    }
+    })
+  );
+
+  handleBackButtonClick() {
+    this.projectService.clearAnalyzerResult();
+    this.router.navigate(['s', 'home', 'title-analyzer']);
   }
 }

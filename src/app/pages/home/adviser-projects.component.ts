@@ -17,6 +17,7 @@ import { ActivatedRoute } from '@angular/router';
 import { HomeStateService } from './data-access/home-state.service';
 import { ProjectsAccordionComponent } from './projects-accordion.component';
 import { ProjectCardComponent } from './project-card.component';
+import { map, tap } from 'rxjs';
 
 @Component({
   selector: 'adviser-projects',
@@ -31,11 +32,11 @@ import { ProjectCardComponent } from './project-card.component';
     <div class="w-full">
       <projects>
         <projects-accordion
-          *ngFor="let section of sections()"
+          *ngFor="let section of sections$ | async"
           [heading]="section.section"
         >
           <ProjectCard
-            (removeProjectId)="removeProjectId($event)"
+            (removeProjectId)="this.homeStateService.setActiveProjectId($event)"
             *ngFor="let project of section.projects"
             [project]="project"
             [role]="role"
@@ -44,7 +45,7 @@ import { ProjectCardComponent } from './project-card.component';
 
         <projects-accordion heading="Archived">
           <ProjectCard
-            *ngFor="let project of archived | async"
+            *ngFor="let project of archived$ | async"
             [project]="project"
             [role]="role"
           />
@@ -53,41 +54,30 @@ import { ProjectCardComponent } from './project-card.component';
     </div>
   `,
 })
-export class AdviserProjectsComponent implements OnInit {
+export class AdviserProjectsComponent {
   projectService = inject(ProjectService);
   spinner = inject(NgxSpinnerService);
   route = inject(ActivatedRoute);
   homeStateService = inject(HomeStateService);
 
-  sections: WritableSignal<SectionProject[]> = signal([]);
-  archived = this.projectService.getArchived();
+  sections$ = this.projectService.getProjects().pipe(
+    tap((projects) => {
+      if (projects === null) {
+        this.spinner.show();
+        return;
+      }
+
+      this.spinner.hide();
+    }),
+    map((projects) => {
+      if (projects === null) {
+        return [];
+      }
+
+      return groupBySection(projects);
+    })
+  );
+  archived$ = this.projectService.getArchived();
 
   role = this.route.snapshot.data['role'];
-
-  ngOnInit() {
-    this.setupSections();
-  }
-
-  setupSections() {
-    const projects$ = this.projectService.getProjects();
-
-    projects$.subscribe({
-      next: (projects) => {
-        if (projects === null) {
-          this.sections.set([]);
-          this.spinner.show();
-
-          return;
-        }
-        this.spinner.hide();
-        this.sections.set(groupBySection(projects));
-      },
-      complete: () => console.log('projects$ complete'),
-      error: () => console.log('projects$ errored'),
-    });
-  }
-
-  removeProjectId(id: number) {
-    this.homeStateService.setActiveProjectId(id);
-  }
 }

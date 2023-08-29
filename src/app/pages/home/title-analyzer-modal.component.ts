@@ -6,6 +6,7 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { ProjectService } from 'src/app/services/project.service';
 import { HomeStateService } from './data-access/home-state.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { from, tap } from 'rxjs';
 
 @Component({
   selector: 'title-analyzer-modal',
@@ -88,20 +89,11 @@ export class TitleAnalyzerModalComponent {
   spinner = inject(NgxSpinnerService);
   router = inject(Router);
 
-  async analyzeTitle() {
+  analyzeTitle() {
     this.spinner.show();
+    const analyze$ = from( this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle.value));
 
-    await this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle.value);
-    this.spinner.hide();
+   analyze$.subscribe({next: () => this.spinner.hide()});
+
   }
-  async navigateTo(path: string) {
-    this.spinner.show();
-
-    await this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle.value);
-    this.spinner.hide();
-
-    this.router.navigate(['s', 'home', path], {});
-  }
-
-
 }

@@ -39,7 +39,7 @@ import { AddProjectModalComponent } from './add-project-modal.component';
     AdviserReportsComponent,
     SpinnerComponent,
     RemoveProjectModalComponent,
-    AddProjectModalComponent
+    AddProjectModalComponent,
   ],
   template: `
     <div class="flex flex-col gap-[1rem]">
@@ -49,31 +49,37 @@ import { AddProjectModalComponent } from './add-project-modal.component';
       </div>
       <div
         class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
+        *ngIf="{ activeId: activeId$ | async } as observables"
       >
         <div
           class=" flex w-full  gap-[1rem] sm2:justify-center md:w-full lg:w-[1040px]"
         >
           <adviser-projects
             *ngIf="
-              (activeId === 'projects' || isDesktop) &&
+              (observables.activeId === 'projects' || isDesktop) &&
               (role === 'c' || role === 't')
             "
           />
 
           <adviser-reports
             *ngIf="
-              (activeId === 'reports' || isDesktop) &&
+              (observables.activeId === 'reports' || isDesktop) &&
               (role === 'c' || role === 't')
             "
             [sideColumn]="true"
           />
 
           <student-title-analyzer
-            *ngIf="(activeId === 'title-analyzer' || isDesktop) && role === 's'"
+            *ngIf="
+              (observables.activeId === 'title-analyzer' || isDesktop) &&
+              role === 's'
+            "
           />
 
           <student-projects
-            *ngIf="(activeId === 'projects' || isDesktop) && role === 's'"
+            *ngIf="
+              (observables.activeId === 'projects' || isDesktop) && role === 's'
+            "
           />
         </div>
       </div>
@@ -91,13 +97,9 @@ export class HomePageComponent implements OnInit {
 
   role = this.route.snapshot.data['role'];
   isDesktop = false;
-  activeId = '';
+  activeId$ = this.tabsService.activeId$;
 
   ngOnInit() {
-    this.tabsService.activeId$.subscribe({
-      next: (id) => (this.activeId = id),
-    });
-
     this.watchWindowSize();
     this.setupTabs();
   }

@@ -12,14 +12,11 @@ export class HomeStateService {
   >(null);
 
   activeProjectId$ = this.activeProjectIdSubject
-    .asObservable()
-    .pipe(tap((v) => console.log('emits:', v)));
+    .asObservable();
   alreadyHaveTitle$ = this.alreadyHaveTitleSubject.asObservable();
 
   setActiveProjectId(id: number) {
-    console.log('runs:', id);
     this.activeProjectIdSubject.next(id);
-    console.log('new val:', this.activeProjectIdSubject.getValue());
   }
 
   setAlreadyHaveTitle(v: boolean) {

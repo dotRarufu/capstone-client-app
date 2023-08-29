@@ -1,18 +1,17 @@
 import { ProjectsComponent } from './projects-container.component';
 import { Component, WritableSignal, inject, signal } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
-import { Project } from 'src/app/models/project';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
 import { HomeStateService } from './data-access/home-state.service';
 import { ProjectCardComponent } from './project-card.component';
+import { map, tap } from 'rxjs';
 
 @Component({
   selector: 'student-projects',
   standalone: true,
   imports: [ProjectsComponent, ProjectCardComponent, CommonModule],
-  template: ` 
-  <div
+  template: ` <div
     class="w-full sm2:w-[840px] md:w-[294px]  md:flex-shrink-0 md:basis-[294px] lg:w-[1040px]"
   >
     <projects [showAdd]="true">
@@ -20,8 +19,8 @@ import { ProjectCardComponent } from './project-card.component';
         class="grid grid-flow-row grid-cols-1 items-center justify-items-center gap-[24px]  sm1:grid-cols-2 sm1:justify-start sm2:grid-cols-3 md:flex md:flex-col md:items-center md:justify-center"
       >
         <ProjectCard
-          (removeProjectId)="removeProjectId($event)"
-          *ngFor="let project of projects()"
+          (removeProjectId)="homeStateService.setActiveProjectId($event)"
+          *ngFor="let project of projects$ | async"
           [project]="project"
           [role]="'s'"
         />
@@ -34,35 +33,22 @@ export class StudentProjectsComponent {
   spinner = inject(NgxSpinnerService);
   homeStateService = inject(HomeStateService);
 
-  projects: WritableSignal<Project[]> = signal([]);
+  projects$ = this.projectService.getProjects().pipe(
+    tap((projects) => {
+      if (projects === null) {
+        this.spinner.show();
 
-  ngOnInit() {
-    this.initializeProjects();
-  }
+        return;
+      }
 
-  initializeProjects() {
-    // todo: unsubscribe on destroy
-    const projects$ = this.projectService.getProjects();
-    const subscription = projects$.subscribe({
-      next: (projects) => {
-        if (projects === null) {
-          this.projects.set([]);
-          this.spinner.show();
+      this.spinner.hide();
+    }),
+    map((projects) => {
+      if (projects === null) {
+        return [];
+      }
 
-          return;
-        }
-
-        this.spinner.hide();
-        this.projects.set(projects);
-      },
-      complete: () => {},
-    });
-
-    return subscription;
-  }
-
-  removeProjectId(id: number) {
-    console.log('id:', id);
-    this.homeStateService.setActiveProjectId(id);
-  }
+      return projects;
+    })
+  );
 }

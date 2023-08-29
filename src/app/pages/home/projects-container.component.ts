@@ -35,6 +35,5 @@ import { CommonModule } from '@angular/common';
 export class ProjectsComponent {
   search: string = '';
   @Input() showAdd? = false;
-
-  constructor() {}
+ 
 }

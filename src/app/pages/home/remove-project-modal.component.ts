@@ -47,7 +47,6 @@ export class RemoveProjectModalComponent {
 
     removeProject$.subscribe({
       next: (res) => this.toastr.success('Project removed successfully'),
-
       error: (err) => this.toastr.error('Failed to remove project'),
     });
   }
