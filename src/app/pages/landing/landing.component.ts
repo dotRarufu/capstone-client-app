@@ -40,6 +40,9 @@ import { ToastrService } from 'ngx-toastr';
           alt=""
         />
       </div>
+      <div class="absolute right-4 bottom-4 text-sm">
+        Version 0.0.0
+      </div>
     </div>
   `,
 })

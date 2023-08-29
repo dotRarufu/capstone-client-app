@@ -145,48 +145,49 @@ export class NavigationRailComponent {
   user$ = this.authService.getAuthenticatedUser();
 
   navigateTo(path: string) {
-    this.user$.pipe(
-      filter(isNotNull),
-      map(user => {
-        if (user.role_id === null) throw new Error('user has no role id');
+    this.user$
+      .pipe(
+        filter(isNotNull),
+        map((user) => {
+          if (user.role_id === null) throw new Error('user has no role id');
 
-        return user;
-      }),
-      map(user => getRolePath(user.role_id)),
-      map(rolePath => {
-        if (rolePath === 's') {
-          this.router.navigate([rolePath, 'p', this.projectId, path]);
-          return;
-        }
+          return user;
+        }),
+        map((user) => getRolePath(user.role_id))
+      )
+      .subscribe({
+        next: (rolePath) => {
+          console.log('navigates:', rolePath, path);
+          if (rolePath === 's') {
+            this.router.navigate([rolePath, 'p', this.projectId(), path]);
+            return;
+          }
 
-        this.router.navigate(['a', rolePath, 'p', this.projectId, path]);
-      })
-    ).subscribe({next: () => {}})
-
-
+          this.router.navigate(['a', rolePath, 'p', this.projectId(), path]);
+        },
+      });
   }
 
   navigateToHome() {
+    this.user$
+      .pipe(
+        filter(isNotNull),
+        map((user) => {
+          if (user.role_id === null) throw new Error('user has no role id');
 
-    this.user$.pipe(
-      filter(isNotNull),
-      map(user => {
-        if (user.role_id === null) throw new Error('user has no role id');
+          return user;
+        }),
+        map((user) => getRolePath(user.role_id))
+      )
+      .subscribe({
+        next: (rolePath) => {
+          if (rolePath === 's') {
+            this.router.navigate([rolePath, 'home']);
+            return;
+          }
 
-        return user;
-      }),
-      map(user => getRolePath(user.role_id)),
-      map(rolePath => {
-        if (rolePath === 's') {
-          this.router.navigate([rolePath, 'home']);
-          return;
-        }
-
-        this.router.navigate(['a', rolePath, 'home']);
-      })
-    ).subscribe({next: () => {}})
-
-
+          this.router.navigate(['a', rolePath, 'home']);
+        },
+      });
   }
-
 }

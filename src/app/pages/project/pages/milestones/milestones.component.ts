@@ -36,7 +36,8 @@ type Milestone = {
       class="flex h-full flex-col justify-start gap-x-[16px] sm1:grid sm1:grid-cols-[auto_1fr] md:grid-cols-[1fr_3fr]"
       *ngIf="{
         milestones: milestones$ | async,
-        isCapstoneAdviser: isCapstoneAdviser$ | async
+        isCapstoneAdviser: isCapstoneAdviser$ | async,
+        capstoneAdviser: capstoneAdviser$ | async
       } as observables"
     >
       <ul
@@ -84,12 +85,11 @@ type Milestone = {
           >
             <i-feather name="flag" class="" />
             <span
-              *ngIf="capstoneAdviser$ | async as capstoneAdviser"
               class="text-base"
             >
               {{
                 getMessage(
-                  capstoneAdviser,
+                  observables.capstoneAdviser,
                   observables.milestones || [],
                   observables.isCapstoneAdviser || false
                 )
@@ -150,10 +150,11 @@ export class MilestonesComponent {
     .pipe(map((res) => res.capstone_adviser_id));
 
   getMessage(
-    capstoneAdviser: string,
+    capstoneAdviser: string | null,
     milestones: Milestone[],
     isCapstoneAdviser: boolean
   ) {
+    console.log("tjos runs:", capstoneAdviser, milestones, isCapstoneAdviser)
     if (isCapstoneAdviser) {
       if (milestones.length === 0) {
         return "No milestones";
