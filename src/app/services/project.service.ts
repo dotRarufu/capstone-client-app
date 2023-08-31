@@ -130,6 +130,21 @@ export class ProjectService {
     return insertRequest$;
   }
 
+  getAdvisers(projectId: number) {
+    const advisers = this.client
+      .from('project')
+      .select('capstone_adviser_id, technical_adviser_id')
+      .eq('id', projectId);
+
+    return from(advisers).pipe(
+      map((a) => {
+        const { data } = errorFilter(a);
+
+        return data[0];
+      })
+    );
+  }
+
   // Todo: add takeUntilDestroyed pipe for users of this method
   getParticipants(projectId: number) {
     // used observables so participants can be immediately updated when  new participant is added.
@@ -141,21 +156,12 @@ export class ProjectService {
         if (projectId < 0) throw new Error('Invalid project id');
       }),
       switchMap(() => {
-        const advisers = this.client
-          .from('project')
-          .select('capstone_adviser_id, technical_adviser_id')
-          .eq('id', projectId);
         const students = this.client
           .from('member')
           .select('student_uid')
           .eq('project_id', projectId);
 
-        const advisers$ = from(advisers).pipe(
-          map((a) => {
-            const { data } = errorFilter(a);
-
-            return data[0];
-          }),
+        const advisers$ = this.getAdvisers(projectId).pipe(
           switchMap((advisers) => {
             const ids = [];
 

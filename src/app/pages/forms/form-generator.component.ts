@@ -1,5 +1,13 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TabDefinition } from 'src/app/models/tab';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
@@ -8,41 +16,49 @@ import { TabsService } from 'src/app/services/tabs.service';
 import { CommonModule } from '@angular/common';
 import { TabsComponent } from '../../components/ui/tabs.component';
 import { SpinnerComponent } from 'src/app/components/spinner.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 
 @Component({
   standalone: true,
-  imports: [FeatherIconsModule, TabsComponent, CommonModule, RouterModule, SpinnerComponent],
+  imports: [
+    FeatherIconsModule,
+    TabsComponent,
+    CommonModule,
+    RouterModule,
+    SpinnerComponent,
+  ],
   template: `
-    <div
-      class="flex h-full w-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible"
+    <ng-container
+      *ngIf="{ formUrl: formGeneratorService.formUrl$ | async } as observables"
     >
-      <div class="w-full">
-        <tabs [isResponsive]="false" />
+      <div
+        class="flex h-full w-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible"
+      >
+        <div class="w-full">
+          <tabs [isResponsive]="false" />
+        </div>
+
+        <div class="relative h-[calc(100vh-60px)] overflow-x-scroll">
+          <router-outlet #myOutlet="outlet" />
+          <button
+            *ngIf="observables.formUrl !== ''"
+            [class.hidden]="!myOutlet.isActivated"
+            (click)="handleDownloadClick()"
+            class="btn-ghost btn absolute bottom-0 right-0 gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
+          >
+            <i-feather class="text-base-content/70" name="download" />
+          </button>
+        </div>
       </div>
 
-      <div class="relative h-[calc(100vh-60px)] overflow-x-scroll">
-        <router-outlet #myOutlet="outlet" />
-        <button
-          [class.hidden]="!myOutlet.isActivated"
-          (click)="anchor.click()"
-          class="btn-ghost btn absolute bottom-0 right-0 gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
-        >
-          <i-feather class="text-base-content/70" name="download" />
-        </button>
-      </div>
-    </div>
-
-    <a
-      class="hidden"
-      #anchor
-      [href]="formGeneratorService.formUrl$ | async"
-      download
-    ></a>
+      <a #anchor class="hidden" [href]="observables.formUrl" download></a>
+    </ng-container>
 
     <spinner />
   `,
 })
-export class FormGeneratorComponent implements OnInit {
+export class FormGeneratorComponent implements OnInit, OnDestroy {
   pdfSrc = signal(
     'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_2_project_0.docx?t=2023-05-18T14%3A11%3A02.027Z'
   );
@@ -50,7 +66,13 @@ export class FormGeneratorComponent implements OnInit {
   projectService = inject(ProjectService);
   tabsService = inject(TabsService);
   route = inject(ActivatedRoute);
+  router = inject(Router);
   formGeneratorService = inject(FormGeneratorService);
+  @ViewChild('#anchor') anchor!: ElementRef<HTMLAnchorElement>;
+
+  handleDownloadClick() {
+    this.anchor.nativeElement.click();
+  }
 
   ngOnInit(): void {
     const tabs: TabDefinition[] = [
@@ -83,6 +105,16 @@ export class FormGeneratorComponent implements OnInit {
 
     this.tabsService.setTabs(tabs, route, active);
   }
+  ngOnDestroy(): void {}
 
-
+  a = this.router.events
+    .pipe(
+      takeUntilDestroyed(),
+      filter((event) => event.constructor.name === 'NavigationStart')
+    )
+    .subscribe({
+      next: (url) => {
+        this.formGeneratorService.clearFormUrl();
+      },
+    });
 }

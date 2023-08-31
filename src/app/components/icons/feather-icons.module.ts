@@ -34,8 +34,7 @@ import {
   ChevronLeft,
   CheckCircle,
   Minus,
-  Save
-
+  Save,
 } from 'angular-feather/icons';
 
 const icons = {

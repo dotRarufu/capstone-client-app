@@ -24,7 +24,10 @@ export class FormGeneratorService {
   clearAnalyzerResult() {
     this._analyzerResult$.next(undefined);
   }
-
+  
+clearFormUrl() {
+  this.formUrlSubject.next("")
+}
 
   generateForm(
     projectId: number,
