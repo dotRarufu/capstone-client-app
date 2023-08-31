@@ -10,7 +10,7 @@ type AnalyzerResultError = string;
 })
 export class FormGeneratorService {
   private readonly client = supabaseClient;
-  private formUrlSubject: BehaviorSubject<string> = new BehaviorSubject('');
+  private formUrlSubject= new BehaviorSubject('');
   // move this in user service
   private _analyzerResult$ = new BehaviorSubject<
     TitleAnalyzerResult | AnalyzerResultError | undefined | null
@@ -25,11 +25,12 @@ export class FormGeneratorService {
     this._analyzerResult$.next(undefined);
   }
 
+
   generateForm(
     projectId: number,
     formNumber: number,
     dateTime: number,
-    dateTimeRange?: number[]
+    dateTimeList: number[] = [-1]
   ) {
     if (formNumber < 0) return throwError(() => new Error('No form number'));
 
@@ -41,19 +42,20 @@ export class FormGeneratorService {
         formNumber,
         projectId,
         dateTime,
-        // todo: update the edge fn to accept dateTimeRange
         // why accept dateTimeRange? why not just output the form 4 without asking for range
-        // dateTimeRange,
+        dateTimeList,
         name: 'Functions',
       },
     });
 
     const req$ = from(req).pipe(
       map((res) => {
-        if (res.error !== null || res.data === null) throw new Error('error 10123');
+        if (res.error !== null || res.data === null)
+          throw new Error('error 10123');
 
         return res.data;
-      })
+      }),
+      tap(url => this.formUrlSubject.next(url))
     );
 
     return req$;

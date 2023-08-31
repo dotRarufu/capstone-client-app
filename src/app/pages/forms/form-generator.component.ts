@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TabDefinition } from 'src/app/models/tab';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ProjectService } from 'src/app/services/project.service';
+import { FormGeneratorService } from 'src/app/services/form-generator.service';
 import { TabsService } from 'src/app/services/tabs.service';
 import { CommonModule } from '@angular/common';
 import { TabsComponent } from '../../components/ui/tabs.component';
@@ -34,7 +35,7 @@ import { SpinnerComponent } from 'src/app/components/spinner.component';
     <a
       class="hidden"
       #anchor
-      [href]="projectService.formUrl$ | async"
+      [href]="formGeneratorService.formUrl$ | async"
       download
     ></a>
 
@@ -49,6 +50,7 @@ export class FormGeneratorComponent implements OnInit {
   projectService = inject(ProjectService);
   tabsService = inject(TabsService);
   route = inject(ActivatedRoute);
+  formGeneratorService = inject(FormGeneratorService);
 
   ngOnInit(): void {
     const tabs: TabDefinition[] = [

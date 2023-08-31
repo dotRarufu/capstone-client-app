@@ -37,7 +37,6 @@ export class ProjectService {
   private formUrlSubject = new BehaviorSubject('');
   private projectUpdate$ = new BehaviorSubject(0);
   private newParticipant$ = new BehaviorSubject(0);
-  formUrl$ = this.formUrlSubject.asObservable();
 
   authService = inject(AuthService);
   milestoneService = inject(MilestoneService);

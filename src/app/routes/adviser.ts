@@ -17,6 +17,7 @@ import { HomePageComponent } from '../pages/home/home.component';
 import { ReportsComponent } from '../pages/home/reports.component';
 import { FormComponent } from '../pages/forms/form.component';
 import { Form3Component } from '../pages/forms/form-3.component';
+import { Form4Component } from '../pages/forms/form-4.component';
 
 const routes: Routes = [
   {
@@ -114,7 +115,7 @@ const routes: Routes = [
                       },
                       {
                         path: '4',
-                        component: FormComponent,
+                        component: Form4Component,
                       },
                     ],
                   },
@@ -225,11 +226,11 @@ const routes: Routes = [
                       },
                       {
                         path: '3',
-                        component: FormComponent,
+                        component: Form3Component,
                       },
                       {
                         path: '4',
-                        component: FormComponent,
+                        component: Form4Component,
                       },
                     ],
                   },
