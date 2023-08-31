@@ -28,10 +28,10 @@ export class FormGeneratorService {
   generateForm(
     projectId: number,
     formNumber: number,
-    dateTime?: number,
+    dateTime: number,
     dateTimeRange?: number[]
   ) {
-    if (formNumber < 0) return throwError(() => new Error('User uid is empty'));
+    if (formNumber < 0) return throwError(() => new Error('No form number'));
 
     if (projectId < 0)
       return throwError(() => new Error('Project id is invalid'));
@@ -40,7 +40,7 @@ export class FormGeneratorService {
       body: {
         formNumber,
         projectId,
-        dateTime: 123,
+        dateTime,
         // todo: update the edge fn to accept dateTimeRange
         // why accept dateTimeRange? why not just output the form 4 without asking for range
         // dateTimeRange,
@@ -50,7 +50,7 @@ export class FormGeneratorService {
 
     const req$ = from(req).pipe(
       map((res) => {
-        if (res.error !== null || res.data === null) throw new Error('error');
+        if (res.error !== null || res.data === null) throw new Error('error 10123');
 
         return res.data;
       })

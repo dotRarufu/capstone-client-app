@@ -21,7 +21,7 @@ import { FormGeneratorService } from 'src/app/services/form-generator.service';
     </div>
   `,
 })
-export class FormComponent {
+export class FormComponent implements OnInit {
   formGeneratorService = inject(FormGeneratorService);
   spinner = inject(NgxSpinnerService);
   route = inject(ActivatedRoute);
@@ -31,9 +31,12 @@ export class FormComponent {
   projectId = Number(this.route.parent!.parent!.parent!.snapshot.url[0].path);
 
   src$ = this.formGeneratorService
-    .generateForm(this.projectId, this.formNumber)
+    .generateForm(this.projectId, this.formNumber, -1)
     .pipe(
-      tap((_) => this.toastr.success('successfully generated form')),
+      tap((_) => {
+        this.toastr.success('successfully generated form');
+        this.spinner.hide();
+      }),
       catchError((err) => {
         this.toastr.error('error generating form:', err);
         this.spinner.hide();
@@ -41,4 +44,8 @@ export class FormComponent {
         return EMPTY;
       })
     );
+
+    ngOnInit(): void {
+      this.spinner.show();
+    }
 }

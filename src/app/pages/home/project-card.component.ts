@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { Project } from 'src/app/models/project';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
@@ -39,7 +47,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
           <i-feather class="text-base-content/70" name="log-in" />
         </button>
         <button
-          (click)="removeProjectId.emit(this.project.id)"
+          (click)="removeProjectId.emit(this.projectSubject.getValue()!.id)"
           onclick="removeProjectModal.showModal()"
           class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
         >
@@ -49,7 +57,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
     </div>
   `,
 })
-export class ProjectCardComponent {
+export class ProjectCardComponent implements OnChanges {
   projectSubject = new BehaviorSubject<Project | null>(null);
   project$ = this.projectSubject.pipe(
     filter(isNotNull),
@@ -58,16 +66,14 @@ export class ProjectCardComponent {
       members: this.project.members.map((s) => ' ' + s),
     }))
   );
-  @Input({ required: true }) set project(project: Project) {
-    this.projectSubject.next(project);
-  }
+  @Input({ required: true }) project!: Project;
   @Input() role = '';
   @Output() removeProjectId = new EventEmitter<number>();
 
   router = inject(Router);
 
   handleCardClick() {
-    this.project$.pipe().subscribe({
+    this.project$.subscribe({
       next: (project) => {
         const studentPath = [this.role, 'p', project.id];
         const adviserPath = ['a', this.role, 'p', project.id];
@@ -75,5 +81,11 @@ export class ProjectCardComponent {
         this.router.navigate(this.role === 's' ? studentPath : adviserPath);
       },
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const newValue = changes['project'].currentValue as Project;
+
+    this.projectSubject.next(newValue);
   }
 }

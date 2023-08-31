@@ -16,6 +16,7 @@ import { MilestoneInfoComponent } from '../pages/project/pages/milestones/info.c
 import { HomePageComponent } from '../pages/home/home.component';
 import { ReportsComponent } from '../pages/home/reports.component';
 import { FormComponent } from '../pages/forms/form.component';
+import { Form3Component } from '../pages/forms/form-3.component';
 
 const routes: Routes = [
   {
@@ -109,7 +110,7 @@ const routes: Routes = [
                       },
                       {
                         path: '3',
-                        component: FormComponent,
+                        component: Form3Component,
                       },
                       {
                         path: '4',
