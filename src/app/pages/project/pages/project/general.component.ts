@@ -114,7 +114,6 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
             [checked]="isDone"
             [(ngModel)]="isDone"
             (change)="newIsDoneSubject.next(this.isDone)"
-            
           />
           <div class="text-base font-semibold">
             {{ isDone ? 'Done' : 'Not Done' }}
@@ -125,7 +124,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
     <add-participant-modal />
   `,
 })
-export class GeneralComponent {
+export class GeneralComponent implements OnInit {
   projectService = inject(ProjectService);
   spinner = inject(NgxSpinnerService);
   route = inject(ActivatedRoute);
@@ -251,31 +250,21 @@ export class GeneralComponent {
       },
     });
 
-  participants$ = this.projectService
-    .getParticipants(this.projectId)
-    .pipe(
-      tap((p) => {
-        if (p === null) {
-          this.spinner.show();
+  participants$ = this.projectService.getParticipants(this.projectId).pipe(
+    map((p) => {
+      if (p === null) {
+        return [];
+      }
 
-          return;
-        }
+      return p;
+    }),
+    tap(() => this.spinner.hide()),
+    catchError((err) => {
+      this.toastr.error('Error getting participants');
 
-        this.spinner.hide();
-      }),
-      map((p) => {
-        if (p === null) {
-          return [];
-        }
-
-        return p;
-      }),
-      catchError((err) => {
-        this.toastr.error('Error getting participants');
-
-        return EMPTY;
-      })
-    );
+      return EMPTY;
+    })
+  );
 
   handleRemoveButtonClick(userUid: string) {
     this.projectService
@@ -302,5 +291,9 @@ export class GeneralComponent {
     const user = this.user();
 
     return user !== null && participant.uid !== user.uid;
+  }
+
+  ngOnInit(): void {
+    this.spinner.show();
   }
 }

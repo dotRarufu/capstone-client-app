@@ -134,13 +134,13 @@ export class ProjectService {
     const advisers = this.client
       .from('project')
       .select('capstone_adviser_id, technical_adviser_id')
-      .eq('id', projectId);
+      .eq('id', projectId).single();
 
     return from(advisers).pipe(
       map((a) => {
         const { data } = errorFilter(a);
 
-        return data[0];
+        return data;
       })
     );
   }
@@ -151,10 +151,9 @@ export class ProjectService {
     // only for student,fort he add participant button
     // not intended for realtime sync with db
 
+    if (projectId < 0) return throwError(() =>  new Error('Invalid project id'));
+
     const res = this.newParticipant$.pipe(
-      map((_) => {
-        if (projectId < 0) throw new Error('Invalid project id');
-      }),
       switchMap(() => {
         const students = this.client
           .from('member')
@@ -170,6 +169,8 @@ export class ProjectService {
 
             if (advisers.technical_adviser_id !== null)
               ids.push(advisers.technical_adviser_id);
+
+            if (ids.length === 0) return of([])
 
             return forkJoin(ids.map((id) => this.authService.getUser(id)));
           })
