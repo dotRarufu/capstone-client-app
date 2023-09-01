@@ -7,7 +7,7 @@ import { TaskService } from 'src/app/services/task.service';
 import { ActivatedRoute } from '@angular/router';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { Task } from 'src/app/types/collection';
-import { from, switchMap } from 'rxjs';
+import { Observable, from, map, switchMap, tap } from 'rxjs';
 import { TotalTaskAssignmentReportComponent } from './total-task-assignment-report.component';
 import { ConsultationByCategoryReportComponent } from './consultation-by-category-report.component';
 
@@ -34,7 +34,7 @@ import { ConsultationByCategoryReportComponent } from './consultation-by-categor
             baseChart
             class="h-full w-full"
             [options]="barChartOptions"
-            [data]="taskByStatus"
+            [data]="(taskByStatus$ | async)!"
             [plugins]="barChartPlugins"
             type="bar"
           >
@@ -52,7 +52,7 @@ import { ConsultationByCategoryReportComponent } from './consultation-by-categor
           <canvas
             baseChart
             class=""
-            [data]="accomplishedMilestones"
+            [data]="(accomplishedMilestones$ | async)!"
             type="pie"
             [options]="pieChartOptions"
             [plugins]="pieChartPlugins"
@@ -77,104 +77,59 @@ export class ProjectReportsComponent {
   route = inject(ActivatedRoute);
   milestoneService = inject(MilestoneService);
 
-  accomplishedMilestones: ChartData<'pie', number[], string | string[]> = {
-    labels: [],
-    datasets: [
-      {
-        data: [],
-        // backgroundColor: ['#0b874b', '#3127b4'],
-      },
-    ],
-  };
+  projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
 
-  constructor() {
-    const projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
-    // this.taskService.getTaskCountByAdviser(0, projectId).subscribe({
-    //   next: (count) => {
-    //     this.taskByStatus.datasets[0].data[0] = count;
-    //     this.chart?.update();
-    //   },
-    // });
-    // this.taskService.getTaskCountByAdviser(1, projectId).subscribe({
-    //   next: (count) => {
-    //     this.taskByStatus.datasets[0].data[1] = count;
-    //     this.chart?.update();
-    //   },
-    // });
-    // this.taskService.getTaskCountByAdviser(2, projectId).subscribe({
-    //   next: (d) => {
-    //     // todo: create new chart for getTaskCountByAdviser,
-    //     // todo: create n ew service function for getTaskCount and totalTaskAssigned
-    //     // display task count assigned by advisers
-    //     // display getTaskCount and totalTaskAssigned
+  accomplishedMilestones$: Observable<
+    ChartData<'pie', number[], string | string[]>
+  > = this.milestoneService.getMilestones(this.projectId).pipe(
+    map((v) => {
+      const accomplished = v.filter((v) => v.is_achieved).length;
+      const unAccomplished = v.length - accomplished;
 
-    //     // tech ad
-    //     // doing tasks - 2
-    //     // done tasks -34
+      return { accomplished, unAccomplished };
+    }),
+    map(({ accomplished, unAccomplished }) => {
+      const newData = {
+        labels: ['Achieved', 'Unaccomplished'],
+        datasets: [
+          {
+            data: [accomplished, unAccomplished],
+            backgroundColor: ['#0b874b', '#3127b4'],
+          },
+        ],
+      };
 
-    //     // getTaskByStatus
+      return newData;
+    }),
+    tap((_) => this.chart?.update())
+  );
 
-    //     this.taskByStatus.datasets[0].data[2] = d.count;
-    //     this.chart?.update();
-    //   },
-    // });
-
-    this.taskService.getAllTasks(projectId).subscribe({
-      next: (tasks) => {
+  taskByStatus$: Observable<ChartConfiguration<'bar'>['data']> =
+    this.taskService.getAllTasks(this.projectId).pipe(
+      map((tasks) => {
         const todo = tasks.filter((t) => t.status_id === 0);
         const ongoing = tasks.filter((t) => t.status_id === 1);
         const done = tasks.filter((t) => t.status_id === 2);
 
-        this.taskByStatus.datasets[0].data[0] = todo.length;
-        this.taskByStatus.datasets[0].data[1] = ongoing.length;
-        this.taskByStatus.datasets[0].data[2] = done.length;
-
-        this.chart?.update();
-      },
-    });
-
-    this.milestoneService.getMilestones(projectId).subscribe({
-      next: (v) => {
-        const accomplished = v.filter((v) => v.is_achieved).length;
-        const unAccomplished = v.length - accomplished;
-
-        const newData = {
-          labels: ['Achieved', 'Unaccomplished'],
+        return { todo, ongoing, done };
+      }),
+      tap((_) => this.chart?.update()),
+      map(({ todo, ongoing, done }) => {
+        const data = {
+          labels: ['To Do', 'Done', 'On going'],
           datasets: [
             {
-              data: [accomplished, unAccomplished],
-              backgroundColor: ['#0b874b', '#3127b4'],
+              data: [todo.length, ongoing.length, done.length],
+              label: 'Tasks',
+              borderRadius: 3,
+              backgroundColor: '#3127b4',
             },
           ],
         };
-        this.accomplishedMilestones = newData;
-        this.chart?.update();
-      },
-      error: (err) => console.log('errs:', err),
-    });
-  }
 
-  taskByStatus: ChartConfiguration<'bar'>['data'] = {
-    labels: ['To Do', 'Done', 'On going'],
-    datasets: [
-      {
-        data: [],
-        label: 'Tasks',
-        borderRadius: 3,
-        backgroundColor: '#3127b4',
-      },
-    ],
-  };
-
-  totalTaskAssigmentData: ChartData<'pie', number[], string | string[]> = {
-    labels: [],
-    datasets: [
-      {
-        data: [],
-        backgroundColor: ['#0b874b', '#3127b4'],
-      },
-    ],
-  };
+        return data;
+      })
+    );
 
   barChartOptions: ChartConfiguration['options'] = {
     responsive: true,

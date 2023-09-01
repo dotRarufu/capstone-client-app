@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import {
+  EMPTY,
   Subject,
+  catchError,
   debounceTime,
   distinctUntilChanged,
+  filter,
   from,
   map,
   switchMap,
@@ -13,26 +16,32 @@ import {
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
 import { MilestoneData } from '../../../../types/collection';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
+import { isNotNull } from 'src/app/utils/isNotNull';
+import { CommonModule } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'milestone-info',
   standalone: true,
-  imports: [BreadcrumbModule, FormsModule],
+  imports: [BreadcrumbModule, ReactiveFormsModule, CommonModule],
   template: `
-    <div class=" flex flex-col gap-[16px] pt-[20px]">
+    <div
+      class=" flex flex-col gap-[16px] pt-[20px]"
+      *ngIf="{ isCapstoneAdviser: isCapstoneAdviser$ | async } as observables"
+    >
       <div class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Title</div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <input
           type="text"
-          [disabled]="!isCapstoneAdviser"
-          [(ngModel)]="title"
-          (change)="handleTitleChange()"
+          [disabled]="!observables.isCapstoneAdviser"
+          [formControl]="title"
+          (change)="this.newTitle$.next(this.title.value)"
           placeholder="Type here"
-          class="input-bordered input bg-base-300/80 input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
+          class="input-bordered input input-md w-full rounded-[3px] bg-base-300/80 focus:input-primary  focus:outline-0"
         />
       </div>
 
@@ -41,18 +50,18 @@ import { getRolePath } from 'src/app/utils/getRolePath';
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <textarea
           type="text"
-          [(ngModel)]="description"
-          [disabled]="!isCapstoneAdviser"
-          (change)="handleDescriptionChange()"
+          [formControl]="description"
+          [disabled]="!observables.isCapstoneAdviser"
+          (change)="this.newDescription$.next(this.description.value)"
           placeholder="Type here"
-          class="textarea-bordered bg-base-300/80 textarea input-md h-[144px] w-full rounded-[3px] focus:textarea-primary focus:outline-0"
+          class="textarea-bordered textarea input-md h-[144px] w-full rounded-[3px] bg-base-300/80 focus:textarea-primary focus:outline-0"
         ></textarea>
       </div>
 
       <div class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Due Date</div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-        <div>{{ dueDate }}</div>
+        <div>{{ milestoneDataSignal().dueDate }}</div>
       </div>
 
       <div class="flex flex-col gap-[4px]">
@@ -62,9 +71,9 @@ import { getRolePath } from 'src/app/utils/getRolePath';
           <input
             type="checkbox"
             [checked]="isAchieved"
-            [disabled]="!isCapstoneAdviser"
-            [(ngModel)]="isAchieved"
-            (change)="handleIsAchievedChange()"
+            [disabled]="!observables.isCapstoneAdviser"
+            [formControl]="isAchieved"
+            (change)="this.newIsAchieved$.next(this.isAchieved.value)"
             class="toggle-success toggle"
           />
           <div class="text-base font-semibold">
@@ -83,7 +92,7 @@ import { getRolePath } from 'src/app/utils/getRolePath';
         </div>
         <button
           (click)="handleDeleteMilestone()"
-          class="btn-sm btn btn-error rounded-[5px] gap-2 hover:btn-error"
+          class="btn-error btn-sm btn gap-2 rounded-[5px] hover:btn-error"
         >
           Delete
         </button>
@@ -91,160 +100,127 @@ import { getRolePath } from 'src/app/utils/getRolePath';
     </div>
   `,
 })
-export class MilestoneInfoComponent implements OnInit {
-  id = -1;
-  title = '';
-  description = '';
-  dueDate = '';
-  isAchieved = false;
-  isCapstoneAdviser = false;
+export class MilestoneInfoComponent {
+  breadcrumb = inject(BreadcrumbService);
+  milestoneService = inject(MilestoneService);
+  route = inject(ActivatedRoute);
+  router = inject(Router);
+  toastr = inject(ToastrService);
+  authService = inject(AuthService);
+
+  title = new FormControl('', { nonNullable: true });
+  description = new FormControl('', { nonNullable: true });
+  isAchieved = new FormControl(false, { nonNullable: true });
+
+  isCapstoneAdviser$ = this.authService.getAuthenticatedUser().pipe(
+    filter(isNotNull),
+    map((user) => getRolePath(user.role_id) === 'c')
+  );
+
   newTitle$ = new Subject<string>();
   newDescription$ = new Subject<string>();
   newIsAchieved$ = new Subject<boolean>();
 
-  constructor(
-    private breadcrumb: BreadcrumbService,
-    private milestoneService: MilestoneService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private toastr: ToastrService,
-    private authService: AuthService
-  ) {}
-
-  ngOnInit(): void {
-    this.newTitle$
-      .pipe(
-        debounceTime(3000),
-        distinctUntilChanged(),
-        switchMap((newTitle) =>
-          this.milestoneService.update(this.id, {
-            title: newTitle,
-          })
-        )
-      )
-      .subscribe({
-        next: (res) => {
-          this.breadcrumb.set('@milestoneId', res.title);
-          this.toastr.success(
-            'successfully changed milestone title to ' + res.title
-          );
-        },
-        error: () => {
-          this.toastr.error('error changing milestone title');
-        },
-      });
-
-    this.newDescription$
-      .pipe(
-        debounceTime(3000),
-        distinctUntilChanged(),
-        switchMap((newDescription) =>
-          this.milestoneService.update(this.id, {
-            description: newDescription,
-          })
-        )
-      )
-      .subscribe({
-        next: (res) => {
-          this.toastr.success(
-            'successfully changed milestone description to ' + res.description
-          );
-        },
-        error: () => {
-          this.toastr.error('error changing milestone description');
-        },
-      });
-
-    this.newIsAchieved$
-      .pipe(
-        debounceTime(1000),
-        distinctUntilChanged(),
-        switchMap((newIsAchieved) =>
-          this.milestoneService.update(this.id, {
-            is_achieved: newIsAchieved,
-          })
-        )
-      )
-      .subscribe({
-        next: (res) => {
-          this.toastr.success(
-            'successfully changed milestone data is achieved to ' +
-              res.is_achieved
-          );
-        },
-        error: () => {
-          this.toastr.error('error changing milestone data is achieved');
-        },
-      });
-
-    const user$ = this.authService.getAuthenticatedUser();
-    user$
-      .pipe(
-        map((user) => {
-          if (user === null) throw new Error('no authenticated user');
-
-          return user;
+  newIsAchievedSubscription = this.newIsAchieved$
+    .pipe(
+      debounceTime(1000),
+      distinctUntilChanged(),
+      switchMap((newIsAchieved) =>
+        this.milestoneService.update(this.milestoneDataSignal().id, {
+          is_achieved: newIsAchieved,
         })
       )
-      .subscribe({
-        next: (user) => {
-          this.isCapstoneAdviser = getRolePath(user.role_id) === 'c';
-        },
-      });
+    )
+    .subscribe({
+      next: (res) => {
+        this.toastr.success(
+          'successfully changed milestone data is achieved to ' +
+            res.is_achieved
+        );
+      },
+      error: () => {
+        this.toastr.error('error changing milestone data is achieved');
+      },
+    });
 
-    this.watchMilestoneId();
-  }
-
-  watchMilestoneId() {
-    this.route.url
-      .pipe(
-        map((url) => Number(url[0].path)),
-        switchMap((milestoneId) =>
-          this.milestoneService.getMilestoneData(milestoneId)
-        )
+  newDescriptionIsAchieved = this.newDescription$
+    .pipe(
+      debounceTime(3000),
+      distinctUntilChanged(),
+      switchMap((newDescription) =>
+        this.milestoneService.update(this.milestoneDataSignal().id, {
+          description: newDescription,
+        })
       )
-      .subscribe({
-        next: (d) => {
-          this.breadcrumb.set('@milestoneId', d.title);
+    )
+    .subscribe({
+      next: (res) => {
+        this.toastr.success(
+          'successfully changed milestone description to ' + res.description
+        );
+      },
+      error: () => {
+        this.toastr.error('error changing milestone description');
+      },
+    });
 
-          this.title = d.title;
-          this.description = d.description;
-          this.dueDate = d.due_date;
-          this.isAchieved = !!d.is_achieved;
-          this.id = d.milestone_id;
-        },
-        error: (err) => {
-          this.toastr.error('error getting milestone data');
-        },
-      });
-  }
+  newTitleSubscription = this.newTitle$
+    .pipe(
+      debounceTime(3000),
+      distinctUntilChanged(),
+      switchMap((newTitle) =>
+        this.milestoneService.update(this.milestoneDataSignal().id, {
+          title: newTitle,
+        })
+      )
+    )
+    .subscribe({
+      next: (res) => {
+        this.breadcrumb.set('@milestoneId', res.title);
+        this.toastr.success(
+          'successfully changed milestone title to ' + res.title
+        );
+      },
+      error: () => {
+        this.toastr.error('error changing milestone title');
+      },
+    });
 
-  handleDescriptionChange() {
-    this.newDescription$.next(this.description);
-  }
+  milestoneData$ = this.route.url.pipe(
+    map((url) => Number(url[0].path)),
+    switchMap((milestoneId) =>
+      this.milestoneService.getMilestoneData(milestoneId)
+    ),
+    tap((d) => {
+      this.breadcrumb.set('@milestoneId', d.title);
 
-  handleTitleChange() {
-    this.newTitle$.next(this.title);
-  }
+      this.title.setValue(d.title);
+      this.description.setValue(d.description);
+      this.isAchieved.setValue(!!d.is_achieved);
+      
+    }),
+    catchError((err) => {
+      this.toastr.error('error getting milestone data:', err);
 
-  handleIsAchievedChange() {
-    this.newIsAchieved$.next(this.isAchieved);
-  }
+      return EMPTY;
+    })
+  );
+  milestoneDataSignal = toSignal(this.milestoneData$.pipe(map(({id, due_date}) => ({id, dueDate: due_date}))), {
+    initialValue: {
+      id: -1,
+      dueDate: ""
+    }
+  });
 
   handleDeleteMilestone() {
-    console.log("delete click: ", this.id);
-    this.milestoneService.delete(this.id).subscribe({
+    this.milestoneService.delete(this.milestoneDataSignal().id).subscribe({
       next: () => {
         this.toastr.success('successfully deleted a milestone');
-        this.navigateToMilestones();
+        this.router.navigate(['../../milestones'], { relativeTo: this.route });
       },
       error: () => {
         this.toastr.error('failed to delete a milestone');
       },
     });
-  }
-
-  navigateToMilestones() {
-    this.router.navigate(['../../milestones'], { relativeTo: this.route });
   }
 }

@@ -1,13 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { ToastrService } from 'ngx-toastr';
+import { Component } from '@angular/core';
 import { ParticipantCardComponent } from 'src/app/pages/project/pages/project/participant-card.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
-import { ProjectService } from 'src/app/services/project.service';
-import { User } from 'src/app/types/collection';
 import { AddParticipantModalComponent } from './add-participant-modal.component';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import {  RouterModule } from '@angular/router';
 
 @Component({
   selector: 'project',
@@ -72,7 +68,5 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
   `,
 })
 export class ProjectComponent {
-  constructor() {
-    console.log('project omponent renders');
-  }
+
 }

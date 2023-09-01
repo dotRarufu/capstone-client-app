@@ -154,7 +154,7 @@ export class MilestonesComponent {
     milestones: Milestone[],
     isCapstoneAdviser: boolean
   ) {
-    console.log("tjos runs:", capstoneAdviser, milestones, isCapstoneAdviser)
+
     if (isCapstoneAdviser) {
       if (milestones.length === 0) {
         return "No milestones";

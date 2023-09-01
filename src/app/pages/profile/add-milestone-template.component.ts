@@ -1,16 +1,17 @@
 import { Component, inject } from '@angular/core';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { from, map, switchMap } from 'rxjs';
+import { filter, from, map, switchMap } from 'rxjs';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
+import { isNotNull } from 'src/app/utils/isNotNull';
 
 @Component({
   selector: 'add-milestone-template-modal',
   standalone: true,
-  imports: [ModalComponent, FeatherIconsModule, FormsModule],
+  imports: [ModalComponent, FeatherIconsModule, ReactiveFormsModule],
   template: `
     <modal inputId="addMilestone">
       <div
@@ -19,7 +20,7 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
         <div class="flex justify-between bg-primary p-[24px]">
           <div class="flex w-full flex-col justify-between">
             <input
-              [(ngModel)]="title"
+              [formControl]="title"
               type="text"
               placeholder="Milestone Title"
               class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
@@ -40,7 +41,7 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <textarea
-              [(ngModel)]="description"
+              [formControl]="description"
               class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
               placeholder="Description"
             ></textarea>
@@ -53,7 +54,7 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
 
             <input
               type="date"
-              [(ngModel)]="dueDate"
+              [formControl]="dueDate"
               class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-base-100 px-3 py-2 text-[20px] text-base text-base-content/70 placeholder:text-[20px] placeholder:text-base-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
             />
           </div>
@@ -83,9 +84,10 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
   `,
 })
 export class AddMilestoneTemplateModalComponent {
-  title = '';
-  description = '';
-  dueDate = '';
+  title = new FormControl('', {nonNullable: true});
+  description = new FormControl('', {nonNullable: true});
+  dueDate = new FormControl('', {nonNullable: true});
+
   authService = inject(AuthService);
   milestoneService = inject(MilestoneService);
   toastr = inject(ToastrService);
@@ -93,31 +95,27 @@ export class AddMilestoneTemplateModalComponent {
   handleDoneClick() {
     const user$ = this.authService.getAuthenticatedUser();
     const status$ = user$.pipe(
-      map((user) => {
-        if (user === null) throw new Error('asdasdsa');
-
-        return user.uid;
-      }),
-      switchMap((userId) =>
-        this.milestoneService.addTemplate(userId, {
-          title: this.title,
-          description: this.description,
-          dueDate: this.dueDate,
+      filter(isNotNull),
+      switchMap(({uid}) =>
+        this.milestoneService.addTemplate(uid, {
+          title: this.title.value,
+          description: this.description.value,
+          dueDate: this.dueDate.value,
         })
       )
     );
 
     status$.subscribe({
       next: (status) => {
-        console.log('runs 123');
+
         this.toastr.success(status);
       },
       error: (err) => {
-        console.log('runs error');
+
         this.toastr.error(err);
       },
       complete: () => {
-        console.log('completed');
+
       },
     });
   }

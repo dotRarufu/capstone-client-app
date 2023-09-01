@@ -6,13 +6,14 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 import { ProjectService } from 'src/app/services/project.service';
 import { ActivatedRoute } from '@angular/router';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
+// import {} from 'validator';
 
 @Component({
   selector: 'add-participant-modal',
   standalone: true,
   imports: [ModalComponent, FeatherIconsModule, ReactiveFormsModule],
   template: `
-    <modal inputId="addParticipant" (closed)="handleClosedEvent()">
+    <modal inputId="addParticipant" (closed)="this.userUid.reset()">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -83,7 +84,5 @@ export class AddParticipantModalComponent {
     });
   }
 
-  handleClosedEvent() {
-    this.userUid.reset();
-  }
+
 }

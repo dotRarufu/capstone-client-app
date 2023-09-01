@@ -28,7 +28,7 @@ import { ArchivedMarkComponent } from './archived-mark.component';
         <navigation-rail />
       </div>
 
-      <archived-mark *ngIf="isInArchive()" />
+      <archived-mark *ngIf="isInArchive$ | async" />
 
       <div class="basis-[64px] min-[998px]:hidden">
         <mobile-header />
@@ -52,41 +52,14 @@ import { ArchivedMarkComponent } from './archived-mark.component';
     <spinner />
   `,
 })
-export class ProjectPageComponent implements OnInit {
-  urls: string[] = [];
-  toastId: number | null = null;
-  isDesktop = false;
-  isInArchive = signal(false);
-
+export class ProjectPageComponent {
   toastrService = inject(ToastrService);
   projectService = inject(ProjectService);
   router = inject(Router);
   route = inject(ActivatedRoute);
 
-  ngOnInit() {
-    this.watchWindowSize();
-
-    const projectId = Number(this.route.snapshot.url[0].path);
-    this.projectService.getProjectInfo(projectId).subscribe({
-      next: (p) => {
-        this.isInArchive.set(p.is_done);
-      },
-    });
-
-    this.route.url.subscribe({
-      next: (url) => {
-        this.urls = url.map((u) => u.path);
-      },
-    });
-  }
-
-  watchWindowSize() {
-    const windowResize$ = fromEvent(window, 'resize');
-    this.isDesktop = window.innerWidth >= 1240;
-    windowResize$.pipe(map((_) => window.innerWidth)).subscribe({
-      next: (width) => {
-        this.isDesktop = width >= 1240;
-      },
-    });
-  }
+  projectId = Number(this.route.snapshot.url[0].path);
+  isInArchive$ = this.projectService
+    .getProjectInfo(this.projectId)
+    .pipe(map((p) => p.is_done));
 }

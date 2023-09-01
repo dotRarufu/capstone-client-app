@@ -89,10 +89,8 @@ export class Form3Component {
       this.spinner.hide();
 
       return EMPTY;
-    }),
-    finalize(() => {
-      console.log('COMPLETES!');
     })
+    
   );
 
   handleDateClick(unix: number) {

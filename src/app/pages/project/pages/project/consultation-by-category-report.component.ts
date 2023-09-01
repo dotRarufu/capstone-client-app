@@ -7,7 +7,7 @@ import { TaskService } from 'src/app/services/task.service';
 import { ActivatedRoute } from '@angular/router';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { Task } from 'src/app/types/collection';
-import { from, switchMap } from 'rxjs';
+import { Observable, from, map, switchMap, tap } from 'rxjs';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -26,7 +26,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
           baseChart
           class="h-full w-full"
           [options]="barChartOptions"
-          [data]="data"
+          [data]="(data$ | async)!"
           [plugins]="barChartPlugins"
           type="bar"
         >
@@ -40,49 +40,39 @@ export class ConsultationByCategoryReportComponent {
   consultationService = inject(ConsultationService);
   route = inject(ActivatedRoute);
 
-  constructor() {
-    const projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
+  projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
 
-    this.consultationService
-      .getAllConsultations(projectId)
-      .pipe(takeUntilDestroyed())
-      .subscribe({
-        next: (consultations) => {
-          const pending = consultations.filter(
-            (c) => c.category_id === 0
-          ).length;
-          const scheduled = consultations.filter(
-            (c) => c.category_id === 1
-          ).length;
-          const completed = consultations.filter(
-            (c) => c.category_id === 2
-          ).length;
-          const declined = consultations.filter(
-            (c) => c.category_id === 3
-          ).length;
+  data$: Observable<ChartConfiguration<'bar'>['data']> =
+    this.consultationService.getAllConsultations(this.projectId).pipe(
+      takeUntilDestroyed(),
+      tap((_) => this.chart?.update()),
+      map((consultations) => {
+        const pending = consultations.filter((c) => c.category_id === 0).length;
+        const scheduled = consultations.filter(
+          (c) => c.category_id === 1
+        ).length;
+        const completed = consultations.filter(
+          (c) => c.category_id === 2
+        ).length;
+        const declined = consultations.filter(
+          (c) => c.category_id === 3
+        ).length;
 
-          this.data.datasets[0].data = [
-            pending,
-            scheduled,
-            completed,
-            declined,
-          ];
-          this.chart?.update();
-        },
-      });
-  }
+        const newData = {
+          labels: ['Pending', 'Scheduled', 'Completed', 'Declined'],
+          datasets: [
+            {
+              data: [pending, scheduled, completed, declined],
+              label: 'Consultations',
+              borderRadius: 3,
+              backgroundColor: '#3127b4',
+            },
+          ],
+        };
 
-  data: ChartConfiguration<'bar'>['data'] = {
-    labels: ['Pending', 'Scheduled', 'Completed', 'Declined'],
-    datasets: [
-      {
-        data: [],
-        label: 'Consultations',
-        borderRadius: 3,
-        backgroundColor: '#3127b4',
-      },
-    ],
-  };
+        return newData;
+      })
+    );
 
   barChartOptions: ChartConfiguration['options'] = {
     responsive: true,

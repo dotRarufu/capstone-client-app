@@ -149,6 +149,7 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class SignupComponent {
   @Output() toLogin = new EventEmitter<void>();
+
   email = new FormControl('', { nonNullable: true });
   password = new FormControl('', { nonNullable: true });
   studentNumber = new FormControl('', { nonNullable: true });

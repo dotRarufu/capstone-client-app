@@ -49,9 +49,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
       <accordion *ngFor="let c of consultations" [heading]="c.category">
         <div class="flex flex-wrap justify-start gap-[24px]">
           <consultation-card
-            *ngFor="let data of c.items"
+            *ngFor="let data of c.items | async"
             [data]="data"
-            (click)="handleCardClick(data)"
+            (click)="this.consultationStateService.setActiveConsultation(data)"
             [buttonId]="c.buttonId"
           >
             <!-- todo: add slot for controls -->
@@ -100,36 +100,44 @@ export class ConsultationsComponent {
   consultationStateService = inject(ConsultationStateService);
   destroyRef = inject(DestroyRef);
 
+  projectId = Number(this.route.parent!.snapshot.url[0].path);
+
   role = this.route.snapshot.data['role'];
-  consultations: {
-    category: string;
-    items: Consultation[];
-    buttonId?: string;
-  }[] = [
+  consultations = [
     {
       category: 'Pending',
-      items: [],
+      items: this.consultationService
+        .getConsultations(0, this.projectId)
+        .pipe(takeUntilDestroyed(this.destroyRef)),
       buttonId: this.getButtonIdForPendingAccordion(),
     },
     {
       category: 'Scheduled',
-      items: [],
+      items: this.consultationService
+        .getConsultations(1, this.projectId)
+        .pipe(takeUntilDestroyed(this.destroyRef)),
       buttonId: this.role === 't' ? 'techAdScheduled' : '',
     },
     {
       category: 'Completed',
-      items: [],
+      items: this.consultationService
+        .getConsultations(2, this.projectId)
+        .pipe(takeUntilDestroyed(this.destroyRef)),
       buttonId: this.role === 't' ? 'techAdCompleted' : '',
     },
-    { category: 'Declined', items: [] },
+    {
+      category: 'Declined',
+      items: this.consultationService
+        .getConsultations(3, this.projectId)
+        .pipe(takeUntilDestroyed(this.destroyRef)),
+    },
   ];
 
   handleInvitation(decision: boolean) {
     const activeConsultation =
-      this.consultationStateService.getActiveConsultation();
+      this.consultationStateService.getActiveConsultation()!;
 
-    if (activeConsultation === null)
-      throw new Error('should be nmpossible, no consultation is selected');
+
 
     const id = activeConsultation.id;
 
@@ -144,65 +152,16 @@ export class ConsultationsComponent {
   }
 
   cancelInvitation() {
-    const consultation = this.consultationStateService.getActiveConsultation();
+    const consultation = this.consultationStateService.getActiveConsultation()!;
 
-    if (consultation === null)
-      throw new Error('cant cancel invitation without an active one');
+
     this.consultationService.cancelInvitation(consultation.id).subscribe({
       next: (res) => this.toastr.success(res),
       error: (res) => this.toastr.error(res),
     });
   }
 
-  ngOnInit() {
-    const projectId = Number(this.route.parent!.snapshot.url[0].path);
-    // todo: refactor these
-    const scheduled$ = this.consultationService
-      .getConsultations(1, projectId)
-      .pipe(takeUntilDestroyed(this.destroyRef));
-    const pending$ = this.consultationService
-      .getConsultations(0, projectId)
-      .pipe(takeUntilDestroyed(this.destroyRef));
-    const completed$ = this.consultationService
-      .getConsultations(2, projectId)
-      .pipe(takeUntilDestroyed(this.destroyRef));
-    const rejected$ = this.consultationService
-      .getConsultations(3, projectId)
-      .pipe(takeUntilDestroyed(this.destroyRef));
 
-    scheduled$.subscribe({
-      next: (consultations) => {
-        const scheduled = this.consultations[1];
-        // maybe make this non mutated
-        scheduled.items = consultations;
-      },
-    });
-    pending$.subscribe({
-      next: (consultations) => {
-        const pending = this.consultations[0];
-        // maybe make this non mutated
-        pending.items = consultations;
-      },
-    });
-    completed$.subscribe({
-      next: (consultations) => {
-        const completed = this.consultations[2];
-        // maybe make this non mutated
-        completed.items = consultations;
-      },
-    });
-    rejected$.subscribe({
-      next: (consultations) => {
-        const rejected = this.consultations[3];
-        // maybe make this non mutated
-        rejected.items = consultations;
-      },
-    });
-  }
-
-  handleCardClick(data: Consultation) {
-    this.consultationStateService.setActiveConsultation(data);
-  }
 
   getButtonIdForPendingAccordion() {
     switch (this.role) {

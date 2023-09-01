@@ -11,7 +11,7 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import {  Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { User } from '../types/collection';
 import supabaseClient from '../lib/supabase';
 import errorFilter from '../utils/errorFilter';
@@ -262,12 +262,12 @@ export class AuthService {
       .from('avatars')
       .getPublicUrl(uid + '.png');
 
-    const req = this.client.from('user').select('*').eq('uid', uid);
+    const req = this.client.from('user').select('*').eq('uid', uid).single();
     const req$ = from(req).pipe(
       map((res) => {
         const { data } = errorFilter(res);
 
-        return data[0];
+        return data;
       }),
       map(({ name, role_id, uid, avatar_last_update }) => ({
         name,
@@ -349,9 +349,7 @@ export class AuthService {
           uid: id,
           avatar_last_update: user.avatar_last_update,
         })),
-        tap((loggedInUser) => 
-          this.userSubject.next(loggedInUser)
-        )
+        tap((loggedInUser) => this.userSubject.next(loggedInUser))
       )
       .subscribe({
         next: () => {},

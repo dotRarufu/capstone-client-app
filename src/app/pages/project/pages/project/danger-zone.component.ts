@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { from, map, switchMap } from 'rxjs';
+import { filter, from, map, switchMap, tap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProjectService } from 'src/app/services/project.service';
-import { User } from 'src/app/types/collection';
 import { getRolePath } from 'src/app/utils/getRolePath';
+import { isNotNull } from 'src/app/utils/isNotNull';
 
 @Component({
   selector: 'danger-zone',
@@ -45,39 +45,53 @@ import { getRolePath } from 'src/app/utils/getRolePath';
     </div>
   `,
 })
-export class DangerZoneComponent implements OnInit {
-  projectId = -1;
-  user: User | null = null;
+export class DangerZoneComponent {
+  projectService = inject(ProjectService);
+  route = inject(ActivatedRoute);
+  toastr = inject(ToastrService);
+  authService = inject(AuthService);
+  router = inject(Router);
 
-  constructor(
-    private projectService: ProjectService,
-    private route: ActivatedRoute,
-    private toastr: ToastrService,
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
+  user$ = this.authService.getAuthenticatedUser().pipe(
+    map((user) => {
+      if (user === null) throw new Error('no authenticated user');
 
-    navigateToHome() {
-      if (this.user === null) throw new Error('impossible');
-      // move this inside a pipe
-      if (this.user.role_id === null) throw new Error('user has no role id');
+      return user;
+    })
+  );
 
-      const rolePath = getRolePath(this.user.role_id);
+  navigateToHome() {
+    this.user$
+      .pipe(
+        filter(isNotNull),
+        map((user) => {
+          if (user.role_id === null) throw new Error('user has no role id');
 
-      if (rolePath === 's') {
-        this.router.navigate([rolePath, 'home']);
-        return;
-      }
+          const rolePath = getRolePath(user.role_id);
 
-      this.router.navigate(['a', rolePath, 'home']);
-    }
+          return rolePath;
+        })
+      )
+      .subscribe({
+        next: (rolePath) => {
+          if (rolePath === 's') {
+            this.router.navigate([rolePath, 'home']);
+            return;
+          }
+
+          this.router.navigate(['a', rolePath, 'home']);
+        },
+        error: (err) => this.toastr.error(err),
+      });
+  }
 
   handleDeleteProject() {
     this.projectService.deleteProject(this.projectId).subscribe({
       next: () => {
         this.toastr.success('project successfully deleted');
 
-       this.navigateToHome();
+        this.navigateToHome();
       },
       error: (err) => {
         console.log('error:', err);
@@ -87,36 +101,24 @@ export class DangerZoneComponent implements OnInit {
   }
 
   handleLeaveProject() {
-    if (this.user === null) throw new Error('impossible');
-
-    this.projectService
-      .removeProjectParticipant(this.user.uid, this.projectId, true)
+    this.user$
+      .pipe(
+        filter(isNotNull),
+        switchMap((user) =>
+          this.projectService.removeProjectParticipant(
+            user.uid,
+            this.projectId,
+            true
+          )
+        )
+      )
       .subscribe({
         next: () => {
           this.toastr.success('successfully left the project');
           this.navigateToHome();
-
         },
         error: () => {
           this.toastr.error('failed to leave the project');
-        },
-      });
-  }
-
-  ngOnInit(): void {
-    this.projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
-
-    this.authService.getAuthenticatedUser()
-      .pipe(
-        map((user) => {
-          if (user === null) throw new Error('no authenticated user');
-
-          return user;
-        })
-      )
-      .subscribe({
-        next: (user) => {
-          this.user = user;
         },
       });
   }

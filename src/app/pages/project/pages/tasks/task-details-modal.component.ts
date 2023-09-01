@@ -1,8 +1,4 @@
-import {
-  Component,
-  signal,
-  inject,
-} from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -11,6 +7,8 @@ import { ToastrService } from 'ngx-toastr';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { TaskStateService } from './data-access/tasks-state.service';
+import { filter } from 'rxjs';
+import { isNotNull } from 'src/app/utils/isNotNull';
 
 @Component({
   selector: 'task-details-modal',
@@ -157,9 +155,7 @@ export class TaskDetailsModalComponent {
   handleDeleteClick() {
     const task = this.taskStateService.getActiveTask();
 
-    if (task === null) throw new Error('shuld be impossible');
-
-    this.taskService.delete(task.id, task.assigner_id).subscribe({
+    this.taskService.delete(task!.id, task!.assigner_id).subscribe({
       next: (status) => {
         this.toastr.success(status);
       },

@@ -68,10 +68,8 @@ export class Form4Component implements OnInit {
       this.spinner.hide();
 
       return EMPTY;
-    }),
-    finalize(() => {
-      console.log('COMPLETES!');
     })
+    
   );
 
   ngOnInit(): void {

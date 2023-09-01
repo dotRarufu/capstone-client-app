@@ -43,18 +43,10 @@ import { isNotNull } from 'src/app/utils/isNotNull';
 })
 export class TaskCardComponent implements OnChanges {
   @Input() setActiveTask: null | ((t: Task) => void) = null;
-  @Input({ required: true }) task: Task = {
-    assigner_id: '',
-    description: '',
-    id: 0,
-    date_added: 0,
-    project_id: 0,
-    status_id: 0,
-    title: '',
-  };
-  
+  @Input({ required: true }) task!: Task;
+
   taskSubject = new BehaviorSubject<Task | null>(null);
- 
+
   authService = inject(AuthService);
   adviserName$ = this.taskSubject.pipe(
     filter(isNotNull),

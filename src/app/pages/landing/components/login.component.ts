@@ -83,7 +83,7 @@ import { SpinnerComponent } from 'src/app/components/spinner.component';
   `,
 })
 export class LoginComponent {
-  @Output() toSignUp: EventEmitter<void> = new EventEmitter<void>();
+  @Output() toSignUp = new EventEmitter<void>();
   email = new FormControl('', { nonNullable: true });
   password = new FormControl('', { nonNullable: true });
 
@@ -127,24 +127,5 @@ export class LoginComponent {
           this.toastr.error('Login failed');
         },
       });
-    //   const user$ = this.getAuthenticatedUser();
-    //   user$
-    //     .pipe(
-    //       filter(isNotNull),
-    //       map((user) => getRolePath(user.role_id))
-    //     )
-    //     .subscribe({
-    //       next: (rolePath) => {
-    //         if (rolePath !== 's') {
-    //           this.router.navigate(['a', rolePath, 'home']);
-
-    //           return;
-    //         }
-
-    //         this.router.navigate([rolePath, 'home']);
-
-    //         this.spinner.hide();
-    //       },
-    //     });
   }
 }

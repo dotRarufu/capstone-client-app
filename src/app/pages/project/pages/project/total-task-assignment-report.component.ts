@@ -7,9 +7,8 @@ import { TaskService } from 'src/app/services/task.service';
 import { ActivatedRoute } from '@angular/router';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { Task } from 'src/app/types/collection';
-import { forkJoin, from, map, switchMap } from 'rxjs';
+import { Observable, forkJoin, from, map, switchMap, tap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-
 
 @Component({
   selector: 'total-task-assignment-report',
@@ -27,7 +26,7 @@ import { AuthService } from 'src/app/services/auth.service';
           baseChart
           #totalTaskAssignmentChart
           class=" w-full"
-          [data]="totalTaskAssigmentData"
+          [data]="(totalTaskAssigmentData$ | async)!"
           type="pie"
           [options]="pieChartOptions"
           [plugins]="pieChartPlugins"
@@ -50,58 +49,51 @@ export class TotalTaskAssignmentReportComponent {
   milestoneService = inject(MilestoneService);
   authService = inject(AuthService);
 
-  SetupTotalTaskAssigment(advisers: Set<string>, tasks: Task[]) {
-    const reqs$ = [...advisers].map((a) => this.authService.getUser(a));
+  projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
 
-    const roledAdvisers$ = forkJoin(reqs$);
-    const res$ = roledAdvisers$.pipe(
-      map((a) =>
-        a.map((b) => {
-          const role =
-            b.role_id === 1 ? 'Capstone Adviser' : 'Technical Adviser';
-          const count = tasks.filter((t) => t.assigner_id === b.uid).length;
+  totalTaskAssigmentData$: Observable<
+    ChartData<'pie', number[], string | string[]>
+  > = this.taskService.getAllTasks(this.projectId).pipe(
+    map((tasks) => {
+      const advisers = new Set<string>();
+      tasks.forEach((t) => advisers.add(t.assigner_id));
 
-          return {
-            role,
-            count,
-          };
-        })
-      )
-    );
+      return { advisers, tasks };
+    }),
+    switchMap(({ advisers, tasks }) => {
+      const reqs$ = [...advisers].map((a) => this.authService.getUser(a));
+      const roledAdvisers$ = forkJoin(reqs$);
 
-    res$.subscribe({
-      next: (r) => {
-        r.forEach((a) => {
-          this.totalTaskAssigmentData.labels?.push(a.role);
-          this.totalTaskAssigmentData.datasets[0].data.push(a.count);
-        });
-        this.chart?.update();
-      },
-    });
-  }
+      return roledAdvisers$.pipe(
+        map((a) =>
+          a.map((b) => {
+            const role =
+              b.role_id === 1 ? 'Capstone Adviser' : 'Technical Adviser';
+            const count = tasks.filter((t) => t.assigner_id === b.uid).length;
 
-  constructor() {
-    const projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
+            return {
+              role,
+              count,
+            };
+          })
+        )
+      );
+    }),
+    map((r) => {
+      const data = {
+        labels: [...r].map((a) => a.role),
+        datasets: [
+          {
+            data: [...r].map((a) => a.count),
+            backgroundColor: ['#0b874b', '#3127b4'],
+          },
+        ],
+      };
 
-    this.taskService.getAllTasks(projectId).subscribe({
-      next: (tasks) => {
-        const advisers = new Set<string>();
-        tasks.forEach((t) => advisers.add(t.assigner_id));
-
-        this.SetupTotalTaskAssigment(advisers, tasks);
-      },
-    });
-  }
-
-  totalTaskAssigmentData: ChartData<'pie', number[], string | string[]> = {
-    labels: [],
-    datasets: [
-      {
-        data: [],
-        backgroundColor: ['#0b874b', '#3127b4'],
-      },
-    ],
-  };
+      return data;
+    }),
+    tap(() => this.chart?.update())
+  );
 
   pieChartOptions: ChartConfiguration['options'] = {
     responsive: true,

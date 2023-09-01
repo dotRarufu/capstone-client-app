@@ -40,9 +40,7 @@ import { ToastrService } from 'ngx-toastr';
           alt=""
         />
       </div>
-      <div class="absolute right-4 bottom-4 text-sm">
-        Version 0.0.1
-      </div>
+      <div class="absolute bottom-4 right-4 text-sm">Version 0.0.1</div>
     </div>
   `,
 })
@@ -58,24 +56,24 @@ export class LandingComponent implements OnInit {
 
   ngOnInit() {
     this.spinner.show();
-    this.user$.pipe(
-      tap(_ => this.spinner.hide()),
-      filter(isNotNull)).subscribe({
-      next: (user) => {
-        const role = getRolePath(user.role_id);
-        console.log('role:', role);
-        if (role === 's') {
-          // this.ngZone.run(() => this.router.navigate(['s']));
-          this.router.navigate(['s'])
+    this.user$
+      .pipe(
+        tap((_) => this.spinner.hide()),
+        filter(isNotNull)
+      )
+      .subscribe({
+        next: (user) => {
+          const role = getRolePath(user.role_id);
+          console.log('role:', role);
+          if (role === 's') {
+            this.router.navigate(['s']);
 
-          return;
-        }
+            return;
+          }
 
-
-        this.router.navigate(['a', role]);
-        this.toastr.success('Welcome back ' + user.name);
-
-      },
-    });
+          this.router.navigate(['a', role]);
+          this.toastr.success('Welcome back ' + user.name);
+        },
+      });
   }
 }

@@ -35,8 +35,6 @@ import { Component, OnInit } from '@angular/core';
     </div>
   `,
 })
-export class ArchivedMarkComponent implements OnInit {
-  constructor() {}
+export class ArchivedMarkComponent   {
 
-  ngOnInit() {}
 }

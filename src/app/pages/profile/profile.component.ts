@@ -1,14 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Project } from 'src/app/models/project';
-import { Tab } from 'src/app/models/tab';
 import { ProfileViewComponent } from './profile-view.component';
 import { TabsService } from 'src/app/services/tabs.service';
 import { AdviserProfileReportsComponent } from 'src/app/pages/profile/profile-reports.component';
 import { AddMilestoneTemplateModalComponent } from './add-milestone-template.component';
-import { NgxSpinnerModule } from 'ngx-spinner';
 import { TabsComponent } from 'src/app/components/ui/tabs.component';
 import { TopAppBarComponent } from 'src/app/components/ui/top-app-bar.component';
+import { SpinnerComponent } from 'src/app/components/spinner.component';
 
 @Component({
   standalone: true,
@@ -19,7 +17,7 @@ import { TopAppBarComponent } from 'src/app/components/ui/top-app-bar.component'
     ProfileViewComponent,
     AdviserProfileReportsComponent,
     AddMilestoneTemplateModalComponent,
-    NgxSpinnerModule,
+    SpinnerComponent,
   ],
   template: `
     <add-milestone-template-modal />
@@ -49,18 +47,11 @@ import { TopAppBarComponent } from 'src/app/components/ui/top-app-bar.component'
       </div>
     </div>
 
-    <ngx-spinner
-      bdColor="rgba(0, 0, 0, 0.8)"
-      size="default"
-      color="#fff"
-      type="square-loader"
-      [fullScreen]="true"
-      ><p style="color: white">Loading...</p></ngx-spinner
-    >
+    <spinner />
   `,
 })
 export class ProfileComponent implements OnInit {
-  tabs: Tab[] = [
+  tabs = signal([
     {
       name: 'Profile',
       active: true,
@@ -72,33 +63,30 @@ export class ProfileComponent implements OnInit {
       id: 'reports',
       handler: this.handlerFactory('reports'),
     },
-  ];
-  projects: Project[] = [];
+  ]);
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private tabsService: TabsService
-  ) {}
+  router = inject(Router);
+  route = inject(ActivatedRoute);
+  tabsService = inject(TabsService);
 
   handlerFactory(path: string) {
     return () => {
       this.router.navigate(['profile', path]);
 
-      this.tabs = this.tabs.map((tab) =>
-        tab.id === path ? { ...tab, active: true } : { ...tab, active: false }
+      this.tabs.update((old) =>
+        old.map((tab) =>
+          tab.id === path ? { ...tab, active: true } : { ...tab, active: false }
+        )
       );
     };
   }
 
   ngOnInit() {
-    const child1 = this.route.snapshot.firstChild;
-
-    if (child1 === null) throw new Error('impossible');
+    const child1 = this.route.snapshot.firstChild!;
 
     const active = child1.url[0].path;
     const route = ['profile'];
 
-    this.tabsService.setTabs(this.tabs, route, active);
+    this.tabsService.setTabs(this.tabs(), route, active);
   }
 }

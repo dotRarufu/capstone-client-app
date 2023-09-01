@@ -1,12 +1,14 @@
-import { Component, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { BaseChartDirective, NgChartsModule } from 'ng2-charts';
-import { from, map, switchMap } from 'rxjs';
+import { filter, from, map, switchMap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { TaskService } from 'src/app/services/task.service';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
+import { isNotNull } from 'src/app/utils/isNotNull';
+import { months } from 'src/app/utils/months';
 
 @Component({
   selector: 'total-tasks-assigned-report',
@@ -32,7 +34,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
     </div>
   `,
 })
-export class TotalTasksAssignedReportComponent {
+export class TotalTasksAssignedReportComponent implements OnInit {
   taskService = inject(TaskService);
   authService = inject(AuthService);
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
@@ -63,14 +65,11 @@ export class TotalTasksAssignedReportComponent {
   };
   lineChartPlugins = [DataLabelsPlugin];
 
-  constructor() {
-    this.authService.getAuthenticatedUser()
+  ngOnInit() {
+    this.authService
+      .getAuthenticatedUser()
       .pipe(
-        map((user) => {
-          if (user === null) throw new Error('{as');
-
-          return user;
-        }),
+        filter(isNotNull),
         switchMap((user) => this.taskService.getAllTasksBy(user.uid))
       )
       .subscribe({
@@ -81,19 +80,7 @@ export class TotalTasksAssignedReportComponent {
           p.forEach((p) => {
             const seconds = p.date_added * 1000;
             const date = new Date(seconds);
-            const months = [
-              'January',
-              'February',
-              'March',
-              'April',
-              'May',
-              'June',
-              'July',
-              'August',
-              'September',
-              'November',
-              'December',
-            ];
+
             labels.add(months[date.getUTCMonth()]);
           });
 
@@ -102,19 +89,7 @@ export class TotalTasksAssignedReportComponent {
           p.forEach((p) => {
             const seconds = p.date_added * 1000;
             const date = new Date(seconds);
-            const months = [
-              'January',
-              'February',
-              'March',
-              'April',
-              'May',
-              'June',
-              'July',
-              'August',
-              'September',
-              'November',
-              'December',
-            ];
+
             const index = [...labels].indexOf(months[date.getUTCMonth()]);
 
             tasks[index] += 1;

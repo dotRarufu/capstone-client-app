@@ -10,8 +10,10 @@ import { User } from 'src/app/types/collection';
   template: `
     <div class="flex w-full items-center justify-between rounded-[3px]">
       <div class="flex items-center gap-2 py-[8px]">
-        <div class=" avatar  aspect-square rounded-[5px] flex items-center bg-blue-300 p-0">
-          <span class="text-xl w-11 text-center">K</span>
+        <div
+          class=" avatar  flex aspect-square items-center rounded-[5px] bg-blue-300 p-0"
+        >
+          <span class="w-11 text-center text-xl">K</span>
         </div>
 
         <div class="flex w-full flex-col">
@@ -26,7 +28,7 @@ import { User } from 'src/app/types/collection';
 
       <button
         *ngIf="showRemoveButton"
-        (click)="handleClick()"
+        (click)="this.removeButtonClicked.emit(this.user.uid)"
         class="btn-ghost btn-xs btn gap-2 rounded-[3px] text-[14px] font-normal text-base-content hover:text-error  "
       >
         Remove
@@ -35,13 +37,12 @@ import { User } from 'src/app/types/collection';
   `,
 })
 export class ParticipantCardComponent {
-  @Input() user: User = { name: '', role_id: -1, uid: '',avatar_last_update: 0 };
+  @Input() user: User = {
+    name: '',
+    role_id: -1,
+    uid: '',
+    avatar_last_update: 0,
+  };
   @Input({ required: true }) showRemoveButton!: boolean;
   @Output() removeButtonClicked = new EventEmitter<string>();
-
-  constructor() {}
-
-  handleClick() {
-    this.removeButtonClicked.emit(this.user.uid);
-  }
 }

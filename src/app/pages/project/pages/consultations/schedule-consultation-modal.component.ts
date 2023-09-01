@@ -140,6 +140,7 @@ export class ScheduleConsultationModalComponent implements OnInit {
   dateTime = new FormControl('', { nonNullable: true });
   description = new FormControl('', { nonNullable: true });
   location = new FormControl('', { nonNullable: true });
+  
   doneTasks = signal<Task[]>([]);
   selectedTasks = signal<Task[]>([]);
 

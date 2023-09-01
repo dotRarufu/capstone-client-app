@@ -8,7 +8,7 @@ import { AError, ProjectService } from 'src/app/services/project.service';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectRow, User } from 'src/app/types/collection';
 import { ProjectCardPreviewComponent } from './project-card-preview.component';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import {
   Subject,
@@ -35,7 +35,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
     CommonModule,
     AddParticipantModalComponent,
     ProjectCardPreviewComponent,
-    FormsModule,
+    ReactiveFormsModule,
     AddParticipantModalComponent,
   ],
 
@@ -47,8 +47,8 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
             <div class="text-base font-semibold">Name</div>
             <div class="h-[2px] w-full bg-base-content/10"></div>
             <input
-              [(ngModel)]="name"
-              (change)="newNameSubject.next(this.name)"
+              [formControl]="name"
+              (change)="newNameSubject.next(this.name.value)"
               [disabled]="!isStudent()"
               type="text"
               placeholder="Type here"
@@ -60,8 +60,8 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
             <div class="text-base font-semibold">Full Title</div>
             <div class="h-[2px] w-full bg-base-content/10"></div>
             <textarea
-              [(ngModel)]="title"
-              (change)="newTitleSubject.next(this.title)"
+              [formControl]="title"
+              (change)="newTitleSubject.next(this.title.value)"
               [disabled]="!isStudent()"
               type="text"
               placeholder="Type here"
@@ -72,7 +72,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
         <div *ngIf="isStudent()" class="flex w-[320px] flex-col gap-[4px]">
           <div class="text-base font-semibold">Preview</div>
-          <project-card-preview [name]="name" [title]="title" />
+          <project-card-preview [name]="name.value" [title]="title.value" />
         </div>
       </div>
 
@@ -112,8 +112,8 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
             type="checkbox"
             class="toggle-success toggle"
             [checked]="isDone"
-            [(ngModel)]="isDone"
-            (change)="newIsDoneSubject.next(this.isDone)"
+            [formControl]="isDone"
+            (change)="newIsDoneSubject.next(this.isDone.value)"
           />
           <div class="text-base font-semibold">
             {{ isDone ? 'Done' : 'Not Done' }}
@@ -131,9 +131,10 @@ export class GeneralComponent implements OnInit {
   toastr = inject(ToastrService);
   authService = inject(AuthService);
 
-  name = '';
-  title = '';
-  isDone = false;
+  name = new FormControl('', { nonNullable: true });
+  title = new FormControl('', { nonNullable: true });
+  isDone = new FormControl(false, { nonNullable: true });
+
   projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
 
   isStudent = computed(() => {
@@ -158,9 +159,9 @@ export class GeneralComponent implements OnInit {
 
   project$ = this.projectService.getProjectInfo(this.projectId).subscribe({
     next: (project) => {
-      this.name = project.name;
-      this.title = project.full_title;
-      this.isDone = project.is_done;
+      this.name.setValue(project.name);
+      this.title.setValue(project.full_title);
+      this.isDone.setValue(project.is_done);
     },
     error: (err) => {
       this.toastr.error('error fetching project info');

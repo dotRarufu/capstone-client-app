@@ -58,16 +58,13 @@ import { filter } from 'rxjs';
     <spinner />
   `,
 })
-export class FormGeneratorComponent implements OnInit, OnDestroy {
-  pdfSrc = signal(
-    'https://iryebjmqurfynqgjvntp.supabase.co/storage/v1/object/public/chum-bucket/form_2_project_0.docx?t=2023-05-18T14%3A11%3A02.027Z'
-  );
-
+export class FormGeneratorComponent implements OnInit {
   projectService = inject(ProjectService);
   tabsService = inject(TabsService);
   route = inject(ActivatedRoute);
   router = inject(Router);
   formGeneratorService = inject(FormGeneratorService);
+
   @ViewChild('#anchor') anchor!: ElementRef<HTMLAnchorElement>;
 
   handleDownloadClick() {
@@ -105,16 +102,13 @@ export class FormGeneratorComponent implements OnInit, OnDestroy {
 
     this.tabsService.setTabs(tabs, route, active);
   }
-  ngOnDestroy(): void {}
 
-  a = this.router.events
+  resetterSubscription = this.router.events
     .pipe(
       takeUntilDestroyed(),
       filter((event) => event.constructor.name === 'NavigationStart')
     )
     .subscribe({
-      next: (url) => {
-        this.formGeneratorService.clearFormUrl();
-      },
+      next: (url) => this.formGeneratorService.clearFormUrl(),
     });
 }

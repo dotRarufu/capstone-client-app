@@ -1,4 +1,4 @@
-import { Component, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { BaseChartDirective, NgChartsModule } from 'ng2-charts';
@@ -7,6 +7,7 @@ import { ProjectService } from 'src/app/services/project.service';
 import { Project } from 'src/app/models/project';
 import { AuthService } from 'src/app/services/auth.service';
 import { TaskService } from 'src/app/services/task.service';
+import { isNotNull } from 'src/app/utils/isNotNull';
 
 @Component({
   selector: 'total-tasks-by-category-report',
@@ -32,7 +33,7 @@ import { TaskService } from 'src/app/services/task.service';
     </div>
   `,
 })
-export class TotalTasksByCategoryReportComponent {
+export class TotalTasksByCategoryReportComponent implements OnInit {
   projectService = inject(ProjectService);
   taskService = inject(TaskService);
   authService = inject(AuthService);
@@ -59,20 +60,11 @@ export class TotalTasksByCategoryReportComponent {
   };
   barChartPlugins = [DataLabelsPlugin];
 
-  constructor() {
+  ngOnInit() {
     this.authService
       .getAuthenticatedUser()
       .pipe(
-        filter(
-          (
-            user
-          ): user is {
-            name: string;
-            role_id: number;
-            uid: string;
-            avatar_last_update: number | null;
-          } => !!user
-        ),
+        filter(isNotNull),
         switchMap((user) => this.taskService.getAllTasksBy(user.uid))
       )
       .subscribe({
