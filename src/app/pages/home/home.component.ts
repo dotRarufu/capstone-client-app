@@ -52,35 +52,46 @@ import { AddProjectModalComponent } from './add-project-modal.component';
         *ngIf="{ activeId: activeId$ | async } as observables"
       >
         <div
-          class=" flex w-full  gap-[1rem] sm2:justify-center md:w-full lg:w-[1040px]"
+          class=" flex w-full justify-center gap-[1rem] md:w-full lg:w-[1040px]"
         >
-          <adviser-projects
+          <div
+            class="w-full sm2:w-[840px]  md:w-full lg:w-[1040px]"
             *ngIf="
               (observables.activeId === 'projects' || isDesktop) &&
               (role === 'c' || role === 't')
             "
-          />
+          >
+            <adviser-projects />
+          </div>
 
-          <adviser-reports
+          <div
+            class="w-full sm2:w-[840px] md:w-[294px] md:flex-shrink-0 md:basis-[294px] lg:w-[1040px]"
             *ngIf="
               (observables.activeId === 'reports' || isDesktop) &&
               (role === 'c' || role === 't')
             "
-            [sideColumn]="true"
-          />
+          >
+            <adviser-reports [sideColumn]="true" />
+          </div>
 
-          <student-title-analyzer
+          <div
+            class="w-full sm2:w-[840px] md:w-full lg:w-[1040px]"
             *ngIf="
               (observables.activeId === 'title-analyzer' || isDesktop) &&
               role === 's'
             "
-          />
+          >
+            <student-title-analyzer />
+          </div>
 
-          <student-projects
+          <div
+            class="w-full sm2:w-[840px] md:w-[294px] md:flex-shrink-0 md:basis-[294px] lg:w-[1040px]"
             *ngIf="
               (observables.activeId === 'projects' || isDesktop) && role === 's'
             "
-          />
+          >
+            <student-projects />
+          </div>
         </div>
       </div>
     </div>
@@ -102,6 +113,7 @@ export class HomePageComponent implements OnInit {
   ngOnInit() {
     this.watchWindowSize();
     this.setupTabs();
+    console.log('role:', this.role);
   }
 
   setupTabs() {

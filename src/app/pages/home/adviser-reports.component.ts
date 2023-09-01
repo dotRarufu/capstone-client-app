@@ -23,12 +23,12 @@ import { ProjectsByStatusComponent } from './project-by-status.component';
         <div
           class="flex w-full flex-wrap items-start justify-center gap-4  md:flex-col md:items-center"
         >
-          <div class="w-full min-w-[229px] max-w-[429px]">
-            <projects-by-section-report />
+        <div class="w-full min-w-[229px] max-w-[329px]">
+            <projects-by-status-report />
           </div>
 
-          <div class="w-full min-w-[229px] max-w-[329px]">
-            <projects-by-status-report />
+          <div class="w-full min-w-[229px] max-w-[429px]">
+            <projects-by-section-report />
           </div>
         </div>
       </ng-container>
@@ -44,12 +44,12 @@ import { ProjectsByStatusComponent } from './project-by-status.component';
           <div
             class="flex w-full flex-wrap items-start justify-center gap-4  md:flex-col md:items-center"
           >
-            <div class="w-full min-w-[229px] max-w-[429px]">
-              <projects-by-section-report />
+          <div class="w-full min-w-[229px] max-w-[329px]">
+              <projects-by-status-report />
             </div>
 
-            <div class="w-full min-w-[229px] max-w-[329px]">
-              <projects-by-status-report />
+            <div class="w-full min-w-[229px] max-w-[429px]">
+              <projects-by-section-report />
             </div>
           </div>
         </div>
@@ -59,7 +59,7 @@ import { ProjectsByStatusComponent } from './project-by-status.component';
 })
 export class AdviserReportsComponent {
   taskByStatus: ChartConfiguration<'bar'>['data'] = {
-    labels: ['To Do', 'Done', 'Doing'],
+    labels: ['To Do', 'Done', 'On going'],
     datasets: [
       {
         // minBarLength:

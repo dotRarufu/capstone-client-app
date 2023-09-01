@@ -15,7 +15,7 @@ import { TaskService } from 'src/app/services/task.service';
   template: `
     <div class=" h-full w-full rounded-[3px] border border-base-content/50 ">
       <div class="bg-primary p-4 text-primary-content">
-        <h1 class="text-[20px] ">All Tasks by Category </h1>
+        <h1 class="text-[20px] ">All Tasks by Category</h1>
       </div>
 
       <div class="flex justify-center p-4">
@@ -38,7 +38,7 @@ export class TotalTasksByCategoryReportComponent {
   authService = inject(AuthService);
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
   data: ChartConfiguration<'bar'>['data'] = {
-    labels: ['To Do', 'Done', 'Doing'],
+    labels: ['To Do', 'Done', 'On going'],
     datasets: [
       {
         // minBarLength:
@@ -60,7 +60,8 @@ export class TotalTasksByCategoryReportComponent {
   barChartPlugins = [DataLabelsPlugin];
 
   constructor() {
-    this.authService.getAuthenticatedUser()
+    this.authService
+      .getAuthenticatedUser()
       .pipe(
         filter(
           (
@@ -77,16 +78,15 @@ export class TotalTasksByCategoryReportComponent {
       .subscribe({
         next: (tasks) => {
           const todo = tasks.filter((t) => t.status_id === 0);
-          const doing = tasks.filter((t) => t.status_id === 1);
+          const ongoing = tasks.filter((t) => t.status_id === 1);
           const done = tasks.filter((t) => t.status_id === 2);
 
           this.data.datasets[0].data[0] = todo.length;
-          this.data.datasets[0].data[1] = doing.length;
+          this.data.datasets[0].data[1] = ongoing.length;
           this.data.datasets[0].data[2] = done.length;
 
           this.chart?.update();
         },
       });
-
-    }
+  }
 }

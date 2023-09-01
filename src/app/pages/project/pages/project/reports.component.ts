@@ -122,11 +122,11 @@ export class ProjectReportsComponent {
     this.taskService.getAllTasks(projectId).subscribe({
       next: (tasks) => {
         const todo = tasks.filter((t) => t.status_id === 0);
-        const doing = tasks.filter((t) => t.status_id === 1);
+        const ongoing = tasks.filter((t) => t.status_id === 1);
         const done = tasks.filter((t) => t.status_id === 2);
 
         this.taskByStatus.datasets[0].data[0] = todo.length;
-        this.taskByStatus.datasets[0].data[1] = doing.length;
+        this.taskByStatus.datasets[0].data[1] = ongoing.length;
         this.taskByStatus.datasets[0].data[2] = done.length;
 
         this.chart?.update();
@@ -155,7 +155,7 @@ export class ProjectReportsComponent {
   }
 
   taskByStatus: ChartConfiguration<'bar'>['data'] = {
-    labels: ['To Do', 'Done', 'Doing'],
+    labels: ['To Do', 'Done', 'On going'],
     datasets: [
       {
         data: [],

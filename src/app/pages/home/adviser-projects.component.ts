@@ -17,7 +17,9 @@ import { ActivatedRoute } from '@angular/router';
 import { HomeStateService } from './data-access/home-state.service';
 import { ProjectsAccordionComponent } from './projects-accordion.component';
 import { ProjectCardComponent } from './project-card.component';
-import { map, tap } from 'rxjs';
+import { EMPTY, catchError, map, tap } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 
 @Component({
   selector: 'adviser-projects',
@@ -27,12 +29,13 @@ import { map, tap } from 'rxjs';
     ProjectsAccordionComponent,
     CommonModule,
     ProjectCardComponent,
+    FeatherIconsModule,
   ],
   template: `
-    <div class="w-full">
-      <projects>
+    <div class="w-full" *ngIf="{sections: sections$ | async} as observables">
+      <projects *ngIf="observables.sections !== null && observables.sections.length !== 0; else empty">
         <projects-accordion
-          *ngFor="let section of sections$ | async"
+          *ngFor="let section of observables.sections"
           [heading]="section.section"
         >
           <ProjectCard
@@ -43,14 +46,27 @@ import { map, tap } from 'rxjs';
           />
         </projects-accordion>
 
-        <projects-accordion heading="Archived">
+        <projects-accordion
+          *ngIf="archived$ | async as archived"
+          heading="Archived"
+        >
           <ProjectCard
-            *ngFor="let project of archived$ | async"
+            *ngFor="let project of archived"
             [project]="project"
             [role]="role"
           />
         </projects-accordion>
       </projects>
+
+      <ng-template #empty>
+        <div
+          class=" flex flex-col items-center justify-center gap-[8px]
+        text-base-content/50"
+        >
+          <i-feather name="calendar" class="" />
+          <span class="text-base">You have no assigned projects</span>
+        </div>
+      </ng-template>
     </div>
   `,
 })
@@ -59,20 +75,12 @@ export class AdviserProjectsComponent {
   spinner = inject(NgxSpinnerService);
   route = inject(ActivatedRoute);
   homeStateService = inject(HomeStateService);
+  toastr = inject(ToastrService);
 
   sections$ = this.projectService.getProjects().pipe(
-    tap((projects) => {
-      if (projects === null) {
-        this.spinner.show();
-        return;
-      }
-
-      this.spinner.hide();
-    }),
+    tap(() => this.spinner.hide()),
     map((projects) => {
-      if (projects === null) {
-        return [];
-      }
+      if (projects === null) return [];
 
       return groupBySection(projects);
     })

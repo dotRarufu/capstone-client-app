@@ -113,7 +113,7 @@ export class TasksPageComponent implements OnInit {
       statusId: 0,
     },
     {
-      title: 'Doing',
+      title: 'On going',
       tasks: this.taskService.getTasks(1, this.projectId),
       statusId: 1,
     },
