@@ -13,7 +13,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
   standalone: true,
   imports: [ModalComponent, FeatherIconsModule, ReactiveFormsModule],
   template: `
-    <modal inputId="addMilestone">
+    <modal inputId="addMilestone" (closed)="resetForms()">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -118,5 +118,11 @@ export class AddMilestoneTemplateModalComponent {
 
       },
     });
+  }
+
+  resetForms() {
+    this.title.reset()
+    this.description.reset()
+    this.dueDate.reset()
   }
 }

@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { filter, from, map, switchMap, tap } from 'rxjs';
@@ -10,9 +12,13 @@ import { isNotNull } from 'src/app/utils/isNotNull';
 @Component({
   selector: 'danger-zone',
   standalone: true,
+  imports: [CommonModule],
   template: `
     <div class="flex flex-col gap-[16px]">
-      <div class="flex items-center justify-between ">
+      <div
+        *ngIf="isCapstoneAdviser()"
+        class="flex items-center justify-between"
+      >
         <div class="flex flex-col gap-[4px]">
           <div class="text-base font-semibold">Delete this project</div>
           <div>
@@ -59,6 +65,9 @@ export class DangerZoneComponent {
 
       return user;
     })
+  );
+  isCapstoneAdviser = toSignal(
+    this.user$.pipe(map((user) => getRolePath(user.role_id) === 'c'))
   );
 
   navigateToHome() {

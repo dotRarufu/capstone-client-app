@@ -104,7 +104,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <div>July 23, 2023</div>
       </div>
-      <div *ngIf="isStudent()" class="flex flex-col gap-[4px]">
+      <div *ngIf="isCapstoneAdviser()" class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Mark as Done</div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <div class="flex gap-[8px]">
@@ -143,6 +143,13 @@ export class GeneralComponent implements OnInit {
     if (user === null) return false;
 
     return getRolePath(user.role_id) === 's';
+  });
+  isCapstoneAdviser = computed(() => {
+    const user = this.user();
+
+    if (user === null) return false;
+
+    return getRolePath(user.role_id) === 'c';
   });
   user = toSignal(
     this.authService.user$.pipe(

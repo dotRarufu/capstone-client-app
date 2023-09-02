@@ -25,6 +25,7 @@ interface AnalysesDataItem {
   heading: string;
   value: number;
   content: string;
+  images?: string[];
 }
 
 @Component({
@@ -66,12 +67,17 @@ interface AnalysesDataItem {
       >
         <div class="pt-[16px] text-base-content">
           {{ data.content }}
+          <ng-container *ngIf="data.images && data.images.length > 0">
+            <div class="flex flex-wrap gap-[8px]">
+              <img
+                *ngFor="let image of data.images"
+                [src]="image"
+                class="max-h-[260px] w-full object-contain"
+              />
+            </div>
+          </ng-container>
         </div>
       </accordion>
-
-      <div
-        class="flex w-full flex-shrink-0  basis-[294px] flex-col gap-[16px]"
-      ></div>
     </div>
   `,
 })
@@ -120,6 +126,7 @@ export class ResultComponent {
         content: `The title is easily comprehensible for a ${getReadabilityScoreMeaning(
           data.readability
         )}`,
+        images: ['assets/readability-scores.PNG'],
       };
 
       return [substantiveWordCount, titleUniqueness, readability];

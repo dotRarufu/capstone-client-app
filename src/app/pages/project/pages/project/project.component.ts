@@ -33,10 +33,10 @@ import {  RouterModule } from '@angular/router';
             class="btn-ghost btn flex-col items-start justify-center rounded-[3px]  normal-case"
             ><span>General</span></a
           >
-          <a
+          <!-- <a
             class="btn-ghost btn flex-col items-start justify-center rounded-[3px]  normal-case"
             ><span>Notifications</span></a
-          >
+          > -->
           <a
             [routerLink]="['reports']"
             routerLinkActive="btn-active"
