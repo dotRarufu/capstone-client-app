@@ -14,6 +14,8 @@ import {
 } from 'rxjs';
 import errorFilter from '../utils/errorFilter';
 import { AuthService } from './auth.service';
+import { isNotNull } from '../utils/isNotNull';
+import { ProjectService } from './project.service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +29,7 @@ export class MilestoneService {
     this.updateMilestoneTemplatesSubject.asObservable();
 
   authService = inject(AuthService);
+  projectService = inject(ProjectService);
 
   add(
     projectId: number,
@@ -289,6 +292,74 @@ export class MilestoneService {
     );
 
     return res$;
+  }
+
+  reapplyTemplates() {
+    const user$ = this.authService.getAuthenticatedUser().pipe(
+      tap((u) => console.log('user:', u)),
+      filter(isNotNull)
+    );
+    const projects$ = this.projectService.getProjects().pipe(
+      take(2),
+      tap((u) => console.log('projects:', u)),
+      filter(isNotNull)
+    );
+    const req$ = forkJoin({ user: user$, projects: projects$ }).pipe(
+      tap((u) => console.log('runss!:', u)),
+      switchMap(({ user, projects }) => {
+        const req$ = projects.map((p) =>
+          this.applyCapstoneAdviserTemplate(user.uid, p.id)
+        );
+
+        return forkJoin(req$);
+      })
+    );
+
+    return req$;
+  }
+
+  applyCapstoneAdviserTemplate(userUid: string, projectId: number) {
+    console.log('called!');
+    const templates$ = this.getMilestoneTemplates(userUid);
+    const milestoneIds$ = from(
+      this.client.from('milestone').select('id').eq('project_id', projectId)
+    ).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      }),
+      map((ids) => ids.map(({ id }) => id))
+    );
+
+    const deleteReq$ = milestoneIds$.pipe(
+      switchMap((ids) => {
+        const a = ids.map((id) => this.delete(id));
+
+        if (ids.length === 0) return of([]);
+
+        return forkJoin(a);
+      })
+    );
+    const addReq$ = templates$.pipe(
+      take(1),
+      tap((_) => console.log('adds new milestones')),
+      switchMap((templates) => {
+        if (templates.length === 0) return of([]);
+
+        const reqs$ = templates.map((t) =>
+          this.add(projectId, {
+            title: t.title,
+            description: t.description,
+            dueDate: t.due_date,
+          })
+        );
+
+        return forkJoin(reqs$);
+      })
+    );
+
+    return deleteReq$.pipe(switchMap((_) => addReq$));
   }
 
   private signalMilestonesUpdate() {

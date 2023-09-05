@@ -14,7 +14,8 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { MilestoneTemplateInfoComponent } from './milestone-info.component';
 import { AuthService } from 'src/app/services/auth.service';
-import { EMPTY, catchError, from, map, switchMap } from 'rxjs';
+import { EMPTY, catchError, delay, from, map, switchMap } from 'rxjs';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'milestones-template',
@@ -29,9 +30,21 @@ import { EMPTY, catchError, from, map, switchMap } from 'rxjs';
     <ng-container *ngIf="{ milestones: milestones$ | async } as observables">
       <ng-container *ngIf="!sideColumn">
         <div
-          class="rounded-[5px] border border-base-content/50 bg-base-100 p-[16px] "
+          class="rounded-[5px] border border border-base-content/50 border-red-500 bg-base-100 p-[16px]"
         >
-          <h1 class="text-[18px] font-semibold ">Milestones Template</h1>
+          <div class="flex justify-between items-center border border-blue-500">
+            <h1 class="text-[18px] font-semibold">Milestones Template</h1>
+            <button
+            (click)="reapplyTemplates()"
+              class="btn-ghost btn-sm flex flex-row items-center justify-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+            >
+              <i-feather
+                class="h-[20px] w-[20px] text-base-content/70"
+                name="plus"
+              />
+              <span class="uppercase"> Re-apply </span>
+            </button>
+          </div>
 
           <div
             class="flex h-full flex-col justify-start gap-x-[16px] sm1:grid sm1:grid-cols-[1fr_3fr] md:grid-cols-[1fr_3fr]"
@@ -93,8 +106,8 @@ import { EMPTY, catchError, from, map, switchMap } from 'rxjs';
         <div
           class="rounded-[5px] border border-base-content/50 bg-base-100 p-[16px]"
         >
-          <div class="flex w-full justify-between">
-            <h1 class="text-[18px] font-semibold">Milestones Template</h1>
+          <div class="flex w-full justify-between ">
+            <h1 class=" text-[18px] font-semibold">Milestones Template</h1>
             <button
               onclick="addMilestone.showModal()"
               class="btn-ghost btn-sm flex w-fit flex-row items-center justify-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
@@ -157,6 +170,7 @@ export class MilestonesTemplateComponent {
   authService = inject(AuthService);
   milestoneService = inject(MilestoneService);
   toastr = inject(ToastrService);
+  spinner = inject(NgxSpinnerService);
 
   selectedMilestoneId = signal<number | null>(null);
   @Input() sideColumn? = false;
@@ -191,4 +205,23 @@ export class MilestonesTemplateComponent {
       return EMPTY;
     })
   );
+
+  reapplyTemplates() {
+    console.log("reapply start")
+    this.spinner.show();
+
+    const reapply$ = this.milestoneService.reapplyTemplates()
+
+    reapply$.subscribe({
+      next: (a) => {
+        console.log("reapplied res:", a)
+        this.spinner.hide();
+        this.toastr.success('Sucessfully re-applied templates')
+      },
+      error:() => {
+        this.spinner.hide();
+        this.toastr.error('Failed to re-apply templates')
+      }
+    })
+  }
 }

@@ -39,7 +39,6 @@ export class ProjectService {
   private newParticipant$ = new BehaviorSubject(0);
 
   authService = inject(AuthService);
-  milestoneService = inject(MilestoneService);
 
   // Todo: add takeUntilDestroyed pipe for users of this method
   getProjects() {
@@ -134,7 +133,8 @@ export class ProjectService {
     const advisers = this.client
       .from('project')
       .select('capstone_adviser_id, technical_adviser_id')
-      .eq('id', projectId).single();
+      .eq('id', projectId)
+      .single();
 
     return from(advisers).pipe(
       map((a) => {
@@ -151,7 +151,7 @@ export class ProjectService {
     // only for student,fort he add participant button
     // not intended for realtime sync with db
 
-    if (projectId < 0) return throwError(() =>  new Error('Invalid project id'));
+    if (projectId < 0) return throwError(() => new Error('Invalid project id'));
 
     const res = this.newParticipant$.pipe(
       switchMap(() => {
@@ -170,7 +170,7 @@ export class ProjectService {
             if (advisers.technical_adviser_id !== null)
               ids.push(advisers.technical_adviser_id);
 
-            if (ids.length === 0) return of([])
+            if (ids.length === 0) return of([]);
 
             return forkJoin(ids.map((id) => this.authService.getUser(id)));
           })
@@ -709,52 +709,7 @@ export class ProjectService {
       })
     );
 
-    return update$.pipe(
-      switchMap((_) => this.applyCapstoneAdviserTemplate(userUid, projectId))
-    );
-  }
-
-  private applyCapstoneAdviserTemplate(userUid: string, projectId: number) {
-    console.log('called!');
-    const templates$ = this.milestoneService.getMilestoneTemplates(userUid);
-    const milestoneIds$ = from(
-      this.client.from('milestone').select('id').eq('project_id', projectId)
-    ).pipe(
-      map((res) => {
-        const { data } = errorFilter(res);
-
-        return data;
-      }),
-      map((ids) => ids.map(({ id }) => id))
-    );
-
-    const deleteReq$ = milestoneIds$.pipe(
-      switchMap((ids) => {
-        const a = ids.map((id) => this.milestoneService.delete(id));
-
-        if (ids.length === 0) return of([]);
-
-        return forkJoin(a);
-      })
-    );
-    const addReq$ = templates$.pipe(
-      tap((_) => console.log('adds new milestones')),
-      switchMap((templates) => {
-        if (templates.length === 0) return of([]);
-
-        const reqs$ = templates.map((t) =>
-          this.milestoneService.add(projectId, {
-            title: t.title,
-            description: t.description,
-            dueDate: t.due_date,
-          })
-        );
-
-        return forkJoin(reqs$);
-      })
-    );
-
-    return deleteReq$.pipe(switchMap((_) => addReq$));
+    return update$;
   }
 
   // todo: make the backend services automatically restart when something fails

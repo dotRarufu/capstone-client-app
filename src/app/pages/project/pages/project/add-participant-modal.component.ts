@@ -6,6 +6,8 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 import { ProjectService } from 'src/app/services/project.service';
 import { ActivatedRoute } from '@angular/router';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
+import { switchMap } from 'rxjs';
+import { MilestoneService } from 'src/app/services/milestone.service';
 // import {} from 'validator';
 
 @Component({
@@ -33,13 +35,38 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
         >
           <div
             class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-scroll"
-          ></div>
+          >
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Role</h1>
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+
+            <div
+              class="form-control rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50"
+            >
+              <div
+                class="input-group rounded-[3px] border border-base-content/50"
+              >
+                <select
+                  class="select-bordered select w-full rounded-[3px] border-none text-base font-normal  outline-0  focus:rounded-[3px] "
+                >
+                  <!-- todo: make this dynamic -->
+                  <option disabled selected>Select a role</option>
+                  <!-- todo: rename roles table to role -->
+                  <option (click)="selectRole(0)"></option>
+                  <option (click)="selectRole(1)">Subject Adviser</option>
+                  <option (click)="selectRole(2)">Technical Adviser</option>
+                </select>
+              </div>
+            </div>
+          </div>
           <ul class="flex w-full flex-col bg-neutral/20 p-0 py-2 sm1:w-[223px]">
             <button
               (click)="addParticipant()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
-              <i-feather class="text-base-content/70" r name="check-square" />
+              <i-feather class="text-base-content/70" name="check-square" />
               done
             </button>
 
@@ -61,16 +88,23 @@ export class AddParticipantModalComponent {
 
   spinner = inject(NgxSpinnerService);
   projectService = inject(ProjectService);
+  milestoneService = inject(MilestoneService);
   toastr = inject(ToastrService);
   route = inject(ActivatedRoute);
 
   addParticipant() {
     this.spinner.show();
     const projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
-    const addParticipant$ = this.projectService.addParticipant(
-      this.userUid.value,
-      projectId
-    );
+    const addParticipant$ = this.projectService
+      .addParticipant(this.userUid.value, projectId)
+      .pipe(
+        switchMap((_) =>
+          this.milestoneService.applyCapstoneAdviserTemplate(
+            this.userUid.value,
+            projectId
+          )
+        )
+      );
 
     addParticipant$.subscribe({
       error: (e) => {
@@ -84,5 +118,7 @@ export class AddParticipantModalComponent {
     });
   }
 
-
+  selectRole(id: number) {
+    // this.userUid.reset();
+  }
 }
