@@ -114,12 +114,12 @@ import { AuthService } from 'src/app/services/auth.service';
           class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
           min="1"
         /> -->
-        <input
+        <!-- <input
           type="text"
           placeholder="Student Number"
           [formControl]="studentNumber"
           class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
-        />
+        /> -->
         <input
           type="email"
           placeholder="Email"
@@ -174,8 +174,6 @@ export class SignupComponent {
         this.email.value,
         this.password.value,
         user,
-        this.studentNumber.value,
-        this.section
       )
       .subscribe({
         next: () => {

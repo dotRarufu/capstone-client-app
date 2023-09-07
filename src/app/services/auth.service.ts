@@ -112,8 +112,7 @@ export class AuthService {
     email: string,
     password: string,
     userInfo: { name: string; roleId: number },
-    studentNumber: string,
-    sectionId: number
+
   ) {
     const signUp = this.client.auth.signUp({
       email,
@@ -129,9 +128,9 @@ export class AuthService {
         return authRes.data.user;
       }),
       switchMap((user) => this.updateUserData(user.id, userInfo)),
-      switchMap((user) =>
-        this.createStudentInfo(user.uid, studentNumber, sectionId)
-      )
+      // switchMap((user) =>
+      //   this.createStudentInfo(user.uid, studentNumber, sectionId)
+      // )
     );
 
     return signUp$;
@@ -281,29 +280,29 @@ export class AuthService {
     return req$;
   }
 
-  private createStudentInfo(
-    uid: string,
-    studentNumber: string,
-    sectionId: number
-  ) {
-    const client = this.client;
-    const data = {
-      uid,
-      number: studentNumber,
-      section_id: sectionId,
-    };
+  // private createStudentInfo(
+  //   uid: string,
+  //   studentNumber: string,
+  //   sectionId: number
+  // ) {
+  //   const client = this.client;
+  //   const data = {
+  //     uid,
+  //     number: studentNumber,
+  //     section_id: sectionId,
+  //   };
 
-    const insert = client.from('student_info').insert(data);
-    const insert$ = from(insert).pipe(
-      map((res) => {
-        const { statusText } = errorFilter(res);
+  //   const insert = client.from('student_info').insert(data);
+  //   const insert$ = from(insert).pipe(
+  //     map((res) => {
+  //       const { statusText } = errorFilter(res);
 
-        return statusText;
-      })
-    );
+  //       return statusText;
+  //     })
+  //   );
 
-    return insert$;
-  }
+  //   return insert$;
+  // }
 
   private updateUserData(
     userId: string,

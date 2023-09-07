@@ -36,7 +36,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
       <projects *ngIf="observables.sections !== null && observables.sections.length !== 0; else empty">
         <projects-accordion
           *ngFor="let section of observables.sections"
-          [heading]="section.section"
+          [heading]="section.section.toString()"
         >
           <ProjectCard
             (removeProjectId)="this.homeStateService.setActiveProjectId($event)"
@@ -78,6 +78,7 @@ export class AdviserProjectsComponent {
   toastr = inject(ToastrService);
 
   sections$ = this.projectService.getProjects().pipe(
+    tap(p => console.log("sections!:", p)),
     tap(() => this.spinner.hide()),
     map((projects) => {
       if (projects === null) return [];

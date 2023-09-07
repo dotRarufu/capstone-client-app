@@ -610,7 +610,7 @@ export interface Database {
           id: number
           is_done: boolean
           name: string
-          section_id: number
+          section: string | null
           technical_adviser_id: string | null
         }
         Insert: {
@@ -619,7 +619,7 @@ export interface Database {
           id?: number
           is_done: boolean
           name: string
-          section_id: number
+          section?: string | null
           technical_adviser_id?: string | null
         }
         Update: {
@@ -628,7 +628,7 @@ export interface Database {
           id?: number
           is_done?: boolean
           name?: string
-          section_id?: number
+          section?: string | null
           technical_adviser_id?: string | null
         }
         Relationships: [
@@ -637,12 +637,6 @@ export interface Database {
             columns: ["capstone_adviser_id"]
             referencedRelation: "user"
             referencedColumns: ["uid"]
-          },
-          {
-            foreignKeyName: "project_section_id_fkey"
-            columns: ["section_id"]
-            referencedRelation: "section"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "project_technical_adviser_id_fkey"

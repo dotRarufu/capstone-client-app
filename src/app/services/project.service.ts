@@ -89,33 +89,32 @@ export class ProjectService {
       })
     );
 
-    const section$ = user$.pipe(
-      switchMap((user) => this.getUserSection(user.uid)),
-      map((d) => {
-        const { data } = errorFilter(d);
+    // const section$ = user$.pipe(
+    //   switchMap((user) => this.getUserSection(user.uid)),
+    //   map((d) => {
+    //     const { data } = errorFilter(d);
 
-        if (data.length === 0) throw new Error('user has no section');
+    //     if (data.length === 0) throw new Error('user has no section');
 
-        return data[0].section_id;
-      })
-    );
+    //     return data[0].section_id;
+    //   })
+    // );
 
-    const insertRequest$ = section$.pipe(
-      switchMap(async (section) => {
-        const data = {
-          name,
-          full_title: fullTitle,
-          section_id: section,
-          capstone_adviser_id: null,
-          is_done: false,
-          technical_adviser_id: null,
-        };
+    const data = {
+      name,
+      full_title: fullTitle,
+      // section_id: section,
+      capstone_adviser_id: null,
+      is_done: false,
+      technical_adviser_id: null,
+    };
+    const req = this.client.from('project').insert(data).select('id').single();
 
-        const res = await this.client.from('project').insert(data).select('id');
+    const insertRequest$ = from(req).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
 
-        if (res.error) throw new Error('error while inserting project');
-
-        return res.data[0].id;
+        return data.id;
       }),
       // add self to the new project
       switchMap((projectId) =>
@@ -599,14 +598,13 @@ export class ProjectService {
           const names$ = forkJoin(
             userIds.map((id) => from(this.authService.getUser(id)))
           ).pipe(map((members) => members.map((m) => m.name)));
-          const section$ = this.getSection(p.section_id);
 
-          return forkJoin({ names: names$, section: section$ });
+          return names$;
         }),
-        map(({ names, section }) => ({
+        map((names) => ({
           name: p.name,
           id: p.id,
-          sectionName: section,
+          section: p.section,
           members: names,
           title: p.full_title,
           isDone: p.is_done,
@@ -630,14 +628,14 @@ export class ProjectService {
     return res$;
   }
 
-  private getUserSection(uid: string) {
-    const section = this.client
-      .from('student_info')
-      .select('section_id')
-      .eq('uid', uid);
+  // private getUserSection(uid: string) {
+  //   const section = this.client
+  //     .from('student_info')
+  //     .select('section_id')
+  //     .eq('uid', uid);
 
-    return from(section);
-  }
+  //   return from(section);
+  // }
 
   private async getProjectMembers(projectId: number) {
     const res = await this.client

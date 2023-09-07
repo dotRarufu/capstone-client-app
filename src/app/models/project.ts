@@ -2,7 +2,7 @@ export interface Project {
   name: string;
   id: number;
   title: string;
-  sectionName: string;
+  section: string | null;
   members: string[];
   isDone: boolean;
 }

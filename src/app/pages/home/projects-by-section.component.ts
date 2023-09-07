@@ -41,11 +41,13 @@ export class ProjectsBySectionComponent {
       map((projects) => projects.filter((p) => !p.isDone)),
       map((undoneProjects) => {
         const sections = new Set<string>();
-        undoneProjects.forEach((p) => sections.add(p.sectionName));
+        // undoneProjects.forEach((p) => sections.add(p.sectionName));
+        const nonNulls = undoneProjects.filter((p) => p.section !== null);
+        nonNulls.forEach((p) => sections.add(p.section!));
 
         const counts = new Array([...sections].length).fill(0);
         undoneProjects.forEach((p) => {
-          const index = [...sections].findIndex((c) => c === p.sectionName);
+          const index = [...sections].findIndex((c) => c === p.section);
 
           if (index !== -1) {
             counts[index] += 1;
