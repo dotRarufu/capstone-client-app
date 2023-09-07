@@ -6,6 +6,7 @@ import {
   OnInit,
   Output,
   SimpleChanges,
+  effect,
   inject,
 } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
@@ -26,6 +27,8 @@ import {
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ProfileStateService } from './data-access/profile-state.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'milestone-template-info',
@@ -89,18 +92,23 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
     </div>
   `,
 })
-export class MilestoneTemplateInfoComponent implements OnInit, OnChanges {
-  @Input({ required: true }) milestoneId!: number | null;
-  @Output() closed = new EventEmitter();
+export class MilestoneTemplateInfoComponent implements OnInit {
+  profileStateService = inject(ProfileStateService);
+  breadcrumb = inject(BreadcrumbService);
+  milestoneService = inject(MilestoneService);
+  toastr = inject(ToastrService);
+
+  // @Input({ required: true }) milestoneId!: number | null;
+  // @Output() closed = new EventEmitter();
 
   title = new FormControl('', { nonNullable: true });
   description = new FormControl('', { nonNullable: true });
   dueDate = new FormControl('');
-  
+
   newTitle$ = new Subject<string>();
   newDescription$ = new Subject<string>();
   newDueDate$ = new Subject<string>();
-  milestoneId$ = new BehaviorSubject(this.milestoneId);
+  milestoneId$ = this.profileStateService.selectedMilestoneId$;
   id$ = this.milestoneId$.pipe(
     filter((v): v is number => v !== null),
     switchMap((id) => this.milestoneService.getMilestoneTemplateData(id)),
@@ -116,21 +124,18 @@ export class MilestoneTemplateInfoComponent implements OnInit, OnChanges {
       return EMPTY;
     })
   );
+  id = toSignal(this.id$, { initialValue: -1 });
+  a = effect(() => console.log('emits 1231221:', this.id()));
 
-  breadcrumb = inject(BreadcrumbService);
-  milestoneService = inject(MilestoneService);
-  toastr = inject(ToastrService);
-
+  
   ngOnInit(): void {
     this.newTitle$
       .pipe(
         debounceTime(3000),
         distinctUntilChanged(),
+
         switchMap((newTitle) =>
-          forkJoin({ newTitle: of(newTitle), id: this.id$ })
-        ),
-        switchMap(({ newTitle, id }) =>
-          this.milestoneService.updateTemplate(id, {
+          this.milestoneService.updateTemplate(this.id(), {
             title: newTitle,
           })
         )
@@ -151,12 +156,9 @@ export class MilestoneTemplateInfoComponent implements OnInit, OnChanges {
       .pipe(
         debounceTime(3000),
         distinctUntilChanged(),
-        switchMap((newDescription) =>
-          forkJoin({ newDescription: of(newDescription), id: this.id$ })
-        ),
 
-        switchMap(({ newDescription, id }) =>
-          this.milestoneService.updateTemplate(id, {
+        switchMap((newDescription) =>
+          this.milestoneService.updateTemplate(this.id(), {
             description: newDescription,
           })
         )
@@ -175,11 +177,9 @@ export class MilestoneTemplateInfoComponent implements OnInit, OnChanges {
       .pipe(
         debounceTime(3000),
         distinctUntilChanged(),
+
         switchMap((newDueDate) =>
-          forkJoin({ newDueDate: of(newDueDate), id: this.id$ })
-        ),
-        switchMap(({ newDueDate, id }) =>
-          this.milestoneService.updateTemplate(id, {
+          this.milestoneService.updateTemplate(this.id(), {
             due_date: newDueDate,
           })
         )
@@ -194,37 +194,17 @@ export class MilestoneTemplateInfoComponent implements OnInit, OnChanges {
           this.toastr.error('error changing milestone description');
         },
       });
-
-    this.watchMilestoneId();
   }
-
-  watchMilestoneId() {}
 
   handleDeleteMilestone() {
-    this.id$
-      .pipe(switchMap((id) => this.milestoneService.deleteTemplate(id)))
-      .subscribe({
-        next: () => {
-          this.toastr.success('successfully deleted a template');
-          this.closed.emit();
-        },
-        error: () => {
-          this.toastr.error('failed to delete a template');
-        },
-      });
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    this.handleMilestoneIdChanges(changes);
-  }
-
-  handleMilestoneIdChanges(changes: SimpleChanges) {
-    const newMilestoneId = changes['milestoneId'];
-
-    if (newMilestoneId === undefined) return;
-
-    const newValue = newMilestoneId.currentValue as number;
-
-    this.milestoneId$.next(newValue);
+    this.milestoneService.deleteTemplate(this.id()).subscribe({
+      next: () => {
+        this.toastr.success('successfully deleted a template');
+        this.profileStateService.setSelectedMilestoneId(null);
+      },
+      error: () => {
+        this.toastr.error('failed to delete a template');
+      },
+    });
   }
 }

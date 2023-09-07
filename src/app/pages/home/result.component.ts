@@ -15,6 +15,7 @@ import {
   from,
   map,
   switchMap,
+  take,
   tap,
 } from 'rxjs';
 import { formatStringArray } from 'src/app/utils/formatStringArray';
@@ -92,6 +93,7 @@ export class ResultComponent {
   toastr = inject(ToastrService);
 
   result$ = this.projectService.analyzerResult$.pipe(
+    take(1),
     filter((res): res is TitleAnalyzerResult => res !== undefined),
     catchError((err) => {
       this.toastr.error('Error occured while analyzing title');

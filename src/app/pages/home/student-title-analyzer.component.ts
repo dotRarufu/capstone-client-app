@@ -4,20 +4,21 @@ import { CommonModule } from '@angular/common';
 import { ResultComponent } from './result.component';
 import { HomeStateService } from './data-access/home-state.service';
 import { ProjectService } from '../../services/project.service';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'student-title-analyzer',
   standalone: true,
   imports: [TitleAnalyzerComponent, CommonModule, ResultComponent],
   template: `
-    <div class="flex flex-col gap-4 ">
-      <ng-container *ngIf="!(projectService.analyzerResult$ | async)">
+    <div class="flex flex-col gap-4" *ngIf="{result: result$ | async} as observbles">
+      <ng-container *ngIf="!observbles.result">
         <title-analyzer
           (analyzeClicked)="homeStateService.setAlreadyHaveTitle(true)"
         />
       </ng-container>
 
-      <ng-container *ngIf="projectService.analyzerResult$ | async">
+      <ng-container *ngIf="observbles.result">
         <title-analyzer-result />
       </ng-container>
     </div>
@@ -26,4 +27,9 @@ import { ProjectService } from '../../services/project.service';
 export class StudentTitleAnalyzerComponent {
   projectService = inject(ProjectService);
   homeStateService = inject(HomeStateService);
+  result$  = this.projectService.analyzerResult$
+
+  a = this.projectService.analyzerResult$.pipe(
+    tap((v) => console.log('res emits:!', v))
+  );
 }

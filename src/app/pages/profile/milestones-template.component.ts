@@ -5,6 +5,7 @@ import {
   OnChanges,
   OnInit,
   SimpleChanges,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -16,6 +17,7 @@ import { MilestoneTemplateInfoComponent } from './milestone-info.component';
 import { AuthService } from 'src/app/services/auth.service';
 import { EMPTY, catchError, delay, from, map, switchMap } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ProfileStateService } from './data-access/profile-state.service';
 
 @Component({
   selector: 'milestones-template',
@@ -27,15 +29,20 @@ import { NgxSpinnerService } from 'ngx-spinner';
     MilestoneTemplateInfoComponent,
   ],
   template: `
-    <ng-container *ngIf="{ milestones: milestones$ | async } as observables">
+    <ng-container
+      *ngIf="{
+        milestones: milestones$ | async,
+        selectedMilestoneId: profileStateService.selectedMilestoneId$ | async
+      } as observables"
+    >
       <ng-container *ngIf="!sideColumn">
         <div
           class="rounded-[5px] border border border-base-content/50 border-red-500 bg-base-100 p-[16px]"
         >
-          <div class="flex justify-between items-center border border-blue-500">
+          <div class="flex items-center justify-between border border-blue-500">
             <h1 class="text-[18px] font-semibold">Milestones Template</h1>
             <button
-            (click)="reapplyTemplates()"
+              (click)="reapplyTemplates()"
               class="btn-ghost btn-sm flex flex-row items-center justify-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
             >
               <i-feather
@@ -58,9 +65,11 @@ import { NgxSpinnerService } from 'ngx-spinner';
                 <div class="flex w-full items-center justify-between">
                   <span
                     class="btn-link btn px-0 text-left text-base-content no-underline"
-                    (click)="this.selectedMilestoneId.set(milestone.id)"
+                    (click)="
+                      profileStateService.setSelectedMilestoneId(milestone.id)
+                    "
                     [class.text-primary]="
-                      selectedMilestoneId() === milestone.id
+                    observables.selectedMilestoneId === milestone.id
                     "
                   >
                     {{ milestone.title }}
@@ -85,9 +94,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
 
             <div class="pt-[20px]">
               <milestone-template-info
-                *ngIf="selectedMilestoneId() !== null; else empty"
-                [milestoneId]="selectedMilestoneId()"
-                (closed)="selectedMilestoneId.set(null)"
+                *ngIf="observables.selectedMilestoneId !== null; else empty"
+
               />
 
               <ng-template #empty>
@@ -130,9 +138,11 @@ import { NgxSpinnerService } from 'ngx-spinner';
                 <div class="flex w-full items-center justify-between">
                   <span
                     class="btn-link btn px-0 text-left text-base-content no-underline"
-                    (click)="this.selectedMilestoneId.set(milestone.id)"
+                    (click)="
+                      profileStateService.setSelectedMilestoneId(milestone.id)
+                    "
                     [class.text-primary]="
-                      selectedMilestoneId() === milestone.id
+                    observables.selectedMilestoneId === milestone.id
                     "
                   >
                     {{ milestone.title }}
@@ -146,9 +156,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 
             <div class="rounded-[5px] border p-[16px]">
               <milestone-template-info
-                *ngIf="selectedMilestoneId() !== null; else empty"
-                [milestoneId]="selectedMilestoneId()"
-                (closed)="selectedMilestoneId.set(null)"
+                *ngIf="observables.selectedMilestoneId !== null; else empty"
               />
 
               <ng-template #empty>
@@ -171,8 +179,9 @@ export class MilestonesTemplateComponent {
   milestoneService = inject(MilestoneService);
   toastr = inject(ToastrService);
   spinner = inject(NgxSpinnerService);
+  profileStateService = inject(ProfileStateService);
 
-  selectedMilestoneId = signal<number | null>(null);
+  a = this.profileStateService.selectedMilestoneId$.subscribe({next:(v) => console.log("emits123:", v)})
   @Input() sideColumn? = false;
 
   data = [0, 1, 2];
@@ -207,21 +216,21 @@ export class MilestonesTemplateComponent {
   );
 
   reapplyTemplates() {
-    console.log("reapply start")
+    console.log('reapply start');
     this.spinner.show();
 
-    const reapply$ = this.milestoneService.reapplyTemplates()
+    const reapply$ = this.milestoneService.reapplyTemplates();
 
     reapply$.subscribe({
       next: (a) => {
-        console.log("reapplied res:", a)
+        console.log('reapplied res:', a);
         this.spinner.hide();
-        this.toastr.success('Sucessfully re-applied templates')
+        this.toastr.success('Sucessfully re-applied templates');
       },
-      error:() => {
+      error: () => {
         this.spinner.hide();
-        this.toastr.error('Failed to re-apply templates')
-      }
-    })
+        this.toastr.error('Failed to re-apply templates');
+      },
+    });
   }
 }
