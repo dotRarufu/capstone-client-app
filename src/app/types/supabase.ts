@@ -408,16 +408,19 @@ export interface Database {
         Row: {
           id: number
           project_id: number
+          role: string | null
           student_uid: string
         }
         Insert: {
           id?: number
           project_id: number
+          role?: string | null
           student_uid: string
         }
         Update: {
           id?: number
           project_id?: number
+          role?: string | null
           student_uid?: string
         }
         Relationships: [

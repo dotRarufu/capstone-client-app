@@ -8,8 +8,8 @@ import { User } from 'src/app/types/collection';
   standalone: true,
   imports: [FeatherModule, CommonModule],
   template: `
-    <div class="flex w-full items-center justify-between rounded-[3px]">
-      <div class="flex items-center gap-2 py-[8px]">
+    <div onclick="participantDetail.showModal()" class="flex w-full items-center justify-between rounded-[3px] hover:bg-base-200 cursor-pointer">
+      <div class="flex items-center gap-2 p-[8px]">
         <div
           class=" avatar  flex aspect-square items-center rounded-[5px] bg-blue-300 p-0"
         >
@@ -22,26 +22,27 @@ import { User } from 'src/app/types/collection';
           >
             {{ user.name }}
           </a>
-          <p class="text-base text-base-content/70">role {{ user.role_id }}</p>
+          <p class="text-base text-base-content/70">{{ user.projectRole }}</p>
         </div>
       </div>
 
-      <button
+      <!-- <button
         *ngIf="showRemoveButton"
         (click)="this.removeButtonClicked.emit(this.user.uid)"
         class="btn-ghost btn-xs btn gap-2 rounded-[3px] text-[14px] font-normal text-base-content hover:text-error  "
       >
         Remove
-      </button>
+      </button> -->
     </div>
   `,
 })
 export class ParticipantCardComponent {
-  @Input() user: User = {
+  @Input() user: User & {projectRole: string | null} = {
     name: '',
     role_id: -1,
     uid: '',
     avatar_last_update: 0,
+    projectRole: ""
   };
   @Input({ required: true }) showRemoveButton!: boolean;
   @Output() removeButtonClicked = new EventEmitter<string>();

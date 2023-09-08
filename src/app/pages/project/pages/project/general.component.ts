@@ -25,6 +25,8 @@ import {
 import { AuthService } from 'src/app/services/auth.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { ParticipntDetailModalComponent } from './participant-detail-modal.component';
+import { ProjectStateService } from './data-access/project-state.service';
 
 @Component({
   selector: 'general',
@@ -37,6 +39,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
     ProjectCardPreviewComponent,
     ReactiveFormsModule,
     AddParticipantModalComponent,
+    ParticipntDetailModalComponent
   ],
 
   template: `
@@ -92,7 +95,8 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <participant-card
-          *ngFor="let participant of participants$ | async"
+        *ngFor="let participant of participants$ | async"
+        (click)="projectStateService.setActiveParticipant(participant)"
           [user]="participant"
           [showRemoveButton]="shouldShowParticipant(participant)"
           (removeButtonClicked)="handleRemoveButtonClick($event)"
@@ -122,6 +126,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
       </div>
     </div>
     <add-participant-modal />
+    <participant-detail-modal />
   `,
 })
 export class GeneralComponent implements OnInit {
@@ -130,6 +135,7 @@ export class GeneralComponent implements OnInit {
   route = inject(ActivatedRoute);
   toastr = inject(ToastrService);
   authService = inject(AuthService);
+  projectStateService = inject(ProjectStateService);
 
   name = new FormControl('', { nonNullable: true });
   title = new FormControl('', { nonNullable: true });

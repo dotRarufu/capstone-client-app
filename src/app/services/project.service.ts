@@ -156,22 +156,34 @@ export class ProjectService {
       switchMap(() => {
         const students = this.client
           .from('member')
-          .select('student_uid')
+          .select('student_uid, role')
           .eq('project_id', projectId);
 
         const advisers$ = this.getAdvisers(projectId).pipe(
           switchMap((advisers) => {
-            const ids = [];
+            const ids: { id: string; role: string }[] = [];
 
             if (advisers.capstone_adviser_id !== null)
-              ids.push(advisers.capstone_adviser_id);
+              ids.push({
+                id: advisers.capstone_adviser_id,
+                role: 'Capstone Adviser',
+              });
 
             if (advisers.technical_adviser_id !== null)
-              ids.push(advisers.technical_adviser_id);
+              ids.push({
+                id: advisers.technical_adviser_id,
+                role: 'Technical Adviser',
+              });
 
             if (ids.length === 0) return of([]);
 
-            return forkJoin(ids.map((id) => this.authService.getUser(id)));
+            return forkJoin(
+              ids.map(({ id, role }) =>
+                this.authService
+                  .getUser(id)
+                  .pipe(map((u) => ({ ...u, projectRole: role })))
+              )
+            );
           })
         );
         const students$ = from(students).pipe(
@@ -182,8 +194,10 @@ export class ProjectService {
           }),
           switchMap((ids) =>
             forkJoin(
-              ids.map(({ student_uid }) =>
-                this.authService.getUser(student_uid)
+              ids.map(({ student_uid, role }) =>
+                this.authService
+                  .getUser(student_uid)
+                  .pipe(map((u) => ({ ...u, projectRole: role })))
               )
             )
           )
@@ -450,6 +464,24 @@ export class ProjectService {
     );
 
     return res$;
+  }
+
+  changeParticipantRole(uid: string, projectId: number, role: string) {
+    if (uid === '')
+    return throwError(() => new Error('No user uid passed'));
+  if (projectId < 0) return throwError(() => new Error('Invalid project id'));
+
+
+    const req = this.client.from("member").update({role}).eq("student_uid", uid)
+    const req$ = from(req).pipe(
+      map(res => {
+        const { data } = errorFilter(res);
+
+        return res;
+      })
+    );
+
+    return req$;
   }
 
   async getProjectsFromCategory(categoryId: number) {

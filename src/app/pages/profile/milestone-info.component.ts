@@ -125,9 +125,7 @@ export class MilestoneTemplateInfoComponent implements OnInit {
     })
   );
   id = toSignal(this.id$, { initialValue: -1 });
-  a = effect(() => console.log('emits 1231221:', this.id()));
 
-  
   ngOnInit(): void {
     this.newTitle$
       .pipe(
