@@ -58,7 +58,7 @@ import { AddProjectModalComponent } from './add-project-modal.component';
             class="w-full sm2:w-[840px]  md:w-full lg:w-[1040px]"
             *ngIf="
               (observables.activeId === 'projects' || isDesktop) &&
-              (role === 'c' || role === 't')
+              (role === 'a')
             "
           >
             <adviser-projects />
@@ -68,7 +68,7 @@ import { AddProjectModalComponent } from './add-project-modal.component';
             class="w-full sm2:w-[840px] md:w-[294px] md:flex-shrink-0 md:basis-[294px] lg:w-[1040px]"
             *ngIf="
               (observables.activeId === 'reports' || isDesktop) &&
-              (role === 'c' || role === 't')
+              (role === 'a')
             "
           >
             <adviser-reports [sideColumn]="true" />
@@ -122,8 +122,8 @@ export class HomePageComponent implements OnInit {
     if (child1 === null) throw new Error('impossible');
 
     const active = child1.url[0].path;
-    const routes = ['c', 't'].includes(this.role)
-      ? ['a', this.role, 'home']
+    const routes = ['a'].includes(this.role)
+      ? [this.role, 'home']
       : [this.role, 'home'];
 
     const studentTabs: TabDefinition[] = [

@@ -64,7 +64,7 @@ export class MobileHeaderComponent {
             return;
           }
 
-          this.router.navigate(['a', rolePath, 'p', this.projectId(), path]);
+          this.router.navigate([rolePath, 'p', this.projectId(), path]);
         })
       )
       .subscribe({

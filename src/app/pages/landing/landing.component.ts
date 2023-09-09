@@ -71,7 +71,7 @@ export class LandingComponent implements OnInit {
             return;
           }
 
-          this.router.navigate(['a', role]);
+          this.router.navigate(['a']);
           this.toastr.success('Welcome back ' + user.name);
         },
       });

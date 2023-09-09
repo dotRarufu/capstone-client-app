@@ -114,12 +114,6 @@ export class LoginComponent {
       )
       .subscribe({
         next: (rolePath) => {
-          if (rolePath !== 's') {
-            this.router.navigate(['a', rolePath, 'home']);
-
-            return;
-          }
-
           this.router.navigate([rolePath, 'home']);
         },
         error: () => {

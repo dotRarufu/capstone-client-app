@@ -43,6 +43,22 @@ export class ProjectService {
 
   authService = inject(AuthService);
 
+  getAdviserProjectRole(projectId: number, userUid: string) {
+    const project$ = this.getProjectInfo(projectId).pipe(
+      map((p) => {
+        if (p.capstone_adviser_id === userUid) return 'c';
+        if (p.technical_adviser_id === userUid) return 't';
+
+        console.log('projectid:', projectId);
+        console.log('userUid:', userUid);
+        console.log('p:', p);
+        throw new Error('User is not participant of the project');
+      })
+    );
+
+    return project$;
+  }
+
   // Todo: add takeUntilDestroyed pipe for users of this method
   getProjects() {
     const user$ = this.authService.getAuthenticatedUser();
@@ -58,11 +74,8 @@ export class ProjectService {
           case 0: {
             return this.getStudentProjects(user.uid);
           }
-          case 1: {
-            return this.getCapstoneAdviserProjects(user.uid);
-          }
-          case 2: {
-            return this.getTechnicalAdviserProjects(user.uid);
+          case 5: {
+            return this.getGenericAdviserProjects(user.uid);
           }
 
           default:
@@ -110,7 +123,7 @@ export class ProjectService {
       capstone_adviser_id: null,
       is_done: false,
       technical_adviser_id: null,
-      section
+      section,
     };
     const req = this.client.from('project').insert(data).select('id').single();
 
@@ -277,7 +290,10 @@ export class ProjectService {
     );
     const roleMatchesTargetUser$ = this.authService.getUser(userUid).pipe(
       map((u) => {
-        if (u.role_id !== roleId)
+        console.log('role id:', roleId, 'u role:', u.role_id);
+        console.log('case 1:', roleId === 2 || roleId === 1);
+        console.log('case 2:', u.role_id !== 5);
+        if ((roleId === 2 || roleId === 1) && u.role_id !== 5)
           throw new Error(`Cannot add user as ${getRoleName(roleId)}`);
       })
     );
@@ -306,7 +322,7 @@ export class ProjectService {
             tap((_) => this.signalNewParticipant())
           );
 
-        if (![1, 2].includes(role_id)) throw new Error('unknon role');
+        if (![5].includes(role_id)) throw new Error('unknon role');
 
         const addProjectAdviser$ = sender$.pipe(
           switchMap((sender) =>
@@ -344,8 +360,7 @@ export class ProjectService {
           return this.removeStudent(user.uid, projectId);
         }
 
-        if (![1, 2].includes(user.role_id))
-          throw new Error('unknown user role');
+        if (![5].includes(user.role_id)) throw new Error('unknown user role');
 
         const data: { [x: string]: null } = {};
         const adviser = user.role_id === 1 ? 'capstone' : 'technical';
@@ -640,12 +655,19 @@ export class ProjectService {
     return projects$;
   }
 
-  private getTechnicalAdviserProjects(userUid: string) {
+  private getGenericAdviserProjects(userUid: string) {
     const request = this.client
       .from('project')
       .select('id')
-      .eq('is_done', false)
-      .eq('technical_adviser_id', userUid);
+      .or(
+        `capstone_adviser_id.eq.${userUid}, technical_adviser_id.eq.${userUid}`
+      )
+      .eq('is_done', false);
+
+    console.log(
+      'test:',
+      `capstone_adviser_id.eq.${userUid}, technical_adviser_id.eq.${userUid}`
+    );
 
     const projects$ = from(request).pipe(
       map((res) => {

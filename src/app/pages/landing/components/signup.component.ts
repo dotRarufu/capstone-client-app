@@ -44,10 +44,10 @@ import { AuthService } from 'src/app/services/auth.service';
             >
               <!-- todo: make this dynamic -->
               <option disabled selected>What is your role?</option>
-              <!-- todo: rename roles table to role -->
+           
               <option (click)="roleId.setValue(0)">Student</option>
-              <option (click)="roleId.setValue(1)">Subject Adviser</option>
-              <option (click)="roleId.setValue(2)">Technical Adviser</option>
+              <option (click)="roleId.setValue(5)">Adviser</option>
+
             </select>
           </div>
         </div>

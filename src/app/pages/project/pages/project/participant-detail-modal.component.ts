@@ -106,7 +106,7 @@ import { AuthService } from 'src/app/services/auth.service';
               save
             </button>
             <button
-              *ngIf="observables.user?.uid !== observables.participant?.uid && observables.participant?.role_id === 0"
+              *ngIf="observables.user?.uid !== observables.participant?.uid && observables.participant?.role_id === 0 && observables.user?.role_id === 0"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
               (click)="handleRemoveClick(observables.participant?.uid || '')"
             >

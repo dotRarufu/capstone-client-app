@@ -7,8 +7,10 @@ import { ToastrService } from 'ngx-toastr';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { TaskStateService } from './data-access/tasks-state.service';
-import { filter } from 'rxjs';
+import { filter, of, switchMap } from 'rxjs';
 import { isNotNull } from 'src/app/utils/isNotNull';
+import { AuthService } from 'src/app/services/auth.service';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'task-details-modal',
@@ -24,7 +26,9 @@ import { isNotNull } from 'src/app/utils/isNotNull';
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
         *ngIf="{
-          activeTask: taskStateService.activeTask$ | async
+          activeTask: taskStateService.activeTask$ | async,
+          role: role$ | async,
+          user: user$ | async
         } as observables"
       >
         <div class="flex justify-between bg-primary p-[24px]">
@@ -75,7 +79,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
           <ul class=" flex w-full flex-col  bg-neutral/20 py-2 sm1:w-[223px]">
             <label
               (click)="this.isInEdit.set(true)"
-              *ngIf="!isInEdit() && ['c', 't'].includes(role)"
+              *ngIf="!isInEdit() && observables.activeTask?.assigner_id === observables.user!.uid"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="edit" />
@@ -83,7 +87,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
             </label>
             <button
               (click)="handleDeleteClick()"
-              *ngIf="!isInEdit() && ['c', 't'].includes(role)"
+              *ngIf="!isInEdit() && observables.activeTask?.assigner_id === observables.user!.uid"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="user-check" />
@@ -91,7 +95,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
             </button>
             <button
               (click)="handleSaveClick()"
-              *ngIf="isInEdit() && ['c', 't'].includes(role)"
+              *ngIf="isInEdit() && observables.role?.role_id === 5"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="user-check" />
@@ -109,7 +113,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
             </button>
             <label
               (click)="this.isInEdit.set(false)"
-              *ngIf="isInEdit() && ['c', 't'].includes(role)"
+              *ngIf="isInEdit() && observables.role?.role_id === 5"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="user-check" />
@@ -126,8 +130,15 @@ export class TaskDetailsModalComponent {
   taskService = inject(TaskService);
   toastr = inject(ToastrService);
   taskStateService = inject(TaskStateService);
+  authService = inject(AuthService);
+  projectService = inject(ProjectService);
 
-  role: 's' | 't' | 'c' = this.route.snapshot.data['role'];
+  projectId = Number(this.route.parent!.snapshot.url[0].path)
+
+  role$ = this.authService.getAuthenticatedUser().pipe(
+    filter(isNotNull)
+  )
+  user$ = this.authService.getAuthenticatedUser().pipe(filter(isNotNull))
 
   isInEdit = signal(false);
   description = new FormControl('', { nonNullable: true });

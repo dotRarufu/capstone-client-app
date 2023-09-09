@@ -6,10 +6,11 @@ import { AddMilestoneModalComponent } from 'src/app/pages/project/pages/mileston
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { FeatherIconsModule } from '../../../../components/icons/feather-icons.module';
 import { AuthService } from 'src/app/services/auth.service';
-import { catchError, from, map, tap } from 'rxjs';
+import { catchError, filter, from, map, switchMap, tap, of } from 'rxjs';
 import { getRolePath } from 'src/app/utils/getRolePath';
 import { ProjectService } from 'src/app/services/project.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { isNotNull } from 'src/app/utils/isNotNull';
 
 type Milestone = {
   title: string;
@@ -114,11 +115,14 @@ export class MilestonesComponent {
   projectId = Number(this.route.parent!.snapshot.url[0].path);
 
   isCapstoneAdviser$ = this.authService.getAuthenticatedUser().pipe(
-    map((u) => {
-      if (u === null) return false;
+    filter(isNotNull),
+    switchMap((u) => {
+      if (u.role_id === 0) return of('s')
 
-      return getRolePath(u.role_id) === 'c';
-    })
+      return this.projectService.getAdviserProjectRole(this.projectId, u.uid)
+    }
+    ),
+    map((role) => role === 'c')
   );
   milestones$ = this.milestoneService.getMilestones(this.projectId).pipe(
     takeUntilDestroyed(),

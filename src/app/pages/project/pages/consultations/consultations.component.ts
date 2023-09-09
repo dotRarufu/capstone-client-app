@@ -13,6 +13,10 @@ import { ActivatedRoute } from '@angular/router';
 import { ScheduledConsultationModalComponent } from './scheduled-consultation-modal.component';
 import { ConsultationStateService } from './data-access/consultations-state.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ProjectService } from 'src/app/services/project.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { filter, map, switchMap, of } from 'rxjs';
+import { isNotNull } from 'src/app/utils/isNotNull';
 
 @Component({
   selector: 'consultations',
@@ -28,14 +32,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     ScheduledConsultationModalComponent,
   ],
   template: `
-    <div class="flex h-full flex-col gap-[16px] ">
+  <ng-container   *ngIf="{ consultations: consultations$ | async, role: role$ | async } as observables">
+    <div
+    
+      class="flex h-full flex-col gap-[16px] "
+    >
       <div class="flex justify-between ">
         <h1 class="hidden text-2xl text-base-content min-[998px]:block">
           Consultation
         </h1>
 
         <button
-          *ngIf="role === 's'"
+          *ngIf="observables.role === 's'"
           onclick="scheduleConsultation.showModal()"
           class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
         >
@@ -46,7 +54,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
       <div class="h-[2px] w-full bg-base-content/10"></div>
 
-      <accordion *ngFor="let c of consultations" [heading]="c.category">
+      <accordion
+        *ngFor="let c of observables.consultations"
+        [heading]="c.category"
+      >
         <div class="flex flex-wrap justify-start gap-[24px]">
           <consultation-card
             *ngFor="let data of c.items | async"
@@ -60,22 +71,22 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
       </accordion>
     </div>
 
-    <schedule-consultation-modal *ngIf="role === 's'" />
+    <schedule-consultation-modal *ngIf="observables.role === 's'" />
     <consultation-details-modal />
     <!-- todo: find out why id has  to be wrapped -->
     <consultation-details-modal [id]="'pendingConsultationsModal'">
       <button
-        *ngIf="role === 's'"
+        *ngIf="observables.role === 's'"
         (click)="cancelInvitation()"
         class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
       >
         <i-feather class="text-base-content/70" name="x" /> cancel
       </button>
     </consultation-details-modal>
-    <completed-consultation-modal *ngIf="['c', 't'].includes(role)" />
-    <scheduled-consultation-modal *ngIf="role === 't'" />
+    <completed-consultation-modal *ngIf="['c', 't'].includes(observables.role || '')" />
+    <scheduled-consultation-modal *ngIf="observables.role === 't'" />
     <consultation-details-modal
-      *ngIf="role === 't'"
+      *ngIf="observables.role === 't'"
       [id]="'techAdPendingConsultationsModal'"
     >
       <button
@@ -91,6 +102,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
         <i-feather class="text-base-content/70" name="x" /> Decline
       </button>
     </consultation-details-modal>
+</ng-container>
   `,
 })
 export class ConsultationsComponent {
@@ -98,46 +110,59 @@ export class ConsultationsComponent {
   toastr = inject(ToastrService);
   route = inject(ActivatedRoute);
   consultationStateService = inject(ConsultationStateService);
+  projectService = inject(ProjectService);
+  authService = inject(AuthService);
   destroyRef = inject(DestroyRef);
 
   projectId = Number(this.route.parent!.snapshot.url[0].path);
 
-  role = this.route.snapshot.data['role'];
-  consultations = [
-    {
-      category: 'Pending',
-      items: this.consultationService
-        .getConsultations(0, this.projectId)
-        .pipe(takeUntilDestroyed(this.destroyRef)),
-      buttonId: this.getButtonIdForPendingAccordion(),
-    },
-    {
-      category: 'Scheduled',
-      items: this.consultationService
-        .getConsultations(1, this.projectId)
-        .pipe(takeUntilDestroyed(this.destroyRef)),
-      buttonId: this.role === 't' ? 'techAdScheduled' : '',
-    },
-    {
-      category: 'Completed',
-      items: this.consultationService
-        .getConsultations(2, this.projectId)
-        .pipe(takeUntilDestroyed(this.destroyRef)),
-      buttonId: this.role === 't' ? 'techAdCompleted' : '',
-    },
-    {
-      category: 'Declined',
-      items: this.consultationService
-        .getConsultations(3, this.projectId)
-        .pipe(takeUntilDestroyed(this.destroyRef)),
-    },
-  ];
+  role$ = this.authService.getAuthenticatedUser().pipe(
+    filter(isNotNull),
+    switchMap(u => {
+      if (u.role_id === 0) return of('s');
+
+    return this.projectService.getAdviserProjectRole(this.projectId, u.uid)
+    })
+  )
+  consultations$ = this.authService.getAuthenticatedUser().pipe(
+    filter(isNotNull),
+    switchMap((user) =>
+      this.projectService.getAdviserProjectRole(this.projectId, user.uid)
+    ),
+    map((role) => [
+      {
+        category: 'Pending',
+        items: this.consultationService
+          .getConsultations(0, this.projectId)
+          .pipe(takeUntilDestroyed(this.destroyRef)),
+        buttonId: this.getButtonIdForPendingAccordion(role),
+      },
+      {
+        category: 'Scheduled',
+        items: this.consultationService
+          .getConsultations(1, this.projectId)
+          .pipe(takeUntilDestroyed(this.destroyRef)),
+        buttonId: role === 't' ? 'techAdScheduled' : '',
+      },
+      {
+        category: 'Completed',
+        items: this.consultationService
+          .getConsultations(2, this.projectId)
+          .pipe(takeUntilDestroyed(this.destroyRef)),
+        buttonId: role === 't' ? 'techAdCompleted' : '',
+      },
+      {
+        category: 'Declined',
+        items: this.consultationService
+          .getConsultations(3, this.projectId)
+          .pipe(takeUntilDestroyed(this.destroyRef)),
+      },
+    ])
+  );
 
   handleInvitation(decision: boolean) {
     const activeConsultation =
       this.consultationStateService.getActiveConsultation()!;
-
-
 
     const id = activeConsultation.id;
 
@@ -154,23 +179,18 @@ export class ConsultationsComponent {
   cancelInvitation() {
     const consultation = this.consultationStateService.getActiveConsultation()!;
 
-
     this.consultationService.cancelInvitation(consultation.id).subscribe({
       next: (res) => this.toastr.success(res),
       error: (res) => this.toastr.error(res),
     });
   }
 
-
-
-  getButtonIdForPendingAccordion() {
-    switch (this.role) {
-      case 's':
-        return 'studentPending';
+  getButtonIdForPendingAccordion(role: 'c' | 't') {
+    switch (role) {
       case 't':
         return 'techAdPending';
       default:
-        return '';
+        return 'studentPending';
     }
   }
 }

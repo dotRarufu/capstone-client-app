@@ -76,7 +76,7 @@ export class ProjectCardComponent implements OnChanges {
     this.project$.subscribe({
       next: (project) => {
         const studentPath = [this.role, 'p', project.id];
-        const adviserPath = ['a', this.role, 'p', project.id];
+        const adviserPath = [this.role, 'p', project.id];
 
         this.router.navigate(this.role === 's' ? studentPath : adviserPath);
       },

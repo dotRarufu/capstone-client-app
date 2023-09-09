@@ -49,7 +49,10 @@ import { InvitedParticipantCardComponent } from './invited-participant-card.comp
   ],
 
   template: `
-    <div *ngIf="{project: project$ | async} as observables" class="flex flex-col gap-[16px]">
+    <div
+      *ngIf="{ project: project$ | async } as observables"
+      class="flex flex-col gap-[16px]"
+    >
       <div class="flex w-full flex-col gap-[16px] sm2:flex-row">
         <div class="flex w-full flex-col gap-[8px]">
           <div class="flex flex-col gap-[4px]">
@@ -112,25 +115,23 @@ import { InvitedParticipantCardComponent } from './invited-participant-card.comp
         />
       </div>
 
-      
       <div class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Section</div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-   
+
         <input
-              [formControl]="section"
-              (change)="newSectionSubject.next(this.section.value)"
-          
-              type="text"
-              placeholder="3-1"
-              class="input-bordered input input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
-            />
+          [formControl]="section"
+          (change)="newSectionSubject.next(this.section.value)"
+          type="text"
+          placeholder="3-1"
+          class="input-bordered input input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
+        />
       </div>
 
       <div class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Date Created</div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-        <div>{{observables.project?.created_at}}</div>
+        <div>{{ observables.project?.created_at }}</div>
       </div>
       <div *ngIf="isCapstoneAdviser()" class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Mark as Done</div>
@@ -181,8 +182,11 @@ export class GeneralComponent implements OnInit {
 
     if (user === null) return false;
 
-    return getRolePath(user.role_id) === 'c';
+    return this.projectService
+      .getAdviserProjectRole(this.projectId, user.uid)
+      .pipe(map((role) => role === 'c'));
   });
+
   user = toSignal(
     this.authService.user$.pipe(
       take(1),
@@ -196,7 +200,7 @@ export class GeneralComponent implements OnInit {
     { initialValue: null }
   );
 
-  project$ = this.projectService.getProjectInfo(this.projectId)
+  project$ = this.projectService.getProjectInfo(this.projectId);
   projectSubscription = this.project$.subscribe({
     next: (project) => {
       this.name.setValue(project.name);
@@ -251,9 +255,7 @@ export class GeneralComponent implements OnInit {
     .pipe(filter((v): v is ProjectRow => !v.hasOwnProperty('isError')))
     .subscribe({
       next: (res) => {
-        this.toastr.success(
-          'Successfully changed section to ' + res.section
-        );
+        this.toastr.success('Successfully changed section to ' + res.section);
       },
     });
   newSectionFailed$ = this.newSection$
@@ -322,13 +324,14 @@ export class GeneralComponent implements OnInit {
   invited$ = this.projectService.getInvitedParticipants(this.projectId).pipe(
     switchMap((users) => {
       const usersData$ = users.map((u) =>
-        this.authService.getUser(u.receiver_uid).pipe(map(v => ({...v, ...u})))
+        this.authService
+          .getUser(u.receiver_uid)
+          .pipe(map((v) => ({ ...v, ...u })))
       );
-      if (users.length === 0) return of([])
+      if (users.length === 0) return of([]);
 
       return forkJoin(usersData$);
-    }),
-
+    })
   );
 
   participants$ = this.projectService.getParticipants(this.projectId).pipe(

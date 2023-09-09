@@ -163,7 +163,7 @@ export class NavigationRailComponent {
             return;
           }
 
-          this.router.navigate(['a', rolePath, 'p', this.projectId(), path]);
+          this.router.navigate([rolePath, 'p', this.projectId(), path]);
         },
       });
   }
@@ -186,7 +186,7 @@ export class NavigationRailComponent {
             return;
           }
 
-          this.router.navigate(['a', rolePath, 'home']);
+          this.router.navigate([rolePath, 'home']);
         },
       });
   }

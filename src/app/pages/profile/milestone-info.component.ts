@@ -29,11 +29,16 @@ import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ProfileStateService } from './data-access/profile-state.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { AuthService } from 'src/app/services/auth.service';
+import { CommonModule } from '@angular/common';
+import { isNotNull } from 'src/app/utils/isNotNull';
+import { ProjectService } from 'src/app/services/project.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'milestone-template-info',
   standalone: true,
-  imports: [BreadcrumbModule, ReactiveFormsModule],
+  imports: [BreadcrumbModule, ReactiveFormsModule, CommonModule],
   template: `
     <div class=" flex flex-col gap-[16px]">
       <div class="flex flex-col gap-[4px]">
@@ -97,9 +102,6 @@ export class MilestoneTemplateInfoComponent implements OnInit {
   breadcrumb = inject(BreadcrumbService);
   milestoneService = inject(MilestoneService);
   toastr = inject(ToastrService);
-
-  // @Input({ required: true }) milestoneId!: number | null;
-  // @Output() closed = new EventEmitter();
 
   title = new FormControl('', { nonNullable: true });
   description = new FormControl('', { nonNullable: true });

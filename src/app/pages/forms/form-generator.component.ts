@@ -44,7 +44,7 @@ import { filter } from 'rxjs';
           <button
             *ngIf="observables.formUrl !== ''"
             [class.hidden]="!myOutlet.isActivated"
-            (click)="handleDownloadClick()"
+            (click)="anchor.click()"
             class="btn-ghost btn absolute bottom-0 right-0 gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
             <i-feather class="text-base-content/70" name="download" />
@@ -97,7 +97,7 @@ export class FormGeneratorComponent implements OnInit {
 
     let route = [role, 'p', projectId.toString(), 'project', 'forms'];
     if (role !== 's') {
-      route = ['a', role, 'p', projectId.toString(), 'project', 'forms'];
+      route = [ role, 'p', projectId.toString(), 'project', 'forms'];
     }
 
     this.tabsService.setTabs(tabs, route, active);

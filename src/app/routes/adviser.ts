@@ -21,259 +21,125 @@ import { Form4Component } from '../pages/forms/form-4.component';
 
 const routes: Routes = [
   {
-    path: 'c',
-    canActivate: [authGuard, roleGuard('c')],
-    data: { breadcrumb: 'Home' },
+    path: 'home',
+    data: { role: 'a' },
+    component: HomePageComponent,
     children: [
       {
-        path: 'home',
-        data: { role: 'c' },
-        component: HomePageComponent,
-        children: [
-          {
-            path: 'projects',
+        path: 'projects',
 
-            // does not matter, is rendered in home component
-            component: ProjectPageComponent,
-          },
-          {
-            path: 'reports',
-            component: ReportsComponent,
-            // does not matter, is rendered in home component
-          },
-
-          { path: '', redirectTo: '/a/c/home/projects', pathMatch: 'full' },
-        ],
+        // does not matter, is rendered in home component
+        component: ProjectPageComponent,
       },
       {
-        path: 'p',
-        canActivate: [participantGuard],
-        data: { breadcrumb: { skip: true } },
-        children: [
-          {
-            path: ':projectId',
-            data: { breadcrumb: { skip: true } },
-            component: ProjectPageComponent,
-            children: [
-              {
-                path: 'tasks',
-                component: TasksPageComponent,
-                data: { role: 'c', breadcrumb: 'Tasks' },
-              },
-              {
-                path: 'milestones',
-                data: { breadcrumb: 'Milestones' },
-                component: MilestonesComponent,
-                children: [
-                  {
-                    path: ':milestoneId',
-                    // todo: do this in :projectId
-                    data: { breadcrumb: { alias: 'milestoneId' } },
-                    component: MilestoneInfoComponent,
-                  },
-                ],
-              },
-              {
-                path: 'project',
-                component: ProjectComponent,
-                data: { breadcrumb: 'Project' },
-                children: [
-                  {
-                    path: 'general',
-                    data: { breadcrumb: 'General' },
-
-                    component: GeneralComponent,
-                  },
-                  {
-                    path: 'reports',
-                    data: { breadcrumb: 'Reports' },
-
-                    component: ReportsComponent,
-                  },
-                  {
-                    path: 'danger-zone',
-                    data: { breadcrumb: 'Danger Zone' },
-                    component: DangerZoneComponent,
-                  },
-                  {
-                    path: 'forms',
-                    data: { role: 'c', breadcrumb: 'Forms' },
-
-                    component: FormGeneratorComponent,
-                    children: [
-                      {
-                        path: '1',
-                        component: FormComponent,
-                      },
-                      {
-                        path: '2',
-                        component: FormComponent,
-                      },
-                      {
-                        path: '3',
-                        component: Form3Component,
-                      },
-                      {
-                        path: '4',
-                        component: Form4Component,
-                      },
-                    ],
-                  },
-                  {
-                    path: '',
-                    pathMatch: 'full',
-                    redirectTo: 'general',
-                  },
-                ],
-              },
-              {
-                path: 'consultations',
-                component: ConsultationsComponent,
-                data: { role: 'c', breadcrumb: 'Consultations' },
-              },
-
-              {
-                path: '',
-                component: RedirectComponent,
-                // redirectTo: redirectToNewPath, pathMatch: 'full'
-                data: { path: ['a', 'c', 'p'] },
-              },
-            ],
-          },
-          { path: '', redirectTo: '/a/c/home/projects', pathMatch: 'full' },
-        ],
+        path: 'reports',
+        component: ReportsComponent,
+        // does not matter, is rendered in home component
       },
-      { path: '', redirectTo: '/a/c/home/projects', pathMatch: 'full' },
-      { path: '**', component: NotFoundComponent },
+
+      { path: '', redirectTo: '/a/home/projects', pathMatch: 'full' },
     ],
   },
   {
-    path: 't',
-    canActivate: [authGuard, roleGuard('t')],
-    data: { breadcrumb: 'Home' },
+    path: 'p',
+    canActivate: [participantGuard],
+    data: { breadcrumb: { skip: true } },
     children: [
       {
-        path: 'home',
-        component: HomePageComponent,
-        data: { role: 't' },
-        children: [
-          {
-            path: 'projects',
-
-            // does not matter, is rendered in home component
-            component: ProjectPageComponent,
-          },
-          {
-            path: 'reports',
-            component: ReportsComponent,
-            // does not matter, is rendered in home component
-          },
-
-          { path: '', redirectTo: '/a/t/home/projects', pathMatch: 'full' },
-        ],
-      },
-      {
-        path: 'p',
-        canActivate: [participantGuard],
+        path: ':projectId',
         data: { breadcrumb: { skip: true } },
+        component: ProjectPageComponent,
         children: [
           {
-            path: ':projectId',
-            data: { breadcrumb: { skip: true } },
-            component: ProjectPageComponent,
-
+            path: 'tasks',
+            component: TasksPageComponent,
+            data: { breadcrumb: 'Tasks' },
+          },
+          {
+            path: 'milestones',
+            data: { breadcrumb: 'Milestones' },
+            component: MilestonesComponent,
             children: [
               {
-                path: 'tasks',
-                component: TasksPageComponent,
-                data: { role: 't', breadcrumb: 'Tasks' },
+                path: ':milestoneId',
+                // todo: do this in :projectId
+                data: { breadcrumb: { alias: 'milestoneId' } },
+                component: MilestoneInfoComponent,
+              },
+            ],
+          },
+          {
+            path: 'project',
+            component: ProjectComponent,
+            data: { breadcrumb: 'Project' },
+            children: [
+              {
+                path: 'general',
+                data: { breadcrumb: 'General' },
+
+                component: GeneralComponent,
               },
               {
-                path: 'project',
-                component: ProjectComponent,
-                data: { breadcrumb: 'Project' },
+                path: 'reports',
+                data: { breadcrumb: 'Reports' },
+
+                component: ReportsComponent,
+              },
+              {
+                path: 'danger-zone',
+                data: { breadcrumb: 'Danger Zone' },
+                component: DangerZoneComponent,
+              },
+              {
+                path: 'forms',
+                data: { role: 'a', breadcrumb: 'Forms' },
+
+                component: FormGeneratorComponent,
                 children: [
                   {
-                    path: 'general',
-                    data: { breadcrumb: 'General' },
-
-                    component: GeneralComponent,
+                    path: '1',
+                    component: FormComponent,
                   },
                   {
-                    path: 'reports',
-                    data: { breadcrumb: 'Reports' },
-
-                    component: ReportsComponent,
+                    path: '2',
+                    component: FormComponent,
                   },
                   {
-                    path: 'danger-zone',
-                    data: { breadcrumb: 'Danger Zone' },
-                    component: DangerZoneComponent,
+                    path: '3',
+                    component: Form3Component,
                   },
                   {
-                    path: 'forms',
-                    data: { role: 't', breadcrumb: 'Forms' },
-
-                    component: FormGeneratorComponent,
-                    children: [
-                      {
-                        path: '1',
-                        component: FormComponent,
-                      },
-                      {
-                        path: '2',
-                        component: FormComponent,
-                      },
-                      {
-                        path: '3',
-                        component: Form3Component,
-                      },
-                      {
-                        path: '4',
-                        component: Form4Component,
-                      },
-                    ],
-                  },
-                  {
-                    path: '',
-                    pathMatch: 'full',
-                    redirectTo: 'general',
-                  },
-                ],
-              },
-              {
-                path: 'consultations',
-                component: ConsultationsComponent,
-                data: { role: 't', breadcrumb: 'Consultations' },
-              },
-              {
-                path: 'milestones',
-                data: { breadcrumb: 'Milestones' },
-                component: MilestonesComponent,
-                children: [
-                  {
-                    path: ':milestoneId',
-                    // todo: do this in :projectId
-                    data: { breadcrumb: { alias: 'milestoneId' } },
-                    component: MilestoneInfoComponent,
+                    path: '4',
+                    component: Form4Component,
                   },
                 ],
               },
               {
                 path: '',
-                component: RedirectComponent,
-                // redirectTo: redirectToNewPath, pathMatch: 'full'
-                data: { path: ['a', 't', 'p'] },
+                pathMatch: 'full',
+                redirectTo: 'general',
               },
             ],
           },
-          { path: '', redirectTo: '/a/t/home/projects', pathMatch: 'full' },
+          {
+            path: 'consultations',
+            component: ConsultationsComponent,
+            data: { role: 'a', breadcrumb: 'Consultations' },
+          },
+
+          {
+            path: '',
+            component: RedirectComponent,
+            // redirectTo: redirectToNewPath, pathMatch: 'full'
+            data: { path: ['a', 'p'] },
+          },
         ],
       },
-      { path: '', redirectTo: '/a/t/home/projects', pathMatch: 'full' },
-      { path: '**', component: NotFoundComponent },
+      { path: '', redirectTo: '/a/home/projects', pathMatch: 'full' },
     ],
   },
+  { path: '', redirectTo: '/a/home/projects', pathMatch: 'full' },
+  { path: '**', component: NotFoundComponent },
 ];
 
 export default routes;

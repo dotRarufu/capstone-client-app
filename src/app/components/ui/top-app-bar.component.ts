@@ -87,9 +87,9 @@ export class TopAppBarComponent {
         const rolePath = getRolePath(user.role_id);
         const route = [rolePath, 'home'];
 
-        if (rolePath !== 's') {
-          route.unshift('a');
-        }
+        // if (rolePath !== 's') {
+        //   route.unshift('a');
+        // }
 
         return route;
       }),

@@ -11,6 +11,9 @@ export const getRolePath = (roleId: number) => {
     case 2:
       role = 't';
       break;
+    case 5:
+      role = 'a';
+      break;
     default:
       throw new Error('user role error');
   }

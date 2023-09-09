@@ -1,4 +1,4 @@
-import {  Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { LandingComponent } from '../pages/landing/landing.component';
 import { ProfileComponent } from '../pages/profile/profile.component';
 import { ProfileViewComponent } from '../pages/profile/profile-view.component';
@@ -41,8 +41,8 @@ export const app: Routes = [
 
   {
     path: 'a',
-    // data: { breadcrumb: "Home" },
-    data: { breadcrumb: { skip: true } },
+    canActivate: [authGuard, roleGuard('a')],
+    data: { breadcrumb: 'Home' },
     loadChildren: () => import('./adviser'),
   },
   {

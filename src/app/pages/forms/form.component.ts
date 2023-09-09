@@ -25,10 +25,12 @@ import { ProjectService } from 'src/app/services/project.service';
       class="flex h-full w-full justify-center"
       *ngIf="{ src: src$ | async, advisers: advisers$ | async } as observables"
     >
+     
       <ngx-doc-viewer
         *ngIf="observables.advisers === null; else empty"
         [url]="observables.src || ''"
         viewer="office"
+        (loaded)="handleLoaded()"
         style="width:100%;height:100%;"
       />
 
@@ -54,7 +56,9 @@ export class FormComponent implements OnInit {
   route = inject(ActivatedRoute);
   toastr = inject(ToastrService);
   projectService = inject(ProjectService);
-
+  handleLoaded() {
+    console.log('LODADED!');
+  }
   formNumber = Number(this.route.snapshot.url[0].path);
   projectId = Number(this.route.parent!.parent!.parent!.snapshot.url[0].path);
 
@@ -86,6 +90,7 @@ export class FormComponent implements OnInit {
       )
     ),
     tap((_) => {
+      console.log('url:', _);
       this.toastr.success('successfully generated form');
       this.spinner.hide();
     }),

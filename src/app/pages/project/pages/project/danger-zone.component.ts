@@ -67,7 +67,12 @@ export class DangerZoneComponent {
     })
   );
   isCapstoneAdviser = toSignal(
-    this.user$.pipe(map((user) => getRolePath(user.role_id) === 'c'))
+    this.user$.pipe(
+      switchMap((u) =>
+        this.projectService.getAdviserProjectRole(this.projectId, u.uid)
+      ),
+      map((role) => role === 'c')
+    )
   );
 
   navigateToHome() {
