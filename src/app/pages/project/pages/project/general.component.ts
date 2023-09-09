@@ -49,7 +49,7 @@ import { InvitedParticipantCardComponent } from './invited-participant-card.comp
   ],
 
   template: `
-    <div class="flex flex-col gap-[16px]">
+    <div *ngIf="{project: project$ | async} as observables" class="flex flex-col gap-[16px]">
       <div class="flex w-full flex-col gap-[16px] sm2:flex-row">
         <div class="flex w-full flex-col gap-[8px]">
           <div class="flex flex-col gap-[4px]">
@@ -112,10 +112,25 @@ import { InvitedParticipantCardComponent } from './invited-participant-card.comp
         />
       </div>
 
+      
+      <div class="flex flex-col gap-[4px]">
+        <div class="text-base font-semibold">Section</div>
+        <div class="h-[2px] w-full bg-base-content/10"></div>
+   
+        <input
+              [formControl]="section"
+              (change)="newSectionSubject.next(this.section.value)"
+          
+              type="text"
+              placeholder="3-1"
+              class="input-bordered input input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
+            />
+      </div>
+
       <div class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Date Created</div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-        <div>July 23, 2023</div>
+        <div>{{observables.project?.created_at}}</div>
       </div>
       <div *ngIf="isCapstoneAdviser()" class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Mark as Done</div>
@@ -149,6 +164,7 @@ export class GeneralComponent implements OnInit {
 
   name = new FormControl('', { nonNullable: true });
   title = new FormControl('', { nonNullable: true });
+  section = new FormControl('', { nonNullable: true });
   isDone = new FormControl(false, { nonNullable: true });
 
   projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
@@ -180,11 +196,13 @@ export class GeneralComponent implements OnInit {
     { initialValue: null }
   );
 
-  project$ = this.projectService.getProjectInfo(this.projectId).subscribe({
+  project$ = this.projectService.getProjectInfo(this.projectId)
+  projectSubscription = this.project$.subscribe({
     next: (project) => {
       this.name.setValue(project.name);
       this.title.setValue(project.full_title);
       this.isDone.setValue(project.is_done);
+      this.section.setValue(project.section);
     },
     error: (err) => {
       this.toastr.error('error fetching project info');
@@ -216,6 +234,33 @@ export class GeneralComponent implements OnInit {
     .subscribe({
       next: (res) => {
         this.toastr.error('error changing title: ' + res.message);
+      },
+    });
+  newSectionSubject = new Subject<string>();
+  newSection$ = this.newSectionSubject.pipe(
+    takeUntilDestroyed(),
+    debounceTime(3000),
+    distinctUntilChanged(),
+    switchMap((newSection) =>
+      this.projectService.updateGeneralInfo(this.projectId, {
+        section: newSection,
+      })
+    )
+  );
+  newSectionSuccess$ = this.newSection$
+    .pipe(filter((v): v is ProjectRow => !v.hasOwnProperty('isError')))
+    .subscribe({
+      next: (res) => {
+        this.toastr.success(
+          'Successfully changed section to ' + res.section
+        );
+      },
+    });
+  newSectionFailed$ = this.newSection$
+    .pipe(filter((v): v is AError => v.hasOwnProperty('isError')))
+    .subscribe({
+      next: (res) => {
+        this.toastr.error('Error changing section: ' + res.message);
       },
     });
 
@@ -286,7 +331,6 @@ export class GeneralComponent implements OnInit {
 
   );
 
-  a = this.invited$.subscribe({complete: () => console.log("this completes")})
   participants$ = this.projectService.getParticipants(this.projectId).pipe(
     map((p) => {
       if (p === null) {

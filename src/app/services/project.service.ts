@@ -77,7 +77,7 @@ export class ProjectService {
     );
   }
 
-  createProject(name: string, fullTitle: string) {
+  createProject(name: string, fullTitle: string, section: string) {
     const user$ = this.authService.getAuthenticatedUser().pipe(
       map((_) => {
         if (name === '' || fullTitle === '')
@@ -110,6 +110,7 @@ export class ProjectService {
       capstone_adviser_id: null,
       is_done: false,
       technical_adviser_id: null,
+      section
     };
     const req = this.client.from('project').insert(data).select('id').single();
 

@@ -609,29 +609,32 @@ export interface Database {
       project: {
         Row: {
           capstone_adviser_id: string | null
+          created_at: string
           full_title: string
           id: number
           is_done: boolean
           name: string
-          section: string | null
+          section: string
           technical_adviser_id: string | null
         }
         Insert: {
           capstone_adviser_id?: string | null
+          created_at?: string
           full_title?: string
           id?: number
           is_done: boolean
           name: string
-          section?: string | null
+          section: string
           technical_adviser_id?: string | null
         }
         Update: {
           capstone_adviser_id?: string | null
+          created_at?: string
           full_title?: string
           id?: number
           is_done?: boolean
           name?: string
-          section?: string | null
+          section?: string
           technical_adviser_id?: string | null
         }
         Relationships: [

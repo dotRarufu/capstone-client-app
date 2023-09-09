@@ -46,11 +46,10 @@ import { MilestoneService } from 'src/app/services/milestone.service';
                 class="input-group rounded-[3px] border border-base-content/50"
               >
                 <select
-                  class="select-bordered select w-full rounded-[3px] border-none text-base font-normal  outline-0  focus:rounded-[3px] "
+                  class="select-bordered select w-full rounded-[3px] border-none text-base-content font-normal  outline-0  focus:rounded-[3px] "
                 >
                   <!-- todo: make this dynamic -->
                   <option disabled selected>Select a role</option>
-                  <!-- todo: rename roles table to role -->
                   <option (click)="selectRole(0)">Student</option>
                   <option (click)="selectRole(1)">Subject Adviser</option>
                   <option (click)="selectRole(2)">Technical Adviser</option>

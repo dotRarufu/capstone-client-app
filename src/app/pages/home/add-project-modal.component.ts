@@ -42,7 +42,20 @@ import { NgxSpinnerService } from 'ngx-spinner';
               class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
               placeholder="Full Title"
             ></textarea>
+
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Section</h1>
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+
+            <input
+              [formControl]="section"
+              class="input  w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
+              placeholder="Section"
+            />
           </div>
+
           <ul class=" flex w-full flex-col  bg-neutral/20 p-0 sm1:w-[223px] ">
             <button
               (click)="addProject()"
@@ -69,6 +82,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 export class AddProjectModalComponent {
   name = new FormControl('', { nonNullable: true });
   fullTitle = new FormControl('', { nonNullable: true });
+  section = new FormControl('', { nonNullable: true });
 
   projectService = inject(ProjectService);
   toastr = inject(ToastrService);
@@ -77,7 +91,7 @@ export class AddProjectModalComponent {
   addProject() {
     this.spinner.show();
     this.projectService
-      .createProject(this.name.value, this.fullTitle.value)
+      .createProject(this.name.value, this.fullTitle.value, this.section.value)
       .subscribe({
         next: (a) => {
           this.spinner.hide();
@@ -91,7 +105,8 @@ export class AddProjectModalComponent {
   }
 
   handleCloseEvent() {
-    this.name.setValue('');
-    this.fullTitle.setValue('');
+    this.name.reset();
+    this.fullTitle.reset();
+    this.section.reset();
   }
 }
