@@ -122,7 +122,7 @@ export class MilestonesComponent {
       return this.projectService.getAdviserProjectRole(this.projectId, u.uid)
     }
     ),
-    map((role) => role === 'c')
+    map((role) => ['c', 'ct'].includes(role))
   );
   milestones$ = this.milestoneService.getMilestones(this.projectId).pipe(
     takeUntilDestroyed(),

@@ -46,12 +46,12 @@ export class ProjectService {
   getAdviserProjectRole(projectId: number, userUid: string) {
     const project$ = this.getProjectInfo(projectId).pipe(
       map((p) => {
-        if (p.capstone_adviser_id === userUid) return 'c';
-        if (p.technical_adviser_id === userUid) return 't';
+        let res = '';
+        if (p.capstone_adviser_id === userUid) res += 'c';
+        if (p.technical_adviser_id === userUid) res += 't';
 
-        console.log('projectid:', projectId);
-        console.log('userUid:', userUid);
-        console.log('p:', p);
+        if (res !== '') return res;
+      
         throw new Error('User is not participant of the project');
       })
     );
@@ -290,9 +290,7 @@ export class ProjectService {
     );
     const roleMatchesTargetUser$ = this.authService.getUser(userUid).pipe(
       map((u) => {
-        console.log('role id:', roleId, 'u role:', u.role_id);
-        console.log('case 1:', roleId === 2 || roleId === 1);
-        console.log('case 2:', u.role_id !== 5);
+       
         if ((roleId === 2 || roleId === 1) && u.role_id !== 5)
           throw new Error(`Cannot add user as ${getRoleName(roleId)}`);
       })
@@ -306,6 +304,7 @@ export class ProjectService {
         .from('project_invitation')
         .select('*')
         .eq('receiver_uid', userUid)
+        .eq("role", roleId)
     ).pipe(
       map((res) => {
         const { data } = errorFilter(res);
@@ -366,9 +365,26 @@ export class ProjectService {
         const adviser = user.role_id === 1 ? 'capstone' : 'technical';
         data[`${adviser}_adviser_id`] = null;
 
-        return from(
-          this.client.from('project').update(data).eq('id', projectId)
-        );
+        const adviserProjectRole$ = this.getAdviserProjectRole(projectId, user.uid);
+        return adviserProjectRole$.pipe(
+          switchMap(role => {
+            const data: { [x: string]: null } = {};
+
+            if (['c', 'ct'].includes(role)) {
+               data[`capstone_adviser_id`] = null;
+            }
+
+            if (['t', 'ct'].includes(role)) {
+               data[`technical_adviser_id`] = null;
+            }
+
+            return from(
+              this.client.from('project').update(data).eq('id', projectId)
+            );
+          })
+        )
+
+        
       }),
       map((res) => {
         const { statusText } = errorFilter(res);

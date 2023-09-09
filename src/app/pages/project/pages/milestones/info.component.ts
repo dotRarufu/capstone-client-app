@@ -45,7 +45,7 @@ import { ProjectService } from 'src/app/services/project.service';
           [formControl]="title"
           (change)="this.newTitle$.next(this.title.value)"
           placeholder="Type here"
-          class="input-bordered input input-md w-full rounded-[3px] border border-red-500  bg-base-300/80 focus:input-primary focus:outline-0 "
+          class="input-bordered input input-md w-full rounded-[3px]  bg-base-300/80 focus:input-primary focus:outline-0 "
         />
       </div>
 
@@ -134,15 +134,16 @@ export class MilestoneInfoComponent {
       return this.projectService.getAdviserProjectRole(this.projectId, u.uid);
     }),
     tap((role) => {
-      console.log('role:sadsa:', role);
-      if (role === 'c') return;
 
-      this.isAchieved.disable();
-      this.description.disable();
-      this.title.disable();
-      console.log('title disableD:', this.title.disabled);
+      if (['c', 'ct'].includes(role)) return;
+
+
+        this.isAchieved.disable();
+        this.description.disable();
+        this.title.disable();
+      
     }),
-    map((role) => role === 'c')
+    map((role) => ['c', 'ct'].includes(role))
   );
 
   newTitle$ = new Subject<string>();

@@ -71,7 +71,7 @@ export class DangerZoneComponent {
       switchMap((u) =>
         this.projectService.getAdviserProjectRole(this.projectId, u.uid)
       ),
-      map((role) => role === 'c')
+      map((role) => ['c', 'ct'].includes(role))
     )
   );
 
@@ -94,7 +94,7 @@ export class DangerZoneComponent {
             return;
           }
 
-          this.router.navigate(['a', rolePath, 'home']);
+          this.router.navigate([rolePath, 'home']);
         },
         error: (err) => this.toastr.error(err),
       });

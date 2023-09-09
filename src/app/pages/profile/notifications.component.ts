@@ -6,6 +6,7 @@ import { forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { ProjectService } from 'src/app/services/project.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import getRoleName from 'src/app/utils/getRoleName';
 
 @Component({
   selector: 'notifications',
@@ -24,7 +25,7 @@ import { ToastrService } from 'ngx-toastr';
         >
           <span class=""
             ><span class="font-bold">{{ notification.senderData.name }}</span>
-            invited you to participate in their project</span
+            invited you to participate in their project as {{getRoleName(notification.role)}}</span
           >
           <div class="join rounded-[5px] border">
             <button
@@ -124,5 +125,9 @@ export class NotificationsComponent {
         this.toastr.error('Failed to delete invitation');
       },
     });
+  }
+
+  getRoleName(id: number) {
+    return getRoleName(id)
   }
 }
