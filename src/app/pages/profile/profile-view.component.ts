@@ -21,6 +21,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ImgFallbackModule } from 'ngx-img-fallback';
+import { NotificationsComponent } from './notifications.component';
 
 @Component({
   selector: 'profile-view',
@@ -32,6 +33,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
     AddMilestoneModalComponent,
     FeatherIconsModule,
     ReactiveFormsModule,
+    NotificationsComponent
   ],
   template: `
     <ng-container *ngIf="{ user: user$ | async } as observables">
@@ -125,7 +127,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
             </div>
 
             <ul>
-              <li class="form-control w-full">
+              <!-- <li class="form-control w-full">
                 <label class="label flex cursor-pointer items-center">
                   <span class="label-text text-[18px] sm2:text-[20px]"
                     >Notifications</span
@@ -136,7 +138,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
                     checked
                   />
                 </label>
-              </li>
+              </li> -->
               <li class="form-control w-full">
                 <label class="label flex cursor-pointer items-center">
                   <span class="label-text text-[18px] sm2:text-[20px]"
@@ -161,6 +163,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
             </ul>
 
             <milestones-template *ngIf="observables.user?.role_id === 1" />
+            <notifications />
           </div>
         </div>
       </ng-container>
@@ -249,7 +252,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
 
             <ul>
               <li class="form-control w-full">
-                <label class="label flex cursor-pointer items-center">
+                <!-- <label class="label flex cursor-pointer items-center">
                   <span class="label-text text-[18px] sm2:text-[20px]"
                     >Notifications</span
                   >
@@ -259,7 +262,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
                     checked
                   />
                 </label>
-              </li>
+              </li> -->
               <li class="form-control w-full">
                 <label class="label flex cursor-pointer items-center">
                   <span class="label-text text-[18px] sm2:text-[20px]"
@@ -287,6 +290,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
               *ngIf="observables.user?.role_id === 1"
               [sideColumn]="true"
             />
+            <notifications />
           </div>
         </div>
       </ng-container>

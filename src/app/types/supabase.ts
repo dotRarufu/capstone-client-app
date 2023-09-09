@@ -649,6 +649,36 @@ export interface Database {
           }
         ]
       }
+      project_invitation: {
+        Row: {
+          created_at: string
+          id: number
+          is_accepted: boolean
+          project_id: number
+          receiver_uid: string
+          role: number
+          sender_uid: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          is_accepted?: boolean
+          project_id: number
+          receiver_uid: string
+          role: number
+          sender_uid: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          is_accepted?: boolean
+          project_id?: number
+          receiver_uid?: string
+          role?: number
+          sender_uid?: string
+        }
+        Relationships: []
+      }
       proposed_next_step: {
         Row: {
           consultation_id: number

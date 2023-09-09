@@ -23,7 +23,7 @@ import { AuthService } from 'src/app/services/auth.service';
     CommonModule,
   ],
   template: `
-    <modal inputId="participantDetail" (closed)="newRole.set('')">
+    <modal inputId="participantDetail" (closed)="reset()">
       <div
         class="flex h-full w-full flex-col rounded-[3px] border border-base-content/10"
         *ngIf="{
@@ -106,7 +106,7 @@ import { AuthService } from 'src/app/services/auth.service';
               save
             </button>
             <button
-              *ngIf="observables.user?.uid !== observables.participant?.uid"
+              *ngIf="observables.user?.uid !== observables.participant?.uid && observables.participant?.role_id === 0"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
               (click)="handleRemoveClick(observables.participant?.uid || '')"
             >
@@ -173,5 +173,10 @@ export class ParticipntDetailModalComponent {
           this.spinner.hide();
         },
       });
+  }
+
+  reset() {
+    this.newRole.set('');
+    this.projectStateService.setActiveParticipant(null);
   }
 }

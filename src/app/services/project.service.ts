@@ -11,6 +11,7 @@ import {
   throwError,
   catchError,
   forkJoin,
+  filter,
 } from 'rxjs';
 import { TitleAnalyzerResult } from '../models/titleAnalyzerResult';
 import { AuthService } from './auth.service';
@@ -22,6 +23,7 @@ import supabaseClient from '../lib/supabase';
 import { isNotNull } from '../utils/isNotNull';
 import { checkObjectHasKeys } from '../utils/checkObjectHasKeys';
 import { MilestoneService } from './milestone.service';
+import getRoleName from '../utils/getRoleName';
 
 export type AError = {
   name: string;
@@ -37,6 +39,7 @@ export class ProjectService {
   private formUrlSubject = new BehaviorSubject('');
   private projectUpdate$ = new BehaviorSubject(0);
   private newParticipant$ = new BehaviorSubject(0);
+  private invitedParticipantUpdate$ = new BehaviorSubject(0);
 
   authService = inject(AuthService);
 
@@ -254,7 +257,7 @@ export class ProjectService {
     return isUserParticipant$;
   }
 
-  addParticipant(userUid: string, projectId: number) {
+  addParticipant(userUid: string, projectId: number, roleId: number) {
     // todo: if the adviser already exist, notify user that they are replacing the adviser by adding new adviser
 
     if (userUid === '')
@@ -271,20 +274,54 @@ export class ProjectService {
         return isParticipant;
       })
     );
+    const roleMatchesTargetUser$ = this.authService.getUser(userUid).pipe(
+      map((u) => {
+        if (u.role_id !== roleId)
+          throw new Error(`Cannot add user as ${getRoleName(roleId)}`);
+      })
+    );
+    const sender$ = this.authService
+      .getAuthenticatedUser()
+      .pipe(filter(isNotNull));
     const role$ = this.authService.getUser(userUid);
+    const isAlreadyInvited$ = from(
+      this.client
+        .from('project_invitation')
+        .select('*')
+        .eq('receiver_uid', userUid)
+    ).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        if (data.length > 0) throw new Error('User is already invited');
+
+        return false;
+      })
+    );
     const req$ = role$.pipe(
       switchMap(({ role_id }) => {
-        if (role_id === 0) return this.addStudentMember(projectId, userUid);
+        if (role_id === 0)
+          return this.addStudentMember(projectId, userUid).pipe(
+            tap((_) => this.signalNewParticipant())
+          );
 
         if (![1, 2].includes(role_id)) throw new Error('unknon role');
 
-        return this.addProjectAdviser(userUid, projectId, role_id as 1 | 2);
+        const addProjectAdviser$ = sender$.pipe(
+          switchMap((sender) =>
+            this.addProjectAdviser(sender.uid, userUid, projectId, roleId)
+          ),
+          tap((_) => this.signalInvitedParticipant())
+        );
+
+        return addProjectAdviser$;
       })
     );
 
     return isParticipant$.pipe(
-      switchMap((_) => req$),
-      tap((_) => this.signalNewParticipant())
+      switchMap((_) => roleMatchesTargetUser$),
+      switchMap((_) => isAlreadyInvited$),
+      switchMap((_) => req$)
     );
   }
 
@@ -329,6 +366,24 @@ export class ProjectService {
         }
       })
     );
+  }
+
+  cancelInvitation(projectId: number, senderUid: string, receiverUid: string) {
+    const req = this.client
+      .from('project_invitation')
+      .delete()
+      .eq('project_id', projectId)
+      .eq('sender_uid', senderUid)
+      .eq('receiver_uid', receiverUid);
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+        return statusText;
+      }),
+      tap((_) => this.signalInvitedParticipant())
+    );
+
+    return req$;
   }
 
   removeProject(projectId: number) {
@@ -467,17 +522,36 @@ export class ProjectService {
   }
 
   changeParticipantRole(uid: string, projectId: number, role: string) {
-    if (uid === '')
-    return throwError(() => new Error('No user uid passed'));
-  if (projectId < 0) return throwError(() => new Error('Invalid project id'));
+    if (uid === '') return throwError(() => new Error('No user uid passed'));
+    if (projectId < 0) return throwError(() => new Error('Invalid project id'));
 
-
-    const req = this.client.from("member").update({role}).eq("student_uid", uid)
+    const req = this.client
+      .from('member')
+      .update({ role })
+      .eq('student_uid', uid);
     const req$ = from(req).pipe(
-      map(res => {
+      map((res) => {
         const { data } = errorFilter(res);
 
         return res;
+      })
+    );
+
+    return req$;
+  }
+
+  getInvitedParticipants(projectId: number) {
+    const req = this.client
+      .from('project_invitation')
+      .select('*')
+      .eq('project_id', projectId);
+
+    const req$ = this.invitedParticipantUpdate$.asObservable().pipe(
+      switchMap((_) => from(req)),
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
       })
     );
 
@@ -538,6 +612,12 @@ export class ProjectService {
   private signalProjectUpdate() {
     const old = this.projectUpdate$.getValue();
     this.projectUpdate$.next(old + 1);
+  }
+  private signalInvitedParticipant() {
+    console.log('update invited participants!');
+
+    const old = this.invitedParticipantUpdate$.getValue();
+    this.invitedParticipantUpdate$.next(old + 1);
   }
 
   private getStudentProjects(userUid: string) {
@@ -719,19 +799,21 @@ export class ProjectService {
     return members$;
   }
 
-  private addProjectAdviser(userUid: string, projectId: number, role: 1 | 2) {
-    let data: Partial<ProjectRow> = {
-      technical_adviser_id: userUid,
+  private addProjectAdviser(
+    sender: string,
+    receiver: string,
+    projectId: number,
+    roleId: number
+  ) {
+    const data = {
+      project_id: projectId,
+      receiver_uid: receiver,
+      sender_uid: sender,
+      role: roleId,
     };
+    const invitationReq = this.client.from('project_invitation').insert(data);
 
-    if (role === 1) {
-      data = {
-        capstone_adviser_id: userUid,
-      };
-    }
-
-    const update = this.client.from('project').update(data).eq('id', projectId);
-    const update$ = from(update).pipe(
+    const invitationReq$ = from(invitationReq).pipe(
       map((r) => {
         const { statusText } = errorFilter(r);
 
@@ -739,7 +821,7 @@ export class ProjectService {
       })
     );
 
-    return update$;
+    return invitationReq$;
   }
 
   // todo: make the backend services automatically restart when something fails

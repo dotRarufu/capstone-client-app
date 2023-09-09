@@ -21,12 +21,16 @@ import {
   map,
   catchError,
   EMPTY,
+  forkJoin,
+  of,
 } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ParticipntDetailModalComponent } from './participant-detail-modal.component';
+import { InvitedParticipntDetailModalComponent } from './invited-participant-detail-modal.component';
 import { ProjectStateService } from './data-access/project-state.service';
+import { InvitedParticipantCardComponent } from './invited-participant-card.component';
 
 @Component({
   selector: 'general',
@@ -39,7 +43,9 @@ import { ProjectStateService } from './data-access/project-state.service';
     ProjectCardPreviewComponent,
     ReactiveFormsModule,
     AddParticipantModalComponent,
-    ParticipntDetailModalComponent
+    ParticipntDetailModalComponent,
+    InvitedParticipntDetailModalComponent,
+    InvitedParticipantCardComponent,
   ],
 
   template: `
@@ -95,11 +101,14 @@ import { ProjectStateService } from './data-access/project-state.service';
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <participant-card
-        *ngFor="let participant of participants$ | async"
-        (click)="projectStateService.setActiveParticipant(participant)"
+          *ngFor="let participant of participants$ | async"
+          (click)="projectStateService.setActiveParticipant(participant)"
           [user]="participant"
-          [showRemoveButton]="shouldShowParticipant(participant)"
-          (removeButtonClicked)="handleRemoveButtonClick($event)"
+        />
+        <invited-participant-card
+          *ngFor="let user of invited$ | async"
+          (click)="projectStateService.setActiveInvitedParticipant(user)"
+          [user]="user"
         />
       </div>
 
@@ -127,6 +136,7 @@ import { ProjectStateService } from './data-access/project-state.service';
     </div>
     <add-participant-modal />
     <participant-detail-modal />
+    <invited-participant-detail-modal />
   `,
 })
 export class GeneralComponent implements OnInit {
@@ -264,6 +274,19 @@ export class GeneralComponent implements OnInit {
       },
     });
 
+  invited$ = this.projectService.getInvitedParticipants(this.projectId).pipe(
+    switchMap((users) => {
+      const usersData$ = users.map((u) =>
+        this.authService.getUser(u.receiver_uid).pipe(map(v => ({...v, ...u})))
+      );
+      if (users.length === 0) return of([])
+
+      return forkJoin(usersData$);
+    }),
+
+  );
+
+  a = this.invited$.subscribe({complete: () => console.log("this completes")})
   participants$ = this.projectService.getParticipants(this.projectId).pipe(
     map((p) => {
       if (p === null) {
@@ -272,6 +295,10 @@ export class GeneralComponent implements OnInit {
 
       return p;
     }),
+    // switchMap(p => forkJoin({participants: of(p), invited: this.projectService.getInvitedParticipants(this.projectId)})),
+    // map(({invited, participants}) => {
+
+    // }),
     tap(() => this.spinner.hide()),
     catchError((err) => {
       this.toastr.error('Error getting participants');
@@ -279,19 +306,6 @@ export class GeneralComponent implements OnInit {
       return EMPTY;
     })
   );
-
-  handleRemoveButtonClick(userUid: string) {
-    this.projectService
-      .removeProjectParticipant(userUid, this.projectId)
-      .subscribe({
-        next: () => {
-          this.toastr.success('successfully removed user from the project');
-        },
-        error: () => {
-          this.toastr.error('failed to removed user from the project');
-        },
-      });
-  }
 
   shouldShowParticipant(participant: {
     name: string;

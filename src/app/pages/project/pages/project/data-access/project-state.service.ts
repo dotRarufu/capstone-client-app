@@ -12,7 +12,15 @@ export class ProjectStateService {
     avatar_last_update: number | null;
     projectRole: string | null;
   } | null>(null);
+  private readonly activeInvitedParticipantSubject = new BehaviorSubject<{
+    name: string;
+    role_id: number;
+    uid: string;
+    avatar: string;
+    avatar_last_update: number | null;
+  } | null>(null);
   activeParticipant$ = this.activeParticipantSubject.asObservable();
+  activeInvitedParticipant$ = this.activeInvitedParticipantSubject.asObservable();
 
   getActivePraticipant() {
     return this.activeParticipantSubject.getValue();
@@ -25,7 +33,22 @@ export class ProjectStateService {
     avatar: string;
     avatar_last_update: number | null;
     projectRole: string | null;
-  }) {
+  } | null) {
     return this.activeParticipantSubject.next(t);
+  }
+ 
+
+  getActiveInvitedPraticipant() {
+    return this.activeParticipantSubject.getValue();
+  }
+
+  setActiveInvitedParticipant(t: {
+    name: string;
+    role_id: number;
+    uid: string;
+    avatar: string;
+    avatar_last_update: number | null;
+  } | null) {
+    return this.activeInvitedParticipantSubject.next(t);
   }
 }

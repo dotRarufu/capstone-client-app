@@ -319,7 +319,7 @@ export class MilestoneService {
   }
 
   applyCapstoneAdviserTemplate(userUid: string, projectId: number) {
-    console.log('called!');
+    console.log('called! | user:', userUid);
     const templates$ = this.getMilestoneTemplates(userUid);
     const milestoneIds$ = from(
       this.client.from('milestone').select('id').eq('project_id', projectId)

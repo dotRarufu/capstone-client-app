@@ -12,10 +12,11 @@ import {
   throwError,
 } from 'rxjs';
 import { Router } from '@angular/router';
-import { User } from '../types/collection';
+import { ProjectRow, User } from '../types/collection';
 import supabaseClient from '../lib/supabase';
 import errorFilter from '../utils/errorFilter';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { isNotNull } from '../utils/isNotNull';
 
 @Injectable({
   providedIn: 'root',
@@ -24,8 +25,10 @@ export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
   private readonly client = supabaseClient;
   private readonly updateUserProfileSubject = new BehaviorSubject(0);
+  private readonly updateNotificationsSubject = new BehaviorSubject(0);
   user$ = this.userSubject.asObservable();
   updateUserProfile$ = this.updateUserProfileSubject.asObservable();
+  updateNotifications$ = this.updateNotificationsSubject.asObservable();
   // todo: should these use readonly?
   private router = inject(Router);
   private spinner = inject(NgxSpinnerService);
@@ -42,6 +45,11 @@ export class AuthService {
       this.spinner.hide();
     }
   });
+
+a = this.updateNotifications$.subscribe({
+  next: () => console.log("emits inside srvie!"),
+  complete: () => console.log("completes inside service!")
+})
 
   getAuthenticatedUser() {
     const currentUser = this.getCurrentUser();
@@ -304,6 +312,75 @@ export class AuthService {
   //   return insert$;
   // }
 
+  getNotifications() {
+    const user$ = this.getAuthenticatedUser().pipe(filter(isNotNull));
+    const req$ = this.updateNotifications$.pipe(
+      switchMap(_ => user$),
+      switchMap(({uid}) => {
+        const req = this.client.from("project_invitation").select("*").eq("receiver_uid", uid);
+
+        return from(req).pipe(map(res => {
+          const {data} = errorFilter(res);
+
+          return data;
+        }))
+      })
+    );
+
+    return req$;
+  }
+
+  acceptInvitation(id: number, userUid: string, roleId: number, projectId: number) {
+    const req = this.client.from("project_invitation").delete().eq("id", id);
+
+    const req$ = from(req).pipe(
+      map(res => {
+        const {statusText} = errorFilter(res);
+
+        return statusText;
+      }),
+      tap(() => this.signalUpdateNotifications())
+    )
+
+    let data: Partial<ProjectRow> = {
+      technical_adviser_id: userUid,
+    };
+
+    if (roleId === 1) {
+      data = {
+        capstone_adviser_id: userUid,
+      };
+    }
+
+    const update = this.client.from("project").update(data).eq("id", projectId);
+    const update$ = from(update).pipe(map(res => {
+      const { statusText} = errorFilter(res);
+
+      return statusText
+    }))
+
+
+    return req$.pipe(
+      switchMap(_ => update$)
+    );
+  }
+
+
+  deleteInvitation(id: number) {
+    const req = this.client.from("project_invitation").delete().eq("id", id);
+
+    const req$ = from(req).pipe(
+      map(res => {
+        const {statusText} = errorFilter(res);
+
+        return statusText;
+      }),
+      tap(() => this.signalUpdateNotifications())
+    )
+
+    return req$;
+  }
+
   private updateUserData(
     userId: string,
     //todo: create interface for this, name it UserRow
@@ -358,5 +435,10 @@ export class AuthService {
   private signalUpdateUserProfile() {
     const old = this.updateUserProfileSubject.getValue();
     this.updateUserProfileSubject.next(old + 1);
+  }
+  private signalUpdateNotifications() {
+    console.log("signal new notif")
+    const old = this.updateNotificationsSubject.getValue();
+    this.updateNotificationsSubject.next(old + 1);
   }
 }

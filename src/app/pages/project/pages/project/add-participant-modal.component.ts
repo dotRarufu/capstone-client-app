@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
@@ -15,7 +15,7 @@ import { MilestoneService } from 'src/app/services/milestone.service';
   standalone: true,
   imports: [ModalComponent, FeatherIconsModule, ReactiveFormsModule],
   template: `
-    <modal inputId="addParticipant" (closed)="this.userUid.reset()">
+    <modal inputId="addParticipant" >
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -36,10 +36,7 @@ import { MilestoneService } from 'src/app/services/milestone.service';
           <div
             class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-scroll"
           >
-            <div class="flex items-center justify-between ">
-              <h1 class="text-[20px] text-base-content">Role</h1>
-            </div>
-
+            
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <div
@@ -54,7 +51,7 @@ import { MilestoneService } from 'src/app/services/milestone.service';
                   <!-- todo: make this dynamic -->
                   <option disabled selected>Select a role</option>
                   <!-- todo: rename roles table to role -->
-                  <option (click)="selectRole(0)"></option>
+                  <option (click)="selectRole(0)">Student</option>
                   <option (click)="selectRole(1)">Subject Adviser</option>
                   <option (click)="selectRole(2)">Technical Adviser</option>
                 </select>
@@ -92,11 +89,13 @@ export class AddParticipantModalComponent {
   toastr = inject(ToastrService);
   route = inject(ActivatedRoute);
 
+  role = signal(-1)
+
   addParticipant() {
     this.spinner.show();
     const projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
     const addParticipant$ = this.projectService
-      .addParticipant(this.userUid.value, projectId)
+      .addParticipant(this.userUid.value, projectId, this.role())
       .pipe(
         switchMap((_) =>
           this.milestoneService.applyCapstoneAdviserTemplate(
@@ -113,12 +112,13 @@ export class AddParticipantModalComponent {
       },
       complete: () => {
         this.spinner.hide();
+        this.userUid.reset()
         this.toastr.success('Participant added successfully');
       },
     });
   }
 
   selectRole(id: number) {
-    // this.userUid.reset();
+    this.role.set(id)
   }
 }
