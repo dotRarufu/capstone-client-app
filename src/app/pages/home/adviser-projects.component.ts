@@ -32,8 +32,13 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
     FeatherIconsModule,
   ],
   template: `
-    <div class="w-full" *ngIf="{sections: sections$ | async} as observables">
-      <projects *ngIf="observables.sections !== null && observables.sections.length !== 0; else empty">
+    <div class="w-full" *ngIf="{ sections: sections$ | async } as observables">
+      <projects
+        *ngIf="
+          observables.sections !== null && observables.sections.length !== 0;
+          else empty
+        "
+      >
         <projects-accordion
           *ngFor="let section of observables.sections"
           [heading]="section.section.toString()"
@@ -77,16 +82,24 @@ export class AdviserProjectsComponent {
   homeStateService = inject(HomeStateService);
   toastr = inject(ToastrService);
 
+  showSpinner = this.spinner.show();
+
   sections$ = this.projectService.getProjects().pipe(
-    tap(p => console.log("sections!:", p)),
-    tap(() => this.spinner.hide()),
+    tap((p) => {
+      // initial emit 
+      if (p === null) return;
+      this.spinner.hide();
+      
+    }),
     map((projects) => {
       if (projects === null) return [];
 
       return groupBySection(projects);
-    })
+    }),
   );
+
   archived$ = this.projectService.getArchived();
 
+  // todo: remove this
   role = this.route.snapshot.data['role'];
 }

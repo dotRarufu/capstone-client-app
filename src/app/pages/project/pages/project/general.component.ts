@@ -405,6 +405,11 @@ export class GeneralComponent implements OnInit {
   );
 
   participants$ = this.projectService.getParticipants(this.projectId).pipe(
+    tap((p) => {
+      // initial emit
+      if (p === null) return;
+      this.spinner.hide();
+    }),
     map((p) => {
       if (p === null) {
         return [];

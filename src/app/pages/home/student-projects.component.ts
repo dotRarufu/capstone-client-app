@@ -1,5 +1,5 @@
 import { ProjectsComponent } from './projects-container.component';
-import { Component, WritableSignal, inject, signal } from '@angular/core';
+import { Component, OnInit, WritableSignal, inject, signal } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
@@ -50,13 +50,18 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
     </ng-template>
 </ng-container>`,
 })
-export class StudentProjectsComponent {
+export class StudentProjectsComponent implements OnInit{
   projectService = inject(ProjectService);
   spinner = inject(NgxSpinnerService);
   homeStateService = inject(HomeStateService);
 
   projects$ = this.projectService.getProjects().pipe(
-    tap(() => this.spinner.hide()),
+    tap((p) => {
+      // initial emit 
+      if (p === null) return;
+      this.spinner.hide();
+      
+    }),
     map((projects) => {
       if (projects === null) {
         return [];
@@ -65,4 +70,8 @@ export class StudentProjectsComponent {
       return projects;
     })
   );
+
+  ngOnInit(): void {
+    this.spinner.show()
+  }
 }
