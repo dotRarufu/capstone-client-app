@@ -13,11 +13,11 @@ import getRoleName from 'src/app/utils/getRoleName';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="flex flex-col gap-4 py-4">
-      <h1 class="font-bold">Notifications</h1>
+    <div *ngIf="{ notifications: (notifications$ | async )|| [] } as observables" class="flex flex-col gap-4 py-4">
+      <h1 class="font-bold">Project Invitations</h1>
       <ul
+      *ngIf="observables.notifications.length > 0; else empty"
         class="flex w-full flex-col gap-2"
-        *ngIf="{ notifications: notifications$ | async } as observables"
       >
         <li
           *ngFor="let notification of observables.notifications"
@@ -50,6 +50,12 @@ import getRoleName from 'src/app/utils/getRoleName';
           </div>
         </li>
       </ul>
+
+      <ng-template #empty>
+                  <div class="w-full bg-base-200 flex justify-center items-center rounded-[5px] text-base-content/70 p-4">
+                    You have no project invitations
+                </div>
+    </ng-template>
     </div>
   `,
 })

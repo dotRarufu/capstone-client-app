@@ -15,6 +15,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
   template: `
     <div
       class=" w-full bg-primary  px-[1rem]  py-[1rem]  sm1:px-[32px] sm2:px-0 md:px-[200px]"
+      *ngIf="{ notifications: notifications$ | async } as observables"
     >
       <div
         class=" flex  w-full flex-row  items-center justify-between text-primary-content   sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"
@@ -40,14 +41,22 @@ import { isNotNull } from 'src/app/utils/isNotNull';
             <a
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
               (click)="navigateHome()"
-              ><i-feather class="text-base-content/70" name="home" />home >
+              ><i-feather class="text-base-content/70" name="home" />home
             </a>
             <a
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px]
               text-base-content"
               (click)="this.router.navigate(['profile', 'view'])"
             >
-              <i-feather class="text-base-content/70" name="user" />profile
+              <i-feather class="text-base-content/70 " name="user" />
+              
+              <div *ngIf="observables.notifications; else empty" class="indicator flex-1 ">
+                <span
+                class="rounded-full bg-primary w-[8px] aspect-square indicator-end indicator-middle indicator-item"
+                ></span>
+                <div class="text-left">profile</div>
+              </div>
+              <ng-template #empty >profile</ng-template>
             </a>
             <a
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px]
@@ -72,6 +81,9 @@ export class TopAppBarComponent {
   profileUrl = this.user$.pipe(
     map((user) => `https://api.multiavatar.com/${user?.uid || 'unnamed'}.png`)
   );
+  notifications$ = this.authService.getNotifications().pipe(
+    map(n => n.length > 0)
+  )
   name = this.user$.pipe(map((user) => user?.name || 'unnamed'));
 
   signOut() {
@@ -81,23 +93,23 @@ export class TopAppBarComponent {
   }
 
   navigateHome() {
-    this.user$.pipe(
-      filter(isNotNull),
-      map((user) => {
-        const rolePath = getRolePath(user.role_id);
-        const route = [rolePath, 'home'];
+    this.user$
+      .pipe(
+        filter(isNotNull),
+        map((user) => {
+          const rolePath = getRolePath(user.role_id);
+          const route = [rolePath, 'home'];
 
-        // if (rolePath !== 's') {
-        //   route.unshift('a');
-        // }
+          // if (rolePath !== 's') {
+          //   route.unshift('a');
+          // }
 
-        return route;
-      }),
-      tap((route) => this.router.navigate(route))
-    ).subscribe({
-      next: () => {
-
-      }
-    });
+          return route;
+        }),
+        tap((route) => this.router.navigate(route))
+      )
+      .subscribe({
+        next: () => {},
+      });
   }
 }

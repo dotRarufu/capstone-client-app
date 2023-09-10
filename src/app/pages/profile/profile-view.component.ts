@@ -168,8 +168,8 @@ import { ProjectService } from 'src/app/services/project.service';
               </li>
             </ul>
 
-            <milestones-template *ngIf="observables.isCapstoneAdviser" />
             <notifications />
+            <milestones-template *ngIf="observables.isCapstoneAdviser" />
           </div>
         </div>
       </ng-container>
@@ -294,11 +294,11 @@ import { ProjectService } from 'src/app/services/project.service';
             </li> -->
             </ul>
 
+            <notifications />
             <milestones-template
               *ngIf="observables.isCapstoneAdviser"
               [sideColumn]="true"
             />
-            <notifications />
           </div>
         </div>
       </ng-container>
