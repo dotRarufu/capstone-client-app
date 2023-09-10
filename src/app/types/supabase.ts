@@ -1007,7 +1007,12 @@ export interface Database {
       }
     }
     Views: {
-      [_ in never]: never
+      distinct_section: {
+        Row: {
+          section: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

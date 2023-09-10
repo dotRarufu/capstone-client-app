@@ -1,4 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ParticipantCardComponent } from './participant-card.component';
 import { CommonModule } from '@angular/common';
@@ -23,14 +30,20 @@ import {
   EMPTY,
   forkJoin,
   of,
+  from,
 } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import {
+  takeUntilDestroyed,
+  toObservable,
+  toSignal,
+} from '@angular/core/rxjs-interop';
 import { ParticipntDetailModalComponent } from './participant-detail-modal.component';
 import { InvitedParticipntDetailModalComponent } from './invited-participant-detail-modal.component';
 import { ProjectStateService } from './data-access/project-state.service';
 import { InvitedParticipantCardComponent } from './invited-participant-card.component';
+import { isNotNull } from 'src/app/utils/isNotNull';
 
 @Component({
   selector: 'general',
@@ -50,7 +63,10 @@ import { InvitedParticipantCardComponent } from './invited-participant-card.comp
 
   template: `
     <div
-      *ngIf="{ project: project$ | async } as observables"
+      *ngIf="{
+        project: project$ | async,
+        sections: sections$ | async
+      } as observables"
       class="flex flex-col gap-[16px]"
     >
       <div class="flex w-full flex-col gap-[16px] sm2:flex-row">
@@ -61,7 +77,6 @@ import { InvitedParticipantCardComponent } from './invited-participant-card.comp
             <input
               [formControl]="name"
               (change)="newNameSubject.next(this.name.value)"
-              [disabled]="!isStudent()"
               type="text"
               placeholder="Type here"
               class="input-bordered input input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
@@ -74,7 +89,6 @@ import { InvitedParticipantCardComponent } from './invited-participant-card.comp
             <textarea
               [formControl]="title"
               (change)="newTitleSubject.next(this.title.value)"
-              [disabled]="!isStudent()"
               type="text"
               placeholder="Type here"
               class="textarea-bordered textarea input-md h-[144px] w-full rounded-[3px] focus:textarea-primary focus:outline-0"
@@ -119,13 +133,34 @@ import { InvitedParticipantCardComponent } from './invited-participant-card.comp
         <div class="text-base font-semibold">Section</div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
 
-        <input
-          [formControl]="section"
-          (change)="newSectionSubject.next(this.section.value)"
-          type="text"
-          placeholder="3-1"
-          class="input-bordered input input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
-        />
+        <div class="join flex w-full">
+          <input
+            [formControl]="section"
+            (change)="newSectionSubject.next(this.section.value)"
+            type="text"
+            placeholder="3-1"
+            class="input-bordered input input-md join-item w-full rounded-[3px] focus:input-primary  focus:outline-0"
+          />
+          <div class="form-control join-item ">
+            <div
+              class="input-group rounded-[3px] border border-base-content/50"
+            >
+              <select
+                class="select-bordered select w-full rounded-[3px] border-none text-base  font-normal  focus:rounded-[3px] "
+                [formControl]="section"
+              >
+                <option disabled selected>Sections</option>
+
+                <option
+                  *ngFor="let s of observables.sections"
+                  (click)="newSectionSubject.next(s); section.setValue(s)"
+                >
+                  {{ s }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="flex flex-col gap-[4px]">
@@ -165,27 +200,9 @@ export class GeneralComponent implements OnInit {
 
   name = new FormControl('', { nonNullable: true });
   title = new FormControl('', { nonNullable: true });
+  // todo: refactor: use this.section.valueChanges
   section = new FormControl('', { nonNullable: true });
   isDone = new FormControl(false, { nonNullable: true });
-
-  projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
-
-  isStudent = computed(() => {
-    const user = this.user();
-
-    if (user === null) return false;
-
-    return getRolePath(user.role_id) === 's';
-  });
-  isCapstoneAdviser = computed(() => {
-    const user = this.user();
-
-    if (user === null) return false;
-
-    return this.projectService
-      .getAdviserProjectRole(this.projectId, user.uid)
-      .pipe(map((role) => role === 'c'));
-  });
 
   user = toSignal(
     this.authService.user$.pipe(
@@ -199,6 +216,59 @@ export class GeneralComponent implements OnInit {
     ),
     { initialValue: null }
   );
+
+  sections$ = this.projectService
+    .getSections()
+    .pipe(
+      map((sections) =>
+        sections
+          .map((s) => s.section)
+          .map((s) => (s === null ? 'No Section' : s))
+      )
+    );
+
+  projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
+
+  isStudent = computed(() => {
+    const user = this.user();
+
+    if (user === null) return false;
+
+    return getRolePath(user.role_id) === 's';
+  });
+
+  disableInputs = toSignal(
+    toObservable(this.user).pipe(
+      filter(isNotNull),
+      switchMap((u) => {
+        if (u.role_id === 0) return of('s');
+
+        const projectId = Number(
+          this.route.parent!.parent!.snapshot.url[0].path
+        );
+
+        return this.projectService.getAdviserProjectRole(projectId, u.uid);
+      }),
+      tap((role) => {
+        if (['s', 'c', 'ct'].includes(role)) return;
+
+        this.name.disable();
+        this.title.disable();
+        this.section.disable();
+        this.isDone.disable();
+      })
+    )
+  );
+
+  isCapstoneAdviser = computed(() => {
+    const user = this.user();
+
+    if (user === null) return false;
+
+    return this.projectService
+      .getAdviserProjectRole(this.projectId, user.uid)
+      .pipe(map((role) => role === 'c'));
+  });
 
   project$ = this.projectService.getProjectInfo(this.projectId);
   projectSubscription = this.project$.subscribe({

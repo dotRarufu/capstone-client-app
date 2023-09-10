@@ -14,7 +14,7 @@ import { tap } from 'rxjs';
     <div class="flex flex-col gap-4" *ngIf="{result: result$ | async} as observbles">
       <ng-container *ngIf="!observbles.result">
         <title-analyzer
-          (analyzeClicked)="homeStateService.setAlreadyHaveTitle(true)"
+          (analyzeClicked)="homeStateService.setAlreadyHaveTitle(false)"
         />
       </ng-container>
 

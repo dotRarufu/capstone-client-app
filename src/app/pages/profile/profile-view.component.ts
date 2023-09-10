@@ -22,6 +22,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ImgFallbackModule } from 'ngx-img-fallback';
 import { NotificationsComponent } from './notifications.component';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'profile-view',
@@ -33,10 +34,15 @@ import { NotificationsComponent } from './notifications.component';
     AddMilestoneModalComponent,
     FeatherIconsModule,
     ReactiveFormsModule,
-    NotificationsComponent
+    NotificationsComponent,
   ],
   template: `
-    <ng-container *ngIf="{ user: user$ | async } as observables">
+    <ng-container
+      *ngIf="{
+        user: user$ | async,
+        isCapstoneAdviser: isCapstoneAdviser$ | async
+      } as observables"
+    >
       <ng-container *ngIf="!sideColumn">
         <div
           class="flex w-full flex-col gap-[1rem] sm2:w-[840px] md:w-full lg:w-full "
@@ -162,7 +168,7 @@ import { NotificationsComponent } from './notifications.component';
               </li>
             </ul>
 
-            <milestones-template *ngIf="observables.user?.role_id === 1" />
+            <milestones-template *ngIf="observables.isCapstoneAdviser" />
             <notifications />
           </div>
         </div>
@@ -263,6 +269,8 @@ import { NotificationsComponent } from './notifications.component';
                   />
                 </label>
               </li> -->
+              </li>
+
               <li class="form-control w-full">
                 <label class="label flex cursor-pointer items-center">
                   <span class="label-text text-[18px] sm2:text-[20px]"
@@ -287,7 +295,7 @@ import { NotificationsComponent } from './notifications.component';
             </ul>
 
             <milestones-template
-              *ngIf="observables.user?.role_id === 1"
+              *ngIf="observables.isCapstoneAdviser"
               [sideColumn]="true"
             />
             <notifications />
@@ -308,6 +316,7 @@ export class ProfileViewComponent implements OnInit {
   spinner = inject(NgxSpinnerService);
   toastr = inject(ToastrService);
   authService = inject(AuthService);
+  projectService = inject(ProjectService);
 
   showSaveButtonSubject = new BehaviorSubject('');
   showSaveButton$ = this.showSaveButtonSubject.asObservable().pipe(
@@ -341,6 +350,7 @@ export class ProfileViewComponent implements OnInit {
       return newUrl;
     })
   );
+  isCapstoneAdviser$ = this.projectService.isUserCapstoneAdviser();
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @Input() sideColumn? = false;

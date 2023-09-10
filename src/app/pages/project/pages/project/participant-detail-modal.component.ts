@@ -66,16 +66,13 @@ import { AuthService } from 'src/app/services/auth.service';
                   "
                   class="select-bordered select w-full rounded-[3px] border-none font-normal text-base-content  outline-0  focus:rounded-[3px] "
                 >
-                  <!-- todo: make this dynamic -->
                   <option disabled selected>
                     {{
                       observables.participant?.projectRole || 'Select a role'
                     }}
                   </option>
-                  <!-- todo: rename roles table to role -->
-                  <ng-container
-                    *ngIf="observables.participant?.role_id === 0; else adviser"
-                  >
+
+                  <ng-container *ngIf="observables.participant?.role_id === 0">
                     <option
                       (click)="newRole.set(role)"
                       *ngFor="let role of studentRoleOptions"
@@ -83,14 +80,6 @@ import { AuthService } from 'src/app/services/auth.service';
                       {{ role }}
                     </option>
                   </ng-container>
-                  <ng-template #adviser>
-                    <option
-                      (click)="newRole.set(role)"
-                      *ngFor="let role of adviserRoleOptions"
-                    >
-                      {{ role }}
-                    </option>
-                  </ng-template>
                 </select>
               </div>
             </div>
@@ -98,7 +87,7 @@ import { AuthService } from 'src/app/services/auth.service';
 
           <ul class="flex w-full flex-col bg-neutral/20 p-0 py-2 sm1:w-[223px]">
             <button
-                    *ngIf="newRole() !== ''"
+              *ngIf="newRole() !== ''"
               (click)="handleSaveClick(observables.participant!.uid)"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
@@ -106,7 +95,11 @@ import { AuthService } from 'src/app/services/auth.service';
               save
             </button>
             <button
-              *ngIf="observables.user?.uid !== observables.participant?.uid && observables.participant?.role_id === 0 && observables.user?.role_id === 0"
+              *ngIf="
+                observables.user?.uid !== observables.participant?.uid &&
+                observables.participant?.role_id === 0 &&
+                observables.user?.role_id === 0
+              "
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
               (click)="handleRemoveClick(observables.participant?.uid || '')"
             >
@@ -148,8 +141,9 @@ export class ParticipntDetailModalComponent {
     const projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
 
     this.projectService.removeProjectParticipant(userUid, projectId).subscribe({
-      next: () => {
+      complete: () => {
         this.toastr.success('successfully removed user from the project');
+        this.newRole.set('');
       },
       error: () => {
         this.toastr.error('failed to removed user from the project');
@@ -164,9 +158,10 @@ export class ParticipntDetailModalComponent {
     this.projectService
       .changeParticipantRole(uid, projectId, this.newRole())
       .subscribe({
-        next: () => {
+        complete: () => {
           this.toastr.success(`Role updated to ${this.newRole()}`);
           this.spinner.hide();
+          this.newRole.set('');
         },
         error: () => {
           this.toastr.error('Failed to change role');
@@ -176,7 +171,6 @@ export class ParticipntDetailModalComponent {
   }
 
   reset() {
-    this.newRole.set('');
     this.projectStateService.setActiveParticipant(null);
   }
 }

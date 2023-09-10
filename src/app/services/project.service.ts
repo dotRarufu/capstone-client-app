@@ -51,7 +51,7 @@ export class ProjectService {
         if (p.technical_adviser_id === userUid) res += 't';
 
         if (res !== '') return res;
-      
+
         throw new Error('User is not participant of the project');
       })
     );
@@ -290,7 +290,6 @@ export class ProjectService {
     );
     const roleMatchesTargetUser$ = this.authService.getUser(userUid).pipe(
       map((u) => {
-       
         if ((roleId === 2 || roleId === 1) && u.role_id !== 5)
           throw new Error(`Cannot add user as ${getRoleName(roleId)}`);
       })
@@ -304,7 +303,7 @@ export class ProjectService {
         .from('project_invitation')
         .select('*')
         .eq('receiver_uid', userUid)
-        .eq("role", roleId)
+        .eq('role', roleId)
     ).pipe(
       map((res) => {
         const { data } = errorFilter(res);
@@ -365,26 +364,27 @@ export class ProjectService {
         const adviser = user.role_id === 1 ? 'capstone' : 'technical';
         data[`${adviser}_adviser_id`] = null;
 
-        const adviserProjectRole$ = this.getAdviserProjectRole(projectId, user.uid);
+        const adviserProjectRole$ = this.getAdviserProjectRole(
+          projectId,
+          user.uid
+        );
         return adviserProjectRole$.pipe(
-          switchMap(role => {
+          switchMap((role) => {
             const data: { [x: string]: null } = {};
 
             if (['c', 'ct'].includes(role)) {
-               data[`capstone_adviser_id`] = null;
+              data[`capstone_adviser_id`] = null;
             }
 
             if (['t', 'ct'].includes(role)) {
-               data[`technical_adviser_id`] = null;
+              data[`technical_adviser_id`] = null;
             }
 
             return from(
               this.client.from('project').update(data).eq('id', projectId)
             );
           })
-        )
-
-        
+        );
       }),
       map((res) => {
         const { statusText } = errorFilter(res);
@@ -566,7 +566,8 @@ export class ProjectService {
         const { data } = errorFilter(res);
 
         return res;
-      })
+      }),
+      tap((_) => this.signalNewParticipant())
     );
 
     return req$;
@@ -588,6 +589,44 @@ export class ProjectService {
     );
 
     return req$;
+  }
+
+  getSections() {
+    const req = this.client.from('distinct_section').select();
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      })
+    );
+
+    return req$;
+  }
+
+  isUserCapstoneAdviser() {
+    const user$ = this.authService
+      .getAuthenticatedUser()
+      .pipe(filter(isNotNull));
+
+    const request$ = user$.pipe(
+      filter(u => u.role_id === 5),
+      switchMap((u) =>
+        this.client
+          .from('project')
+          .select('id')
+          .eq('capstone_adviser_id', u.uid)
+          .eq('is_done', false)
+      ),
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data.map((d) => d.id).length;
+      }),
+      map((length) => length > 0)
+    );
+
+    return request$;
   }
 
   async getProjectsFromCategory(categoryId: number) {
@@ -679,11 +718,6 @@ export class ProjectService {
         `capstone_adviser_id.eq.${userUid}, technical_adviser_id.eq.${userUid}`
       )
       .eq('is_done', false);
-
-    console.log(
-      'test:',
-      `capstone_adviser_id.eq.${userUid}, technical_adviser_id.eq.${userUid}`
-    );
 
     const projects$ = from(request).pipe(
       map((res) => {

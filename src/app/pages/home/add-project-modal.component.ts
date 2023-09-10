@@ -5,13 +5,19 @@ import { ToastrService } from 'ngx-toastr';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { ProjectService } from 'src/app/services/project.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { CommonModule } from '@angular/common';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'add-project-modal',
   standalone: true,
-  imports: [ModalComponent, FeatherModule, ReactiveFormsModule],
+  imports: [ModalComponent, FeatherModule, ReactiveFormsModule, CommonModule],
   template: `
-    <modal inputId="addProject" (closed)="handleCloseEvent()">
+    <modal
+      *ngIf="{ sections: sections$ | async } as observables"
+      inputId="addProject"
+      (closed)="handleCloseEvent()"
+    >
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
@@ -39,7 +45,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 
             <textarea
               [formControl]="fullTitle"
-              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
+              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 text-base-content"
               placeholder="Full Title"
             ></textarea>
 
@@ -49,11 +55,32 @@ import { NgxSpinnerService } from 'ngx-spinner';
 
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
-            <input
-              [formControl]="section"
-              class="input  w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
-              placeholder="Section"
-            />
+            <div class="join flex w-full">
+              <input
+                [formControl]="section"
+                class="input join-item  w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 text-base-content"
+                placeholder="New Section"
+              />
+              <div class="form-control join-item ">
+                <div
+                  class="input-group rounded-[3px] border border-base-content/50"
+                >
+                  <select
+                    class="select-bordered select w-full rounded-[3px] border-none font-normal  text-base-content  focus:rounded-[3px] "
+                  >
+                    <option disabled selected>Sections</option>
+
+                    <option
+                      *ngFor="let s of observables.sections"
+                      (click)="section.setValue(s)"
+            
+                    >
+                      {{ s }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
 
           <ul class=" flex w-full flex-col  bg-neutral/20 p-0 sm1:w-[223px] ">
@@ -87,6 +114,16 @@ export class AddProjectModalComponent {
   projectService = inject(ProjectService);
   toastr = inject(ToastrService);
   spinner = inject(NgxSpinnerService);
+
+  sections$ = this.projectService
+    .getSections()
+    .pipe(
+      map((sections) =>
+        sections
+          .map((s) => s.section)
+          .map((s) => (s === null ? 'No Section' : s))
+      )
+    );
 
   addProject() {
     this.spinner.show();
