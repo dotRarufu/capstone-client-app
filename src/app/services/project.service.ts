@@ -62,13 +62,14 @@ export class ProjectService {
   // Todo: add takeUntilDestroyed pipe for users of this method
   getProjects() {
     const user$ = this.authService.getAuthenticatedUser();
-
+    console.log('get projects runs');
     const projects$ = user$.pipe(
       map((user) => {
         if (user === null) throw new Error('cant');
 
         return user;
       }),
+      tap((v) => console.log('runs 1:', v)),
       switchMap((user) => {
         switch (user.role_id) {
           case 0: {
@@ -82,11 +83,13 @@ export class ProjectService {
             console.log('unknown user role:', user.role_id);
             throw new Error('cannt');
         }
-      })
+      }),
+      tap((v) => console.log('projects length:', v.length))
     );
 
     return this.projectUpdate$.pipe(
-      switchMap((_) => merge(of(null), projects$))
+      switchMap((_) => merge(of(null), projects$)),
+      tap((v) => console.log('projects emit:', v))
     );
   }
 
@@ -610,7 +613,7 @@ export class ProjectService {
       .pipe(filter(isNotNull));
 
     const request$ = user$.pipe(
-      filter(u => u.role_id === 5),
+      filter((u) => u.role_id === 5),
       switchMap((u) =>
         this.client
           .from('project')
@@ -698,12 +701,15 @@ export class ProjectService {
       .eq('student_uid', userUid);
 
     const projects$ = from(studentRequest).pipe(
+      tap((v) => console.log('get student projects:', v)),
       map((res) => {
         const { data } = errorFilter(res);
 
         return data.map((d) => d.project_id);
       }),
       switchMap((projectIds) => from(this.getProjectRows(projectIds))),
+      tap((v) => console.log('project rows:', v)),
+      
       switchMap((projectRows) => this.getProject(projectRows))
     );
 
@@ -769,6 +775,8 @@ export class ProjectService {
   }
 
   private getProject(projectRows: ProjectRow[]) {
+    if (projectRows.length === 0) return of([]); 
+
     const projects = projectRows.map((p) => {
       const projectMembers$ = from(this.getProjectMembers(p.id));
       const adviserIds: string[] = [];
