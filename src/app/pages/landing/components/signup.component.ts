@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { SpinnerComponent } from 'src/app/components/spinner.component';
 import { AuthService } from 'src/app/services/auth.service';
+import { User } from 'src/app/types/collection';
 
 @Component({
   selector: 'signup',
@@ -44,10 +45,9 @@ import { AuthService } from 'src/app/services/auth.service';
             >
               <!-- todo: make this dynamic -->
               <option disabled selected>What is your role?</option>
-           
+
               <option (click)="roleId.setValue(0)">Student</option>
               <option (click)="roleId.setValue(5)">Adviser</option>
-
             </select>
           </div>
         </div>
@@ -167,22 +167,20 @@ export class SignupComponent {
   signUp() {
     this.spinner.show();
 
-    const user = { name: this.fullName.value, roleId: this.roleId.value };
     this.authService
-      // todo: maybe remove section, make it changeable in project settings, so there will be no conflict even when project members have different sections
-      .signUp(
-        this.email.value,
-        this.password.value,
-        user,
-      )
+      .signUp(this.email.value, this.password.value)
       .subscribe({
-        next: () => {
-          this.toastr.success('signup success');
+        next: (value) => {
+          if (value.hasOwnProperty('user_metadata')) {
+            this.toastr.success('Sign up success');
+            this.spinner.hide();
+            this.toLogin.emit();
+
+            return;
+          }
+
           this.spinner.hide();
-          this.toLogin.emit();
-        },
-        error: (err) => {
-          this.toastr.error('err');
+          this.toastr.error(value as string);
         },
       });
   }

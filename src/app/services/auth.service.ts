@@ -10,6 +10,7 @@ import {
   switchMap,
   tap,
   throwError,
+  catchError,
 } from 'rxjs';
 import { Router } from '@angular/router';
 import { ProjectRow, User } from '../types/collection';
@@ -46,10 +47,10 @@ export class AuthService {
     }
   });
 
-a = this.updateNotifications$.subscribe({
-  next: () => console.log("emits inside srvie!"),
-  complete: () => console.log("completes inside service!")
-})
+  a = this.updateNotifications$.subscribe({
+    next: () => console.log('emits inside srvie!'),
+    complete: () => console.log('completes inside service!'),
+  });
 
   getAuthenticatedUser() {
     const currentUser = this.getCurrentUser();
@@ -115,30 +116,20 @@ a = this.updateNotifications$.subscribe({
     return login$;
   }
 
-  signUp(
-    // todo: handle this with forms
-    email: string,
-    password: string,
-    userInfo: { name: string; roleId: number },
-
-  ) {
+  signUp(email: string, password: string) {
     const signUp = this.client.auth.signUp({
       email,
       password,
     });
     const signUp$ = from(signUp).pipe(
       map((authRes) => {
-        if (authRes.error) throw authRes.error.message;
-        if (authRes.data.user == null)
-          // on what case is user == null, even without error
-          throw new Error('user is null, while data.error is null');
+        if (authRes.error) {
+          return authRes.error.message;
+        }
+        if (authRes.data.user == null) return 'Sign up failed';
 
         return authRes.data.user;
-      }),
-      switchMap((user) => this.updateUserData(user.id, userInfo)),
-      // switchMap((user) =>
-      //   this.createStudentInfo(user.uid, studentNumber, sectionId)
-      // )
+      })
     );
 
     return signUp$;
@@ -315,32 +306,42 @@ a = this.updateNotifications$.subscribe({
   getNotifications() {
     const user$ = this.getAuthenticatedUser().pipe(filter(isNotNull));
     const req$ = this.updateNotifications$.pipe(
-      switchMap(_ => user$),
-      switchMap(({uid}) => {
-        const req = this.client.from("project_invitation").select("*").eq("receiver_uid", uid);
+      switchMap((_) => user$),
+      switchMap(({ uid }) => {
+        const req = this.client
+          .from('project_invitation')
+          .select('*')
+          .eq('receiver_uid', uid);
 
-        return from(req).pipe(map(res => {
-          const {data} = errorFilter(res);
+        return from(req).pipe(
+          map((res) => {
+            const { data } = errorFilter(res);
 
-          return data;
-        }))
+            return data;
+          })
+        );
       })
     );
 
     return req$;
   }
 
-  acceptInvitation(id: number, userUid: string, roleId: number, projectId: number) {
-    const req = this.client.from("project_invitation").delete().eq("id", id);
+  acceptInvitation(
+    id: number,
+    userUid: string,
+    roleId: number,
+    projectId: number
+  ) {
+    const req = this.client.from('project_invitation').delete().eq('id', id);
 
     const req$ = from(req).pipe(
-      map(res => {
-        const {statusText} = errorFilter(res);
+      map((res) => {
+        const { statusText } = errorFilter(res);
 
         return statusText;
       }),
       tap(() => this.signalUpdateNotifications())
-    )
+    );
 
     let data: Partial<ProjectRow> = {
       technical_adviser_id: userUid,
@@ -352,31 +353,29 @@ a = this.updateNotifications$.subscribe({
       };
     }
 
-    const update = this.client.from("project").update(data).eq("id", projectId);
-    const update$ = from(update).pipe(map(res => {
-      const { statusText} = errorFilter(res);
+    const update = this.client.from('project').update(data).eq('id', projectId);
+    const update$ = from(update).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
 
-      return statusText
-    }))
-
-
-    return req$.pipe(
-      switchMap(_ => update$)
+        return statusText;
+      })
     );
+
+    return req$.pipe(switchMap((_) => update$));
   }
 
-
   deleteInvitation(id: number) {
-    const req = this.client.from("project_invitation").delete().eq("id", id);
+    const req = this.client.from('project_invitation').delete().eq('id', id);
 
     const req$ = from(req).pipe(
-      map(res => {
-        const {statusText} = errorFilter(res);
+      map((res) => {
+        const { statusText } = errorFilter(res);
 
         return statusText;
       }),
       tap(() => this.signalUpdateNotifications())
-    )
+    );
 
     return req$;
   }
@@ -437,7 +436,7 @@ a = this.updateNotifications$.subscribe({
     this.updateUserProfileSubject.next(old + 1);
   }
   private signalUpdateNotifications() {
-    console.log("signal new notif")
+    console.log('signal new notif');
     const old = this.updateNotificationsSubject.getValue();
     this.updateNotificationsSubject.next(old + 1);
   }
