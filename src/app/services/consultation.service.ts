@@ -12,6 +12,7 @@ import { ConsultationData } from '../models/consultationData';
 import { AuthService } from './auth.service';
 import errorFilter from '../utils/errorFilter';
 import supabaseClient from '../lib/supabase';
+import dateToEpoch from '../utils/dateToEpoch';
 
 @Injectable({
   providedIn: 'root',
@@ -26,12 +27,12 @@ export class ConsultationService {
     if (projectId < 0)
       return throwError(() => new Error('Project id is invalid'));
 
-    if (data.dateTime < 0)
-      return throwError(() => new Error('date time is invalid'));
+    if (data.scheduleId < 0)
+      return throwError(() => new Error('Schedule id is invalid'));
     if (data.description === '')
-      return throwError(() => new Error('description is invalid'));
+      return throwError(() => new Error('Description is invalid'));
     if (data.location === '')
-      return throwError(() => new Error('location is invalid'));
+      return throwError(() => new Error('Location is invalid'));
 
     const user$ = this.authService.getAuthenticatedUser().pipe(
       map((user) => {
@@ -42,8 +43,9 @@ export class ConsultationService {
     );
 
     const request$ = user$.pipe(
-      switchMap((user) =>
-        this.insertConsultation(user.uid, data, projectId)
+      switchMap((user) => this.insertConsultation(user.uid, data, projectId)),
+      switchMap((_) =>
+        this.authService.markScheduleUnavailable(data.scheduleId)
       ),
       tap(() => this.signalNewConsultation())
     );
@@ -278,30 +280,58 @@ export class ConsultationService {
     data: ConsultationData,
     projectId: number
   ) {
-    const newData = {
-      organizer_id: userUid,
-      project_id: projectId,
-      date_time: data.dateTime,
-      location: data.location,
-      description: data.description,
-    };
+    const dateTime$ = this.authService.getScheduleData(data.scheduleId);
+    return dateTime$.pipe(
+      switchMap((dateTime) => {
+        const date = new Date(dateTime.date);
+        const time = new Date(0);
+        time.setUTCSeconds(dateTime.start_time);
 
-    const insertConsultation = this.client
-      .from('consultation')
-      .insert(newData)
-      .select('id');
+        const hours = time.getHours();
+        const minutes = time.getMinutes();
+        const seconds = time.getSeconds();
+        const milliseconds = time.getMilliseconds();
 
-    return from(insertConsultation).pipe(
-      map((res) => {
-        const { data } = errorFilter(res);
+        date.setHours(hours);
+        date.setMinutes(minutes);
+        date.setSeconds(seconds);
+        date.setMilliseconds(milliseconds);
 
-        return data[0].id;
+        // Format the Date object
+        const formattedDate = date.toLocaleString('en-US', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        });
+        console.log('new date:', formattedDate);
+
+        const newData = {
+          organizer_id: userUid,
+          project_id: projectId,
+          date_time: dateToEpoch(date),
+          location: data.location,
+          description: data.description,
+        };
+
+        const insertConsultation = this.client
+          .from('consultation')
+          .insert(newData)
+          .select('id');
+
+        return from(insertConsultation).pipe(
+          map((res) => {
+            const { data } = errorFilter(res);
+
+            return data[0].id;
+          })
+        );
       }),
-
       switchMap((id) => this.insertAccomplishedTasks(id, data.taskIds))
     );
   }
-
 
   private insertAccomplishedTasks(consultationId: number, taskIds: number[]) {
     const request = Promise.all(

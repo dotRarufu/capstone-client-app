@@ -10,3 +10,5 @@ export type Consultation = Database['public']['Tables']['consultation']['Row'];
 export type ProjectRow = Database['public']['Tables']['project']['Row'];
 export type MilestoneData =
   Database['public']['Tables']['milestone_data']['Row'];
+export type AvailableSchedule =
+  Database['public']['Tables']['available_schedule']['Row'];

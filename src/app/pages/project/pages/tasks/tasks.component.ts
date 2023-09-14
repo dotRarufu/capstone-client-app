@@ -34,7 +34,7 @@ import { TaskStateService } from './data-access/tasks-state.service';
   ],
   template: `
     <div
-      *ngIf="{isStudent: isStudent$ | async} as observables"
+      *ngIf="{ isStudent: isStudent$ | async } as observables"
       class="flex h-full flex-col gap-[16px]"
     >
       <div class="flex justify-between ">
@@ -69,7 +69,7 @@ import { TaskStateService } from './data-access/tasks-state.service';
             [forcedOpen]="true"
             [heading]="category.title"
             [isHeadingCentered]="true"
-            *ngIf="{tasks: (category.tasks | async) || []} as taskObservables"
+            *ngIf="{ tasks: (category.tasks | async) || [] } as taskObservables"
           >
             <div
               class="flex w-full flex-col gap-[16px]  pt-[16px]"
@@ -109,7 +109,9 @@ export class TasksPageComponent implements OnInit {
   categories = [
     {
       title: 'Todo',
-      tasks: this.taskService.getTasks(0, this.projectId),
+      tasks: this.taskService
+        .getTasks(0, this.projectId)
+        .pipe(tap((t) => this.taskStateService.setTasks(t))),
       statusId: 0,
     },
     {

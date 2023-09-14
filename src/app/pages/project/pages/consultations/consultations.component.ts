@@ -17,6 +17,9 @@ import { ProjectService } from 'src/app/services/project.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { filter, map, switchMap, of, tap } from 'rxjs';
 import { isNotNull } from 'src/app/utils/isNotNull';
+import { AvailableScheduleDetailModalComponent } from './available-schedule-detail-modal.component';
+import { AddAvailableScheduleModalComponent } from './add-available-schedule-modal.component';
+import { AvailableSchedulesComponent } from './available-schedules.component';
 
 @Component({
   selector: 'consultations',
@@ -30,6 +33,9 @@ import { isNotNull } from 'src/app/utils/isNotNull';
     CommonModule,
     CompletedConsultationModalComponent,
     ScheduledConsultationModalComponent,
+    AvailableScheduleDetailModalComponent,
+    AddAvailableScheduleModalComponent,
+    AvailableSchedulesComponent
   ],
   template: `
     <ng-container
@@ -73,8 +79,17 @@ import { isNotNull } from 'src/app/utils/isNotNull';
             </consultation-card>
           </div>
         </accordion>
+
+        <div class="h-[2px] w-full bg-base-content/10"></div>
+
+        <available-schedules *ngIf="observables.role === 't'" />
+
+      
+
       </div>
 
+      <add-available-schedule-modal *ngIf="observables.role === 't'"/>
+      <available-schedule-detail-modal *ngIf="observables.role === 't'" />
       <schedule-consultation-modal *ngIf="observables.role === 's'" />
       <consultation-details-modal />
       <!-- todo: find out why id has  to be wrapped -->
@@ -90,7 +105,9 @@ import { isNotNull } from 'src/app/utils/isNotNull';
       <completed-consultation-modal
         *ngIf="['c', 't', 'ct'].includes(observables.role || '')"
       />
-      <scheduled-consultation-modal *ngIf="['t', 'ct'].includes(observables.role || '')" />
+      <scheduled-consultation-modal
+        *ngIf="['t', 'ct'].includes(observables.role || '')"
+      />
       <consultation-details-modal
         *ngIf="['t', 'ct'].includes(observables.role || '')"
         [id]="'techAdPendingConsultationsModal'"
@@ -120,6 +137,10 @@ export class ConsultationsComponent {
   authService = inject(AuthService);
   destroyRef = inject(DestroyRef);
 
+  test() {
+    console.log('click!!');
+  }
+
   projectId = Number(this.route.parent!.snapshot.url[0].path);
 
   role$ = this.authService.getAuthenticatedUser().pipe(
@@ -129,7 +150,7 @@ export class ConsultationsComponent {
 
       return this.projectService.getAdviserProjectRole(this.projectId, u.uid);
     }),
-    tap(v => console.log("role123:", v))
+    tap((v) => console.log('role123:', v))
   );
   consultations$ = this.authService.getAuthenticatedUser().pipe(
     filter(isNotNull),
@@ -143,7 +164,7 @@ export class ConsultationsComponent {
         category: 'Pending',
         items: this.consultationService
           .getConsultations(0, this.projectId)
-          .pipe(takeUntilDestroyed(this.destroyRef)),
+          .pipe(takeUntilDestroyed(this.destroyRef), tap(v => console.log("pending:", v))),
         buttonId: this.getButtonIdForPendingAccordion(role),
       },
       {
@@ -196,7 +217,7 @@ export class ConsultationsComponent {
 
   getButtonIdForPendingAccordion(role: string) {
     if (['t', 'ct'].includes(role)) return 'techAdPending';
-    
+
     switch (role) {
       case 't':
         return 'techAdPending';

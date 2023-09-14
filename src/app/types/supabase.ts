@@ -239,6 +239,40 @@ export interface Database {
           }
         ]
       }
+      available_schedule: {
+        Row: {
+          date: string
+          end_time: number
+          id: number
+          is_available: boolean
+          start_time: number
+          technical_adviser: string
+        }
+        Insert: {
+          date: string
+          end_time: number
+          id?: number
+          is_available?: boolean
+          start_time: number
+          technical_adviser: string
+        }
+        Update: {
+          date?: string
+          end_time?: number
+          id?: number
+          is_available?: boolean
+          start_time?: number
+          technical_adviser?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "available_schedule_technical_adviser_fkey"
+            columns: ["technical_adviser"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          }
+        ]
+      }
       capstone_projects: {
         Row: {
           abstract: string | null

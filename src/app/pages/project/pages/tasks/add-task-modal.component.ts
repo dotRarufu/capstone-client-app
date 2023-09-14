@@ -5,6 +5,7 @@ import { TaskService } from 'src/app/services/task.service';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute } from '@angular/router';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
+import { TaskStateService } from './data-access/tasks-state.service';
 
 @Component({
   selector: 'add-task-modal',
@@ -40,7 +41,7 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
 
             <textarea
               [formControl]="description"
-              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
+              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
               placeholder="Description"
             ></textarea>
           </div>
@@ -75,6 +76,7 @@ export class AddTaskModalComponent {
   taskService = inject(TaskService);
   toastr = inject(ToastrService);
   route = inject(ActivatedRoute);
+  taskStateService = inject(TaskStateService);
 
   handleCloseEvent() {
     this.title.setValue('');
@@ -83,6 +85,14 @@ export class AddTaskModalComponent {
 
   handleDoneClick() {
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
+
+    const tasks = this.taskStateService.getTasks();
+
+    if (tasks.length > 5) {
+      this.toastr.error('Tasks in todo is already reached');
+
+      return;
+    }
 
     // * completes
     const status$ = this.taskService.add(

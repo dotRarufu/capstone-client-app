@@ -13,6 +13,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 import { BehaviorSubject, filter, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { isNotNull } from 'src/app/utils/isNotNull';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'ProjectCard',
@@ -71,10 +72,12 @@ export class ProjectCardComponent implements OnChanges {
   @Output() removeProjectId = new EventEmitter<number>();
 
   router = inject(Router);
+  spinner = inject(NgxSpinnerService);
 
   handleCardClick() {
     this.project$.subscribe({
       next: (project) => {
+        this.spinner.show();
         const studentPath = [this.role, 'p', project.id];
         const adviserPath = [this.role, 'p', project.id];
 

@@ -27,9 +27,12 @@ export class AuthService {
   private readonly client = supabaseClient;
   private readonly updateUserProfileSubject = new BehaviorSubject(0);
   private readonly updateNotificationsSubject = new BehaviorSubject(0);
+  private readonly updateAvailableSchedulesSubject = new BehaviorSubject(0);
   user$ = this.userSubject.asObservable();
   updateUserProfile$ = this.updateUserProfileSubject.asObservable();
   updateNotifications$ = this.updateNotificationsSubject.asObservable();
+  updateAvailableSchedules$ =
+    this.updateAvailableSchedulesSubject.asObservable();
   // todo: should these use readonly?
   private router = inject(Router);
   private spinner = inject(NgxSpinnerService);
@@ -380,6 +383,156 @@ export class AuthService {
     return req$;
   }
 
+  addAvailableSchedule(
+    taUid: string,
+    date: string,
+    start_time: number,
+    end_time: number
+  ) {
+    const data = {
+      technical_adviser: taUid,
+      date,
+      start_time,
+      end_time,
+    };
+    const req = this.client.from('available_schedule').insert(data);
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      }),
+      tap((_) => this.signalUpdateAvailableSchedules())
+    );
+
+    return req$;
+  }
+
+  getAvailableSchedules() {
+    const technicalAdviser$ = this.getAuthenticatedUser().pipe(
+      filter(isNotNull),
+      map((u) => {
+        if (u.role_id !== 5) return false;
+
+        return u.uid;
+      })
+    );
+
+    const req$ = this.updateAvailableSchedules$.pipe(
+      switchMap((_) => technicalAdviser$),
+      switchMap((uid) =>
+        this.client
+          .from('available_schedule')
+          .select('*')
+          .eq('technical_adviser', uid)
+          .eq('is_available', true)
+      ),
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      })
+    );
+
+    return req$;
+  }
+
+  getProjectAvailableSchedules(taUid: string) {
+    const req = this.client
+      .from('available_schedule')
+      .select('*')
+      .eq('technical_adviser', taUid)
+      .eq('is_available', true);
+
+    const req$ = this.updateAvailableSchedules$.pipe(
+      switchMap(_ => from(req)),
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      })
+    );
+
+    return req$;
+  }
+
+  getScheduleData(id: number) {
+    const req = this.client
+      .from('available_schedule')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      })
+    );
+
+    return req$;
+  }
+
+  markScheduleUnavailable(id: number) {
+    const req = this.client
+      .from('available_schedule')
+      .update({ is_available: false })
+      .eq('id', id);
+
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      })
+    );
+
+    return req$;
+  }
+
+  editAvailableSchedule(
+    id: number,
+    date: string,
+    startTime: number,
+    endTime: number
+  ) {
+    const data = {
+      date,
+      start_time: startTime,
+      end_time: endTime,
+    };
+
+    const req = this.client
+      .from('available_schedule')
+      .update(data)
+      .eq('id', id);
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      }),
+      tap((_) => this.signalUpdateAvailableSchedules())
+    );
+
+    return req$;
+  }
+
+  deleteAvailableSchedule(id: number) {
+    const req = this.client.from('available_schedule').delete().eq('id', id);
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      }),
+      tap((_) => this.signalUpdateAvailableSchedules())
+    );
+
+    return req$;
+  }
+
   private updateUserData(
     userId: string,
     //todo: create interface for this, name it UserRow
@@ -436,8 +589,11 @@ export class AuthService {
     this.updateUserProfileSubject.next(old + 1);
   }
   private signalUpdateNotifications() {
-    console.log('signal new notif');
     const old = this.updateNotificationsSubject.getValue();
     this.updateNotificationsSubject.next(old + 1);
+  }
+  signalUpdateAvailableSchedules() {
+    const old = this.updateAvailableSchedulesSubject.getValue();
+    this.updateAvailableSchedulesSubject.next(old + 1);
   }
 }

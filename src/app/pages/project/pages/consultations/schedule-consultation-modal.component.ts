@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -10,7 +17,15 @@ import { TaskService } from 'src/app/services/task.service';
 import { Task } from 'src/app/types/collection';
 import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
-import { take } from 'rxjs';
+import { of, switchMap, take, tap } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
+import { ProjectService } from 'src/app/services/project.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
+import getDuration from 'src/app/utils/getDuration';
+import formatDate from 'src/app/utils/formatDate';
+import dayFromDate from 'src/app/utils/dayFromDate';
+import { ConsultationStateService } from './data-access/consultations-state.service';
 
 @Component({
   selector: 'schedule-consultation-modal',
@@ -27,12 +42,34 @@ import { take } from 'rxjs';
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
         <div class="flex h-fit justify-between bg-primary p-[24px]">
-          <div class="flex w-full flex-col justify-between gap-4">
+          <!-- <div class="flex w-full flex-col justify-between gap-4">
             <input
               type="datetime-local"
               [formControl]="dateTime"
               class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-transparent px-3 py-2 text-[20px] text-base text-primary-content/70 placeholder:text-[20px] placeholder:text-primary-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
             />
+          </div> -->
+
+          <div class="form-control ">
+            <div
+              class="input-group rounded-[3px] border border-base-content/50"
+            >
+              <select
+                class="select-bordered select w-full rounded-[3px] border-none text-base  font-normal text-base-content focus:rounded-[3px] "
+              >
+                <!-- todo: make this dynamic -->
+                <option disabled selected>Select a schedule</option>
+
+                <option
+                  *ngFor="let schedule of availableSchedules()"
+                  (click)="activeScheduleId.set(schedule.id)"
+                >
+                  {{ formatDate(schedule.date) }} |
+                  {{ getTimeFromEpoch(schedule.start_time) }}
+                </option>
+          
+              </select>
+            </div>
           </div>
         </div>
         <div
@@ -41,6 +78,35 @@ import { take } from 'rxjs';
           <div
             class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-scroll"
           >
+            <div>
+              <!-- Selected schedule details goes here -->
+              <div
+                *ngIf="
+                  activeSchedule() !== null && activeSchedule() !== undefined
+                "
+                class="grid w-full grid-cols-2 gap-2 rounded-[3px] px-2 py-4 text-left"
+              >
+                <div class="p-0 text-base text-base-content sm1:text-[18px]">
+                  {{ getDayFromDate(activeSchedule()!.date) }}
+                </div>
+                <div class="text-base text-base-content/70">
+                  {{ formatDate(activeSchedule()!.date) }}
+                </div>
+
+                <div class="p-0 text-base text-base-content sm1:text-[18px]">
+                  {{ getTimeFromEpoch(activeSchedule()!.start_time) }}
+                </div>
+                <span class="text-base text-base-content/70">{{
+                  getDuration(
+                    activeSchedule()!.start_time,
+                    activeSchedule()!.end_time
+                  )
+                }}</span>
+              </div>
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+
             <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
             </div>
@@ -136,40 +202,54 @@ import { take } from 'rxjs';
     </modal>
   `,
 })
-export class ScheduleConsultationModalComponent implements OnInit {
-  dateTime = new FormControl('', { nonNullable: true });
+export class ScheduleConsultationModalComponent {
   description = new FormControl('', { nonNullable: true });
   location = new FormControl('', { nonNullable: true });
-  
-  doneTasks = signal<Task[]>([]);
-  selectedTasks = signal<Task[]>([]);
+  activeScheduleId = signal(-1);
+  activeSchedule = computed(() => {
+    const schedules = this.availableSchedules();
+
+    if (schedules === undefined) return null;
+
+    const active = schedules.filter((s) => s.id === this.activeScheduleId())[0];
+
+    return active;
+  });
 
   consultationService = inject(ConsultationService);
+  consultationStateService = inject(ConsultationStateService);
   toastr = inject(ToastrService);
   taskService = inject(TaskService);
   route = inject(ActivatedRoute);
+  authService = inject(AuthService);
+  projectService = inject(ProjectService);
 
-  ngOnInit(): void {
-    const projectId = Number(this.route.parent!.snapshot.url[0].path);
+  projectId = Number(this.route.parent!.snapshot.url[0].path);
 
-    const doneTasks$ = this.taskService.getTasks(2, projectId);
-    doneTasks$.pipe(take(1)).subscribe({
-      next: (tasks) => this.doneTasks.set(tasks),
-      error: () => this.toastr.error('error getting done tasks'),
-    });
-  }
+  availableSchedules = toSignal(
+    this.projectService.getProjectInfo(this.projectId).pipe(
+      switchMap((p) => {
+        const uid = p.technical_adviser_id;
+
+        if (uid === null) return of([]);
+
+        return this.authService.getProjectAvailableSchedules(uid);
+      })
+    )
+  );
+  // this.authService.getProjectAvailableSchedules()
+
+  doneTasks = signal<Task[]>([]);
+  selectedTasks = signal<Task[]>([]);
 
   handleClosedEvent() {
-    this.dateTime.reset();
     this.description.reset();
     this.location.reset();
   }
 
   scheduleConsultation() {
-    const epochDateTime = dateStringToEpoch(this.dateTime.value);
-
     const data: ConsultationData = {
-      dateTime: epochDateTime,
+      scheduleId: this.activeScheduleId(),
       description: this.description.value,
       location: this.location.value,
       taskIds: this.selectedTasks().map((t) => t.id),
@@ -179,6 +259,8 @@ export class ScheduleConsultationModalComponent implements OnInit {
     const request$ = this.consultationService.scheduleConsultation(
       data,
       projectId
+    ).pipe(
+      tap(() => this.authService.signalUpdateAvailableSchedules())
     );
 
     request$.subscribe({
@@ -206,5 +288,21 @@ export class ScheduleConsultationModalComponent implements OnInit {
       this.selectedTasks.update((old) => old.filter((t) => t.id !== id));
       this.doneTasks.update((old) => [...old, selectedTasks]);
     };
+  }
+
+  getDayFromDate(d: string) {
+    return dayFromDate(new Date(d));
+  }
+
+  formatDate(d: string) {
+    return formatDate(new Date(d));
+  }
+
+  getDuration(start: number, end: number) {
+    return getDuration(start, end);
+  }
+
+  getTimeFromEpoch(t: number) {
+    return getTimeFromEpoch(t);
   }
 }

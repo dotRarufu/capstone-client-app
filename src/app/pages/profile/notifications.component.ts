@@ -13,10 +13,13 @@ import getRoleName from 'src/app/utils/getRoleName';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div *ngIf="{ notifications: (notifications$ | async )|| [] } as observables" class="flex flex-col gap-4 py-4">
+    <div
+      *ngIf="{ notifications: (notifications$ | async) || [] } as observables"
+      class="flex flex-col gap-4 py-4"
+    >
       <h1 class="font-bold">Project Invitations</h1>
       <ul
-      *ngIf="observables.notifications.length > 0; else empty"
+        *ngIf="observables.notifications.length > 0; else empty"
         class="flex w-full flex-col gap-2"
       >
         <li
@@ -25,7 +28,8 @@ import getRoleName from 'src/app/utils/getRoleName';
         >
           <span class=""
             ><span class="font-bold">{{ notification.senderData.name }}</span>
-            invited you to participate in their project as {{getRoleName(notification.role)}}</span
+            invited you to participate in their project as
+            {{ getRoleName(notification.role) }}</span
           >
           <div class="join rounded-[5px] border">
             <button
@@ -52,10 +56,12 @@ import getRoleName from 'src/app/utils/getRoleName';
       </ul>
 
       <ng-template #empty>
-                  <div class="w-full bg-base-200 flex justify-center items-center rounded-[5px] text-base-content/70 p-4">
-                    You have no project invitations
-                </div>
-    </ng-template>
+        <div
+          class="flex w-full items-center justify-center rounded-[5px] bg-base-200 p-4 text-base-content/70"
+        >
+          You have no project invitations
+        </div>
+      </ng-template>
     </div>
   `,
 })
@@ -64,7 +70,6 @@ export class NotificationsComponent {
   toastr = inject(ToastrService);
   spinner = inject(NgxSpinnerService);
   notifications$ = this.authService.getNotifications().pipe(
-
     switchMap((notifications) => {
       if (notifications.length === 0) return of([]);
 
@@ -76,7 +81,6 @@ export class NotificationsComponent {
       );
 
       const res$ = sendersData$.pipe(
-
         map((senders) => {
           const transformed = senders
             .map((sender) => {
@@ -88,8 +92,7 @@ export class NotificationsComponent {
             .flat(1);
 
           return transformed;
-        }),
-
+        })
       );
 
       return res$;
@@ -134,6 +137,6 @@ export class NotificationsComponent {
   }
 
   getRoleName(id: number) {
-    return getRoleName(id)
+    return getRoleName(id);
   }
 }
