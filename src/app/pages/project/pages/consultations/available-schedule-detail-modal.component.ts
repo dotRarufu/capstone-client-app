@@ -74,14 +74,14 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
                 getTimeFromEpoch(observables.activeSchedule?.end_time || 0)
               }}</span>
             </div>
-            <div *ngIf="isInEdit()" class="flex items-center justify-between">
+            <div *ngIf="isInEdit()" class="flex items-center justify-between gap-2">
               <input
                 type="time"
                 [formControl]="startDate"
                 placeholder="Start"
                 class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
               />
-              <span>TO</span>
+              <span class="text-base-content"> TO </span>
               <input
                 type="time"
                 [formControl]="endDate"
@@ -97,7 +97,7 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
               (click)="handleSaveClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
-              <i-feather class="text-base-content/70" name="check-square" />
+              <i-feather class="text-base-content/70" name="save" />
               save
             </button>
             <button
@@ -113,7 +113,7 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
               (click)="handleRemoveClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
-              <i-feather class="text-base-content/70" name="check-square" />
+              <i-feather class="text-base-content/70" name="trash" />
               Delete
             </button>
 

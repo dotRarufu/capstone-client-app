@@ -35,9 +35,13 @@ import {
   CheckCircle,
   Minus,
   Save,
+  Share2,
+  Star,
 } from 'angular-feather/icons';
 
 const icons = {
+  Share2,
+  Star,
   ArrowLeft,
   Menu,
   List,
@@ -71,7 +75,7 @@ const icons = {
   ChevronLeft,
   CheckCircle,
   Minus,
-  Save
+  Save,
 };
 
 @NgModule({

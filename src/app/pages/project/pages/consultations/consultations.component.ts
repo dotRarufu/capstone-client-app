@@ -99,7 +99,7 @@ import { AvailableSchedulesComponent } from './available-schedules.component';
           (click)="cancelInvitation()"
           class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
         >
-          <i-feather class="text-base-content/70" name="x" /> cancel
+          <i-feather class="text-base-content/70" name="x-circle" /> cancel
         </button>
       </consultation-details-modal>
       <completed-consultation-modal
@@ -116,13 +116,13 @@ import { AvailableSchedulesComponent } from './available-schedules.component';
           (click)="handleInvitation(true)"
           class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
         >
-          <i-feather class="text-base-content/70" name="x" /> Accept
+          <i-feather class="text-base-content/70" name="check" /> Accept
         </button>
         <button
           (click)="handleInvitation(false)"
           class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
         >
-          <i-feather class="text-base-content/70" name="x" /> Decline
+          <i-feather class="text-base-content/70" name="x-circle" /> Decline
         </button>
       </consultation-details-modal>
     </ng-container>

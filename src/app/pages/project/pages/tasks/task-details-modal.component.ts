@@ -7,10 +7,11 @@ import { ToastrService } from 'ngx-toastr';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { TaskStateService } from './data-access/tasks-state.service';
-import { filter, of, switchMap } from 'rxjs';
+import { filter, forkJoin, map, of, switchMap } from 'rxjs';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProjectService } from 'src/app/services/project.service';
+import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
 
 @Component({
   selector: 'task-details-modal',
@@ -26,7 +27,7 @@ import { ProjectService } from 'src/app/services/project.service';
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
         *ngIf="{
-          activeTask: taskStateService.activeTask$ | async,
+          activeTask: activeTask$ | async,
           role: role$ | async,
           user: user$ | async
         } as observables"
@@ -48,9 +49,9 @@ import { ProjectService } from 'src/app/services/project.service';
               *ngIf="!isInEdit()"
               class="text-[12px] text-primary-content/50"
             >
-              Created at {{ observables.activeTask?.date_added }} by
-              {{ observables.activeTask?.assigner_id }} | Currently in
-              {{ observables.activeTask?.status_id }}
+              Created at {{ observables.activeTask?.dateAdded }} by
+              {{ observables.activeTask?.assigner?.name }} | Currently in
+              {{ observables.activeTask?.statusName }}
             </div>
           </div>
         </div>
@@ -79,7 +80,10 @@ import { ProjectService } from 'src/app/services/project.service';
           <ul class=" flex w-full flex-col  bg-neutral/20 py-2 sm1:w-[223px]">
             <label
               (click)="this.isInEdit.set(true)"
-              *ngIf="!isInEdit() && observables.activeTask?.assigner_id === observables.user!.uid"
+              *ngIf="
+                !isInEdit() &&
+                observables.activeTask?.assigner_id === observables.user!.uid
+              "
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="edit" />
@@ -87,10 +91,13 @@ import { ProjectService } from 'src/app/services/project.service';
             </label>
             <button
               (click)="handleDeleteClick()"
-              *ngIf="!isInEdit() && observables.activeTask?.assigner_id === observables.user!.uid"
+              *ngIf="
+                !isInEdit() &&
+                observables.activeTask?.assigner_id === observables.user!.uid
+              "
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
-              <i-feather class="text-base-content/70" name="user-check" />
+              <i-feather class="text-base-content/70" name="trash" />
               Delete
             </button>
             <button
@@ -98,7 +105,7 @@ import { ProjectService } from 'src/app/services/project.service';
               *ngIf="isInEdit() && observables.role?.role_id === 5"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
-              <i-feather class="text-base-content/70" name="user-check" />
+              <i-feather class="text-base-content/70" name="save" />
               Save
             </button>
 
@@ -116,7 +123,7 @@ import { ProjectService } from 'src/app/services/project.service';
               *ngIf="isInEdit() && observables.role?.role_id === 5"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
-              <i-feather class="text-base-content/70" name="user-check" />
+              <i-feather class="text-base-content/70" name="x-circle" />
               Cancel
             </label>
           </ul>
@@ -132,17 +139,35 @@ export class TaskDetailsModalComponent {
   taskStateService = inject(TaskStateService);
   authService = inject(AuthService);
   projectService = inject(ProjectService);
-
-  projectId = Number(this.route.parent!.snapshot.url[0].path)
-
-  role$ = this.authService.getAuthenticatedUser().pipe(
+  currentValuesSubcription = this.taskStateService.activeTask$.pipe(
     filter(isNotNull)
-  )
-  user$ = this.authService.getAuthenticatedUser().pipe(filter(isNotNull))
+  ).subscribe({
+    next: (v) => {
+      this.description.setValue(v.description);
+      this.title.setValue(v.title);
+    },
+  });
+  projectId = Number(this.route.parent!.snapshot.url[0].path);
+
+  role$ = this.authService.getAuthenticatedUser().pipe(filter(isNotNull));
+  user$ = this.authService.getAuthenticatedUser().pipe(filter(isNotNull));
 
   isInEdit = signal(false);
   description = new FormControl('', { nonNullable: true });
   title = new FormControl('', { nonNullable: true });
+
+  activeTask$ = this.taskStateService.activeTask$.pipe(
+    filter(isNotNull),
+    switchMap((v) =>
+      forkJoin({
+        assigner: this.authService.getUserData(v.assigner_id),
+        data: of(v),
+      })
+    ),
+    map(({ data, assigner }) => ({ ...data, assigner })),
+    map((data) => ({ ...data, statusName: this.getStatusName(data.status_id) })),
+    map((data) => ({ ...data, dateAdded: this.a(data.date_added)})),
+  );
 
   // todo: delete add task comp, use this instead
   handleSaveClick() {
@@ -179,5 +204,23 @@ export class TaskDetailsModalComponent {
   handleClosedEvent() {
     this.description.reset();
     this.title.reset();
+  }
+
+  a(v: number) {
+    return convertUnixEpochToDateString(v);
+  }
+
+  getStatusName(id: number) {
+    switch (id) {
+      case 0:
+        return 'To Do';
+      case 1:
+        return 'On Going';
+      case 2:
+        return 'Done';
+
+      default:
+        return 'Unknown section';
+    }
   }
 }

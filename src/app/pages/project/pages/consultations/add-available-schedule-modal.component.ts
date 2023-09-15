@@ -45,14 +45,14 @@ import timeToEpoch from 'src/app/utils/timeToEpoch';
 
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
-            <div class="flex flex-col items-center gap-4 sm1:flex-row">
+            <div class="flex flex-col items-center gap-2 sm1:flex-row">
               <input
                 [formControl]="startTime"
                 type="time"
                 placeholder="Start"
                 class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-secondary focus:outline-0 "
               />
-              <span> TO </span>
+              <span class="text-base-content"> TO </span>
               <input
                 [formControl]="endTime"
                 type="time"

@@ -88,7 +88,7 @@ import { CommonModule } from '@angular/common';
               (click)="handleCompleteClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
-              <i-feather class="text-base-content/70" name="x" /> Complete
+              <i-feather class="text-base-content/70" name="check-circle" /> Complete
             </button>
 
             <div class="h-full"></div>

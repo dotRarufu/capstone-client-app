@@ -32,7 +32,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
     FeatherIconsModule,
   ],
   template: `
-    <div class="w-full" *ngIf="{ sections: sections$ | async } as observables">
+    <div class="w-full" *ngIf="{ sections: sections$ | async, archived: archived$ | async } as observables">
       <projects
         *ngIf="
           observables.sections !== null && observables.sections.length !== 0;
@@ -52,11 +52,11 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
         </projects-accordion>
 
         <projects-accordion
-          *ngIf="archived$ | async as archived"
+          *ngIf="observables.archived !== null && observables.archived !== undefined && observables.archived.length > 0"
           heading="Archived"
         >
           <ProjectCard
-            *ngFor="let project of archived"
+            *ngFor="let project of observables.archived"
             [project]="project"
             [role]="role"
           />
