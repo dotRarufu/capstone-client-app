@@ -17,7 +17,7 @@ import getRoleName from 'src/app/utils/getRoleName';
       *ngIf="{ notifications: (notifications$ | async) || [] } as observables"
       class="flex flex-col gap-4 py-4"
     >
-      <h1 class="font-bold">Project Invitations</h1>
+      <h1 class="font-bold">Notifications</h1>
       <ul
         *ngIf="observables.notifications.length > 0; else empty"
         class="flex w-full flex-col gap-2"
@@ -59,7 +59,7 @@ import getRoleName from 'src/app/utils/getRoleName';
         <div
           class="flex w-full items-center justify-center rounded-[5px] bg-base-200 p-4 text-base-content/70"
         >
-          You have no project invitations
+          You are up to date
         </div>
       </ng-template>
     </div>

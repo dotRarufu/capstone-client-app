@@ -41,7 +41,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
       </select>
 
       <ngx-doc-viewer
-        *ngIf="observables.src !== null; else empty"
+        *ngIf="observables.src !== null && observables.src !== undefined; else empty"
         [url]="observables.src || ''"
         viewer="office"
         style="width:100%;height:100%;"
@@ -81,11 +81,11 @@ export class Form3Component {
       )
     ),
     tap((_) => {
-      this.toastr.success('successfully generated form');
+      this.toastr.success('Form generated');
       this.spinner.hide();
     }),
     catchError((err) => {
-      this.toastr.error('error generating form:', err);
+      this.toastr.error('Could not generate form:', err);
       this.spinner.hide();
 
       return EMPTY;

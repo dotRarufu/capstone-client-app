@@ -114,12 +114,12 @@ import { User } from 'src/app/types/collection';
           class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
           min="1"
         /> -->
-        <!-- <input
+        <input
           type="text"
           placeholder="Student Number"
           [formControl]="studentNumber"
           class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
-        /> -->
+        />
         <input
           type="email"
           placeholder="Email"
@@ -167,18 +167,21 @@ export class SignupComponent {
   signUp() {
     this.spinner.show();
 
+    const userInfo = {
+      studentNumber: this.studentNumber.value,
+      name: this.fullName.value,
+      roleId: this.roleId.value,
+    };
+
     this.authService
-      .signUp(this.email.value, this.password.value)
+      .signUp(this.email.value, this.password.value, userInfo)
       .subscribe({
         next: (value) => {
-          if (value.hasOwnProperty('user_metadata')) {
-            this.toastr.success('Sign up success');
-            this.spinner.hide();
-            this.toLogin.emit();
-
-            return;
-          }
-
+          this.toastr.success('Sign up success');
+          this.spinner.hide();
+          this.toLogin.emit();
+        },
+        error: (value) => {
           this.spinner.hide();
           this.toastr.error(value as string);
         },

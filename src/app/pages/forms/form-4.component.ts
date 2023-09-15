@@ -13,6 +13,7 @@ import {
   switchMap,
   tap,
   map,
+  of,
 } from 'rxjs';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ConsultationService } from 'src/app/services/consultation.service';
@@ -29,11 +30,23 @@ import { isNotNull } from 'src/app/utils/isNotNull';
       *ngIf="{ src: src$ | async } as observables"
     >
       <ngx-doc-viewer
-        *ngIf="observables.src !== null"
+        *ngIf="observables.src; else empty"
         [url]="observables.src || ''"
         viewer="office"
         style="width:100%;height:100%;"
       />
+
+      <ng-template #empty>
+        <div
+          class="flex flex-col items-center justify-center gap-[8px]
+        text-base-content/50"
+        >
+          <i-feather name="x" class="" />
+          <span class="text-base"
+            >The project has no completed consultation</span
+          >
+        </div>
+      </ng-template>
     </div>
   `,
 })
@@ -49,7 +62,13 @@ export class Form4Component implements OnInit {
 
   dateTimes$ = this.consultationService.getConsultations(2, this.projectId);
   src$ = this.dateTimes$.pipe(
-    filter(isNotNull),
+    map((dateTimes) => {
+      if (dateTimes.length === 0) {
+        throw new Error('The project has no completed consultation');
+      }
+
+      return dateTimes;
+    }),
     map((d) => d.map((e) => e.date_time)),
     switchMap((dateTimeList) =>
       this.formGeneratorService.generateForm(
@@ -60,19 +79,18 @@ export class Form4Component implements OnInit {
       )
     ),
     tap((_) => {
-      this.toastr.success('successfully generated form');
+      this.toastr.success('Form generated', );
       this.spinner.hide();
     }),
     catchError((err) => {
-      this.toastr.error('error generating form:', err);
+      this.toastr.error('Could not generate form:', err);
       this.spinner.hide();
 
-      return EMPTY;
+      return of(null);
     })
-    
   );
 
   ngOnInit(): void {
-    this.spinner.show()
+    this.spinner.show();
   }
 }

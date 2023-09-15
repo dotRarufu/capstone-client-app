@@ -119,7 +119,11 @@ export class AuthService {
     return login$;
   }
 
-  signUp(email: string, password: string) {
+  signUp(
+    email: string,
+    password: string,
+    userInfo: { name: string; roleId: number; studentNumber: string }
+  ) {
     const signUp = this.client.auth.signUp({
       email,
       password,
@@ -127,12 +131,16 @@ export class AuthService {
     const signUp$ = from(signUp).pipe(
       map((authRes) => {
         if (authRes.error) {
-          return authRes.error.message;
+          throw new Error(authRes.error.message);
         }
-        if (authRes.data.user == null) return 'Sign up failed';
+        if (authRes.data.user == null) throw new Error('Sign up failed');
 
         return authRes.data.user;
-      })
+      }),
+      switchMap((user) => this.updateUserData(user.id, userInfo)),
+      switchMap((user) =>
+        this.createStudentInfo(user.uid, userInfo.studentNumber)
+      )
     );
 
     return signUp$;
@@ -282,29 +290,24 @@ export class AuthService {
     return req$;
   }
 
-  // private createStudentInfo(
-  //   uid: string,
-  //   studentNumber: string,
-  //   sectionId: number
-  // ) {
-  //   const client = this.client;
-  //   const data = {
-  //     uid,
-  //     number: studentNumber,
-  //     section_id: sectionId,
-  //   };
+  private createStudentInfo(uid: string, studentNumber: string) {
+    const client = this.client;
+    const data = {
+      uid,
+      number: studentNumber,
+    };
 
-  //   const insert = client.from('student_info').insert(data);
-  //   const insert$ = from(insert).pipe(
-  //     map((res) => {
-  //       const { statusText } = errorFilter(res);
+    const insert = client.from('student_info').insert(data);
+    const insert$ = from(insert).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
 
-  //       return statusText;
-  //     })
-  //   );
+        return statusText;
+      })
+    );
 
-  //   return insert$;
-  // }
+    return insert$;
+  }
 
   getNotifications() {
     const user$ = this.getAuthenticatedUser().pipe(filter(isNotNull));
@@ -445,7 +448,7 @@ export class AuthService {
       .eq('is_available', true);
 
     const req$ = this.updateAvailableSchedules$.pipe(
-      switchMap(_ => from(req)),
+      switchMap((_) => from(req)),
       map((res) => {
         const { data } = errorFilter(res);
 
@@ -538,7 +541,7 @@ export class AuthService {
     //todo: create interface for this, name it UserRow
     user: { name: string; roleId: number }
   ) {
-    if (userId === '') return throwError(() => new Error('user id is invalid'));
+    if (userId === '') return throwError(() => new Error('User ID is invalid'));
 
     const query = this.client
       .from('user')

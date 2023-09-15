@@ -894,17 +894,17 @@ export interface Database {
       student_info: {
         Row: {
           number: string
-          section_id: number
+          section_id: number | null
           uid: string
         }
         Insert: {
           number: string
-          section_id: number
+          section_id?: number | null
           uid: string
         }
         Update: {
           number?: string
-          section_id?: number
+          section_id?: number | null
           uid?: string
         }
         Relationships: [
