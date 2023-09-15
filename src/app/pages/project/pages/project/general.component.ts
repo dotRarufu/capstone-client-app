@@ -117,6 +117,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
           </button>
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
+        <div class="flex flex-col gap-[4px]">
         <participant-card
           *ngFor="let participant of participants$ | async"
           (click)="projectStateService.setActiveParticipant(participant)"
@@ -127,6 +128,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
           (click)="projectStateService.setActiveInvitedParticipant(user)"
           [user]="user"
         />
+      </div>
       </div>
 
       <div class="flex flex-col gap-[4px]">

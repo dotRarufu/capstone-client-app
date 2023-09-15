@@ -96,6 +96,7 @@ export class AdviserProjectsComponent {
 
       return groupBySection(projects);
     }),
+    tap(v => console.log("adviser projects emit:", v))
   );
 
   archived$ = this.projectService.getArchived();

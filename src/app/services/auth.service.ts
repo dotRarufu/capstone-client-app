@@ -84,6 +84,7 @@ export class AuthService {
   }
 
   getUserProfile(uid: string) {
+    console.log("get user profile uid:", uid)
     const user$ = this.updateUserProfile$.pipe(
       switchMap((__) => this.getUser(uid))
     );

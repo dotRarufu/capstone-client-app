@@ -4,14 +4,15 @@ import { AuthService } from 'src/app/services/auth.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { getRolePath } from 'src/app/utils/getRolePath';
-import { filter, map, tap } from 'rxjs';
+import { filter, map, switchMap, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { isNotNull } from 'src/app/utils/isNotNull';
+import { ImgFallbackModule } from 'ngx-img-fallback';
 
 @Component({
   selector: 'top-app-bar',
   standalone: true,
-  imports: [FeatherIconsModule, NgxSpinnerModule, CommonModule],
+  imports: [FeatherIconsModule, NgxSpinnerModule, CommonModule, ImgFallbackModule],
   template: `
     <div
       class=" w-full bg-primary  px-[1rem]  py-[1rem]  sm1:px-[32px] sm2:px-0 md:px-[200px]"
@@ -30,7 +31,10 @@ import { isNotNull } from 'src/app/utils/isNotNull';
               {{ name | async }}
               <div class="avatar">
                 <div class="w-[40px] rounded-full">
-                  <img [src]="profileUrl | async" />
+                  <img
+                    [src]="userAvatarUrl$ | async"
+                    src-fallback="{{ fallbackAvatar$ | async }}"
+                  />
                 </div>
               </div></div
           ></label>
@@ -49,14 +53,17 @@ import { isNotNull } from 'src/app/utils/isNotNull';
               (click)="this.router.navigate(['profile', 'view'])"
             >
               <i-feather class="text-base-content/70 " name="user" />
-              
-              <div *ngIf="observables.notifications; else empty" class="indicator flex-1 ">
+
+              <div
+                *ngIf="observables.notifications; else empty"
+                class="indicator flex-1 "
+              >
                 <span
-                class="rounded-full bg-primary w-[8px] aspect-square indicator-end indicator-middle indicator-item"
+                  class="indicator-end indicator-middle indicator-item aspect-square w-[8px] rounded-full bg-primary"
                 ></span>
                 <div class="text-left">profile</div>
               </div>
-              <ng-template #empty >profile</ng-template>
+              <ng-template #empty>profile</ng-template>
             </a>
             <a
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px]
@@ -77,13 +84,30 @@ export class TopAppBarComponent {
   spinner = inject(NgxSpinnerService);
   router = inject(Router);
 
-  user$ = this.authService.getAuthenticatedUser();
-  profileUrl = this.user$.pipe(
-    map((user) => `https://api.multiavatar.com/${user?.uid || 'unnamed'}.png`)
+  user$ = this.authService.getAuthenticatedUser().pipe(
+    filter(isNotNull),
+    switchMap((user) => this.authService.getUserProfile(user.uid))
   );
-  notifications$ = this.authService.getNotifications().pipe(
-    map(n => n.length > 0)
-  )
+  fallbackAvatar$ = this.user$.pipe(
+    map((user) => `https://api.multiavatar.com/${user.name}.png`)
+  );
+  userAvatarUrl$ = this.user$.pipe(
+    map((user) => {
+      const { avatar_last_update, avatar } = user;
+      const time = avatar_last_update;
+
+      if (time === null) {
+        return avatar;
+      }
+      const base = avatar.slice(0, avatar.indexOf('.png'));
+      const newUrl = `${base}-t-${time}.png`;
+
+      return newUrl;
+    })
+  );
+  notifications$ = this.authService
+    .getNotifications()
+    .pipe(map((n) => n.length > 0));
   name = this.user$.pipe(map((user) => user?.name || 'unnamed'));
 
   signOut() {

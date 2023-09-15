@@ -94,6 +94,7 @@ export class DangerZoneComponent {
             return;
           }
 
+          // todo: maybe create a router service, for dealing with these logics
           this.router.navigate([rolePath, 'home']);
         },
         error: (err) => this.toastr.error(err),

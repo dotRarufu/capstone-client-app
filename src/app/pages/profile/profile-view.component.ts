@@ -12,7 +12,7 @@ import {
 import { Project } from 'src/app/models/project';
 import { AuthService } from 'src/app/services/auth.service';
 import { User } from 'src/app/types/collection';
-import { BehaviorSubject, from, map, switchMap, tap, of, forkJoin } from 'rxjs';
+import { BehaviorSubject, from, map, switchMap, tap, of, forkJoin, take } from 'rxjs';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
 import { MilestonesTemplateComponent } from 'src/app/pages/profile/milestones-template.component';
@@ -413,7 +413,9 @@ export class ProfileViewComponent implements OnInit {
     this.spinner.show();
 
     this.user$
-      .pipe(switchMap((user) => this.authService.uploadAvatar(file, user.uid)))
+      .pipe(
+        take(1),
+        switchMap((user) => this.authService.uploadAvatar(file, user.uid)))
       .subscribe({
         next: () => {
           this.spinner.hide();
