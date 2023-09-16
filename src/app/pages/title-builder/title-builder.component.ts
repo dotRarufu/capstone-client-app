@@ -49,12 +49,7 @@ type Action =
                 class="flex flex-col gap-2 text-base text-base-content sm1:flex-row"
               >
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                  irure dolor in reprehenderit in voluptate velit esse cillum
-                  dolore eu fugiat nulla pariatur. Excepteur sint occaec.
+                  Usually, capstone project titles start with Development and Evaluation. You can select "No" if you think this is not applicable to your project.
                 </p>
                 <div
                   class="flex shrink-0 basis-[223px] flex-row gap-2 sm1:flex-col sm1:justify-between"
@@ -103,13 +98,7 @@ type Action =
               >
                 <div class="flex flex-col gap-2">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaec.
+                    It is better to consult it to the current chairperson and faculty members before proceeding with this in your title.
                   </p>
                   <input
                     #customPrefix
@@ -164,13 +153,8 @@ type Action =
               >
                 <div class="flex flex-col gap-2">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaec.
+                    Commonly, a capstone project will have a name, to easily identify and set it apart from others. This also creates a brand, so think it through before picking one. Make sure it represents what your
+                    project can do.   
                   </p>
                   <input
                     #appName
@@ -229,13 +213,7 @@ type Action =
               >
                 <div class="flex flex-col gap-2">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaec.
+                  These are the words the describes your system and sets it apart from others. Be very careful in selecting these words, as this can mean a 'life or death' situation for your project. 
                   </p>
                   <input
                     #setApart
@@ -291,13 +269,9 @@ type Action =
               >
                 <div class="flex flex-col gap-2">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaec.
+                  The client represents the individual, organization, or entity for whom you are conducting this capstone project.
+    It adds real-world context to your project and helps you tailor your solutions to meet the client's specific needs and expectations.
+    Your project's success may be directly tied to how well you address your client's requirements.
                   </p>
                   <input
                     #clientName

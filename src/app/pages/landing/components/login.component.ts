@@ -27,10 +27,8 @@ import { SpinnerComponent } from 'src/app/components/spinner.component';
     >
       <div class="flex flex-col gap-2 py-4">
         <h1 class="text-[2rem]">Login</h1>
-        <p class="text-xs opacity-80">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostru
+        <p class="text-sm opacity-80">
+          Welcome, start your capstone project journey by logging in. 
         </p>
       </div>
       <input

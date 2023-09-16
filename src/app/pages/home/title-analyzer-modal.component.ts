@@ -22,10 +22,9 @@ import { from, tap } from 'rxjs';
             Enter your capstone project title
           </h1>
           <p class="text-base text-base-content/70">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea.
+            A title usually starts with "Development and Evaluation," followed by
+            the project's name (if any), and brief descriptive words to give
+            idea about the project to the readers. 
           </p>
 
           <textarea
@@ -59,10 +58,10 @@ import { from, tap } from 'rxjs';
             Title Analyzer
           </h1>
           <p class="text-base text-base-content/70">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea.
+            Title analyzer is a tool that checks a capstone project title for its
+            readability, uniqueness, and word count, to help students craft
+            a good project title. It uses the past project titles in PLV to 
+            generate informational data.
           </p>
           <div class="flex flex-col items-center gap-4 min-[444px]:items-end">
             <button (click)="this.homeStateService.setAlreadyHaveTitle(true)" class="btn-link btn w-fit">
