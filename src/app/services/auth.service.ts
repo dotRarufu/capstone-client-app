@@ -26,11 +26,15 @@ export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
   private readonly client = supabaseClient;
   private readonly updateUserProfileSubject = new BehaviorSubject(0);
-  private readonly updateNotificationsSubject = new BehaviorSubject(0);
+  private readonly updateProjectInvitationsSubject = new BehaviorSubject(0);
+  private readonly updateScheduleNotificationsSubject = new BehaviorSubject(0);
   private readonly updateAvailableSchedulesSubject = new BehaviorSubject(0);
   user$ = this.userSubject.asObservable();
   updateUserProfile$ = this.updateUserProfileSubject.asObservable();
-  updateNotifications$ = this.updateNotificationsSubject.asObservable();
+  updateProjectInvitations$ =
+    this.updateProjectInvitationsSubject.asObservable();
+  updateScheduleNotifications$ =
+    this.updateScheduleNotificationsSubject.asObservable();
   updateAvailableSchedules$ =
     this.updateAvailableSchedulesSubject.asObservable();
   // todo: should these use readonly?
@@ -38,8 +42,6 @@ export class AuthService {
   private spinner = inject(NgxSpinnerService);
 
   authStateChange = this.client.auth.onAuthStateChange((event, session) => {
-    console.log('EVENT:', event);
-
     // todo: turn to switch
 
     if (event === 'SIGNED_OUT') {
@@ -48,11 +50,6 @@ export class AuthService {
       this.router.navigate(['']);
       this.spinner.hide();
     }
-  });
-
-  a = this.updateNotifications$.subscribe({
-    next: () => console.log('emits inside srvie!'),
-    complete: () => console.log('completes inside service!'),
   });
 
   getAuthenticatedUser() {
@@ -84,7 +81,7 @@ export class AuthService {
   }
 
   getUserProfile(uid: string) {
-    console.log("get user profile uid:", uid)
+    // console.log('get user profile uid:', uid);
     const user$ = this.updateUserProfile$.pipe(
       switchMap((__) => this.getUser(uid))
     );
@@ -312,7 +309,7 @@ export class AuthService {
 
   getNotifications() {
     const user$ = this.getAuthenticatedUser().pipe(filter(isNotNull));
-    const req$ = this.updateNotifications$.pipe(
+    const req$ = this.updateProjectInvitations$.pipe(
       switchMap((_) => user$),
       switchMap(({ uid }) => {
         const req = this.client
@@ -347,7 +344,7 @@ export class AuthService {
 
         return statusText;
       }),
-      tap(() => this.signalUpdateNotifications())
+      tap(() => this.signalUpdateProjectInvitations())
     );
 
     let data: Partial<ProjectRow> = {
@@ -381,7 +378,7 @@ export class AuthService {
 
         return statusText;
       }),
-      tap(() => this.signalUpdateNotifications())
+      tap(() => this.signalUpdateProjectInvitations())
     );
 
     return req$;
@@ -478,10 +475,10 @@ export class AuthService {
     return req$;
   }
 
-  markScheduleUnavailable(id: number) {
+  markScheduleUnavailable(id: number, projectId: number) {
     const req = this.client
       .from('available_schedule')
-      .update({ is_available: false })
+      .update({ is_available: false, taken_by_project: projectId })
       .eq('id', id);
 
     const req$ = from(req).pipe(
@@ -532,6 +529,45 @@ export class AuthService {
         return statusText;
       }),
       tap((_) => this.signalUpdateAvailableSchedules())
+    );
+
+    return req$;
+  }
+
+  // add this in top app bar profile notif
+  getUnavailableSchedules() {
+    const technicalAdviser$ = this.getAuthenticatedUser();
+    const req$ = this.updateScheduleNotifications$.pipe(
+      switchMap((_) => technicalAdviser$),
+      filter(isNotNull),
+      switchMap((user) => {
+        const req = this.client
+          .from('available_schedule')
+          .select('*')
+          .eq('technical_adviser', user.uid)
+          .eq('is_available', false);
+
+        return from(req);
+      }),
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      }) 
+    );
+
+    return req$;
+  }
+
+  confirmScheduleNotification(id: number) {
+    const req = this.client.from('available_schedule').delete().eq('id', id);
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      }),
+      tap((_) => this.signalUpdateScheduleNotifications())
     );
 
     return req$;
@@ -592,9 +628,13 @@ export class AuthService {
     const old = this.updateUserProfileSubject.getValue();
     this.updateUserProfileSubject.next(old + 1);
   }
-  private signalUpdateNotifications() {
-    const old = this.updateNotificationsSubject.getValue();
-    this.updateNotificationsSubject.next(old + 1);
+  private signalUpdateProjectInvitations() {
+    const old = this.updateProjectInvitationsSubject.getValue();
+    this.updateProjectInvitationsSubject.next(old + 1);
+  }
+  private signalUpdateScheduleNotifications() {
+    const old = this.updateScheduleNotificationsSubject.getValue();
+    this.updateScheduleNotificationsSubject.next(old + 1);
   }
   signalUpdateAvailableSchedules() {
     const old = this.updateAvailableSchedulesSubject.getValue();

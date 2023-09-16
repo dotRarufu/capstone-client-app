@@ -4,7 +4,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { getRolePath } from 'src/app/utils/getRolePath';
-import { filter, map, switchMap, tap } from 'rxjs';
+import { filter, forkJoin, map, switchMap, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { ImgFallbackModule } from 'ngx-img-fallback';
@@ -12,11 +12,19 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
 @Component({
   selector: 'top-app-bar',
   standalone: true,
-  imports: [FeatherIconsModule, NgxSpinnerModule, CommonModule, ImgFallbackModule],
+  imports: [
+    FeatherIconsModule,
+    NgxSpinnerModule,
+    CommonModule,
+    ImgFallbackModule,
+  ],
   template: `
     <div
       class=" w-full bg-primary  px-[1rem]  py-[1rem]  sm1:px-[32px] sm2:px-0 md:px-[200px]"
-      *ngIf="{ notifications: notifications$ | async } as observables"
+      *ngIf="{
+        notifications: notifications$ | async,
+        schedules: schedules$ | async
+      } as observables"
     >
       <div
         class=" flex  w-full flex-row  items-center justify-between text-primary-content   sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"
@@ -55,7 +63,10 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
               <i-feather class="text-base-content/70 " name="user" />
 
               <div
-                *ngIf="observables.notifications; else empty"
+                *ngIf="
+                  observables.notifications || observables.schedules;
+                  else empty
+                "
                 class="indicator flex-1 "
               >
                 <span
@@ -107,6 +118,9 @@ export class TopAppBarComponent {
   );
   notifications$ = this.authService
     .getNotifications()
+    .pipe(map((n) => n.length > 0));
+  schedules$ = this.authService
+    .getUnavailableSchedules()
     .pipe(map((n) => n.length > 0));
   name = this.user$.pipe(map((user) => user?.name || 'unnamed'));
 

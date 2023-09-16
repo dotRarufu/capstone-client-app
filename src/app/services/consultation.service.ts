@@ -45,7 +45,7 @@ export class ConsultationService {
     const request$ = user$.pipe(
       switchMap((user) => this.insertConsultation(user.uid, data, projectId)),
       switchMap((_) =>
-        this.authService.markScheduleUnavailable(data.scheduleId)
+        this.authService.markScheduleUnavailable(data.scheduleId, projectId)
       ),
       tap(() => this.signalNewConsultation())
     );

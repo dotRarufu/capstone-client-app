@@ -246,6 +246,7 @@ export interface Database {
           id: number
           is_available: boolean
           start_time: number
+          taken_by_project: number | null
           technical_adviser: string
         }
         Insert: {
@@ -254,6 +255,7 @@ export interface Database {
           id?: number
           is_available?: boolean
           start_time: number
+          taken_by_project?: number | null
           technical_adviser: string
         }
         Update: {
@@ -262,9 +264,16 @@ export interface Database {
           id?: number
           is_available?: boolean
           start_time?: number
+          taken_by_project?: number | null
           technical_adviser?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "available_schedule_taken_by_project_fkey"
+            columns: ["taken_by_project"]
+            referencedRelation: "project"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "available_schedule_technical_adviser_fkey"
             columns: ["technical_adviser"]
@@ -714,7 +723,26 @@ export interface Database {
           role?: number
           sender_uid?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "project_invitation_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "project"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_invitation_receiver_uid_fkey"
+            columns: ["receiver_uid"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "project_invitation_sender_uid_fkey"
+            columns: ["sender_uid"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          }
+        ]
       }
       proposed_next_step: {
         Row: {

@@ -2,11 +2,13 @@ import { Component, Input, inject } from '@angular/core';
 import { NgChartsModule } from 'ng2-charts';
 import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/services/auth.service';
-import { forkJoin, map, of, switchMap, tap } from 'rxjs';
+import { forkJoin, map, of, switchMap, take, tap } from 'rxjs';
 import { ProjectService } from 'src/app/services/project.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import getRoleName from 'src/app/utils/getRoleName';
+import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
+import getUniqueItems from 'src/app/utils/getUniqueItems';
 
 @Component({
   selector: 'notifications',
@@ -14,12 +16,19 @@ import getRoleName from 'src/app/utils/getRoleName';
   imports: [CommonModule],
   template: `
     <div
-      *ngIf="{ notifications: (notifications$ | async) || [] } as observables"
+      *ngIf="{
+        notifications: (notifications$ | async) || [],
+        schedules: (schedules$ | async) || []
+      } as observables"
       class="flex flex-col gap-4 py-4"
     >
       <h1 class="font-bold">Notifications</h1>
       <ul
-        *ngIf="observables.notifications.length > 0; else empty"
+        *ngIf="
+          observables.notifications.length > 0 ||
+            observables.schedules.length > 0;
+          else empty
+        "
         class="flex w-full flex-col gap-2"
       >
         <li
@@ -29,7 +38,7 @@ import getRoleName from 'src/app/utils/getRoleName';
           <span class=""
             ><span class="font-bold">{{ notification.senderData.name }}</span>
             invited you to participate in their project as
-            {{ getRoleName(notification.role) }}</span
+            {{ notification.roleName }}</span
           >
           <div class="join rounded-[5px] border">
             <button
@@ -53,6 +62,24 @@ import getRoleName from 'src/app/utils/getRoleName';
             </button>
           </div>
         </li>
+        <li
+          *ngFor="let schedule of observables.schedules"
+          class="flex w-full items-center justify-between rounded-[5px] bg-base-200 px-4 py-2"
+        >
+          <span class=""
+            ><span class="font-bold">{{ schedule.project.name }}</span> has
+            scheduled a consultation on {{ schedule.formattedStartTime }}
+          </span>
+          <div class="join rounded-[5px] border">
+            <button
+              (click)="confirmSchedule(schedule.id)"
+              class="btn-sm join-item btn hover:btn-success"
+            >
+              OK
+            </button>
+            <button class="btn-sm join-item btn hover:btn-error">Delete</button>
+          </div>
+        </li>
       </ul>
 
       <ng-template #empty>
@@ -67,6 +94,7 @@ import getRoleName from 'src/app/utils/getRoleName';
 })
 export class NotificationsComponent {
   authService = inject(AuthService);
+  projectService = inject(ProjectService);
   toastr = inject(ToastrService);
   spinner = inject(NgxSpinnerService);
   notifications$ = this.authService.getNotifications().pipe(
@@ -92,11 +120,44 @@ export class NotificationsComponent {
             .flat(1);
 
           return transformed;
-        })
+        }),
+        map((p) => p.map((s) => ({ ...s, roleName: getRoleName(s.role) })))
       );
 
       return res$;
     })
+  );
+  schedules$ = this.authService.getUnavailableSchedules().pipe(
+    switchMap((schedules) => {
+      if (schedules.length === 0) return of([]);
+      const nonNull = schedules.filter((s) => s.taken_by_project !== null);
+      const uniqueSchedules = getUniqueItems(nonNull, 'taken_by_project');
+
+      const uniqueReqs$ = uniqueSchedules.map((s) =>
+        this.projectService.getProjectInfo(s.taken_by_project!).pipe()
+      );
+
+      return forkJoin(uniqueReqs$).pipe(
+        map((projectData) =>
+          nonNull.map((s) => {
+            const matchedProjectData = projectData.find(
+              (p) => p.id === s.taken_by_project
+            );
+
+            return { ...s, project: matchedProjectData! };
+          })
+        )
+      );
+    }),
+
+    map((p) =>
+      p
+        .map((a) => ({
+          ...a,
+          formattedStartTime: convertUnixEpochToDateString(a.start_time),
+        }))
+        .flat(1)
+    )
   );
 
   acceptInvitation(
@@ -136,7 +197,18 @@ export class NotificationsComponent {
     });
   }
 
-  getRoleName(id: number) {
-    return getRoleName(id);
+  confirmSchedule(id: number) {
+    this.spinner.show();
+
+    this.authService.confirmScheduleNotification(id).subscribe({
+      complete: () => {
+        this.spinner.hide();
+        this.toastr.success('Schedule confirmed');
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Failed to confirm schedule');
+      },
+    });
   }
 }
