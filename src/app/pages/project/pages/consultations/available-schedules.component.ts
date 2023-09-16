@@ -71,9 +71,12 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
         >
       </button>
 
-      <div *ngIf="observables.availableSchedules?.length === 0">
-        You have not added available schedules yet
-      </div>
+      
+      <div *ngIf="observables.availableSchedules?.length === 0"
+          class="flex w-full items-center justify-center rounded-[5px] bg-base-200 p-4 text-base-content/70"
+        >
+        You have not added any available schedules yet
+        </div>
     </ng-container>
   `,
 })

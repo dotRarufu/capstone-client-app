@@ -72,7 +72,6 @@ export class ParticipantCardComponent implements OnInit {
     this.user.name || 'unnamed'
   }.png`;
   userAvatarUrl$ = this.user$.pipe(
-    tap(v => console.log("user!!:", v)),
     map((user) => {
       const { avatar_last_update, avatar } = user;
       const time = avatar_last_update;

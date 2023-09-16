@@ -129,6 +129,11 @@ export class AddAvailableScheduleModalComponent {
         next: (a) => {
           this.spinner.hide();
           this.toastr.success('Schedule added successfully');
+
+          this.date.reset();
+          this.startTime.reset();
+          this.endTime.reset();
+
         },
         error: (err) => {
           this.spinner.hide();

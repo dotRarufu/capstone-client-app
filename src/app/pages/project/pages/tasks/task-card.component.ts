@@ -13,11 +13,12 @@ import { AuthService } from 'src/app/services/auth.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { Task } from 'src/app/types/collection';
 import { isNotNull } from 'src/app/utils/isNotNull';
+import { ImgFallbackModule } from 'ngx-img-fallback';
 
 @Component({
   selector: 'TaskCard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ImgFallbackModule],
   template: `
     <div
       onclick="taskDetails.showModal()"
@@ -41,10 +42,10 @@ import { isNotNull } from 'src/app/utils/isNotNull';
         {{ observables.adviser?.name || 'Unnamed' }}
 
         <img
-          class="avatar w-8 rounded-full bg-primary/50"
-          src="https://api.multiavatar.com/test.png"
+          class="avatar w-8 rounded-full bg-primary/50 aspect-square"
+          [src]="observables.adviser?.profileUrl"
+          [src-fallback]="'https://api.multiavatar.com/' + (observables.adviser?.name || 'unnamed') + '.png'"
           alt="assigner profile"
-          srcset=""
         />
       </div>
     </div>
@@ -62,13 +63,25 @@ export class TaskCardComponent implements OnChanges {
   taskSubject = new BehaviorSubject<Task | null>(null);
   adviser$ = this.taskSubject.pipe(
     filter(isNotNull),
-    switchMap((task) => this.authService.getUserData(this.task.assigner_id))
+    switchMap((uid) => this.authService.getUserProfile(this.task.assigner_id)),
+    map((user) => {
+      const { avatar_last_update, avatar } = user;
+      const time = avatar_last_update;
+
+      if (time === null) {
+    
+        return {...user, profileUrl: avatar};
+      }
+      const base = avatar.slice(0, avatar.indexOf('.png'));
+      const newUrl = `${base}-t-${time}.png`;
+
+      return {...user, profileUrl: newUrl};
+    })
   );
   adviserProjectRole$ = this.adviser$.pipe(
     switchMap((u) =>
       this.projectService.getAdviserProjectRole(this.projectId, u.uid)
     ),
-    tap(v => console.log("v:", v)),
     catchError((err) => '')
   );
 
