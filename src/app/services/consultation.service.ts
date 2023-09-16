@@ -231,6 +231,26 @@ export class ConsultationService {
     return request$;
   }
 
+  getConsultationData(projectId: number, date: number) {
+    console.log('req:', projectId, date);
+    const req = this.client
+      .from('consultation')
+      .select('*')
+      .eq('project_id', projectId)
+      .eq('date_time', date)
+      .single();
+
+    const req$ = from(req).pipe(
+      map((res) => {
+        const resA = errorFilter(res);
+
+        return resA.data;
+      })
+    );
+
+    return req$;
+  }
+
   private insertConsultationOutcome(
     outcomeId: number,
     contents: string[],
@@ -306,7 +326,7 @@ export class ConsultationService {
           minute: '2-digit',
           hour12: true,
         });
-        console.log('new date:', formattedDate);
+        console.log('new date epoch:', dateToEpoch(date));
 
         const newData = {
           organizer_id: userUid,

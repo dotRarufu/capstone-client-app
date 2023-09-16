@@ -29,7 +29,7 @@ import { CommonModule } from '@angular/common';
           consultation: consultation$ | async
         } as observables"
       >
-        <div class="flex h-fit justify-between bg-primary p-[24px]">
+        <div class="flex h-full justify-between bg-primary p-[24px]">
           <div class="flex w-full flex-col justify-between gap-4">
             <h1 class="text-[20px] text-primary-content">
               {{ epochToDate(observables.consultation?.date_time || 0) }}

@@ -9,11 +9,21 @@ import { ToastrService } from 'ngx-toastr';
 import getRoleName from 'src/app/utils/getRoleName';
 import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
 import getUniqueItems from 'src/app/utils/getUniqueItems';
+import { ScheduleNotificationDetailsModalComponent } from './schedule-notification-detail-modal.component';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
+import {
+  ProfileStateService,
+  SelectedScheduleNotification,
+} from './data-access/profile-state.service';
 
 @Component({
   selector: 'notifications',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    ScheduleNotificationDetailsModalComponent,
+    FeatherIconsModule,
+  ],
   template: `
     <div
       *ngIf="{
@@ -64,21 +74,33 @@ import getUniqueItems from 'src/app/utils/getUniqueItems';
         </li>
         <li
           *ngFor="let schedule of observables.schedules"
-          class="flex w-full items-center justify-between rounded-[5px] bg-base-200 px-4 py-2"
+          class="flex w-full cursor-pointer items-center justify-between rounded-[5px] bg-base-200 px-4 py-2"
+          onclick="scheduleNotificationDetailsModal.showModal()"
+          (click)="setSelectedScheduleNotification(schedule)"
         >
           <span class=""
             ><span class="font-bold">{{ schedule.project.name }}</span> has
             scheduled a consultation on {{ schedule.formattedStartTime }}
           </span>
-          <div class="join rounded-[5px] border">
-            <button
+          <button
+            class="btn-sm btn"
+            onclick="scheduleNotificationDetailsModal.showModal()"
+            (click)="setSelectedScheduleNotification(schedule)"
+          >
+            <i-feather
+              name="log-in"
+              class="h-[20px] w-[20px] text-base-content/70"
+            />
+          </button>
+          <!-- <div class="join rounded-[5px] border"> -->
+          <!-- <button
               (click)="confirmSchedule(schedule.id)"
               class="btn-sm join-item btn hover:btn-success"
             >
               OK
-            </button>
-            <button class="btn-sm join-item btn hover:btn-error">Delete</button>
-          </div>
+            </button> -->
+          <!-- <button class="btn-sm join-item btn hover:btn-error">Delete</button> -->
+          <!-- </div> -->
         </li>
       </ul>
 
@@ -90,6 +112,8 @@ import getUniqueItems from 'src/app/utils/getUniqueItems';
         </div>
       </ng-template>
     </div>
+
+    <schedule-notification-details-modal />
   `,
 })
 export class NotificationsComponent {
@@ -97,6 +121,7 @@ export class NotificationsComponent {
   projectService = inject(ProjectService);
   toastr = inject(ToastrService);
   spinner = inject(NgxSpinnerService);
+  profileStateService = inject(ProfileStateService);
   notifications$ = this.authService.getNotifications().pipe(
     switchMap((notifications) => {
       if (notifications.length === 0) return of([]);
@@ -210,5 +235,9 @@ export class NotificationsComponent {
         this.toastr.error('Failed to confirm schedule');
       },
     });
+  }
+
+  setSelectedScheduleNotification(d: SelectedScheduleNotification) {
+    this.profileStateService.setSelectedScheduleNotification(d);
   }
 }
