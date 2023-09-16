@@ -24,11 +24,14 @@ import { isNotNull } from 'src/app/utils/isNotNull';
     <ng-container *ngIf="!isFab">
       <div
         class="flex h-full w-fit flex-col items-center justify-between gap-[12px] bg-primary px-[4px] py-[24px] text-primary-content"
+        *ngIf="{
+          user: user$ | async
+        } as observables"
+        [class.bg-[#463dbc]]="observables.user?.role_id === 5"
       >
-        <div class="hidden h-[48px] lg:block"></div>
         <button
           (click)="navigateTo('project')"
-          class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px] lg:hidden"
+          class="0 btn-ghost btn flex h-fit w-full flex-col items-center gap-[4px] rounded-[3px] px-[4px] py-[8px] text-[10px]"
         >
           <i-feather name="list" />
           Project
@@ -69,9 +72,14 @@ import { isNotNull } from 'src/app/utils/isNotNull';
       </div>
     </ng-container>
 
+    <!-- todo: remove this, isFab might be unused anymore -->
     <ng-container *ngIf="isFab">
       <div
         class="flex h-full w-fit flex-col items-center justify-between gap-[12px] bg-transparent px-[4px] py-[24px] text-primary"
+        *ngIf="{
+          user: user$ | async
+        } as observables"
+        [class.bg-[#463dbc]]="observables.user?.role_id === 5"
       >
         <div class="hidden h-[48px] lg:block"></div>
         <button

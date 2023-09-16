@@ -26,7 +26,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
     >
       <h2
         (click)="handleCardClick()"
-        class="link-hover link flex h-[92px] w-full flex-col justify-center bg-secondary p-[1rem] text-[20px] font-bold text-secondary-content"
+        class="link-hover link flex h-[92px] w-full flex-col justify-center bg-primary p-[1rem] text-[20px] font-bold text-primary-content"
       >
         {{ observables.project?.name }}
       </h2>

@@ -74,7 +74,7 @@ import { ProfileStateService } from './data-access/profile-state.service';
                   >
                     {{ milestone.title }}
                   </span>
-                  <div class="badge badge-secondary sm1:hidden">
+                  <div class="badge badge-primary sm1:hidden">
                     {{ milestone.dueDate }}
                   </div>
                 </div>

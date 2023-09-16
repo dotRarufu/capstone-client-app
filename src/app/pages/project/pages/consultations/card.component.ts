@@ -16,13 +16,13 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
       <div
         class="card card-compact h-fit w-full max-w-[262px]  rounded-[4px] border border-base-content/50 bg-base-100 shadow-md"
       >
-        <figure class="h-[92px] bg-secondary">
+        <figure class="h-[92px] bg-primary">
           <ng-container [ngSwitch]="buttonId">
             <!-- todo: move switch cases id in constant -->
             <ng-container *ngSwitchCase="'studentPending'">
               <button
                 onclick="pendingConsultationsModal.showModal()"
-                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
+                class="link-hover link card-title  w-full px-4 text-left text-primary-content"
               >
                 {{ epochToDateString(data.date_time) }}
               </button>
@@ -30,7 +30,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
             <ng-container *ngSwitchCase="'techAdPending'">
               <button
                 onclick="techAdPendingConsultationsModal.showModal()"
-                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
+                class="link-hover link card-title  w-full px-4 text-left text-primary-content"
               >
                 {{ epochToDateString(data.date_time) }}
               </button>
@@ -38,7 +38,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
             <ng-container *ngSwitchCase="'techAdScheduled'">
               <button
                 onclick="scheduledConsultationsModal.showModal()"
-                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
+                class="link-hover link card-title  w-full px-4 text-left text-primary-content"
               >
                 {{ epochToDateString(data.date_time) }}
               </button>
@@ -47,7 +47,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
             <ng-container *ngSwitchCase="'techAdCompleted'">
               <button
                 onclick="completedConsultationsModal.showModal()"
-                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
+                class="link-hover link card-title  w-full px-4 text-left text-primary-content"
               >
                 {{ epochToDateString(data.date_time) }}
               </button>
@@ -56,7 +56,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
             <ng-container *ngSwitchDefault>
               <button
                 onclick="consultationModal.showModal()"
-                class="link-hover link card-title  w-full px-4 text-left text-secondary-content"
+                class="link-hover link card-title  w-full px-4 text-left text-primary-content"
               >
                 {{ epochToDateString(data.date_time) }}
               </button>

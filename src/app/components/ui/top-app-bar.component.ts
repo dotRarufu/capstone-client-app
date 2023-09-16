@@ -23,8 +23,10 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
       class=" w-full bg-primary  px-[1rem]  py-[1rem]  sm1:px-[32px] sm2:px-0 md:px-[200px]"
       *ngIf="{
         notifications: notifications$ | async,
-        schedules: schedules$ | async
+        schedules: schedules$ | async,
+        user: user$ | async
       } as observables"
+      [class.bg-[#463dbc]]="observables.user?.role_id === 5"
     >
       <div
         class=" flex  w-full flex-row  items-center justify-between text-primary-content   sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"

@@ -28,10 +28,8 @@ import { isNotNull } from 'src/app/utils/isNotNull';
       } as observables"
     >
       <div
-        class="p-[16px] text-secondary-content"
-        [ngClass]="observables.adviserProjectRole === 't'
-            ? 'bg-blue-500'
-            : 'bg-secondary'"
+        class="p-[16px] text-primary-content bg-primary"
+   
       >
         {{ task.title }}
       </div>

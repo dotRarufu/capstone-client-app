@@ -8,7 +8,7 @@ import { Component, Input } from '@angular/core';
       class="h-[240px] w-[262px] rounded-[4px] border border-neutral/50 bg-base-100 drop-shadow"
     >
       <div
-        class="link-hover link flex h-[92px] w-full flex-col justify-center bg-secondary p-[1rem] text-base  font-bold text-secondary-content"
+        class="link-hover link flex h-[92px] w-full flex-col justify-center bg-primary p-[1rem] text-base  font-bold text-primary-content"
       >
         <p class=" truncate">
           {{ name }}
