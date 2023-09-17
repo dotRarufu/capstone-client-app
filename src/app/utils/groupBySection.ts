@@ -12,8 +12,6 @@ export const groupBySection = (projects: Project[]) => {
   });
 
   const noSections = projects.filter((p) => p.section === null || p.section === '');
-  console.log("nosections:", noSections)
-  console.log("projechs ceck:", projects)
   if (noSections.length > 0) {
     res.push({ section: 'No Section', projects: noSections });
   }

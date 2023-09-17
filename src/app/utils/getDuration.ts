@@ -18,9 +18,6 @@ const getDuration = (startEpoch: number, endEpoch: number) => {
   const hoursText = hours > 0 ? `${hours}h` : '';
   const minutesText = minutes > 0 ? `${minutes}min` : '';
 
-  console.log("runs 1:", {time1, time2})
-  console.log("runs 2:", {startEpoch, endEpoch})
-
   if (hoursText && minutesText) {
     return `${hoursText} ${minutesText}`;
   } else if (hoursText) {

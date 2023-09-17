@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { TabDefinition } from 'src/app/models/tab';
-import { fromEvent, map } from 'rxjs';
+import { filter, fromEvent, map, switchMap, tap } from 'rxjs';
 import { TabsService } from 'src/app/services/tabs.service';
 import { CommonModule } from '@angular/common';
 import { ResultComponent } from './result.component';
@@ -19,6 +19,10 @@ import { RemoveProjectModalComponent } from './remove-project-modal.component';
 import { AdviserReportsComponent } from './adviser-reports.component';
 import { ProjectsAccordionComponent } from './projects-accordion.component';
 import { AddProjectModalComponent } from './add-project-modal.component';
+import { ScheduledConsultationsComponent } from './scheduled-consultations.component';
+import { AuthService } from 'src/app/services/auth.service';
+import { isNotNull } from 'src/app/utils/isNotNull';
+import { ConsultationService } from 'src/app/services/consultation.service';
 
 @Component({
   selector: 'home-page',
@@ -40,6 +44,7 @@ import { AddProjectModalComponent } from './add-project-modal.component';
     SpinnerComponent,
     RemoveProjectModalComponent,
     AddProjectModalComponent,
+    ScheduledConsultationsComponent
   ],
   template: `
     <div class="flex flex-col gap-[1rem]">
@@ -55,13 +60,14 @@ import { AddProjectModalComponent } from './add-project-modal.component';
           class=" flex w-full justify-center gap-[1rem] md:w-full lg:w-[1040px]"
         >
           <div
-            class="w-full sm2:w-[840px]  md:w-full lg:w-[1040px]"
+            class="w-full sm2:w-[840px]  md:w-full lg:w-[1040px] flex flex-col gap-8"
             *ngIf="
               (observables.activeId === 'projects' || isDesktop) &&
               (role === 'a')
             "
           >
             <adviser-projects />
+            <scheduled-consultations *ngIf="hasScheduledConsultation$ | async"/>
           </div>
 
           <div
@@ -105,6 +111,9 @@ import { AddProjectModalComponent } from './add-project-modal.component';
 export class HomePageComponent implements OnInit {
   tabsService = inject(TabsService);
   route = inject(ActivatedRoute);
+  authService = inject(AuthService);
+  consultationService = inject(ConsultationService);
+  hasScheduledConsultation$ = this.consultationService.checkHasScheduledConsultation()
 
   role = this.route.snapshot.data['role'];
   isDesktop = false;

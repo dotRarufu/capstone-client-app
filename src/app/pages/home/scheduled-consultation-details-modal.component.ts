@@ -1,42 +1,46 @@
-import { Component, inject, signal } from '@angular/core';
-import { filter, switchMap, tap } from 'rxjs';
-import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
+import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { Observable, filter, switchMap, tap } from 'rxjs';
 import { TaskService } from 'src/app/services/task.service';
-import { ConsultationService } from 'src/app/services/consultation.service';
-import { ToastrService } from 'ngx-toastr';
+import { Consultation, Task } from 'src/app/types/collection';
+import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
-import { AccomplishmentsComponent } from 'src/app/pages/project/pages/consultations/accomplishments.component';
-import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outcome.component';
-import { ConsultationStateService } from './data-access/consultations-state.service';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
 import { CommonModule } from '@angular/common';
+import { HomeStateService } from './data-access/home-state.service';
+import { AccomplishmentsComponent } from '../project/pages/consultations/accomplishments.component';
+import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outcome.component';
+import { ConsultationService } from 'src/app/services/consultation.service';
+import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
+  selector: 'scheduled-consultation-details-modal',
   standalone: true,
   imports: [
     CommonModule,
-    FeatherIconsModule,
     ModalComponent,
+    FeatherIconsModule,
     AccomplishmentsComponent,
     OutcomeComponent,
   ],
-  selector: 'scheduled-consultation-modal',
   template: `
-    <modal inputId="scheduledConsultationsModal">
+    <modal [inputId]="id || 'consultationModal'">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
-        *ngIf="{ consultation: consultation$ | async } as observables"
+        *ngIf="{
+          accomplishedTasks: accomplishedTasks$ | async,
+          consultation: consultation$ | async
+        } as observables"
       >
-        <div class="flex h-full justify-between bg-primary p-[24px]">
-          <div class="flex w-full flex-col justify-between gap-4">
+        <div class="flex h-full justify-between items-center bg-primary p-[24px]">
+         
             <h1 class="text-[20px] text-primary-content">
               {{ epochToDate(observables.consultation?.date_time || 0) }}
               {{ epochToTime(observables.consultation?.date_time || 0) }}
             </h1>
-          </div>
+       
         </div>
         <div
           class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
@@ -48,17 +52,60 @@ import { NgxSpinnerService } from 'ngx-spinner';
               <h1 class="text-[20px] text-base-content">Description</h1>
             </div>
 
-            <div class="h-[2px] w-full bg-base-content/10"></div>
+
 
             <div class="text-base text-base-content">
               {{ observables.consultation?.description }}
             </div>
 
-            <div class="text-base text-base-content">
-              {{ observables.consultation?.location }}
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+
+
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Time</h1>
             </div>
 
-            <accomplishments [data]="(accomplishedTasks$ | async) || []" />
+            <div class="text-base text-base-content">
+              {{ observables.consultation?.scheduleData?.startTime }} to
+              {{ observables.consultation?.scheduleData?.endTime }}
+         
+            </div>
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Location</h1>
+            </div>
+
+            <div class="text-base text-base-content">
+            {{ observables.consultation?.location }}
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Scheduled by</h1>
+            </div>
+
+            <div class="text-base text-base-content">
+              <!-- {{
+                observables.consultation?.assigner?.name
+              }} -->
+              assigner name
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Project</h1>
+            </div>
+            <div class="text-base text-base-content">
+              {{ observables.consultation?.project?.name }}
+            </div>
+
+
+
+
+            <accomplishments
+              [data]="observables.accomplishedTasks || []"
+              [hideInput]="true"
+            />
 
             <outcome
               heading="Actual Accomplishments"
@@ -80,11 +127,13 @@ import { NgxSpinnerService } from 'ngx-spinner';
               (deleteItem)="deleteNextDeliverable($event)"
               [data]="nextDeliverables()"
             />
-          </div>
 
+          </div>
           <ul
             class="flex h-full w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
           >
+            <ng-content />
+
             <button
               (click)="handleCompleteClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -105,28 +154,32 @@ import { NgxSpinnerService } from 'ngx-spinner';
     </modal>
   `,
 })
-export class ScheduledConsultationModalComponent {
+export class ScheduledConsultationDetailsModalComponent {
+  @Input() id = 'consultationModal';
   taskService = inject(TaskService);
   consultationService = inject(ConsultationService);
+  homeStateService = inject(HomeStateService);
   toastr = inject(ToastrService);
   spinner = inject(NgxSpinnerService);
-  consultationStateService = inject(ConsultationStateService);
 
-  consultation$ = this.consultationStateService.consultation$.pipe(
+  consultation$ = this.homeStateService.activeConsultation$.pipe(
     filter(isNotNull)
   );
-
   accomplishedTasks$ = this.consultation$.pipe(
     switchMap((c) => this.taskService.getAccompishedTasks(c.id))
   );
 
-  actualAccomplishments = signal<string[]>([]);
-  proposedNextSteps = signal<string[]>([]);
-  nextDeliverables = signal<string[]>([]);
+  epochToDate(epoch: number) {
+    return convertUnixEpochToDateString(epoch);
+  }
+
+  epochToTime(epoch: number) {
+    return getTimeFromEpoch(epoch);
+  }
 
   handleCompleteClick() {
-    const consultation = this.consultationStateService.getActiveConsultation();
-
+    const consultation = this.homeStateService.getActiveConsultation();
+    
     if (consultation === null) throw new Error('cant do this without id');
     this.spinner.show();
 
@@ -140,7 +193,7 @@ export class ScheduledConsultationModalComponent {
     completeScheduled.subscribe({
       next: (res) => {
         this.spinner.hide();
-        this.toastr.success('success');
+        this.toastr.success('Success');
       },
       error: (err) => {
         this.spinner.hide();
@@ -148,6 +201,11 @@ export class ScheduledConsultationModalComponent {
       },
     });
   }
+
+
+  actualAccomplishments = signal<string[]>([]);
+  proposedNextSteps = signal<string[]>([]);
+  nextDeliverables = signal<string[]>([]);
 
   addNextDeliverable(value: string) {
     this.nextDeliverables.update((old) => [...old, value]);
@@ -166,13 +224,5 @@ export class ScheduledConsultationModalComponent {
   }
   deleteActualAccomplishment(value: string) {
     this.actualAccomplishments.update((old) => old.filter((v) => v !== value));
-  }
-
-  epochToDate(epoch: number) {
-    return convertUnixEpochToDateString(epoch);
-  }
-
-  epochToTime(epoch: number) {
-    return getTimeFromEpoch(epoch);
   }
 }

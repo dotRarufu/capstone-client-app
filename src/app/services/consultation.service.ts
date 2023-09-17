@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import {
   BehaviorSubject,
+  filter,
   forkJoin,
   from,
   map,
@@ -13,6 +14,9 @@ import { AuthService } from './auth.service';
 import errorFilter from '../utils/errorFilter';
 import supabaseClient from '../lib/supabase';
 import dateToEpoch from '../utils/dateToEpoch';
+import { isNotNull } from '../utils/isNotNull';
+import { ProjectService } from './project.service';
+import combineDateAndTime from '../utils/combineDateAndTime';
 
 @Injectable({
   providedIn: 'root',
@@ -20,8 +24,10 @@ import dateToEpoch from '../utils/dateToEpoch';
 export class ConsultationService {
   private readonly client = supabaseClient;
   private newConsultationSignal$ = new BehaviorSubject(0);
+  newConsultation$ = this.newConsultationSignal$.asObservable();
 
   authService = inject(AuthService);
+  projectService = inject(ProjectService);
 
   scheduleConsultation(data: ConsultationData, projectId: number) {
     if (projectId < 0)
@@ -251,6 +257,50 @@ export class ConsultationService {
     return req$;
   }
 
+  checkHasScheduledConsultation() {
+    return this.authService.getAuthenticatedUser().pipe(
+      filter(isNotNull),
+      switchMap((u) => {
+        return this.projectService.getProjects().pipe(
+          filter(isNotNull),
+          map((p) => {
+            if (p.length === 0)
+              throw new Error('User has no scheduled consultation');
+
+            return p;
+          }),
+          map((p) => p.map((a) => a.id)),
+          switchMap((ids) => {
+            const counts = ids.map((id) => {
+              const req = this.client
+                .from('consultation')
+                .select('*')
+                .eq('project_id', id)
+                .eq('category_id', 1);
+              const scheduleConsultations$ = from(req).pipe(
+                map((res) => {
+                  const { data } = errorFilter(res);
+                  
+                  return data;
+                }),
+             
+                map((scheduled) => scheduled.length),
+           
+              );
+
+              return scheduleConsultations$;
+            });
+
+            return forkJoin(counts);
+          }),
+       
+          map(d => d.filter(a => a > 0).length > 0),
+       
+        );
+      })
+    );
+  }
+
   private insertConsultationOutcome(
     outcomeId: number,
     contents: string[],
@@ -303,35 +353,35 @@ export class ConsultationService {
     const dateTime$ = this.authService.getScheduleData(data.scheduleId);
     return dateTime$.pipe(
       switchMap((dateTime) => {
-        const date = new Date(dateTime.date);
-        const time = new Date(0);
-        time.setUTCSeconds(dateTime.start_time);
+        // const date = new Date(dateTime.date);
+        // const time = new Date(0);
+        // time.setUTCSeconds(dateTime.start_time);
 
-        const hours = time.getHours();
-        const minutes = time.getMinutes();
-        const seconds = time.getSeconds();
-        const milliseconds = time.getMilliseconds();
+        // const hours = time.getHours();
+        // const minutes = time.getMinutes();
+        // const seconds = time.getSeconds();
+        // const milliseconds = time.getMilliseconds();
 
-        date.setHours(hours);
-        date.setMinutes(minutes);
-        date.setSeconds(seconds);
-        date.setMilliseconds(milliseconds);
+        // date.setHours(hours);
+        // date.setMinutes(minutes);
+        // date.setSeconds(seconds);
+        // date.setMilliseconds(milliseconds);
 
         // Format the Date object
-        const formattedDate = date.toLocaleString('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-        });
-        console.log('new date epoch:', dateToEpoch(date));
+        // const formattedDate = date.toLocaleString('en-US', {
+        //   year: 'numeric',
+        //   month: '2-digit',
+        //   day: '2-digit',
+        //   hour: '2-digit',
+        //   minute: '2-digit',
+        //   hour12: true,
+        // });
+        // console.log('new date epoch:', dateToEpoch(date));
 
         const newData = {
           organizer_id: userUid,
           project_id: projectId,
-          date_time: dateToEpoch(date),
+          date_time: combineDateAndTime(dateTime.date, dateTime.start_time),
           location: data.location,
           description: data.description,
         };

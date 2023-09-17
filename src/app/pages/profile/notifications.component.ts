@@ -222,21 +222,7 @@ export class NotificationsComponent {
     });
   }
 
-  confirmSchedule(id: number) {
-    this.spinner.show();
-
-    this.authService.confirmScheduleNotification(id).subscribe({
-      complete: () => {
-        this.spinner.hide();
-        this.toastr.success('Schedule confirmed');
-      },
-      error: () => {
-        this.spinner.hide();
-        this.toastr.error('Failed to confirm schedule');
-      },
-    });
-  }
-
+ 
   setSelectedScheduleNotification(d: SelectedScheduleNotification) {
     this.profileStateService.setSelectedScheduleNotification(d);
   }

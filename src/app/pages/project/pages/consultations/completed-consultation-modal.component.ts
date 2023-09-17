@@ -28,7 +28,7 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
         *ngIf="{ consultation: consultation$ | async } as observables"
       >
-        <div class="flex h-fit justify-between bg-primary p-[24px]">
+        <div class="flex h-full justify-between bg-primary p-[24px]">
           <div class="flex w-full flex-col justify-between gap-4">
             <h1 class="text-[20px] text-primary-content">
               {{ epochToDate(observables.consultation?.date_time || 0) }}

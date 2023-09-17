@@ -62,14 +62,12 @@ export class ProjectService {
   // Todo: add takeUntilDestroyed pipe for users of this method
   getProjects() {
     const user$ = this.authService.getAuthenticatedUser();
-    console.log('get projects runs');
     const projects$ = user$.pipe(
       map((user) => {
         if (user === null) throw new Error('cant');
 
         return user;
       }),
-      tap((v) => console.log('runs 1:', v)),
       switchMap((user) => {
         switch (user.role_id) {
           case 0: {
@@ -84,12 +82,10 @@ export class ProjectService {
             throw new Error('cannt');
         }
       }),
-      tap((v) => console.log('projects length:', v.length))
     );
 
     return this.projectUpdate$.pipe(
       switchMap((_) => merge(of(null), projects$)),
-      tap((v) => console.log('projects emit:', v))
     );
   }
 

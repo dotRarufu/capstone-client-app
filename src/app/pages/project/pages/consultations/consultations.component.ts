@@ -164,7 +164,7 @@ export class ConsultationsComponent {
         category: 'Pending',
         items: this.consultationService
           .getConsultations(0, this.projectId)
-          .pipe(takeUntilDestroyed(this.destroyRef), tap(v => console.log("pending:", v))),
+          .pipe(takeUntilDestroyed(this.destroyRef)),
         buttonId: this.getButtonIdForPendingAccordion(role),
       },
       {

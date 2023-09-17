@@ -545,6 +545,7 @@ export class AuthService {
           .from('available_schedule')
           .select('*')
           .eq('technical_adviser', user.uid)
+          .eq('is_confirmed', false)
           .eq('is_available', false);
 
         return from(req);
@@ -553,14 +554,17 @@ export class AuthService {
         const { data } = errorFilter(res);
 
         return data;
-      }) 
+      })
     );
 
     return req$;
   }
 
   confirmScheduleNotification(id: number) {
-    const req = this.client.from('available_schedule').delete().eq('id', id);
+    const req = this.client
+      .from('available_schedule')
+      .update({ is_confirmed: true })
+      .eq('id', id);
     const req$ = from(req).pipe(
       map((res) => {
         const { statusText } = errorFilter(res);
@@ -568,6 +572,47 @@ export class AuthService {
         return statusText;
       }),
       tap((_) => this.signalUpdateScheduleNotifications())
+    );
+
+    return req$;
+  }
+
+  // after its associated consultation is complete
+  deleteSchedule(id: number) {
+    const req = this.client.from('available_schedule').delete().eq('id', id);
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      })
+    );
+
+    return req$;
+  }
+
+  getScheduleByDateTime(
+    date: string,
+    startTimeEpoch: number,
+    projectId: number
+  ) {
+    console.log('get this:', { date, startTimeEpoch, projectId });
+    const req = this.client
+      .from('available_schedule')
+      .select('*')
+      .eq('date', date)
+      .eq('taken_by_project', projectId)
+      .filter('start_time', 'lte', startTimeEpoch + 720000)
+      .filter('start_time', 'gte', startTimeEpoch - 720000)
+      .single()
+    
+    const req$ = from(req).pipe(
+      map((res) => {
+        
+        const { data } = errorFilter(res);
+ 
+        return data;
+      })
     );
 
     return req$;

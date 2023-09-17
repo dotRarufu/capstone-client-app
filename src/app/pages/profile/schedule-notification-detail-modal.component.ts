@@ -14,6 +14,7 @@ import dateToEpoch from 'src/app/utils/dateToEpoch';
 import { AuthService } from 'src/app/services/auth.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import combineDateAndTime from 'src/app/utils/combineDateAndTime';
 
 @Component({
   selector: 'schedule-notification-details-modal',
@@ -108,22 +109,10 @@ export class ScheduleNotificationDetailsModalComponent {
   schedule$ = this.profileStateService.selectedScheduleNotification$.pipe(
     filter(isNotNull),
     switchMap((s) => {
-      const date = new Date(s.date);
-      const time = new Date(0);
-      time.setUTCSeconds(s.start_time);
-
-      const hours = time.getHours();
-      const minutes = time.getMinutes();
-      const seconds = time.getSeconds();
-      const milliseconds = time.getMilliseconds();
-
-      date.setHours(hours);
-      date.setMinutes(minutes);
-      date.setSeconds(seconds);
-      date.setMilliseconds(milliseconds);
+     const combined = combineDateAndTime(s.date, s.start_time);
 
       return this.consultationService
-        .getConsultationData(s.project.id, dateToEpoch(date))
+        .getConsultationData(s.project.id, combined)
         .pipe(map((p) => ({ ...s, consultationData: p })));
     }),
     map(p => ({...p, startTime: getTimeFromEpoch(p.start_time), endTime: getTimeFromEpoch(p.end_time)})),

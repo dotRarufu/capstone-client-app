@@ -245,6 +245,7 @@ export interface Database {
           end_time: number
           id: number
           is_available: boolean
+          is_confirmed: boolean
           start_time: number
           taken_by_project: number | null
           technical_adviser: string
@@ -254,6 +255,7 @@ export interface Database {
           end_time: number
           id?: number
           is_available?: boolean
+          is_confirmed?: boolean
           start_time: number
           taken_by_project?: number | null
           technical_adviser: string
@@ -263,6 +265,7 @@ export interface Database {
           end_time?: number
           id?: number
           is_available?: boolean
+          is_confirmed?: boolean
           start_time?: number
           taken_by_project?: number | null
           technical_adviser?: string

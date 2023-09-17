@@ -26,6 +26,7 @@ import getDuration from 'src/app/utils/getDuration';
 import formatDate from 'src/app/utils/formatDate';
 import dayFromDate from 'src/app/utils/dayFromDate';
 import { ConsultationStateService } from './data-access/consultations-state.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'schedule-consultation-modal',
@@ -67,7 +68,7 @@ import { ConsultationStateService } from './data-access/consultations-state.serv
                   {{ formatDate(schedule.date) }} |
                   {{ getTimeFromEpoch(schedule.start_time) }}
                 </option>
-          
+
               </select>
             </div>
           </div>
@@ -223,6 +224,7 @@ export class ScheduleConsultationModalComponent {
   route = inject(ActivatedRoute);
   authService = inject(AuthService);
   projectService = inject(ProjectService);
+  spinner = inject(NgxSpinnerService);
 
   projectId = Number(this.route.parent!.snapshot.url[0].path);
 
@@ -248,6 +250,8 @@ export class ScheduleConsultationModalComponent {
   }
 
   scheduleConsultation() {
+    this.spinner.show();
+
     const data: ConsultationData = {
       scheduleId: this.activeScheduleId(),
       description: this.description.value,
@@ -264,8 +268,16 @@ export class ScheduleConsultationModalComponent {
     );
 
     request$.subscribe({
-      next: (message) => this.toastr.success('created'),
-      error: (message) => this.toastr.error(message),
+      next: (message) => {
+        this.toastr.success('created');
+        this.spinner.hide();
+
+      },
+      error: (message) => {
+        this.toastr.error(message);
+        this.spinner.hide();
+
+      },
     });
   }
 
