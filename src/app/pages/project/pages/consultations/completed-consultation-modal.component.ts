@@ -4,6 +4,7 @@ import { filter, map, switchMap, tap } from 'rxjs';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { TaskService } from 'src/app/services/task.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { AccomplishmentsComponent } from 'src/app/pages/project/pages/consultations/accomplishments.component';
 import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outcome.component';
@@ -11,6 +12,7 @@ import { ConsultationStateService } from './data-access/consultations-state.serv
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   standalone: true,
@@ -42,18 +44,48 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
           <div
             class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-scroll"
           >
-            <div class="flex items-center justify-between ">
+          <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
             </div>
-
-            <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <div class="text-base text-base-content">
               {{ observables.consultation?.description }}
             </div>
 
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Time</h1>
+            </div>
+
+            <div class="text-base text-base-content">
+              {{ observables.consultation?.scheduleData?.startTime }} to
+              {{ observables.consultation?.scheduleData?.endTime }}
+            </div>
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Location</h1>
+            </div>
+
             <div class="text-base text-base-content">
               {{ observables.consultation?.location }}
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Scheduled by</h1>
+            </div>
+
+            <div class="text-base text-base-content">
+              {{ observables.consultation?.organizer?.name }}
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Project</h1>
+            </div>
+            <div class="text-base text-base-content">
+              {{ observables.consultation?.project?.name }}
             </div>
 
             <accomplishments
@@ -100,9 +132,38 @@ export class CompletedConsultationModalComponent {
   consultationStateService = inject(ConsultationStateService);
   taskService = inject(TaskService);
   consultationService = inject(ConsultationService);
+  authService = inject(AuthService);
+  projectService = inject(ProjectService);
 
   consultation$ = this.consultationStateService.consultation$.pipe(
-    filter(isNotNull)
+    filter(isNotNull),
+    switchMap((consultation) =>
+      this.authService
+        .getScheduleData(consultation.schedule_id)
+        .pipe(map((d) => ({ ...consultation, scheduleData: d })))
+    ),
+    map((consultation) => ({
+      ...consultation,
+      scheduleData: {
+        ...consultation.scheduleData,
+        startTime: getTimeFromEpoch(consultation.scheduleData.start_time),
+        endTime: getTimeFromEpoch(consultation.scheduleData.end_time),
+      },
+    })),
+
+    switchMap((consultation) =>
+      this.authService
+        .getUserData(consultation.organizer_id)
+        .pipe(map((data) => ({ ...consultation, organizer: data })))
+    ),
+    switchMap((consultation) =>
+      this.projectService.getProjectInfo(consultation.project_id).pipe(
+        map((projectData) => ({
+          ...consultation,
+          project: projectData,
+        }))
+      )
+    )
   );
 
   accomplishedTasks$ = this.consultation$.pipe(

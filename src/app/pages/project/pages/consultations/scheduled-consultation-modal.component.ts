@@ -1,8 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
-import { filter, switchMap, tap } from 'rxjs';
+import { filter, map, switchMap, tap } from 'rxjs';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { TaskService } from 'src/app/services/task.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
+import { ProjectService } from 'src/app/services/project.service';
 import { ToastrService } from 'ngx-toastr';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { AccomplishmentsComponent } from 'src/app/pages/project/pages/consultations/accomplishments.component';
@@ -13,6 +14,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
 import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
 import { CommonModule } from '@angular/common';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   standalone: true,
@@ -30,14 +32,15 @@ import { NgxSpinnerService } from 'ngx-spinner';
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
         *ngIf="{ consultation: consultation$ | async } as observables"
       >
-        <div class="flex h-full justify-between bg-primary p-[24px]">
-          <div class="flex w-full flex-col justify-between gap-4">
-            <h1 class="text-[20px] text-primary-content">
-              {{ epochToDate(observables.consultation?.date_time || 0) }}
-              {{ epochToTime(observables.consultation?.date_time || 0) }}
-            </h1>
-          </div>
+        <div
+          class="flex h-full items-center justify-between bg-primary p-[24px]"
+        >
+          <h1 class="text-[20px] text-primary-content">
+            {{ epochToDate(observables.consultation?.date_time || 0) }}
+            {{ epochToTime(observables.consultation?.date_time || 0) }}
+          </h1>
         </div>
+
         <div
           class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
         >
@@ -48,16 +51,45 @@ import { NgxSpinnerService } from 'ngx-spinner';
               <h1 class="text-[20px] text-base-content">Description</h1>
             </div>
 
-            <div class="h-[2px] w-full bg-base-content/10"></div>
-
             <div class="text-base text-base-content">
               {{ observables.consultation?.description }}
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Time</h1>
+            </div>
+
+            <div class="text-base text-base-content">
+              {{ observables.consultation?.scheduleData?.startTime }} to
+              {{ observables.consultation?.scheduleData?.endTime }}
+            </div>
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Location</h1>
             </div>
 
             <div class="text-base text-base-content">
               {{ observables.consultation?.location }}
             </div>
 
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Scheduled by</h1>
+            </div>
+
+            <div class="text-base text-base-content">
+              {{ observables.consultation?.organizer?.name }}
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Project</h1>
+            </div>
+            <div class="text-base text-base-content">
+              {{ observables.consultation?.project?.name }}
+            </div>
             <accomplishments [data]="(accomplishedTasks$ | async) || []" />
 
             <outcome
@@ -89,7 +121,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
               (click)="handleCompleteClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
-              <i-feather class="text-base-content/70" name="check-circle" /> Complete
+              <i-feather class="text-base-content/70" name="check-circle" />
+              Complete
             </button>
 
             <div class="h-full"></div>
@@ -108,12 +141,41 @@ import { NgxSpinnerService } from 'ngx-spinner';
 export class ScheduledConsultationModalComponent {
   taskService = inject(TaskService);
   consultationService = inject(ConsultationService);
+  projectService = inject(ProjectService);
+  authService = inject(AuthService);
   toastr = inject(ToastrService);
   spinner = inject(NgxSpinnerService);
   consultationStateService = inject(ConsultationStateService);
 
   consultation$ = this.consultationStateService.consultation$.pipe(
-    filter(isNotNull)
+    filter(isNotNull),
+    switchMap((consultation) =>
+      this.authService
+        .getScheduleData(consultation.schedule_id)
+        .pipe(map((d) => ({ ...consultation, scheduleData: d })))
+    ),
+    map((consultation) => ({
+      ...consultation,
+      scheduleData: {
+        ...consultation.scheduleData,
+        startTime: getTimeFromEpoch(consultation.scheduleData.start_time),
+        endTime: getTimeFromEpoch(consultation.scheduleData.end_time),
+      },
+    })),
+
+    switchMap((consultation) =>
+      this.authService
+        .getUserData(consultation.organizer_id)
+        .pipe(map((data) => ({ ...consultation, organizer: data })))
+    ),
+    switchMap((consultation) =>
+      this.projectService.getProjectInfo(consultation.project_id).pipe(
+        map((projectData) => ({
+          ...consultation,
+          project: projectData,
+        }))
+      )
+    )
   );
 
   accomplishedTasks$ = this.consultation$.pipe(

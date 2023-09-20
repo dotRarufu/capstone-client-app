@@ -37,6 +37,7 @@ import {
   Save,
   Share2,
   Star,
+  Edit2,
 } from 'angular-feather/icons';
 
 const icons = {
@@ -68,6 +69,7 @@ const icons = {
   CheckSquare,
   Move,
   Edit,
+  Edit2,
   XCircle,
   Check,
   Calendar,

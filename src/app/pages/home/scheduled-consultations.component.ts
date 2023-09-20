@@ -189,6 +189,22 @@ export class ScheduledConsultationsComponent {
         },
       }))
     ),
+    switchMap((consultations) => {
+      const uniqueUsers = getUniqueItems(consultations, 'organizer_id');
+      const usersData$ = forkJoin(
+        uniqueUsers.map((u) => this.authService.getUserData(u.organizer_id))
+      ).pipe(
+        map((data) =>
+          consultations.map((c) => {
+            const match = data.find((d) => d.uid === c.organizer_id)!;
+
+            return { ...c, organizer: match };
+          })
+        )
+      );
+
+      return usersData$;
+    }),
     tap((_) => this.spinner.hide())
   );
 }

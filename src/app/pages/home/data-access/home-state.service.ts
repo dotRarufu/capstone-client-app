@@ -1,8 +1,18 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, tap } from 'rxjs';
-import { AvailableScheduleRow, ConsultationRow, ProjectRow } from 'src/app/types/collection';
+import {
+  AvailableScheduleRow,
+  ConsultationRow,
+  ProjectRow,
+  User,
+} from 'src/app/types/collection';
 
-export type ActiveConsultation = ConsultationRow & {dateString: string, project: ProjectRow, scheduleData: AvailableScheduleRow & {startTime: string, endTime: string}}
+export type ActiveConsultation = ConsultationRow & {
+  dateString: string;
+  project: ProjectRow;
+  scheduleData: AvailableScheduleRow & { startTime: string; endTime: string };
+  organizer: User;
+};
 
 // Still accessible by other pages, but not from another app
 @Injectable({ providedIn: 'platform' })
@@ -13,13 +23,11 @@ export class HomeStateService {
   private readonly alreadyHaveTitleSubject = new BehaviorSubject<
     boolean | null
   >(null);
-  private readonly activeConsultationSubject = new BehaviorSubject<
-     ActiveConsultation | null
-  >(null);
+  private readonly activeConsultationSubject =
+    new BehaviorSubject<ActiveConsultation | null>(null);
 
-  activeConsultation$ = this.activeConsultationSubject.asObservable()
-  activeProjectId$ = this.activeProjectIdSubject
-    .asObservable();
+  activeConsultation$ = this.activeConsultationSubject.asObservable();
+  activeProjectId$ = this.activeProjectIdSubject.asObservable();
   alreadyHaveTitle$ = this.alreadyHaveTitleSubject.asObservable();
 
   setActiveProjectId(id: number) {

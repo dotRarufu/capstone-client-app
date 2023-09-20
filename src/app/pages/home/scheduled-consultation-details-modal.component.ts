@@ -85,10 +85,10 @@ import { NgxSpinnerService } from 'ngx-spinner';
             </div>
 
             <div class="text-base text-base-content">
-              <!-- {{
-                observables.consultation?.assigner?.name
-              }} -->
-              assigner name
+              {{
+                observables.consultation?.organizer?.name
+              }}
+              
             </div>
 
             <div class="h-[2px] w-full bg-base-content/10"></div>

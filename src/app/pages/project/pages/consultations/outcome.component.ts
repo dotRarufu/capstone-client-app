@@ -37,7 +37,10 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
         </div>
       </ng-container>
 
-      <ul class="flex h-fit  flex-col gap-2">
+      <ul
+        *ngIf="data.length !== 0; else empty"
+        class="flex h-fit  flex-col gap-2"
+      >
         <li
           *ngFor="let item of data || []"
           class="flex items-center justify-between rounded-[3px] border border-base-content/20 px-4 py-2 text-base text-base-content "
@@ -50,12 +53,25 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
             (click)="handleDeleteItem(item)"
             tabindex="0"
             class="btn-ghost btn-sm btn rounded-[3px]"
-            
           >
             <i-feather class="text-base-content/70" name="minus" />
           </label>
         </li>
       </ul>
+
+      <ng-template #empty>
+        <div class="flex w-full items-center gap-2 py-2">
+          <div class=" flex h-[20px] shrink-0 grow-0 basis-[20px]">
+            <i-feather
+              class="text-base-content/50"
+              style="width: 20px; height: 20px;"
+              [name]="hideInput ? 'slash' : 'list'"
+            />
+          </div>
+
+          <p class="text-base text-base-content/50">{{ hideInput ? 'Nothing to show' : 'Add something first'}}</p>
+        </div>
+      </ng-template>
     </div>
   `,
 })
