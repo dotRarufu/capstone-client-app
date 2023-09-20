@@ -10,11 +10,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       (close)="closed.emit()"
       class="modal modal-bottom sm2:modal-middle"
     >
-      <form
-        method="dialog"
+      <div
         class="modal-box flex w-full justify-center rounded-[3px] bg-transparent p-0  sm2:max-w-[712px] sm2:rounded-[3px]"
       >
         <ng-content />
+      </div>
+
+      <form method="dialog" class="modal-backdrop">
+      <button>close</button>
       </form>
     </dialog>
   `,
