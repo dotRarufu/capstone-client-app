@@ -47,7 +47,7 @@ import getUniqueItems from 'src/app/utils/getUniqueItems';
   template: `
     <div
       class="flex w-full flex-col gap-[1rem] sm2:w-[840px] md:w-full lg:w-full "
-      *ngIf="{consultations: consultations$ | async} as observables"
+      *ngIf="{ consultations: consultations$ | async } as observables"
     >
       <div
         class="flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
@@ -86,11 +86,11 @@ import getUniqueItems from 'src/app/utils/getUniqueItems';
       </ul>
 
       <div
-          class="flex w-full items-center justify-center rounded-[5px] bg-base-200 p-4 text-base-content/70"
-          *ngIf="observables.consultations?.length === 0"
-        >
-          You have no more scheduled consultations
-        </div>
+        class="flex w-full items-center justify-center rounded-[5px] bg-base-200 p-4 text-base-content/70"
+        *ngIf="observables.consultations?.length === 0"
+      >
+        You have no more scheduled consultations
+      </div>
     </div>
 
     <scheduled-consultation-details-modal />
@@ -112,7 +112,7 @@ export class ScheduledConsultationsComponent {
       return projects;
     }),
     map((projects) => projects.map(({ id }) => id)),
-  
+
     switchMap((projectIds) => {
       const projectsConsultations = projectIds.map((id) =>
         this.consultationService.getConsultations(1, id).pipe(take(1))
@@ -136,7 +136,6 @@ export class ScheduledConsultationsComponent {
     ),
 
     switchMap((consultations) => {
-      console.log("length:", consultations.length);
       if (consultations.length === 0) return of([]);
 
       const uniqueProjects = getUniqueItems(consultations, 'project_id');
@@ -169,38 +168,14 @@ export class ScheduledConsultationsComponent {
     switchMap((consultations) => {
       if (consultations.length === 0) return of([]);
 
-      const scheduleData$ = consultations.map((consultation) => {
-        const date = toScheduleDateField(new Date(consultation.dateString));
-
-        return this.authService
-          .getScheduleByDateTime(
-            date,
-            consultation.date_time,
-            consultation.project.id
-          )
-          .pipe(
-            map((b) => ({
-              ...consultation,
-              scheduleData: b,
-            })),
-            // tap((v) => console.log('scheduleData:', v.scheduleData)),
-            catchError((err) =>
-              of({
-                ...consultation,
-                scheduleData: {
-                  start_time: 1,
-                  end_time: 2,
-                  date: '',
-                  id: -1,
-                  is_available: false,
-                  is_confirmed: false,
-                  taken_by_project: -1,
-                  technical_adviser: '',
-                },
-              })
-            )
-          );
-      });
+      const scheduleData$ = consultations.map((consultation) =>
+        this.authService.getScheduleData(consultation.schedule_id).pipe(
+          map((b) => ({
+            ...consultation,
+            scheduleData: b,
+          }))
+        )
+      );
 
       return forkJoin(scheduleData$);
     }),

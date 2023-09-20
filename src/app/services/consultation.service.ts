@@ -280,12 +280,11 @@ export class ConsultationService {
               const scheduleConsultations$ = from(req).pipe(
                 map((res) => {
                   const { data } = errorFilter(res);
-                  
+
                   return data;
                 }),
-             
-                map((scheduled) => scheduled.length),
-           
+
+                map((scheduled) => scheduled.length)
               );
 
               return scheduleConsultations$;
@@ -293,9 +292,8 @@ export class ConsultationService {
 
             return forkJoin(counts);
           }),
-       
-          map(d => d.filter(a => a > 0).length > 0),
-       
+
+          map((d) => d.filter((a) => a > 0).length > 0)
         );
       })
     );
@@ -384,6 +382,7 @@ export class ConsultationService {
           date_time: combineDateAndTime(dateTime.date, dateTime.start_time),
           location: data.location,
           description: data.description,
+          schedule_id: data.scheduleId,
         };
 
         const insertConsultation = this.client

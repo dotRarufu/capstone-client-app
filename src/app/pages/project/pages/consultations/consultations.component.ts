@@ -171,7 +171,7 @@ export class ConsultationsComponent {
         category: 'Scheduled',
         items: this.consultationService
           .getConsultations(1, this.projectId)
-          .pipe(takeUntilDestroyed(this.destroyRef)),
+          .pipe(takeUntilDestroyed(this.destroyRef), tap(v => console.log("scheduled consultations:", v))),
         buttonId: ['t', 'ct'].includes(role) ? 'techAdScheduled' : '',
       },
       {

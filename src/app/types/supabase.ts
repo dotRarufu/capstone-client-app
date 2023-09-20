@@ -416,6 +416,7 @@ export interface Database {
           location: string
           organizer_id: string
           project_id: number
+          schedule_id: number
         }
         Insert: {
           category_id?: number
@@ -425,6 +426,7 @@ export interface Database {
           location: string
           organizer_id: string
           project_id: number
+          schedule_id: number
         }
         Update: {
           category_id?: number
@@ -434,6 +436,7 @@ export interface Database {
           location?: string
           organizer_id?: string
           project_id?: number
+          schedule_id?: number
         }
         Relationships: [
           {
@@ -446,6 +449,12 @@ export interface Database {
             foreignKeyName: "consultation_project_id_fkey"
             columns: ["project_id"]
             referencedRelation: "project"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultation_schedule_id_fkey"
+            columns: ["schedule_id"]
+            referencedRelation: "available_schedule"
             referencedColumns: ["id"]
           }
         ]

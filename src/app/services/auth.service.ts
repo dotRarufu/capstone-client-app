@@ -602,8 +602,8 @@ export class AuthService {
       .select('*')
       .eq('date', date)
       .eq('taken_by_project', projectId)
-      .filter('start_time', 'lte', startTimeEpoch + 720000)
       .filter('start_time', 'gte', startTimeEpoch - 720000)
+      .filter('start_time', 'lte', startTimeEpoch + 720000)
       .single()
     
     const req$ = from(req).pipe(
