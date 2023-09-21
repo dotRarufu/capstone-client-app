@@ -93,6 +93,7 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
 
           <ul class="flex w-full flex-col bg-neutral/20 p-0 py-2 sm1:w-[223px]">
             <button
+            onclick="availableScheduleDetail.close()"
               *ngIf="isInEdit()"
               (click)="handleSaveClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -101,6 +102,7 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
               save
             </button>
             <button
+            
               *ngIf="!isInEdit()"
               (click)="isInEdit.set(true)"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -109,6 +111,8 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
               Edit
             </button>
             <button
+            onclick="availableScheduleDetail.close()"
+
               *ngIf="!isInEdit()"
               (click)="handleRemoveClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -119,6 +123,8 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
 
             <div class="h-full"></div>
             <button
+            onclick="availableScheduleDetail.close()"
+
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x-circle" />

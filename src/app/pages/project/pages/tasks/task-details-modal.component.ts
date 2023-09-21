@@ -90,6 +90,7 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
               edit
             </label>
             <button
+            onclick="taskDetails.close()"
               (click)="handleDeleteClick()"
               *ngIf="
                 !isInEdit() &&
@@ -101,6 +102,8 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
               Delete
             </button>
             <button
+            onclick="taskDetails.close()"
+
               (click)="handleSaveClick()"
               *ngIf="isInEdit() && observables.role?.role_id === 5"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -112,6 +115,8 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
             <div class="h-full"></div>
 
             <button
+            onclick="taskDetails.close()"
+
               *ngIf="!isInEdit()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >

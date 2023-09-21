@@ -118,6 +118,7 @@ import { ProjectService } from 'src/app/services/project.service';
             <div class="h-full"></div>
 
             <button
+            onclick="completedConsultationsModal.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x" /> close

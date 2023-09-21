@@ -64,6 +64,7 @@ import timeToEpoch from 'src/app/utils/timeToEpoch';
 
           <ul class=" flex w-full flex-col  bg-neutral/20 p-0 sm1:w-[223px] ">
             <button
+            onclick="addAvailableSchedule.close()"
               (click)="add()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
@@ -74,6 +75,8 @@ import timeToEpoch from 'src/app/utils/timeToEpoch';
             <div class="h-full"></div>
 
             <button
+            onclick="addAvailableSchedule.close()"
+
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x-circle" />

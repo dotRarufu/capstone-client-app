@@ -28,7 +28,9 @@ import combineDateAndTime from 'src/app/utils/combineDateAndTime';
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
-        <div class="flex h-full items-center justify-between bg-primary p-[24px]">
+        <div
+          class="flex h-full items-center justify-between bg-primary p-[24px]"
+        >
           <h1 class="h-fit text-[20px] text-primary-content">
             {{ observables.schedule?.formattedStartTime }}
           </h1>
@@ -62,9 +64,7 @@ import combineDateAndTime from 'src/app/utils/combineDateAndTime';
             </div>
 
             <div class="text-base text-base-content">
-              {{
-                observables.schedule?.assigner?.name
-              }}
+              {{ observables.schedule?.assigner?.name }}
             </div>
 
             <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -81,6 +81,7 @@ import combineDateAndTime from 'src/app/utils/combineDateAndTime';
             <ng-content />
 
             <button
+              onclick="scheduleNotificationDetailsModal.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
               (click)="confirmSchedule(observables.schedule!.id)"
             >
@@ -89,6 +90,7 @@ import combineDateAndTime from 'src/app/utils/combineDateAndTime';
             <div class="h-full"></div>
 
             <button
+              onclick="scheduleNotificationDetailsModal.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x" /> close
@@ -104,19 +106,27 @@ export class ScheduleNotificationDetailsModalComponent {
   consultationService = inject(ConsultationService);
   authService = inject(AuthService);
   spinner = inject(NgxSpinnerService);
-  toastr = inject(ToastrService)
+  toastr = inject(ToastrService);
 
   schedule$ = this.profileStateService.selectedScheduleNotification$.pipe(
     filter(isNotNull),
     switchMap((s) => {
-     const combined = combineDateAndTime(s.date, s.start_time);
+      const combined = combineDateAndTime(s.date, s.start_time);
 
       return this.consultationService
         .getConsultationData(s.project.id, combined)
         .pipe(map((p) => ({ ...s, consultationData: p })));
     }),
-    map(p => ({...p, startTime: getTimeFromEpoch(p.start_time), endTime: getTimeFromEpoch(p.end_time)})),
-    switchMap(p => this.authService.getUserData(p.consultationData.organizer_id).pipe(map(d => ({...p, assigner: d}))))
+    map((p) => ({
+      ...p,
+      startTime: getTimeFromEpoch(p.start_time),
+      endTime: getTimeFromEpoch(p.end_time),
+    })),
+    switchMap((p) =>
+      this.authService
+        .getUserData(p.consultationData.organizer_id)
+        .pipe(map((d) => ({ ...p, assigner: d })))
+    )
   );
 
   confirmSchedule(id: number) {
@@ -133,5 +143,4 @@ export class ScheduleNotificationDetailsModalComponent {
       },
     });
   }
-
 }

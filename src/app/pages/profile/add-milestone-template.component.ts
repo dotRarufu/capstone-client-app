@@ -42,7 +42,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
 
             <textarea
               [formControl]="description"
-              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 text-base-content"
+              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
               placeholder="Description"
             ></textarea>
 
@@ -55,7 +55,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
             <input
               type="date"
               [formControl]="dueDate"
-              class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-base-100 px-3 py-2 text-[20px] text-base text-base-content/70 placeholder:text-[20px] placeholder:text-base-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 text-base-content"
+              class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-base-100 px-3 py-2 text-[20px] text-base text-base-content text-base-content/70 placeholder:text-[20px] placeholder:text-base-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0"
             />
           </div>
 
@@ -63,6 +63,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
             class="flex w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
           >
             <button
+              onclick="addMilestone.close()"
               (click)="handleDoneClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
@@ -72,6 +73,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
 
             <div class="h-full"></div>
             <button
+              onclick="addMilestone.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x-circle" />
@@ -84,9 +86,9 @@ import { isNotNull } from 'src/app/utils/isNotNull';
   `,
 })
 export class AddMilestoneTemplateModalComponent {
-  title = new FormControl('', {nonNullable: true});
-  description = new FormControl('', {nonNullable: true});
-  dueDate = new FormControl('', {nonNullable: true});
+  title = new FormControl('', { nonNullable: true });
+  description = new FormControl('', { nonNullable: true });
+  dueDate = new FormControl('', { nonNullable: true });
 
   authService = inject(AuthService);
   milestoneService = inject(MilestoneService);
@@ -96,7 +98,7 @@ export class AddMilestoneTemplateModalComponent {
     const user$ = this.authService.getAuthenticatedUser();
     const status$ = user$.pipe(
       filter(isNotNull),
-      switchMap(({uid}) =>
+      switchMap(({ uid }) =>
         this.milestoneService.addTemplate(uid, {
           title: this.title.value,
           description: this.description.value,
@@ -107,22 +109,18 @@ export class AddMilestoneTemplateModalComponent {
 
     status$.subscribe({
       next: (status) => {
-
         this.toastr.success(status);
       },
       error: (err) => {
-
         this.toastr.error(err);
       },
-      complete: () => {
-
-      },
+      complete: () => {},
     });
   }
 
   resetForms() {
-    this.title.reset()
-    this.description.reset()
-    this.dueDate.reset()
+    this.title.reset();
+    this.description.reset();
+    this.dueDate.reset();
   }
 }

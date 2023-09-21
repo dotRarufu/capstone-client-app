@@ -183,6 +183,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             class="flex h-full w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
           >
             <button
+            onclick="scheduleConsultation.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
               (click)="scheduleConsultation()"
             >
@@ -193,6 +194,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <div class="h-full"></div>
 
             <button
+            onclick="scheduleConsultation.close()"
+
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x" /> cancel

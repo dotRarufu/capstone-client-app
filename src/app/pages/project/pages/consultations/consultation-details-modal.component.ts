@@ -1,4 +1,11 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ViewChildren,
+  inject,
+} from '@angular/core';
 import { Observable, filter, map, switchMap, tap } from 'rxjs';
 import { TaskService } from 'src/app/services/task.service';
 import { ProjectService } from 'src/app/services/project.service';
@@ -12,6 +19,7 @@ import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
 import { CommonModule } from '@angular/common';
+import { ModalDialog } from 'src/app/pages/home/scheduled-consultation-details-modal.component';
 
 @Component({
   selector: 'consultation-details-modal',
@@ -31,7 +39,7 @@ import { CommonModule } from '@angular/common';
           consultation: consultation$ | async
         } as observables"
       >
-      <div class="flex h-full justify-between bg-primary p-[24px]">
+        <div class="flex h-full justify-between bg-primary p-[24px]">
           <div class="flex w-full flex-col justify-between gap-4">
             <h1 class="text-[20px] text-primary-content">
               {{ epochToDate(observables.consultation?.date_time || 0) }}
@@ -45,7 +53,7 @@ import { CommonModule } from '@angular/common';
           <div
             class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-scroll"
           >
-          <div class="flex items-center justify-between ">
+            <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
             </div>
 
@@ -102,6 +110,7 @@ import { CommonModule } from '@angular/common';
             <div class="h-full"></div>
 
             <button
+              (click)="closeModal()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x" /> close
@@ -160,5 +169,11 @@ export class ConsultationDetailsModalComponent {
 
   epochToTime(epoch: number) {
     return getTimeFromEpoch(epoch);
+  }
+
+  @ViewChild(ModalComponent, { static: false }) modalComponent!: ModalComponent;
+
+  closeModal() {
+    this.modalComponent.close();
   }
 }

@@ -64,6 +64,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
           <ul class="flex w-full flex-col bg-neutral/20 p-0 py-2 sm1:w-[223px]">
 
             <button
+            onclick="invitedParticipantDetail.close()"
               *ngIf="observables.user?.uid !== observables.invitedParticipant?.uid"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
               (click)="handleDeleteClick(observables.invitedParticipant?.uid || '')"
@@ -74,6 +75,8 @@ import { isNotNull } from 'src/app/utils/isNotNull';
 
             <div class="h-full"></div>
             <button
+            onclick="invitedParticipantDetail.close()"
+
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x-circle" />

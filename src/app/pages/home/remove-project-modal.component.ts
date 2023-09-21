@@ -18,8 +18,12 @@ import { ToastrService } from 'ngx-toastr';
           Are you sure you want to remove this project?
         </h2>
         <div class=" flex w-full">
-          <button class=" btn-ghost btn w-1/2 text-error">No</button>
           <button
+          onclick="removeProjectModal.close()"
+          class=" btn-ghost btn w-1/2 text-error">No</button>
+          <button
+          onclick="removeProjectModal.close()"
+
             (click)="removeProjectCard()"
             class="btn-ghost btn w-1/2 text-success"
           >

@@ -87,6 +87,7 @@ import { AuthService } from 'src/app/services/auth.service';
 
           <ul class="flex w-full flex-col bg-neutral/20 p-0 py-2 sm1:w-[223px]">
             <button
+            onclick="participantDetail.close()"
               *ngIf="newRole() !== ''"
               (click)="handleSaveClick(observables.participant!.uid)"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -95,6 +96,8 @@ import { AuthService } from 'src/app/services/auth.service';
               save
             </button>
             <button
+            onclick="participantDetail.close()"
+
               *ngIf="
                 observables.user?.uid !== observables.participant?.uid &&
                 observables.participant?.role_id === 0 &&
@@ -109,6 +112,8 @@ import { AuthService } from 'src/app/services/auth.service';
 
             <div class="h-full"></div>
             <button
+            onclick="participantDetail.close()"
+
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x-circle" />

@@ -1,4 +1,15 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  QueryList,
+  SimpleChanges,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 
 @Component({
   selector: 'modal',
@@ -6,6 +17,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   imports: [],
   template: `
     <dialog
+      #dialogElem
       [id]="inputId"
       (close)="closed.emit()"
       class="modal modal-bottom sm2:modal-middle"
@@ -17,7 +29,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       </div>
 
       <form method="dialog" class="modal-backdrop">
-      <button>close</button>
+        <button>close</button>
       </form>
     </dialog>
   `,
@@ -25,4 +37,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class ModalComponent {
   @Output() closed = new EventEmitter();
   @Input() inputId? = 'Modal';
+  @ViewChildren('dialogElem') dialog!: QueryList<ElementRef<HTMLDialogElement>>;
+
+  close() {
+    if (this.dialog) {
+      this.dialog.first.nativeElement.close();
+    }
+  }
 }

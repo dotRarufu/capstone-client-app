@@ -13,7 +13,10 @@ import { from, tap } from 'rxjs';
   standalone: true,
   imports: [CommonModule, ModalComponent, ReactiveFormsModule],
   template: `
-    <modal inputId="titleAnalyzer" (closed)="this.homeStateService.setAlreadyHaveTitle(true)">
+    <modal
+      inputId="titleAnalyzer"
+      (closed)="this.homeStateService.setAlreadyHaveTitle(true)"
+    >
       <div class="flex w-full flex-col gap-[16px] bg-base-100 p-6">
         <ng-container *ngIf="homeStateService.alreadyHaveTitle$ | async">
           <h1
@@ -22,9 +25,9 @@ import { from, tap } from 'rxjs';
             Enter your capstone project title
           </h1>
           <p class="text-base text-base-content/70">
-            A title usually starts with "Development and Evaluation," followed by
-            the project's name (if any), and brief descriptive words to give
-            idea about the project to the readers. 
+            A title usually starts with "Development and Evaluation," followed
+            by the project's name (if any), and brief descriptive words to give
+            idea about the project to the readers.
           </p>
 
           <textarea
@@ -36,13 +39,14 @@ import { from, tap } from 'rxjs';
           <div class="flex">
             <!-- todo: maybe we can set the default border in daisy ui config -->
             <button
+              onclick="titleAnalyzer.close()"
               class="btn-ghost btn grow rounded-[3px] text-base-content"
               (click)="this.homeStateService.setAlreadyHaveTitle(false)"
             >
               Cancel
             </button>
             <button
-              onclick="titleAnalyzer.showModal()"
+              onclick="titleAnalyzer.close()"
               (click)="analyzeTitle()"
               class="btn-primary btn grow rounded-[3px]"
             >
@@ -58,13 +62,16 @@ import { from, tap } from 'rxjs';
             Title Analyzer
           </h1>
           <p class="text-base text-base-content/70">
-            Title analyzer is a tool that checks a capstone project title for its
-            readability, uniqueness, and word count, to help students craft
-            a good project title. It uses the past project titles in PLV to 
+            Title analyzer is a tool that checks a capstone project title for
+            its readability, uniqueness, and word count, to help students craft
+            a good project title. It uses the past project titles in PLV to
             generate informational data.
           </p>
           <div class="flex flex-col items-center gap-4 min-[444px]:items-end">
-            <button (click)="this.homeStateService.setAlreadyHaveTitle(true)" class="btn-link btn w-fit">
+            <button
+              (click)="this.homeStateService.setAlreadyHaveTitle(true)"
+              class="btn-link btn w-fit"
+            >
               I already have a title
             </button>
             <button
@@ -81,7 +88,7 @@ import { from, tap } from 'rxjs';
   `,
 })
 export class TitleAnalyzerModalComponent {
-  titleFromAlreadyHaveTitle = new FormControl("", { nonNullable: true });
+  titleFromAlreadyHaveTitle = new FormControl('', { nonNullable: true });
 
   homeStateService = inject(HomeStateService);
   projectService = inject(ProjectService);
@@ -90,9 +97,10 @@ export class TitleAnalyzerModalComponent {
 
   analyzeTitle() {
     this.spinner.show();
-    const analyze$ = from( this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle.value));
+    const analyze$ = from(
+      this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle.value)
+    );
 
-   analyze$.subscribe({next: () => this.spinner.hide()});
-
+    analyze$.subscribe({ next: () => this.spinner.hide() });
   }
 }

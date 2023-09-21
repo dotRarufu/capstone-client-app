@@ -73,7 +73,7 @@ import { map } from 'rxjs';
                     <option
                       *ngFor="let s of observables.sections"
                       (click)="section.setValue(s)"
-            
+
                     >
                       {{ s }}
                     </option>
@@ -85,6 +85,7 @@ import { map } from 'rxjs';
 
           <ul class=" flex w-full flex-col  bg-neutral/20 p-0 sm1:w-[223px] ">
             <button
+            onclick="addProject.close()"
               (click)="addProject()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
@@ -95,6 +96,7 @@ import { map } from 'rxjs';
             <div class="h-full"></div>
 
             <button
+            onclick="addProject.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x-circle" />

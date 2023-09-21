@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ViewChildren, inject, signal } from '@angular/core';
 import { Observable, filter, switchMap, tap } from 'rxjs';
 import { TaskService } from 'src/app/services/task.service';
 import { Consultation, Task } from 'src/app/types/collection';
@@ -14,6 +14,8 @@ import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outc
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
+
+export type ModalDialog = {close: () => void};
 
 @Component({
   selector: 'scheduled-consultation-details-modal',
@@ -35,12 +37,12 @@ import { NgxSpinnerService } from 'ngx-spinner';
         } as observables"
       >
         <div class="flex h-full justify-between items-center bg-primary p-[24px]">
-         
+
             <h1 class="text-[20px] text-primary-content">
               {{ epochToDate(observables.consultation?.date_time || 0) }}
               {{ epochToTime(observables.consultation?.date_time || 0) }}
             </h1>
-       
+
         </div>
         <div
           class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
@@ -68,7 +70,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <div class="text-base text-base-content">
               {{ observables.consultation?.scheduleData?.startTime }} to
               {{ observables.consultation?.scheduleData?.endTime }}
-         
+
             </div>
             <div class="h-[2px] w-full bg-base-content/10"></div>
             <div class="flex items-center justify-between ">
@@ -88,7 +90,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
               {{
                 observables.consultation?.organizer?.name
               }}
-              
+
             </div>
 
             <div class="h-[2px] w-full bg-base-content/10"></div>
@@ -135,6 +137,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <ng-content />
 
             <button
+           
               (click)="handleCompleteClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
@@ -144,6 +147,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <div class="h-full"></div>
 
             <button
+            
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x" /> close
@@ -179,7 +183,7 @@ export class ScheduledConsultationDetailsModalComponent {
 
   handleCompleteClick() {
     const consultation = this.homeStateService.getActiveConsultation();
-    
+
     if (consultation === null) throw new Error('cant do this without id');
     this.spinner.show();
 

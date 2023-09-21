@@ -95,6 +95,7 @@ import { AvailableSchedulesComponent } from './available-schedules.component';
       <!-- todo: find out why id has  to be wrapped -->
       <consultation-details-modal [id]="'pendingConsultationsModal'">
         <button
+        onclick="pendingConsultationsModal.showModal()"
           *ngIf="observables.role === 's'"
           (click)="cancelInvitation()"
           class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -113,12 +114,15 @@ import { AvailableSchedulesComponent } from './available-schedules.component';
         [id]="'techAdPendingConsultationsModal'"
       >
         <button
+        onclick="techAdPendingConsultationsModal.showModal()"
           (click)="handleInvitation(true)"
           class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
         >
           <i-feather class="text-base-content/70" name="check" /> Accept
         </button>
         <button
+        onclick="techAdPendingConsultationsModal.showModal()"
+
           (click)="handleInvitation(false)"
           class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
         >
