@@ -46,6 +46,7 @@ import timeToEpoch from 'src/app/utils/timeToEpoch';
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <div class="flex flex-col items-center gap-2 sm1:flex-row">
+            <span class="text-base-content"> FROM </span>
               <input
                 [formControl]="startTime"
                 type="time"

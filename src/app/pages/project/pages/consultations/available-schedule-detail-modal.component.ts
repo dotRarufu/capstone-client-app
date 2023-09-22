@@ -75,6 +75,8 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
               }}</span>
             </div>
             <div *ngIf="isInEdit()" class="flex items-center justify-between gap-2">
+            <span class="text-base-content"> FROM </span>
+
               <input
                 type="time"
                 [formControl]="startDate"

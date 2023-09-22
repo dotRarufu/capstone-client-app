@@ -22,6 +22,7 @@ import { AddAvailableScheduleModalComponent } from './add-available-schedule-mod
 import { AvailableSchedulesComponent } from './available-schedules.component';
 import { TechAdPendingConsultationsModalComponent } from '../project/techad-pending-consultations-modal.component';
 import { DeclinedConsultationModalComponent } from './declined-consultation-modal.component';
+import { ForcedScheduleModalComponent } from './forced-schedule-modal.component';
 
 @Component({
   selector: 'consultations',
@@ -39,7 +40,8 @@ import { DeclinedConsultationModalComponent } from './declined-consultation-moda
     AddAvailableScheduleModalComponent,
     AvailableSchedulesComponent,
     TechAdPendingConsultationsModalComponent,
-    DeclinedConsultationModalComponent
+    DeclinedConsultationModalComponent,
+    ForcedScheduleModalComponent
   ],
   template: `
     <ng-container
@@ -61,6 +63,15 @@ import { DeclinedConsultationModalComponent } from './declined-consultation-moda
           >
             <i-feather class="text-base-content/70" name="plus" />
             <span class="uppercase"> Arrange </span>
+          </button>
+        
+          <button
+            *ngIf="observables.role === 't'"
+            onclick="forcedScheduleConsultation.showModal()"
+            class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+          >
+            <i-feather class="text-base-content/70" name="plus" />
+            <span class="uppercase"> Schedule </span>
           </button>
         </div>
 
@@ -120,6 +131,7 @@ import { DeclinedConsultationModalComponent } from './declined-consultation-moda
       >
       
       </techad-pending-consultations-modal>
+      <forced-schedule-modal />
     </ng-container>
   `,
 })

@@ -17,6 +17,8 @@ import dateToEpoch from '../utils/dateToEpoch';
 import { isNotNull } from '../utils/isNotNull';
 import { ProjectService } from './project.service';
 import combineDateAndTime from '../utils/combineDateAndTime';
+import { dateToDateString } from '../utils/dateToDateString';
+import toScheduleDateField from '../utils/toScheduleDateField';
 
 @Injectable({
   providedIn: 'root',
@@ -86,7 +88,7 @@ export class ConsultationService {
 
     const data = {
       category_id: decision ? 1 : 3,
-      decline_reason
+      decline_reason,
     };
     const request = this.client.from('consultation').update(data).eq('id', id);
     const request$ = from(request).pipe(
@@ -297,6 +299,65 @@ export class ConsultationService {
           map((d) => d.filter((a) => a > 0).length > 0)
         );
       })
+    );
+  }
+
+  forceSchedule(
+    
+    data: {
+      date_time: number;
+      location: string;
+      startTime: number;
+      endTime: number;
+      project_id: number;
+      description: string;
+    }
+  ) {
+    const user$ = this.authService
+      .getAuthenticatedUser()
+      .pipe(filter(isNotNull));
+
+    const dateString = new Date();
+    dateString.setMilliseconds(data.date_time);
+
+    const schedule$ = user$.pipe(
+      switchMap(({ uid }) =>
+        this.authService
+          .addAvailableSchedule(
+            uid,
+            toScheduleDateField(dateString),
+            data.startTime,
+            data.endTime
+          )
+          .pipe(map((v) => v.data[0].id))
+      )
+    );
+
+    const consultationData = {
+      date_time: data.date_time,
+      location: data.location,
+      project_id: data.project_id,
+      description: data.description,
+    };
+
+    return forkJoin({ user: user$, schedule: schedule$ }).pipe(
+      switchMap(({ user: { uid }, schedule: scheduleId }) => {
+        const req = this.client.from('consultation').insert({
+          ...consultationData,
+          organizer_id: uid,
+          category_id: 1,
+          schedule_id: scheduleId,
+        });
+
+        return from(req).pipe(
+          map((res) => {
+            const { statusText } = errorFilter(res);
+
+            return statusText;
+          })
+        );
+      }),
+      tap(() => this.signalNewConsultation())
     );
   }
 

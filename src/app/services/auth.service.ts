@@ -396,12 +396,12 @@ export class AuthService {
       start_time,
       end_time,
     };
-    const req = this.client.from('available_schedule').insert(data);
+    const req = this.client.from('available_schedule').insert(data).select("*");
     const req$ = from(req).pipe(
       map((res) => {
-        const { statusText } = errorFilter(res);
+        const { data, statusText } = errorFilter(res);
 
-        return statusText;
+        return {statusText, data};
       }),
       tap((_) => this.signalUpdateAvailableSchedules())
     );
