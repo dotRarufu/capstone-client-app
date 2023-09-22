@@ -240,17 +240,19 @@ export class ConsultationService {
     return request$;
   }
 
-  getConsultationData(projectId: number, date: number) {
-    console.log('req:', projectId, date);
+  getConsultationData(projectId: number, scheduleId: number) {
+ 
     const req = this.client
       .from('consultation')
       .select('*')
       .eq('project_id', projectId)
-      .eq('date_time', date)
+      .eq('schedule_id', scheduleId)
       .single();
 
     const req$ = from(req).pipe(
       map((res) => {
+        console.log("error:", res.error)
+        console.log("filters:", {projectId, scheduleId})
         const resA = errorFilter(res);
 
         return resA.data;
@@ -323,13 +325,14 @@ export class ConsultationService {
     const schedule$ = user$.pipe(
       switchMap(({ uid }) =>
         this.authService
-          .addAvailableSchedule(
+          .addSchedule(
             uid,
             toScheduleDateField(dateString),
             data.startTime,
-            data.endTime
+            data.endTime,
+            data.project_id
           )
-          .pipe(map((v) => v.data[0].id))
+          .pipe(map((v) => v.data.id))
       )
     );
 
@@ -342,6 +345,12 @@ export class ConsultationService {
 
     return forkJoin({ user: user$, schedule: schedule$ }).pipe(
       switchMap(({ user: { uid }, schedule: scheduleId }) => {
+        console.log("insert:", {
+          ...consultationData,
+          organizer_id: uid,
+          category_id: 1,
+          schedule_id: scheduleId,
+        })
         const req = this.client.from('consultation').insert({
           ...consultationData,
           organizer_id: uid,

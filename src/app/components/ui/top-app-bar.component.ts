@@ -4,10 +4,11 @@ import { AuthService } from 'src/app/services/auth.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { getRolePath } from 'src/app/utils/getRolePath';
-import { filter, forkJoin, map, switchMap, tap } from 'rxjs';
+import { filter, forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { ImgFallbackModule } from 'ngx-img-fallback';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'top-app-bar',
@@ -24,7 +25,9 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
       *ngIf="{
         notifications: notifications$ | async,
         schedules: schedules$ | async,
-        user: user$ | async
+        user: user$ | async,
+        forcedSchedules: forcedSchedules$ | async
+        
       } as observables"
       [class.bg-[#463dbc]]="observables.user?.role_id === 5"
     >
@@ -66,7 +69,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
 
               <div
                 *ngIf="
-                  observables.notifications || observables.schedules;
+                  observables.notifications || observables.schedules || observables.forcedSchedules;
                   else empty
                 "
                 class="indicator flex-1 "
@@ -95,6 +98,7 @@ export class TopAppBarComponent {
 
   authService = inject(AuthService);
   spinner = inject(NgxSpinnerService);
+  projectService = inject(ProjectService);
   router = inject(Router);
 
   user$ = this.authService.getAuthenticatedUser().pipe(
@@ -125,6 +129,24 @@ export class TopAppBarComponent {
     .getUnavailableSchedules()
     .pipe(map((n) => n.length > 0));
   name = this.user$.pipe(map((user) => user?.name || 'unnamed'));
+  forcedSchedules$ = this.projectService.getProjects().pipe(
+    filter(isNotNull),
+    switchMap((projects) => {
+      if (projects.length === 0) return of([]);
+
+      return forkJoin(
+        projects.map(({ id }) => this.projectService.getProjectInfo(id))
+      );
+    }),
+    map((projects) => projects.map((p) => p.technical_adviser_id)),
+    map((ids) => ids.filter((id) => id !== null) as string[]),
+
+    switchMap((technicalAdvisers) =>
+      this.authService.getForcedSchedules(technicalAdvisers)
+    ),
+    map(p => p.length > 0),
+    tap(v => console.log("foredes:", v))
+  );
 
   signOut() {
     this.spinner.show();

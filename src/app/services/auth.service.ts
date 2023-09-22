@@ -11,6 +11,7 @@ import {
   tap,
   throwError,
   catchError,
+  EMPTY,
 } from 'rxjs';
 import { Router } from '@angular/router';
 import { ProjectRow, User } from '../types/collection';
@@ -396,12 +397,12 @@ export class AuthService {
       start_time,
       end_time,
     };
-    const req = this.client.from('available_schedule').insert(data).select("*");
+    const req = this.client.from('available_schedule').insert(data).select('*');
     const req$ = from(req).pipe(
       map((res) => {
         const { data, statusText } = errorFilter(res);
 
-        return {statusText, data};
+        return { statusText, data: data[0] };
       }),
       tap((_) => this.signalUpdateAvailableSchedules())
     );
@@ -423,6 +424,86 @@ export class AuthService {
     );
 
     return isDuplicate$.pipe(switchMap(() => req$));
+  }
+  addSchedule(
+    taUid: string,
+    date: string,
+    start_time: number,
+    end_time: number,
+    projectId: number
+  ) {
+    const data = {
+      technical_adviser: taUid,
+      date,
+      start_time,
+      end_time,
+      taken_by_project: projectId,
+      is_available: false,
+      is_confirmed: true,
+    };
+    const req = this.client.from('available_schedule').insert(data).select('*');
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { data, statusText } = errorFilter(res);
+
+        return { statusText, data: data[0] };
+      }),
+      tap((_) => this.signalUpdateAvailableSchedules())
+    );
+
+    const isDuplicate$ = from(
+      this.client
+        .from('available_schedule')
+        .select('*')
+        .eq('start_time', start_time)
+    ).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data.length > 0;
+      }),
+      map((isDuplicate) => {
+        if (isDuplicate) throw new Error('This schedule has a duplicate');
+      })
+    );
+
+    return isDuplicate$.pipe(switchMap(() => req$));
+  }
+
+  getForcedSchedules(technicalAdvisers: string[]) {
+    const user$ = this.getAuthenticatedUser().pipe(
+      filter(isNotNull),
+      switchMap((user) => {
+        const { role_id } = user;
+
+        if (role_id !== 0) return EMPTY;
+
+        return of(user);
+      })
+    );
+
+    return user$.pipe(
+      switchMap((u) => {
+        // get projects
+        // get projects TA
+        // get consultations organize by TA
+        const req = this.client
+          .from('consultation')
+          .select('*')
+          .filter('organizer_id', 'in', `(${technicalAdvisers})`)
+          .eq("category_id", 1);
+
+        const req$ = from(req).pipe(
+          map((res) => {
+            const { data } = errorFilter(res);
+
+            return data;
+          })
+        );
+
+        return req$;
+      })
+    );
   }
 
   getAvailableSchedules() {
@@ -552,10 +633,17 @@ export class AuthService {
 
   // add this in top app bar profile notif
   getUnavailableSchedules() {
-    const technicalAdviser$ = this.getAuthenticatedUser();
+    const technicalAdviser$ = this.getAuthenticatedUser().pipe(
+      filter(isNotNull),
+      switchMap((user) => {
+        if (user.role_id !== 5) return EMPTY;
+
+        return of(user);
+      })
+    );
     const req$ = this.updateScheduleNotifications$.pipe(
       switchMap((_) => technicalAdviser$),
-      filter(isNotNull),
+
       switchMap((user) => {
         const req = this.client
           .from('available_schedule')
@@ -612,7 +700,7 @@ export class AuthService {
     startTimeEpoch: number,
     projectId: number
   ) {
-    console.log('get this:', { date, startTimeEpoch, projectId });
+   
     const req = this.client
       .from('available_schedule')
       .select('*')

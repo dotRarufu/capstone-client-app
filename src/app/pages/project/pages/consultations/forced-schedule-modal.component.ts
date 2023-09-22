@@ -28,6 +28,7 @@ import dateToEpoch from 'src/app/utils/dateToEpoch';
 import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
 import { ToastrService } from 'ngx-toastr';
 import hour24ToEpoch from 'src/app/utils/24hourToEpoch';
+import combineDateAndTime from 'src/app/utils/combineDateAndTime';
 
 @Component({
   selector: 'forced-schedule-modal',
@@ -172,10 +173,10 @@ export class ForcedScheduleModalComponent {
 
   scheduleClick() {
     this.spinner.show();
-    const dateTime = dateStringToEpoch(this.date.value);
-
+    
     const endTime = dateToEpoch(hour24ToEpoch(this.endDate.value));
     const startTime = dateToEpoch(hour24ToEpoch(this.startDate.value));
+    const dateTime = combineDateAndTime(this.date.value, endTime)
     const data = {
       date_time: dateTime,
       description: this.description.value,
@@ -189,17 +190,12 @@ export class ForcedScheduleModalComponent {
       next: (a) => {
         this.spinner.hide();
         this.toastr.success('Schedule added successfully');
-
-        this.date.reset();
-        this.startDate.reset();
-        this.endDate.reset();
-        this.description.reset();
-        this.location.reset();
-        this.projectId.set(-1);
+        this.reset();
       },
       error: (err) => {
         this.spinner.hide();
         this.toastr.error('Failed to add schedule: ' + err);
+        this.reset();
       },
     });
   }
@@ -208,5 +204,14 @@ export class ForcedScheduleModalComponent {
 
   closeModal() {
     this.modalComponent.close();
+  }
+
+  reset() {
+    this.date.reset();
+    this.startDate.reset();
+    this.endDate.reset();
+    this.description.reset();
+    this.location.reset();
+    this.projectId.set(-1);
   }
 }

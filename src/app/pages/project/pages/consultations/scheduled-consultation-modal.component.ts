@@ -149,8 +149,10 @@ export class ScheduledConsultationModalComponent {
   toastr = inject(ToastrService);
   spinner = inject(NgxSpinnerService);
   consultationStateService = inject(ConsultationStateService);
-  showSpinner = this.spinner.show();
+  
   consultation$ = this.consultationStateService.consultation$.pipe(
+    // todo: fix loader while data for modal is unavailable, use skeleton loader
+    tap(v => this.spinner.show()),
     switchMap(v => {
       if (v ===null) {
         this.spinner.hide()

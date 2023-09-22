@@ -110,12 +110,12 @@ export class ScheduleNotificationDetailsModalComponent {
 
   schedule$ = this.profileStateService.selectedScheduleNotification$.pipe(
     filter(isNotNull),
-    switchMap((s) => {
-      const combined = combineDateAndTime(s.date, s.start_time);
-
+    switchMap((schedule) => {
+ 
+    
       return this.consultationService
-        .getConsultationData(s.project.id, combined)
-        .pipe(map((p) => ({ ...s, consultationData: p })));
+        .getConsultationData(schedule.project.id, schedule.id)
+        .pipe(map((p) => ({ ...schedule, consultationData: p })));
     }),
     map((p) => ({
       ...p,
