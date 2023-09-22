@@ -81,11 +81,12 @@ export class ConsultationService {
     return request$;
   }
 
-  handleInvitation(id: number, decision: boolean) {
+  handleInvitation(id: number, decision: boolean, decline_reason?: string) {
     if (id < 0) return throwError(() => new Error('Id is invalid'));
 
     const data = {
       category_id: decision ? 1 : 3,
+      decline_reason
     };
     const request = this.client.from('consultation').update(data).eq('id', id);
     const request$ = from(request).pipe(

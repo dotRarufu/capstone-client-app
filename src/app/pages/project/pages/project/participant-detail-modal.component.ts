@@ -6,7 +6,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 import { ProjectService } from 'src/app/services/project.service';
 import { ActivatedRoute } from '@angular/router';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
-import { switchMap } from 'rxjs';
+import { switchMap, tap } from 'rxjs';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { ProjectStateService } from './data-access/project-state.service';
 import { CommonModule } from '@angular/common';
@@ -132,8 +132,10 @@ export class ParticipntDetailModalComponent {
   authService = inject(AuthService);
   projectStateService = inject(ProjectStateService);
   spinner = inject(NgxSpinnerService);
-
-  participant$ = this.projectStateService.activeParticipant$;
+  showSpinner= this.spinner.show()
+  participant$ = this.projectStateService.activeParticipant$.pipe(
+    tap(v => this.spinner.hide())
+  );
   // maybe convert getAuthentiatedUser to a state, to prevent multiple retrieval
   user$ = this.authService.getAuthenticatedUser();
 

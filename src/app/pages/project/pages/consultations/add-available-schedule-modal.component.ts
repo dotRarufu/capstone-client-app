@@ -140,7 +140,7 @@ export class AddAvailableScheduleModalComponent {
         },
         error: (err) => {
           this.spinner.hide();
-          this.toastr.error('Failed to schedule');
+          this.toastr.error('Failed to add schedule: ' + err);
         },
       });
   }

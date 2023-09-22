@@ -4,6 +4,7 @@ import { ProjectService } from 'src/app/services/project.service';
 import { HomeStateService } from './data-access/home-state.service';
 import { map, switchMap } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+import { NgxSpinner, NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'remove-project-modal',
@@ -38,8 +39,10 @@ export class RemoveProjectModalComponent {
   projectService = inject(ProjectService);
   homeStateService = inject(HomeStateService);
   toastr = inject(ToastrService);
+  spinner = inject(NgxSpinnerService);
 
   removeProjectCard() {
+    this.spinner.show();
     const removeProject$ = this.homeStateService.activeProjectId$.pipe(
       map((id) => {
         if (id === null) throw new Error('No project id passed');
@@ -50,8 +53,12 @@ export class RemoveProjectModalComponent {
     );
 
     removeProject$.subscribe({
-      next: (res) => this.toastr.success('Project removed successfully'),
-      error: (err) => this.toastr.error('Failed to remove project'),
+      next: (res) => {
+        this.spinner.hide();
+        this.toastr.success('Project removed successfully')},
+      error: (err) => {
+        this.spinner.hide();
+        this.toastr.error('Failed to remove project')},
     });
   }
 }

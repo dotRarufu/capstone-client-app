@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute } from '@angular/router';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { TaskStateService } from './data-access/tasks-state.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'add-task-modal',
@@ -80,6 +81,7 @@ export class AddTaskModalComponent {
   toastr = inject(ToastrService);
   route = inject(ActivatedRoute);
   taskStateService = inject(TaskStateService);
+  spinner = inject(NgxSpinnerService);
 
   handleCloseEvent() {
     this.title.setValue('');
@@ -96,6 +98,7 @@ export class AddTaskModalComponent {
 
       return;
     }
+    this.spinner.show();
 
     // * completes
     const status$ = this.taskService.add(
@@ -106,9 +109,11 @@ export class AddTaskModalComponent {
 
     status$.subscribe({
       next: (status) => {
+        this.spinner.hide();
         this.toastr.success(status);
       },
       error: (err) => {
+        this.spinner.hide();
         this.toastr.error(err);
       },
     });

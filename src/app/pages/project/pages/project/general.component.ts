@@ -44,6 +44,7 @@ import { InvitedParticipntDetailModalComponent } from './invited-participant-det
 import { ProjectStateService } from './data-access/project-state.service';
 import { InvitedParticipantCardComponent } from './invited-participant-card.component';
 import { isNotNull } from 'src/app/utils/isNotNull';
+import toProjectNumber from 'src/app/utils/toProjectNumber';
 
 @Component({
   selector: 'general',
@@ -118,17 +119,17 @@ import { isNotNull } from 'src/app/utils/isNotNull';
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <div class="flex flex-col gap-[4px]">
-        <participant-card
-          *ngFor="let participant of participants$ | async"
-          (click)="projectStateService.setActiveParticipant(participant)"
-          [user]="participant"
-        />
-        <invited-participant-card
-          *ngFor="let user of invited$ | async"
-          (click)="projectStateService.setActiveInvitedParticipant(user)"
-          [user]="user"
-        />
-      </div>
+          <participant-card
+            *ngFor="let participant of participants$ | async"
+            (click)="projectStateService.setActiveParticipant(participant)"
+            [user]="participant"
+          />
+          <invited-participant-card
+            *ngFor="let user of invited$ | async"
+            (click)="projectStateService.setActiveInvitedParticipant(user)"
+            [user]="user"
+          />
+        </div>
       </div>
 
       <div class="flex flex-col gap-[4px]">
@@ -169,6 +170,18 @@ import { isNotNull } from 'src/app/utils/isNotNull';
         <div class="text-base font-semibold">Date Created</div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
         <div>{{ observables.project?.created_at }}</div>
+      </div>
+      <div class="flex flex-col gap-[4px]">
+        <div class="text-base font-semibold">Project Number</div>
+        <div class="h-[2px] w-full bg-base-content/10"></div>
+        <div>
+          {{
+            toProjectNumber(
+              observables.project?.created_at || '',
+              observables.project?.id || 0
+            )
+          }}
+        </div>
       </div>
       <div *ngIf="isCapstoneAdviser()" class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Mark as Done</div>
@@ -447,5 +460,11 @@ export class GeneralComponent implements OnInit {
 
   ngOnInit(): void {
     this.spinner.show();
+  }
+
+  toProjectNumber(dateString: string, id: number) {
+    const date = new Date(dateString);
+
+    return toProjectNumber(date, id);
   }
 }

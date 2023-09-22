@@ -43,13 +43,6 @@ import { NgxSpinnerService } from 'ngx-spinner';
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
         <div class="flex h-fit justify-between bg-primary p-[24px]">
-          <!-- <div class="flex w-full flex-col justify-between gap-4">
-            <input
-              type="datetime-local"
-              [formControl]="dateTime"
-              class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-transparent px-3 py-2 text-[20px] text-base text-primary-content/70 placeholder:text-[20px] placeholder:text-primary-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
-            />
-          </div> -->
 
           <div class="form-control ">
             <div
@@ -58,7 +51,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
               <select
                 class="select-bordered select w-full rounded-[3px] border-none text-base  font-normal text-base-content focus:rounded-[3px] "
               >
-                <!-- todo: make this dynamic -->
+              
                 <option disabled selected>Select a schedule</option>
 
                 <option
@@ -234,15 +227,17 @@ export class ScheduleConsultationModalComponent {
   availableSchedules = toSignal(
     this.projectService.getProjectInfo(this.projectId).pipe(
       switchMap((p) => {
+        this.spinner.show();
         const uid = p.technical_adviser_id;
 
         if (uid === null) return of([]);
 
-        return this.authService.getProjectAvailableSchedules(uid);
+        return this.authService.getProjectAvailableSchedules(uid).pipe(
+          tap(v => this.spinner.hide())
+        );
       })
     )
   );
-  // this.authService.getProjectAvailableSchedules()
 
   doneTasks = signal<Task[]>([]);
   selectedTasks = signal<Task[]>([]);

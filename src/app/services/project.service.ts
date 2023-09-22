@@ -712,7 +712,7 @@ export class ProjectService {
     return projects$;
   }
 
-  private getGenericAdviserProjects(userUid: string) {
+  getGenericAdviserProjects(userUid: string) {
     const request = this.client
       .from('project')
       .select('id')

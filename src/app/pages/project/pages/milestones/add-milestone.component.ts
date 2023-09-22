@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute } from '@angular/router';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'add-milestone-modal',
@@ -92,8 +93,10 @@ export class AddMilestoneModalComponent {
   milestoneService = inject(MilestoneService);
   toastr = inject(ToastrService);
   route = inject(ActivatedRoute);
+  spinner = inject(NgxSpinnerService);
 
   handleDoneClick() {
+    this.spinner.show();
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
 
     const status$ = this.milestoneService.add(projectId, {
@@ -104,11 +107,11 @@ export class AddMilestoneModalComponent {
 
     status$.subscribe({
       next: (status) => {
-        
+        this.spinner.hide();
         this.toastr.success(status);
       },
       error: (err) => {
-       
+        this.spinner.hide();       
         this.toastr.error(err);
       },
      

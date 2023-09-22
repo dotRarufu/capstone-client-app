@@ -6,7 +6,7 @@ import {
   ViewChildren,
   inject,
 } from '@angular/core';
-import { Observable, filter, map, switchMap, tap } from 'rxjs';
+import { EMPTY, Observable, filter, map, of, switchMap, tap } from 'rxjs';
 import { TaskService } from 'src/app/services/task.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -20,6 +20,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
 import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
 import { CommonModule } from '@angular/common';
 import { ModalDialog } from 'src/app/pages/home/scheduled-consultation-details-modal.component';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'consultation-details-modal',
@@ -39,13 +40,13 @@ import { ModalDialog } from 'src/app/pages/home/scheduled-consultation-details-m
           consultation: consultation$ | async
         } as observables"
       >
-        <div class="flex h-full justify-between bg-primary p-[24px]">
-          <div class="flex w-full flex-col justify-between gap-4">
+        <div class="flex h-full items-center bg-primary p-[24px]">
+          
             <h1 class="text-[20px] text-primary-content">
               {{ epochToDate(observables.consultation?.date_time || 0) }}
               {{ epochToTime(observables.consultation?.date_time || 0) }}
             </h1>
-          </div>
+         
         </div>
         <div
           class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
@@ -127,9 +128,17 @@ export class ConsultationDetailsModalComponent {
   consultationStateService = inject(ConsultationStateService);
   authService = inject(AuthService);
   projectService = inject(ProjectService);
-
+  spinner = inject(NgxSpinnerService);
+  showSpinner = this.spinner.show()
   consultation$ = this.consultationStateService.consultation$.pipe(
-    filter(isNotNull),
+    switchMap(v => {
+      if (v ===null) {
+        this.spinner.hide()
+        return EMPTY;
+      }
+
+      return of(v);
+    }),
     switchMap((consultation) =>
       this.authService
         .getScheduleData(consultation.schedule_id)
@@ -156,8 +165,9 @@ export class ConsultationDetailsModalComponent {
           project: projectData,
         }))
       )
-    )
-  );
+    ),
+    tap(() => this.spinner.hide())
+   );
 
   accomplishedTasks$ = this.consultation$.pipe(
     switchMap((c) => this.taskService.getAccompishedTasks(c.id))

@@ -406,7 +406,23 @@ export class AuthService {
       tap((_) => this.signalUpdateAvailableSchedules())
     );
 
-    return req$;
+    const isDuplicate$ = from(
+      this.client
+        .from('available_schedule')
+        .select('*')
+        .eq('start_time', start_time)
+    ).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data.length > 0;
+      }),
+      map((isDuplicate) => {
+        if (isDuplicate) throw new Error('This schedule has a duplicate');
+      })
+    );
+
+    return isDuplicate$.pipe(switchMap(() => req$));
   }
 
   getAvailableSchedules() {
@@ -604,13 +620,12 @@ export class AuthService {
       .eq('taken_by_project', projectId)
       .filter('start_time', 'gte', startTimeEpoch - 720000)
       .filter('start_time', 'lte', startTimeEpoch + 720000)
-      .single()
-    
+      .single();
+
     const req$ = from(req).pipe(
       map((res) => {
-        
         const { data } = errorFilter(res);
- 
+
         return data;
       })
     );

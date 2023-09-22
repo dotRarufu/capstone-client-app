@@ -7,6 +7,7 @@ import { MilestoneService } from 'src/app/services/milestone.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { isNotNull } from 'src/app/utils/isNotNull';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'add-milestone-template-modal',
@@ -93,8 +94,10 @@ export class AddMilestoneTemplateModalComponent {
   authService = inject(AuthService);
   milestoneService = inject(MilestoneService);
   toastr = inject(ToastrService);
+  spinner = inject(NgxSpinnerService);
 
   handleDoneClick() {
+    this.spinner.show();
     const user$ = this.authService.getAuthenticatedUser();
     const status$ = user$.pipe(
       filter(isNotNull),
@@ -109,9 +112,11 @@ export class AddMilestoneTemplateModalComponent {
 
     status$.subscribe({
       next: (status) => {
+        this.spinner.hide();
         this.toastr.success(status);
       },
       error: (err) => {
+        this.spinner.hide();
         this.toastr.error(err);
       },
       complete: () => {},

@@ -7,11 +7,12 @@ import { ToastrService } from 'ngx-toastr';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { TaskStateService } from './data-access/tasks-state.service';
-import { filter, forkJoin, map, of, switchMap } from 'rxjs';
+import { EMPTY, filter, forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { AuthService } from 'src/app/services/auth.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'task-details-modal',
@@ -144,6 +145,8 @@ export class TaskDetailsModalComponent {
   taskStateService = inject(TaskStateService);
   authService = inject(AuthService);
   projectService = inject(ProjectService);
+  spinner = inject(NgxSpinnerService);
+
   currentValuesSubcription = this.taskStateService.activeTask$.pipe(
     filter(isNotNull)
   ).subscribe({
@@ -162,7 +165,14 @@ export class TaskDetailsModalComponent {
   title = new FormControl('', { nonNullable: true });
 
   activeTask$ = this.taskStateService.activeTask$.pipe(
-    filter(isNotNull),
+    switchMap(v => {
+      if (v ===null) {
+        this.spinner.hide()
+        return EMPTY;
+      }
+
+      return of(v);
+    }),
     switchMap((v) =>
       forkJoin({
         assigner: this.authService.getUserData(v.assigner_id),
@@ -172,6 +182,7 @@ export class TaskDetailsModalComponent {
     map(({ data, assigner }) => ({ ...data, assigner })),
     map((data) => ({ ...data, statusName: this.getStatusName(data.status_id) })),
     map((data) => ({ ...data, dateAdded: this.a(data.date_added)})),
+    tap(() => this.spinner.hide())
   );
 
   // todo: delete add task comp, use this instead
@@ -179,28 +190,35 @@ export class TaskDetailsModalComponent {
     const task = this.taskStateService.getActiveTask();
     if (task === null) return;
 
+    this.spinner.show();
+
     this.taskService
       .edit(task.id, this.title.value, this.description.value)
       .subscribe({
         next: () => {
-          this.toastr.success('task edited successfully');
+          this.spinner.hide();
+          this.toastr.success('Task edited successfully');
           this.isInEdit.set(false);
         },
         error: () => {
-          this.toastr.error('failed to edit task');
+          this.spinner.hide();
+          this.toastr.error('Failed to edit task');
           this.isInEdit.set(false);
         },
       });
   }
 
   handleDeleteClick() {
+    this.spinner.show();
     const task = this.taskStateService.getActiveTask();
 
     this.taskService.delete(task!.id, task!.assigner_id).subscribe({
       next: (status) => {
+        this.spinner.hide();
         this.toastr.success(status);
       },
       error: (err) => {
+        this.spinner.hide();
         this.toastr.error(err);
       },
     });

@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { filter, map, switchMap, tap } from 'rxjs';
+import { EMPTY, filter, map, of, switchMap, tap } from 'rxjs';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { TaskService } from 'src/app/services/task.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
@@ -149,9 +149,16 @@ export class ScheduledConsultationModalComponent {
   toastr = inject(ToastrService);
   spinner = inject(NgxSpinnerService);
   consultationStateService = inject(ConsultationStateService);
-
+  showSpinner = this.spinner.show();
   consultation$ = this.consultationStateService.consultation$.pipe(
-    filter(isNotNull),
+    switchMap(v => {
+      if (v ===null) {
+        this.spinner.hide()
+        return EMPTY;
+      }
+
+      return of(v);
+    }),
     switchMap((consultation) =>
       this.authService
         .getScheduleData(consultation.schedule_id)
@@ -178,7 +185,8 @@ export class ScheduledConsultationModalComponent {
           project: projectData,
         }))
       )
-    )
+    ),
+    tap(v => this.spinner.hide())
   );
 
   accomplishedTasks$ = this.consultation$.pipe(

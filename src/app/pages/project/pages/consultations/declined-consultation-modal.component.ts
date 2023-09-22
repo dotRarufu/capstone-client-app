@@ -5,38 +5,34 @@ import {
   ViewChild,
   ViewChildren,
   inject,
-  signal,
 } from '@angular/core';
-import { Observable, filter, switchMap, tap } from 'rxjs';
+import { EMPTY, Observable, filter, map, of, switchMap, tap } from 'rxjs';
 import { TaskService } from 'src/app/services/task.service';
+import { ProjectService } from 'src/app/services/project.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { Consultation, Task } from 'src/app/types/collection';
 import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
+import { AccomplishmentsComponent } from './accomplishments.component';
+import { ConsultationStateService } from './data-access/consultations-state.service';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
 import { CommonModule } from '@angular/common';
-import { HomeStateService } from './data-access/home-state.service';
-import { AccomplishmentsComponent } from '../project/pages/consultations/accomplishments.component';
-import { OutcomeComponent } from 'src/app/pages/project/pages/consultations/outcome.component';
-import { ConsultationService } from 'src/app/services/consultation.service';
-import { ToastrService } from 'ngx-toastr';
+import { ModalDialog } from 'src/app/pages/home/scheduled-consultation-details-modal.component';
 import { NgxSpinnerService } from 'ngx-spinner';
 
-export type ModalDialog = { close: () => void };
-
 @Component({
-  selector: 'scheduled-consultation-details-modal',
+  selector: 'declined-consultation-modal',
   standalone: true,
   imports: [
     CommonModule,
     ModalComponent,
     FeatherIconsModule,
     AccomplishmentsComponent,
-    OutcomeComponent,
   ],
   template: `
-    <modal [inputId]="id || 'consultationModal'">
+    <modal [inputId]="'declinedConsultationModal'">
       <div
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
         *ngIf="{
@@ -44,13 +40,13 @@ export type ModalDialog = { close: () => void };
           consultation: consultation$ | async
         } as observables"
       >
-        <div
-          class="flex h-full items-center justify-between bg-primary p-[24px]"
-        >
-          <h1 class="text-[20px] text-primary-content">
-            {{ epochToDate(observables.consultation?.date_time || 0) }}
-            {{ epochToTime(observables.consultation?.date_time || 0) }}
-          </h1>
+        <div class="flex h-full items-center bg-primary p-[24px]">
+          
+            <h1 class="text-[20px] text-primary-content">
+              {{ epochToDate(observables.consultation?.date_time || 0) }}
+              {{ epochToTime(observables.consultation?.date_time || 0) }}
+            </h1>
+         
         </div>
         <div
           class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
@@ -58,6 +54,16 @@ export type ModalDialog = { close: () => void };
           <div
             class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-scroll"
           >
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Decline Reason</h1>
+            </div>
+
+            <div class="text-base text-base-content">
+              {{ observables.consultation?.decline_reason }}
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+
             <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
             </div>
@@ -106,41 +112,11 @@ export type ModalDialog = { close: () => void };
               [data]="observables.accomplishedTasks || []"
               [hideInput]="true"
             />
-
-            <outcome
-              heading="Actual Accomplishments"
-              (addItem)="addActualAccomplishment($event)"
-              (deleteItem)="deleteActualAccomplishment($event)"
-              [data]="actualAccomplishments()"
-            />
-
-            <outcome
-              heading="Proposed Next Steps"
-              (addItem)="addProposedNextStep($event)"
-              (deleteItem)="deleteProposedNextStep($event)"
-              [data]="proposedNextSteps()"
-            />
-
-            <outcome
-              heading="Next Deliverables"
-              (addItem)="addNextDeliverable($event)"
-              (deleteItem)="deleteNextDeliverable($event)"
-              [data]="nextDeliverables()"
-            />
           </div>
           <ul
             class="flex h-full w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
           >
             <ng-content />
-
-            <button
-           
-              (click)="handleCompleteClick(); closeModal();"
-              class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
-            >
-              <i-feather class="text-base-content/70" name="check-circle" />
-              Complete
-            </button>
 
             <div class="h-full"></div>
 
@@ -156,17 +132,56 @@ export type ModalDialog = { close: () => void };
     </modal>
   `,
 })
-export class ScheduledConsultationDetailsModalComponent {
-  @Input() id = 'consultationModal';
+export class DeclinedConsultationModalComponent {
+ 
   taskService = inject(TaskService);
-  consultationService = inject(ConsultationService);
-  homeStateService = inject(HomeStateService);
-  toastr = inject(ToastrService);
+  consultationStateService = inject(ConsultationStateService);
+  authService = inject(AuthService);
+  projectService = inject(ProjectService);
   spinner = inject(NgxSpinnerService);
+  showSpinner = this.spinner.show()
+  consultation$ = this.consultationStateService.consultation$.pipe(
+    switchMap(v => {
+      if (v ===null) {
+        this.spinner.hide()
+        return EMPTY;
+      }
 
-  consultation$ = this.homeStateService.activeConsultation$.pipe(
-    filter(isNotNull)
+      return of(v);
+    }),
+    switchMap((consultation) =>
+      this.authService
+        .getScheduleData(consultation.schedule_id)
+        .pipe(map((d) => ({ ...consultation, scheduleData: d })))
+    ),
+    map((consultation) => ({
+      ...consultation,
+      scheduleData: {
+        ...consultation.scheduleData,
+        startTime: getTimeFromEpoch(consultation.scheduleData.start_time),
+        endTime: getTimeFromEpoch(consultation.scheduleData.end_time),
+      },
+    })),
+
+    switchMap((consultation) =>
+      this.authService
+        .getUserData(consultation.organizer_id)
+        .pipe(map((data) => ({ ...consultation, organizer: data })))
+    ),
+    switchMap((consultation) =>
+      this.projectService.getProjectInfo(consultation.project_id).pipe(
+        map((projectData) => ({
+          ...consultation,
+          project: projectData,
+        }))
+      )
+    ),
+  
+    tap(() => this.spinner.hide())
+
+
   );
+
   accomplishedTasks$ = this.consultation$.pipe(
     switchMap((c) => this.taskService.getAccompishedTasks(c.id))
   );
@@ -177,54 +192,6 @@ export class ScheduledConsultationDetailsModalComponent {
 
   epochToTime(epoch: number) {
     return getTimeFromEpoch(epoch);
-  }
-
-  handleCompleteClick() {
-    const consultation = this.homeStateService.getActiveConsultation();
-
-    if (consultation === null) throw new Error('cant do this without id');
-    this.spinner.show();
-
-    const id = consultation.id;
-    const completeScheduled = this.consultationService.completeScheduled(
-      id,
-      this.actualAccomplishments(),
-      this.proposedNextSteps(),
-      this.nextDeliverables()
-    );
-    completeScheduled.subscribe({
-      next: (res) => {
-        this.spinner.hide();
-        this.toastr.success('Success');
-      },
-      error: (err) => {
-        this.spinner.hide();
-        this.toastr.error(err);
-      },
-    });
-  }
-
-  actualAccomplishments = signal<string[]>([]);
-  proposedNextSteps = signal<string[]>([]);
-  nextDeliverables = signal<string[]>([]);
-
-  addNextDeliverable(value: string) {
-    this.nextDeliverables.update((old) => [...old, value]);
-  }
-  addProposedNextStep(value: string) {
-    this.proposedNextSteps.update((old) => [...old, value]);
-  }
-  addActualAccomplishment(value: string) {
-    this.actualAccomplishments.update((old) => [...old, value]);
-  }
-  deleteNextDeliverable(value: string) {
-    this.nextDeliverables.update((old) => old.filter((v) => v !== value));
-  }
-  deleteProposedNextStep(value: string) {
-    this.proposedNextSteps.update((old) => old.filter((v) => v !== value));
-  }
-  deleteActualAccomplishment(value: string) {
-    this.actualAccomplishments.update((old) => old.filter((v) => v !== value));
   }
 
   @ViewChild(ModalComponent, { static: false }) modalComponent!: ModalComponent;

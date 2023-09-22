@@ -21,6 +21,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
             <!-- todo: move switch cases id in constant -->
             <ng-container *ngSwitchCase="'studentPending'">
               <button
+              
                 onclick="pendingConsultationsModal.showModal()"
                 class="link-hover link card-title  w-full px-4 text-left text-primary-content"
               >
@@ -47,6 +48,14 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
             <ng-container *ngSwitchCase="'techAdCompleted'">
               <button
                 onclick="completedConsultationsModal.showModal()"
+                class="link-hover link card-title  w-full px-4 text-left text-primary-content"
+              >
+                {{ epochToDateString(data.date_time) }}
+              </button>
+            </ng-container>
+            <ng-container *ngSwitchCase="'declinedConsultationModal'">
+              <button
+                onclick="declinedConsultationModal.showModal()"
                 class="link-hover link card-title  w-full px-4 text-left text-primary-content"
               >
                 {{ epochToDateString(data.date_time) }}
@@ -134,5 +143,9 @@ export class ConsultationCardComponent {
   }
   getEpochTime(unixEpoch: number) {
     return getTimeFromEpoch(unixEpoch);
+  }
+  
+  test() {
+    console.log("idasdsa:", this.buttonId)
   }
 }

@@ -5,6 +5,7 @@ import { NgChartsModule } from 'ng2-charts';
 import { CommonModule } from '@angular/common';
 import { ProjectsBySectionComponent } from './projects-by-section.component';
 import { ProjectsByStatusComponent } from './project-by-status.component';
+import { GroupsConsultationCountReportComponent } from './groups-consultation-count.component';
 
 @Component({
   selector: 'adviser-reports',
@@ -14,6 +15,7 @@ import { ProjectsByStatusComponent } from './project-by-status.component';
     CommonModule,
     ProjectsBySectionComponent,
     ProjectsByStatusComponent,
+    GroupsConsultationCountReportComponent
   ],
   template: `
     <div
@@ -29,6 +31,10 @@ import { ProjectsByStatusComponent } from './project-by-status.component';
 
           <div class="w-full min-w-[229px] max-w-[429px]">
             <projects-by-section-report />
+          </div>
+
+          <div class="w-full min-w-[229px] max-w-[429px]">
+            <groups-consultation-count-report />
           </div>
         </div>
       </ng-container>
@@ -51,6 +57,11 @@ import { ProjectsByStatusComponent } from './project-by-status.component';
             <div class="w-full min-w-[229px] max-w-[429px]">
               <projects-by-section-report />
             </div>
+
+
+          <div class="w-full min-w-[229px] max-w-[429px]">
+            <groups-consultation-count-report />
+          </div>
           </div>
         </div>
       </ng-container>

@@ -411,6 +411,7 @@ export interface Database {
         Row: {
           category_id: number
           date_time: number
+          decline_reason: string | null
           description: string
           id: number
           location: string
@@ -421,6 +422,7 @@ export interface Database {
         Insert: {
           category_id?: number
           date_time: number
+          decline_reason?: string | null
           description?: string
           id?: number
           location: string
@@ -431,6 +433,7 @@ export interface Database {
         Update: {
           category_id?: number
           date_time?: number
+          decline_reason?: string | null
           description?: string
           id?: number
           location?: string

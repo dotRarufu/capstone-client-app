@@ -20,6 +20,8 @@ import { isNotNull } from 'src/app/utils/isNotNull';
 import { AvailableScheduleDetailModalComponent } from './available-schedule-detail-modal.component';
 import { AddAvailableScheduleModalComponent } from './add-available-schedule-modal.component';
 import { AvailableSchedulesComponent } from './available-schedules.component';
+import { TechAdPendingConsultationsModalComponent } from '../project/techad-pending-consultations-modal.component';
+import { DeclinedConsultationModalComponent } from './declined-consultation-modal.component';
 
 @Component({
   selector: 'consultations',
@@ -35,7 +37,9 @@ import { AvailableSchedulesComponent } from './available-schedules.component';
     ScheduledConsultationModalComponent,
     AvailableScheduleDetailModalComponent,
     AddAvailableScheduleModalComponent,
-    AvailableSchedulesComponent
+    AvailableSchedulesComponent,
+    TechAdPendingConsultationsModalComponent,
+    DeclinedConsultationModalComponent
   ],
   template: `
     <ng-container
@@ -56,7 +60,7 @@ import { AvailableSchedulesComponent } from './available-schedules.component';
             class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
           >
             <i-feather class="text-base-content/70" name="plus" />
-            <span class="uppercase"> Schedule </span>
+            <span class="uppercase"> Arrange </span>
           </button>
         </div>
 
@@ -92,10 +96,11 @@ import { AvailableSchedulesComponent } from './available-schedules.component';
       <available-schedule-detail-modal *ngIf="observables.role === 't'" />
       <schedule-consultation-modal *ngIf="observables.role === 's'" />
       <consultation-details-modal />
-      <!-- todo: find out why id has  to be wrapped -->
+      <declined-consultation-modal />
+      <!-- for scheduled and declined consultations -->
       <consultation-details-modal [id]="'pendingConsultationsModal'">
         <button
-        onclick="pendingConsultationsModal.showModal()"
+        onclick="pendingConsultationsModal.close()"
           *ngIf="observables.role === 's'"
           (click)="cancelInvitation()"
           class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -109,26 +114,12 @@ import { AvailableSchedulesComponent } from './available-schedules.component';
       <scheduled-consultation-modal
         *ngIf="['t', 'ct'].includes(observables.role || '')"
       />
-      <consultation-details-modal
+      <techad-pending-consultations-modal
         *ngIf="['t', 'ct'].includes(observables.role || '')"
-        [id]="'techAdPendingConsultationsModal'"
+      
       >
-        <button
-        onclick="techAdPendingConsultationsModal.showModal()"
-          (click)="handleInvitation(true)"
-          class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
-        >
-          <i-feather class="text-base-content/70" name="check" /> Accept
-        </button>
-        <button
-        onclick="techAdPendingConsultationsModal.showModal()"
-
-          (click)="handleInvitation(false)"
-          class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
-        >
-          <i-feather class="text-base-content/70" name="x-circle" /> Decline
-        </button>
-      </consultation-details-modal>
+      
+      </techad-pending-consultations-modal>
     </ng-container>
   `,
 })
@@ -190,25 +181,12 @@ export class ConsultationsComponent {
         items: this.consultationService
           .getConsultations(3, this.projectId)
           .pipe(takeUntilDestroyed(this.destroyRef)),
+          buttonId: 'declinedConsultationModal'
       },
     ])
   );
 
-  handleInvitation(decision: boolean) {
-    const activeConsultation =
-      this.consultationStateService.getActiveConsultation()!;
-
-    const id = activeConsultation.id;
-
-    this.consultationService.handleInvitation(id, decision).subscribe({
-      next: (res) => {
-        this.toastr.success(res);
-      },
-      error: (err) => {
-        this.toastr.error(err);
-      },
-    });
-  }
+ 
 
   cancelInvitation() {
     const consultation = this.consultationStateService.getActiveConsultation()!;

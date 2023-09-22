@@ -1,24 +1,13 @@
 import { Component, DestroyRef, inject } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-import { AccordionComponent } from 'src/app/components/ui/accordion.component';
-import { ConsultationCardComponent } from 'src/app/pages/project/pages/consultations/card.component';
+
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
-import { ConsultationService } from 'src/app/services/consultation.service';
-import { Consultation } from 'src/app/types/collection';
-import { ConsultationDetailsModalComponent } from 'src/app/pages/project/pages/consultations/consultation-details-modal.component';
+
 import { CommonModule } from '@angular/common';
-import { ScheduleConsultationModalComponent } from './schedule-consultation-modal.component';
-import { CompletedConsultationModalComponent } from './completed-consultation-modal.component';
-import { ActivatedRoute } from '@angular/router';
-import { ScheduledConsultationModalComponent } from './scheduled-consultation-modal.component';
+
 import { ConsultationStateService } from './data-access/consultations-state.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ProjectService } from 'src/app/services/project.service';
+
 import { AuthService } from 'src/app/services/auth.service';
-import { filter, map, switchMap, of, tap } from 'rxjs';
-import { isNotNull } from 'src/app/utils/isNotNull';
-import { AvailableScheduleDetailModalComponent } from './available-schedule-detail-modal.component';
-import { AddAvailableScheduleModalComponent } from './add-available-schedule-modal.component';
+
 import dayFromDate from 'src/app/utils/dayFromDate';
 import formatDate from 'src/app/utils/formatDate';
 import getDuration from 'src/app/utils/getDuration';
@@ -71,12 +60,12 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
         >
       </button>
 
-      
-      <div *ngIf="observables.availableSchedules?.length === 0"
-          class="flex w-full items-center justify-center rounded-[5px] bg-base-200 p-4 text-base-content/70"
-        >
+      <div
+        *ngIf="observables.availableSchedules?.length === 0"
+        class="flex w-full items-center justify-center rounded-[5px] bg-base-200 p-4 text-base-content/70"
+      >
         You have not added any available schedules yet
-        </div>
+      </div>
     </ng-container>
   `,
 })
