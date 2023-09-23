@@ -45,41 +45,45 @@ import getUniqueItems from 'src/app/utils/getUniqueItems';
     ScheduledConsultationDetailsModalComponent,
   ],
   template: `
+  
     <div
       class="flex w-full flex-col gap-[1rem] sm2:w-[840px] md:w-full lg:w-full "
       *ngIf="{ consultations: consultations$ | async } as observables"
     >
+   
+
       <div
-        class="flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
+        class="flex flex-col gap-1"
       >
         <h2 class="text-2xl">Scheduled Consultations</h2>
+        <div class="h-[2px] w-full bg-base-content/10"></div>
       </div>
-      <div class="h-[2px] w-full bg-base-content/10"></div>
-      <ul>
+      
+      <ul class="flex flex-col gap-2 rounded-[5px]">
         <li
           onclick="consultationModal.showModal()"
           *ngFor="let consultation of observables.consultations"
           (click)="homeStateService.setActiveConsultation(consultation)"
-          class="grid w-full cursor-pointer grid-cols-2 gap-2 rounded-[3px] px-4 py-2  hover:bg-base-200 sm1:grid-cols-4 sm1:justify-items-center"
+          class=" grid bg-base-200 w-full cursor-pointer grid-cols-2 gap-2 rounded-[5px] px-4 py-2  hover:bg-base-300 sm1:grid-cols-4 sm1:justify-between"
         >
           <div
-            class="p-0 text-left  text-base text-base-content sm1:w-fit sm1:text-center   sm1:text-[18px]"
+            class="p-0 text-base text-base-content sm1:w-fit sm1:text-left   sm1:text-[18px] sm1:grid sm1:place-content-center"
           >
             {{ consultation.dateString }}
           </div>
           <div
-            class="text-right text-base text-base-content/70 sm1:text-center"
+            class="text-right text-base text-base-content/70 sm1:text-center sm1:grid sm1:place-content-center"
           >
             {{ consultation.location }}
           </div>
 
           <div
-            class="p-0 text-left text-base text-base-content sm1:w-fit sm1:text-center  sm1:text-[18px]"
+            class="p-0 text-left text-base text-base-content sm1:text-center  sm1:text-[18px] sm1:grid sm1:place-content-center"
           >
             {{ consultation.description }}
           </div>
           <span
-            class="text-right text-base text-base-content/70 sm1:w-fit sm1:text-center"
+            class="text-right text-base text-base-content/70 flex items-center justify-end"
             >{{ consultation.project.name }}</span
           >
         </li>

@@ -12,22 +12,23 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
   template: `
     <div class="w-full ">
       <div class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full ">
-        <div class="flex justify-between ">
-          <h1 class="text-2xl text-base-content">Title Analysis</h1>
-          <button
-            onclick="titleAnalyzer.showModal()"
-            (click)="analyzeClicked.emit()"
-            class="btn-ghost btn-sm flex items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
-          >
-            <i-feather
-              class="h-[20px] w-[20px] text-base-content/70"
-              name="zap"
-            />
-            <span class="uppercase"> Analyze </span>
-          </button>
+        <div class="flex flex-col gap-1">
+          <div class="flex justify-between ">
+            <h1 class="text-2xl text-base-content">Title Analysis</h1>
+            <button
+              onclick="titleAnalyzer.showModal()"
+              (click)="analyzeClicked.emit()"
+              class="btn-ghost btn-sm flex items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+            >
+              <i-feather
+                class="h-[20px] w-[20px] text-base-content/70"
+                name="zap"
+              />
+              <span class="uppercase"> Analyze </span>
+            </button>
+          </div>
+          <div class="h-[2px] w-full bg-base-content/10"></div>
         </div>
-
-        <div class="h-[2px] w-full bg-base-content/10"></div>
 
         <accordion *ngFor="let content of contents" [heading]="content.heading">
           <div class=" w-full pt-[16px] text-base-content">

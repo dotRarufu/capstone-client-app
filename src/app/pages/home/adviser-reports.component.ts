@@ -41,11 +41,14 @@ import { GroupsConsultationCountReportComponent } from './groups-consultation-co
 
       <ng-container *ngIf="sideColumn">
         <div class="flex h-full flex-col gap-[16px] ">
+        <div class="flex flex-col gap-1">
           <div class="flex justify-between ">
             <h1 class="text-2xl text-base-content ">Reports</h1>
           </div>
-
           <div class="h-[2px] w-full bg-base-content/10"></div>
+        </div>
+
+
 
           <div
             class="flex w-full flex-wrap items-start justify-center gap-4  md:flex-col md:items-center"

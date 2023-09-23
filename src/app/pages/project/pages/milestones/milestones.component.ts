@@ -29,78 +29,83 @@ type Milestone = {
     FeatherIconsModule,
   ],
   template: `
-    <h1 class="hidden text-2xl text-base-content min-[998px]:block">
-      Milestones
-    </h1>
-
-    <div
-      class="flex h-full flex-col justify-start gap-x-[16px] sm1:grid sm1:grid-cols-[auto_1fr] md:grid-cols-[1fr_3fr]"
-      *ngIf="{
-        milestones: milestones$ | async,
-        isCapstoneAdviser: isCapstoneAdviser$ | async,
-        capstoneAdviser: capstoneAdviser$ | async
-      } as observables"
-    >
-      <ul
-        [class.hidden]="myOutlet.isActivated"
-        class="steps steps-vertical sm1:block "
-      >
-      <!-- CSS messes up when extracted to component -->
-        <li
-          *ngFor="let milestone of observables.milestones"
-          class="step"
-          [class.step-primary]="milestone.isAchieved"
+    <div class="flex flex-col gap-2 ">
+      <h1 class="hidden text-2xl text-base-content min-[998px]:block">
+        Milestones
+      </h1>
+      <div class="h-[2px] w-full bg-base-content/10"></div>
+      <div>
+        <div
+          class="flex h-full flex-col justify-start gap-x-[16px] sm1:grid sm1:grid-cols-[auto_1fr] md:grid-cols-[1fr_3fr]"
+          *ngIf="{
+            milestones: milestones$ | async,
+            isCapstoneAdviser: isCapstoneAdviser$ | async,
+            capstoneAdviser: capstoneAdviser$ | async
+          } as observables"
         >
-          <div class="flex w-full items-center justify-between">
-            <span
-              class="btn-link btn px-0 text-left text-base-content no-underline"
-              [routerLink]="[milestone.id]"
-              routerLinkActive="text-primary"
+          <ul
+            [class.hidden]="myOutlet.isActivated"
+            class="steps steps-vertical sm1:block "
+          >
+            <!-- CSS messes up when extracted to component -->
+            <li
+              *ngFor="let milestone of observables.milestones"
+              class="step"
+              [class.step-primary]="milestone.isAchieved"
             >
-              {{ milestone.title }}
-            </span>
-            <div class="badge badge-primary sm1:hidden">
-              {{ milestone.dueDate }}
+              <div class="flex w-full items-center justify-between">
+                <span
+                  class="btn-link btn px-0 text-left text-base-content no-underline"
+                  [routerLink]="[milestone.id]"
+                  routerLinkActive="text-primary"
+                >
+                  {{ milestone.title }}
+                </span>
+                <div class="badge badge-primary sm1:hidden">
+                  {{ milestone.dueDate }}
+                </div>
+              </div>
+            </li>
+
+            <li
+              *ngIf="observables.isCapstoneAdviser"
+              onclick="addMilestone.showModal()"
+              class="btn-ghost btn-sm flex flex-row items-center justify-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+            >
+              <i-feather
+                class="h-[20px] w-[20px] text-base-content/70"
+                name="plus"
+              />
+              <span class="uppercase"> Add </span>
+            </li>
+          </ul>
+
+          <div>
+            <router-outlet #myOutlet="outlet" />
+            <div
+              class="hidden pt-[20px] sm1:block"
+              *ngIf="!myOutlet.isActivated"
+            >
+              <div
+                class=" flex flex-col items-center justify-center gap-[8px] text-base-content/50"
+              >
+                <i-feather name="flag" class="" />
+                <span class="text-base">
+                  {{
+                    getMessage(
+                      observables.capstoneAdviser,
+                      observables.milestones || [],
+                      observables.isCapstoneAdviser || false
+                    )
+                  }}
+                </span>
+              </div>
             </div>
           </div>
-        </li>
 
-        <li
-          *ngIf="observables.isCapstoneAdviser"
-          onclick="addMilestone.showModal()"
-          class="btn-ghost btn-sm flex flex-row items-center justify-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
-        >
-          <i-feather
-            class="h-[20px] w-[20px] text-base-content/70"
-            name="plus"
-          />
-          <span class="uppercase"> Add </span>
-        </li>
-      </ul>
-
-      <div>
-        <router-outlet #myOutlet="outlet" />
-        <div class="hidden pt-[20px] sm1:block" *ngIf="!myOutlet.isActivated">
-          <div
-            class=" flex flex-col items-center justify-center gap-[8px] text-base-content/50"
-          >
-            <i-feather name="flag" class="" />
-            <span
-              class="text-base"
-            >
-              {{
-                getMessage(
-                  observables.capstoneAdviser,
-                  observables.milestones || [],
-                  observables.isCapstoneAdviser || false
-                )
-              }}
-            </span>
-          </div>
+          <add-milestone-modal />
         </div>
       </div>
-
-      <add-milestone-modal />
     </div>
   `,
 })
@@ -117,11 +122,10 @@ export class MilestonesComponent {
   isCapstoneAdviser$ = this.authService.getAuthenticatedUser().pipe(
     filter(isNotNull),
     switchMap((u) => {
-      if (u.role_id === 0) return of('s')
+      if (u.role_id === 0) return of('s');
 
-      return this.projectService.getAdviserProjectRole(this.projectId, u.uid)
-    }
-    ),
+      return this.projectService.getAdviserProjectRole(this.projectId, u.uid);
+    }),
     map((role) => ['c', 'ct'].includes(role))
   );
   milestones$ = this.milestoneService.getMilestones(this.projectId).pipe(
@@ -158,10 +162,9 @@ export class MilestonesComponent {
     milestones: Milestone[],
     isCapstoneAdviser: boolean
   ) {
-
     if (isCapstoneAdviser) {
       if (milestones.length === 0) {
-        return "No milestones";
+        return 'No milestones';
       }
 
       return 'Select a milestone';

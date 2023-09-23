@@ -37,24 +37,25 @@ import { TaskStateService } from './data-access/tasks-state.service';
       *ngIf="{ isStudent: isStudent$ | async } as observables"
       class="flex h-full flex-col gap-[16px]"
     >
-      <div class="flex justify-between ">
-        <h1 class="hidden text-2xl text-base-content min-[998px]:block">
-          Tasks
-        </h1>
-        <button
-          *ngIf="!observables.isStudent"
-          onclick="addTask.showModal()"
-          class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
-        >
-          <i-feather
-            class="h-[20px] w-[20px] text-base-content/70"
-            name="plus"
-          />
-          <span class="uppercase"> Add </span>
-        </button>
+      <div class="flex flex-col gap-2 ">
+        <div class="flex justify-between ">
+          <h1 class="hidden text-2xl text-base-content min-[998px]:block">
+            Tasks
+          </h1>
+          <button
+            *ngIf="!observables.isStudent"
+            onclick="addTask.showModal()"
+            class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+          >
+            <i-feather
+              class="h-[20px] w-[20px] text-base-content/70"
+              name="plus"
+            />
+            <span class="uppercase"> Add </span>
+          </button>
+        </div>
+        <div class="h-[2px] w-full bg-base-content/10"></div>
       </div>
-
-      <div class="h-[2px] w-full bg-base-content/10"></div>
 
       <div
         cdkDropListGroup

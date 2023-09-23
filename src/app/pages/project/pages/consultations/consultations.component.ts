@@ -41,7 +41,7 @@ import { ForcedScheduleModalComponent } from './forced-schedule-modal.component'
     AvailableSchedulesComponent,
     TechAdPendingConsultationsModalComponent,
     DeclinedConsultationModalComponent,
-    ForcedScheduleModalComponent
+    ForcedScheduleModalComponent,
   ],
   template: `
     <ng-container
@@ -51,31 +51,33 @@ import { ForcedScheduleModalComponent } from './forced-schedule-modal.component'
       } as observables"
     >
       <div class="flex h-full flex-col gap-[16px] ">
-        <div class="flex justify-between ">
-          <h1 class="hidden text-2xl text-base-content min-[998px]:block">
-            Consultation
-          </h1>
+        <div class="flex flex-col gap-2 ">
+          <div class="flex justify-between ">
+            <h1 class="hidden text-2xl text-base-content min-[998px]:block">
+              Consultation
+            </h1>
 
-          <button
-            *ngIf="observables.role === 's'"
-            onclick="scheduleConsultation.showModal()"
-            class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
-          >
-            <i-feather class="text-base-content/70" name="plus" />
-            <span class="uppercase"> Arrange </span>
-          </button>
-        
-          <button
-            *ngIf="observables.role === 't'"
-            onclick="forcedScheduleConsultation.showModal()"
-            class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
-          >
-            <i-feather class="text-base-content/70" name="plus" />
-            <span class="uppercase"> Schedule </span>
-          </button>
+            <button
+              *ngIf="observables.role === 's'"
+              onclick="scheduleConsultation.showModal()"
+              class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+            >
+              <i-feather class="text-base-content/70" name="plus" />
+              <span class="uppercase"> Arrange </span>
+            </button>
+
+            <button
+              *ngIf="observables.role === 't'"
+              onclick="forcedScheduleConsultation.showModal()"
+              class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+            >
+              <i-feather class="text-base-content/70" name="plus" />
+              <span class="uppercase"> Schedule </span>
+            </button>
+          </div>
+
+          <div class="h-[2px] w-full bg-base-content/10"></div>
         </div>
-
-        <div class="h-[2px] w-full bg-base-content/10"></div>
 
         <accordion
           *ngFor="let c of observables.consultations"
@@ -95,15 +97,10 @@ import { ForcedScheduleModalComponent } from './forced-schedule-modal.component'
           </div>
         </accordion>
 
-        <div class="h-[2px] w-full bg-base-content/10"></div>
-
         <available-schedules *ngIf="observables.role === 't'" />
-
-      
-
       </div>
 
-      <add-available-schedule-modal *ngIf="observables.role === 't'"/>
+      <add-available-schedule-modal *ngIf="observables.role === 't'" />
       <available-schedule-detail-modal *ngIf="observables.role === 't'" />
       <schedule-consultation-modal *ngIf="observables.role === 's'" />
       <consultation-details-modal />
@@ -111,7 +108,7 @@ import { ForcedScheduleModalComponent } from './forced-schedule-modal.component'
       <!-- for scheduled and declined consultations -->
       <consultation-details-modal [id]="'pendingConsultationsModal'">
         <button
-        onclick="pendingConsultationsModal.close()"
+          onclick="pendingConsultationsModal.close()"
           *ngIf="observables.role === 's'"
           (click)="cancelInvitation()"
           class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -127,9 +124,7 @@ import { ForcedScheduleModalComponent } from './forced-schedule-modal.component'
       />
       <techad-pending-consultations-modal
         *ngIf="['t', 'ct'].includes(observables.role || '')"
-      
       >
-      
       </techad-pending-consultations-modal>
       <forced-schedule-modal />
     </ng-container>
@@ -178,7 +173,10 @@ export class ConsultationsComponent {
         category: 'Scheduled',
         items: this.consultationService
           .getConsultations(1, this.projectId)
-          .pipe(takeUntilDestroyed(this.destroyRef), tap(v => console.log("scheduled consultations:", v))),
+          .pipe(
+            takeUntilDestroyed(this.destroyRef),
+            tap((v) => console.log('scheduled consultations:', v))
+          ),
         buttonId: ['t', 'ct'].includes(role) ? 'techAdScheduled' : '',
       },
       {
@@ -193,12 +191,10 @@ export class ConsultationsComponent {
         items: this.consultationService
           .getConsultations(3, this.projectId)
           .pipe(takeUntilDestroyed(this.destroyRef)),
-          buttonId: 'declinedConsultationModal'
+        buttonId: 'declinedConsultationModal',
       },
     ])
   );
-
- 
 
   cancelInvitation() {
     const consultation = this.consultationStateService.getActiveConsultation()!;
