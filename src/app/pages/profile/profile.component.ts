@@ -2,11 +2,16 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProfileViewComponent } from './profile-view.component';
 import { TabsService } from 'src/app/services/tabs.service';
-import { AdviserProfileReportsComponent } from 'src/app/pages/profile/profile-reports.component';
+import { AdviserProfileReportsComponent } from 'src/app/pages/profile/adviser-profile-reports.component';
+import { StudentProfileReportsComponent } from 'src/app/pages/profile/student-profile-reports.component';
 import { AddMilestoneTemplateModalComponent } from './add-milestone-template.component';
 import { TabsComponent } from 'src/app/components/ui/tabs.component';
 import { TopAppBarComponent } from 'src/app/components/ui/top-app-bar.component';
 import { SpinnerComponent } from 'src/app/components/spinner.component';
+import { AuthService } from 'src/app/services/auth.service';
+import { isNotNull } from 'src/app/utils/isNotNull';
+import { filter } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
@@ -18,10 +23,12 @@ import { SpinnerComponent } from 'src/app/components/spinner.component';
     AdviserProfileReportsComponent,
     AddMilestoneTemplateModalComponent,
     SpinnerComponent,
+    StudentProfileReportsComponent,
+    CommonModule
   ],
   template: `
-    <add-milestone-template-modal />
-    <div class="flex flex-col gap-[1rem]">
+   
+    <div class="flex flex-col gap-[1rem]" *ngIf="{user: user$ | async} as observables">
       <div>
         <top-app-bar activePath="Profile" />
         <tabs />
@@ -41,13 +48,15 @@ import { SpinnerComponent } from 'src/app/components/spinner.component';
           </div>
 
           <div class=" w-[357px] shrink-0  basis-[357px] ">
-            <adviser-profile-reports [sideColumn]="true" />
+            <adviser-profile-reports *ngIf="observables.user?.role_id === 5" [sideColumn]="true" />
+            <student-profile-reports *ngIf="observables.user?.role_id === 0" [sideColumn]="true" />
           </div>
         </div>
       </div>
     </div>
 
     <spinner />
+    <add-milestone-template-modal />
   `,
 })
 export class ProfileComponent implements OnInit {
@@ -68,6 +77,11 @@ export class ProfileComponent implements OnInit {
   router = inject(Router);
   route = inject(ActivatedRoute);
   tabsService = inject(TabsService);
+  authService = inject(AuthService);
+  
+  user$ = this.authService.getAuthenticatedUser().pipe(
+    filter(isNotNull)
+  )
 
   handlerFactory(path: string) {
     return () => {

@@ -410,6 +410,7 @@ export interface Database {
       consultation: {
         Row: {
           category_id: number
+          created_at: string
           date_time: number
           decline_reason: string | null
           description: string
@@ -421,6 +422,7 @@ export interface Database {
         }
         Insert: {
           category_id?: number
+          created_at?: string
           date_time: number
           decline_reason?: string | null
           description?: string
@@ -432,6 +434,7 @@ export interface Database {
         }
         Update: {
           category_id?: number
+          created_at?: string
           date_time?: number
           decline_reason?: string | null
           description?: string

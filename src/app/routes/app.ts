@@ -6,7 +6,8 @@ import { authGuard } from '../guards/auth.guard';
 import { roleGuard } from '../guards/role.guard';
 import { UnauthorizedComponent } from '../pages/unauthorized/unauthorized.component';
 import { NotFoundComponent } from '../pages/not-found/not-found.component';
-import { AdviserProfileReportsComponent } from '../pages/profile/profile-reports.component';
+import { AdviserProfileReportsComponent } from '../pages/profile/adviser-profile-reports.component';
+import { ProfileReportsComponent } from '../pages/profile/profile-reports.component';
 
 export const app: Routes = [
   {
@@ -19,7 +20,7 @@ export const app: Routes = [
     children: [
       {
         path: 'reports',
-        component: AdviserProfileReportsComponent,
+        component: ProfileReportsComponent,
       },
       {
         path: 'view',

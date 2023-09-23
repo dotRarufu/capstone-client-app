@@ -241,7 +241,7 @@ export class ConsultationService {
   }
 
   getConsultationData(projectId: number, scheduleId: number) {
- 
+
     const req = this.client
       .from('consultation')
       .select('*')
@@ -305,7 +305,7 @@ export class ConsultationService {
   }
 
   forceSchedule(
-    
+
     data: {
       date_time: number;
       location: string;
@@ -368,6 +368,20 @@ export class ConsultationService {
       }),
       tap(() => this.signalNewConsultation())
     );
+  }
+
+  getConsultationsOrganizedBy(organizer_id: string) {
+    const req = this.client.from("consultation").select("*").eq("organizer_id",organizer_id);
+
+    const req$  = from(req).pipe(
+      map(res => {
+        const {data} = errorFilter(res);
+
+        return data;
+      })
+    )
+
+    return req$;
   }
 
   private insertConsultationOutcome(
