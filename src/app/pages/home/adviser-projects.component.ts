@@ -43,12 +43,14 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
           *ngFor="let section of observables.sections"
           [heading]="section.section.toString()"
         >
+        <div class="flex sm1:flex-wrap sm1:justify-start gap-[24px] sm1:flex-row flex-col items-center ">
           <ProjectCard
             (removeProjectId)="this.homeStateService.setActiveProjectId($event)"
             *ngFor="let project of section.projects"
             [project]="project"
             [role]="role"
           />
+</div>
         </projects-accordion>
 
         <projects-accordion

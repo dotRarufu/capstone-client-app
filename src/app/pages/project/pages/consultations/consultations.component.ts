@@ -50,7 +50,7 @@ import { ForcedScheduleModalComponent } from './forced-schedule-modal.component'
         role: role$ | async
       } as observables"
     >
-      <div class="flex h-full flex-col gap-[16px] ">
+      <div class="flex h-full flex-col gap-[16px]">
         <div class="flex flex-col gap-2 ">
           <div class="flex justify-between ">
             <h1 class="hidden text-2xl text-base-content min-[998px]:block">
@@ -83,7 +83,7 @@ import { ForcedScheduleModalComponent } from './forced-schedule-modal.component'
           *ngFor="let c of observables.consultations"
           [heading]="c.category"
         >
-          <div class="flex flex-wrap justify-start gap-[24px]">
+          <div class="flex sm1:flex-wrap sm1:justify-start gap-[24px] sm1:flex-row flex-col items-center ">
             <consultation-card
               *ngFor="let data of c.items | async"
               [data]="data"
@@ -138,10 +138,6 @@ export class ConsultationsComponent {
   projectService = inject(ProjectService);
   authService = inject(AuthService);
   destroyRef = inject(DestroyRef);
-
-  test() {
-    console.log('click!!');
-  }
 
   projectId = Number(this.route.parent!.snapshot.url[0].path);
 

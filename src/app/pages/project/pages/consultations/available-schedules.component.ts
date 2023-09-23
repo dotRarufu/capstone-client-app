@@ -20,7 +20,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
   template: `
     <ng-container
       *ngIf="{ availableSchedules: availableSchedules$ | async } as observables"
-      ><div class="flex flex-col gap-2">
+      ><div class="flex flex-col gap-2 pb-4">
         <div class="flex items-center justify-between text-base font-semibold">
           Available Schedule
 

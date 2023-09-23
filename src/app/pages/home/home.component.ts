@@ -57,10 +57,10 @@ import { ConsultationService } from 'src/app/services/consultation.service';
         *ngIf="{ activeId: activeId$ | async } as observables"
       >
         <div
-          class=" flex w-full justify-center gap-[1rem] md:w-full lg:w-[1040px]"
+          class=" flex w-full justify-center gap-4 flex-row md:w-full lg:w-[1040px]"
         >
           <div
-            class="w-full sm2:w-[840px]  md:w-full lg:w-[1040px] flex flex-col gap-8"
+            class=" w-full sm2:w-[840px]  md:w-full lg:w-[1040px] flex flex-col gap-8"
             *ngIf="
               (observables.activeId === 'projects' || isDesktop) &&
               (role === 'a')
@@ -71,7 +71,7 @@ import { ConsultationService } from 'src/app/services/consultation.service';
           </div>
 
           <div
-            class="w-full sm2:w-[840px] md:w-[294px] md:flex-shrink-0 md:basis-[294px] lg:w-[1040px]"
+            class="flex  w-full sm2:w-[840px] md:w-[294px] md:basis-[294px] lg:w-[1040px]"
             *ngIf="
               (observables.activeId === 'reports' || isDesktop) &&
               (role === 'a')
