@@ -241,7 +241,6 @@ export class ConsultationService {
   }
 
   getConsultationData(projectId: number, scheduleId: number) {
-
     const req = this.client
       .from('consultation')
       .select('*')
@@ -251,8 +250,8 @@ export class ConsultationService {
 
     const req$ = from(req).pipe(
       map((res) => {
-        console.log("error:", res.error)
-        console.log("filters:", {projectId, scheduleId})
+        console.log('error:', res.error);
+        console.log('filters:', { projectId, scheduleId });
         const resA = errorFilter(res);
 
         return resA.data;
@@ -275,12 +274,28 @@ export class ConsultationService {
             return p;
           }),
           map((p) => p.map((a) => a.id)),
+        
           switchMap((ids) => {
-            const counts = ids.map((id) => {
+            return forkJoin(
+              ids.map((id) =>
+                this.projectService
+                  .getAdviserProjectRole(id, u.uid)
+                  .pipe(map((role) => ({ role, projectId: id })))
+              )
+            ).pipe(
+              map((projectsAndRoles) =>
+                projectsAndRoles.filter(({ role }) => role === 't')
+              )
+            );
+          }),
+        
+          switchMap((ids) => {
+          
+            const counts = ids.map(({projectId}) => {
               const req = this.client
                 .from('consultation')
                 .select('*')
-                .eq('project_id', id)
+                .eq('project_id', projectId)
                 .eq('category_id', 1);
               const scheduleConsultations$ = from(req).pipe(
                 map((res) => {
@@ -297,6 +312,7 @@ export class ConsultationService {
 
             return forkJoin(counts);
           }),
+        
 
           map((d) => d.filter((a) => a > 0).length > 0)
         );
@@ -304,17 +320,14 @@ export class ConsultationService {
     );
   }
 
-  forceSchedule(
-
-    data: {
-      date_time: number;
-      location: string;
-      startTime: number;
-      endTime: number;
-      project_id: number;
-      description: string;
-    }
-  ) {
+  forceSchedule(data: {
+    date_time: number;
+    location: string;
+    startTime: number;
+    endTime: number;
+    project_id: number;
+    description: string;
+  }) {
     const user$ = this.authService
       .getAuthenticatedUser()
       .pipe(filter(isNotNull));
@@ -345,12 +358,12 @@ export class ConsultationService {
 
     return forkJoin({ user: user$, schedule: schedule$ }).pipe(
       switchMap(({ user: { uid }, schedule: scheduleId }) => {
-        console.log("insert:", {
+        console.log('insert:', {
           ...consultationData,
           organizer_id: uid,
           category_id: 1,
           schedule_id: scheduleId,
-        })
+        });
         const req = this.client.from('consultation').insert({
           ...consultationData,
           organizer_id: uid,
@@ -371,15 +384,18 @@ export class ConsultationService {
   }
 
   getConsultationsOrganizedBy(organizer_id: string) {
-    const req = this.client.from("consultation").select("*").eq("organizer_id",organizer_id);
+    const req = this.client
+      .from('consultation')
+      .select('*')
+      .eq('organizer_id', organizer_id);
 
-    const req$  = from(req).pipe(
-      map(res => {
-        const {data} = errorFilter(res);
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
 
         return data;
       })
-    )
+    );
 
     return req$;
   }

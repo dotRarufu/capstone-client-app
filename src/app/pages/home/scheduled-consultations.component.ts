@@ -1,5 +1,6 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, inject } from '@angular/core';
 import {
+  BehaviorSubject,
   Observable,
   catchError,
   filter,
@@ -24,7 +25,10 @@ import dateToEpoch from 'src/app/utils/dateToEpoch';
 import { AuthService } from 'src/app/services/auth.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { HomeStateService } from './data-access/home-state.service';
+import {
+  ActiveConsultation,
+  HomeStateService,
+} from './data-access/home-state.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { ConsultationDetailsModalComponent } from '../project/pages/consultations/consultation-details-modal.component';
 import { ScheduledConsultationDetailsModalComponent } from './scheduled-consultation-details-modal.component';
@@ -34,6 +38,8 @@ import { dateToDateString } from 'src/app/utils/dateToDateString';
 import epochTo24hour from 'src/app/utils/epochTo24hour';
 import toScheduleDateField from 'src/app/utils/toScheduleDateField';
 import getUniqueItems from 'src/app/utils/getUniqueItems';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import sortArrayByProperty from 'src/app/utils/sortArrayByProperty';
 
 @Component({
   selector: 'scheduled-consultations',
@@ -45,45 +51,54 @@ import getUniqueItems from 'src/app/utils/getUniqueItems';
     ScheduledConsultationDetailsModalComponent,
   ],
   template: `
-  
     <div
       class="flex w-full flex-col gap-[1rem] sm2:w-[840px] md:w-full lg:w-full "
-      *ngIf="{ consultations: consultations$ | async } as observables"
+      *ngIf="{ consultations: (consultations$ | async) || [] } as observables"
     >
-   
+      <div class="flex flex-col gap-1">
+        <div class="flex justify-between">
+          <h2 class="text-2xl">Scheduled Consultations</h2>
+          <button
+            *ngIf="observables.consultations.length > 1"
+            (click)="invertSortOrder()"
+            class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+          >
+            SORT
+            <i-feather
+              class="text-base-content/70"
+              [name]="getInvertedSort()"
+            />
+          </button>
+        </div>
 
-      <div
-        class="flex flex-col gap-1"
-      >
-        <h2 class="text-2xl">Scheduled Consultations</h2>
         <div class="h-[2px] w-full bg-base-content/10"></div>
       </div>
-      
+
       <ul class="flex flex-col gap-2 rounded-[5px]">
         <li
           onclick="consultationModal.showModal()"
           *ngFor="let consultation of observables.consultations"
           (click)="homeStateService.setActiveConsultation(consultation)"
-          class=" grid bg-base-200 w-full cursor-pointer grid-cols-2 gap-2 rounded-[5px] px-4 py-2  hover:bg-base-300 sm1:grid-cols-4 sm1:justify-between"
+          class=" grid w-full cursor-pointer grid-cols-2 gap-2 rounded-[5px] bg-base-200 px-4 py-2  hover:bg-base-300 sm1:grid-cols-4 sm1:justify-between"
         >
           <div
-            class="p-0 text-base text-base-content sm1:w-fit sm1:text-left   sm1:text-[18px] sm1:grid sm1:place-content-center"
+            class="p-0 text-base text-base-content sm1:grid sm1:w-fit   sm1:place-content-center sm1:text-left sm1:text-[18px]"
           >
             {{ consultation.dateString }}
           </div>
           <div
-            class="text-right text-base text-base-content/70 sm1:text-center sm1:grid sm1:place-content-center"
+            class="text-right text-base text-base-content/70 sm1:grid sm1:place-content-center sm1:text-center"
           >
             {{ consultation.location }}
           </div>
 
           <div
-            class="p-0 text-left text-base text-base-content sm1:text-center  sm1:text-[18px] sm1:grid sm1:place-content-center"
+            class="p-0 text-left text-base text-base-content sm1:grid  sm1:place-content-center sm1:text-center sm1:text-[18px]"
           >
             {{ consultation.description }}
           </div>
           <span
-            class="text-right text-base text-base-content/70 flex items-center justify-end"
+            class="flex items-center justify-end text-right text-base text-base-content/70"
             >{{ consultation.project.name }}</span
           >
         </li>
@@ -91,7 +106,7 @@ import getUniqueItems from 'src/app/utils/getUniqueItems';
 
       <div
         class="flex w-full items-center justify-center rounded-[5px] bg-base-200 p-4 text-base-content/70"
-        *ngIf="observables.consultations?.length === 0"
+        *ngIf="observables.consultations.length === 0"
       >
         You have no more scheduled consultations
       </div>
@@ -107,15 +122,36 @@ export class ScheduledConsultationsComponent {
   authService = inject(AuthService);
   spinner = inject(NgxSpinnerService);
   toastr = inject(ToastrService);
-  showSpinner = this.spinner.show();
-  rawConsultations$ = this.projectService.getProjects().pipe(
+  destroyRef = inject(DestroyRef);
+
+  rawConsultations$ = this.authService.getAuthenticatedUser().pipe(
+    takeUntilDestroyed(this.destroyRef),
     filter(isNotNull),
+    switchMap((user) =>
+      this.projectService.getProjects().pipe(
+        filter(isNotNull),
+        switchMap((projects) =>
+          forkJoin(
+            projects.map(({ id }) =>
+              this.projectService
+                .getAdviserProjectRole(id, user.uid)
+                .pipe(map((role) => ({ role, projectId: id })))
+            )
+          ).pipe(
+            map((projectsAndRoles) =>
+              projectsAndRoles.filter(({ role }) => role === 't')
+            )
+          )
+        )
+      )
+    ),
+    tap((_) => this.spinner.show()),
     map((projects) => {
       if (projects.length === 0) throw new Error('User has no projects');
 
       return projects;
     }),
-    map((projects) => projects.map(({ id }) => id)),
+    map((projects) => projects.map(({ projectId }) => projectId)),
 
     switchMap((projectIds) => {
       const projectsConsultations = projectIds.map((id) =>
@@ -126,6 +162,8 @@ export class ScheduledConsultationsComponent {
     }),
     map((consultations) => consultations.flat())
   );
+  sortSubject = new BehaviorSubject<'asc' | 'desc'>('asc');
+
   consultations$ = this.authService.getAuthenticatedUser().pipe(
     filter(isNotNull),
     switchMap((_) => this.consultationService.newConsultation$),
@@ -193,6 +231,17 @@ export class ScheduledConsultationsComponent {
         },
       }))
     ),
+
+    switchMap((consultations) =>
+      this.sortSubject.asObservable().pipe(
+        map((order) => {
+          return { order, consultations };
+        }),
+        map(({ consultations, order }) =>
+          sortArrayByProperty(consultations, 'date_time', order)
+        )
+      )
+    ),
     switchMap((consultations) => {
       const uniqueUsers = getUniqueItems(consultations, 'organizer_id');
       const usersData$ = forkJoin(
@@ -204,11 +253,20 @@ export class ScheduledConsultationsComponent {
 
             return { ...c, organizer: match };
           })
-        )
+        ),
+        tap((_) => this.spinner.hide())
       );
 
       return usersData$;
-    }),
-    tap((_) => this.spinner.hide())
+    })
   );
+
+  invertSortOrder() {
+    const old = this.sortSubject.getValue();
+    this.sortSubject.next(old === 'asc' ? 'desc' : 'asc');
+  }
+
+  getInvertedSort() {
+    return this.sortSubject.getValue() === 'asc' ? 'arrow-down' : 'arrow-up';
+  }
 }

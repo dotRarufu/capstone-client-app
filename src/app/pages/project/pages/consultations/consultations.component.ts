@@ -15,7 +15,15 @@ import { ConsultationStateService } from './data-access/consultations-state.serv
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProjectService } from 'src/app/services/project.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { filter, map, switchMap, of, tap } from 'rxjs';
+import {
+  filter,
+  map,
+  switchMap,
+  of,
+  tap,
+  forkJoin,
+  BehaviorSubject,
+} from 'rxjs';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { AvailableScheduleDetailModalComponent } from './available-schedule-detail-modal.component';
 import { AddAvailableScheduleModalComponent } from './add-available-schedule-modal.component';
@@ -23,6 +31,9 @@ import { AvailableSchedulesComponent } from './available-schedules.component';
 import { TechAdPendingConsultationsModalComponent } from '../project/techad-pending-consultations-modal.component';
 import { DeclinedConsultationModalComponent } from './declined-consultation-modal.component';
 import { ForcedScheduleModalComponent } from './forced-schedule-modal.component';
+import sortArrayByProperty from 'src/app/utils/sortArrayByProperty';
+
+type ConsultationCategory = 'Scheduled' | 'Pending' | 'Completed' | 'Declined';
 
 @Component({
   selector: 'consultations',
@@ -83,9 +94,20 @@ import { ForcedScheduleModalComponent } from './forced-schedule-modal.component'
           *ngFor="let c of observables.consultations"
           [heading]="c.category"
         >
-          <div class="flex sm1:flex-wrap sm1:justify-start gap-[24px] sm1:flex-row flex-col items-center ">
+        <ng-container *ngIf="{consultationItems: (c.items | async) || []} as consultationObservables">
+          <div class="mb-[12px] w-full" *ngIf="consultationObservables.consultationItems.length > 1">
+            <button
+              (click)="invertSortOrder(c.category)"
+              class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+            >
+              SORT <i-feather class="text-base-content/70" [name]="getInvertedSort(c.category)" />
+            </button>
+          </div>
+          <div
+            class="flex flex-col items-center gap-[24px] sm1:flex-row sm1:flex-wrap sm1:justify-start"
+          >
             <consultation-card
-              *ngFor="let data of c.items | async"
+              *ngFor="let data of consultationObservables.consultationItems"
               [data]="data"
               (click)="
                 this.consultationStateService.setActiveConsultation(data)
@@ -95,6 +117,7 @@ import { ForcedScheduleModalComponent } from './forced-schedule-modal.component'
               <!-- todo: add slot for controls -->
             </consultation-card>
           </div>
+    </ng-container>
         </accordion>
 
         <available-schedules *ngIf="observables.role === 't'" />
@@ -139,6 +162,11 @@ export class ConsultationsComponent {
   authService = inject(AuthService);
   destroyRef = inject(DestroyRef);
 
+  sortPendingSubject = new BehaviorSubject<'asc' | 'desc'>('asc');
+  sortScheduledSubject = new BehaviorSubject<'asc' | 'desc'>('asc');
+  sortCompletedSubject = new BehaviorSubject<'asc' | 'desc'>('asc');
+  sortDeclinedSubject = new BehaviorSubject<'asc' | 'desc'>('asc');
+
   projectId = Number(this.route.parent!.snapshot.url[0].path);
 
   role$ = this.authService.getAuthenticatedUser().pipe(
@@ -147,8 +175,7 @@ export class ConsultationsComponent {
       if (u.role_id === 0) return of('s');
 
       return this.projectService.getAdviserProjectRole(this.projectId, u.uid);
-    }),
-    tap((v) => console.log('role123:', v))
+    })
   );
   consultations$ = this.authService.getAuthenticatedUser().pipe(
     filter(isNotNull),
@@ -162,7 +189,18 @@ export class ConsultationsComponent {
         category: 'Pending',
         items: this.consultationService
           .getConsultations(0, this.projectId)
-          .pipe(takeUntilDestroyed(this.destroyRef)),
+          .pipe(
+            takeUntilDestroyed(this.destroyRef),
+
+            switchMap((consultations) =>
+              this.sortPendingSubject
+                .asObservable()
+                .pipe(map((order) => ({ order, consultations })))
+            ),
+            map(({ consultations, order }) =>
+              sortArrayByProperty(consultations, 'date_time', order)
+            )
+          ),
         buttonId: this.getButtonIdForPendingAccordion(role),
       },
       {
@@ -171,7 +209,14 @@ export class ConsultationsComponent {
           .getConsultations(1, this.projectId)
           .pipe(
             takeUntilDestroyed(this.destroyRef),
-            tap((v) => console.log('scheduled consultations:', v))
+            switchMap((consultations) =>
+              this.sortScheduledSubject
+                .asObservable()
+                .pipe(map((order) => ({ order, consultations })))
+            ),
+            map(({ consultations, order }) =>
+              sortArrayByProperty(consultations, 'date_time', order)
+            )
           ),
         buttonId: ['t', 'ct'].includes(role) ? 'techAdScheduled' : '',
       },
@@ -179,18 +224,97 @@ export class ConsultationsComponent {
         category: 'Completed',
         items: this.consultationService
           .getConsultations(2, this.projectId)
-          .pipe(takeUntilDestroyed(this.destroyRef)),
+          .pipe(
+            takeUntilDestroyed(this.destroyRef),
+            switchMap((consultations) =>
+              this.sortCompletedSubject
+                .asObservable()
+                .pipe(map((order) => ({ order, consultations })))
+            ),
+            map(({ consultations, order }) =>
+              sortArrayByProperty(consultations, 'date_time', order)
+            )
+          ),
         buttonId: ['t', 'ct'].includes(role) ? 'techAdCompleted' : '',
       },
       {
         category: 'Declined',
         items: this.consultationService
           .getConsultations(3, this.projectId)
-          .pipe(takeUntilDestroyed(this.destroyRef)),
+          .pipe(
+            takeUntilDestroyed(this.destroyRef),
+            switchMap((consultations) =>
+              this.sortDeclinedSubject
+                .asObservable()
+                .pipe(map((order) => ({ order, consultations })))
+            ),
+            map(({ consultations, order }) =>
+              sortArrayByProperty(consultations, 'date_time', order)
+            )
+          ),
         buttonId: 'declinedConsultationModal',
       },
     ])
   );
+
+  invertSortOrder(category: string) {
+    const typedCategory = category as ConsultationCategory;
+
+    switch (typedCategory) {
+      case 'Pending':
+        {
+          const old = this.sortPendingSubject.getValue();
+          this.sortPendingSubject.next(old === 'asc' ? 'desc' : 'asc');
+        }
+        break;
+      case 'Scheduled':
+        {
+          const old = this.sortScheduledSubject.getValue();
+          this.sortScheduledSubject.next(old === 'asc' ? 'desc' : 'asc');
+        }
+        break;
+      case 'Completed':
+        {
+          const old = this.sortCompletedSubject.getValue();
+          this.sortCompletedSubject.next(old === 'asc' ? 'desc' : 'asc');
+        }
+        break;
+      case 'Declined':
+        {
+          const old = this.sortDeclinedSubject.getValue();
+          this.sortDeclinedSubject.next(old === 'asc' ? 'desc' : 'asc');
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    console.log('category:', category);
+  }
+
+  getInvertedSort(category: string) {
+    const typedCategory = category as ConsultationCategory;
+    let selected = this.sortDeclinedSubject;
+    switch (typedCategory) {
+      case 'Pending':
+        selected = this.sortPendingSubject;
+        break;
+      case 'Scheduled':
+
+      selected = this.sortScheduledSubject;
+      break
+      case 'Completed':
+        selected = this.sortCompletedSubject;
+        break;
+
+      default:
+        selected = this.sortDeclinedSubject;
+        break;
+    }
+
+    return selected.getValue() === 'asc' ? 'arrow-down' : 'arrow-up';
+  }
 
   cancelInvitation() {
     const consultation = this.consultationStateService.getActiveConsultation()!;

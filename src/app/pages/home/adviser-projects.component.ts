@@ -32,7 +32,13 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
     FeatherIconsModule,
   ],
   template: `
-    <div class="w-full" *ngIf="{ sections: sections$ | async, archived: archived$ | async } as observables">
+    <div
+      class="w-full"
+      *ngIf="{
+        sections: sections$ | async,
+        archived: archived$ | async
+      } as observables"
+    >
       <projects
         *ngIf="
           observables.sections !== null && observables.sections.length !== 0;
@@ -43,18 +49,24 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
           *ngFor="let section of observables.sections"
           [heading]="section.section.toString()"
         >
-        <div class="flex sm1:flex-wrap sm1:justify-start gap-[24px] sm1:flex-row flex-col items-center ">
-          <ProjectCard
-            (removeProjectId)="this.homeStateService.setActiveProjectId($event)"
-            *ngFor="let project of section.projects"
-            [project]="project"
-            [role]="role"
-          />
-</div>
+        
+            <ProjectCard
+              (removeProjectId)="
+                this.homeStateService.setActiveProjectId($event)
+              "
+              *ngFor="let project of section.projects"
+              [project]="project"
+              [role]="role"
+            />
+        
         </projects-accordion>
 
         <projects-accordion
-          *ngIf="observables.archived !== null && observables.archived !== undefined && observables.archived.length > 0"
+          *ngIf="
+            observables.archived !== null &&
+            observables.archived !== undefined &&
+            observables.archived.length > 0
+          "
           heading="Archived"
         >
           <ProjectCard
@@ -88,16 +100,15 @@ export class AdviserProjectsComponent {
 
   sections$ = this.projectService.getProjects().pipe(
     tap((p) => {
-      // initial emit 
+      // initial emit
       if (p === null) return;
       this.spinner.hide();
-      
     }),
     map((projects) => {
       if (projects === null) return [];
 
       return groupBySection(projects);
-    }),
+    })
   );
 
   archived$ = this.projectService.getArchived();

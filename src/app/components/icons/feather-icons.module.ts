@@ -17,6 +17,8 @@ import {
   Zap,
   Heart,
   LogOut,
+  ArrowDown,
+  ArrowUp,
   User,
   X,
   LogIn,
@@ -41,6 +43,8 @@ import {
 } from 'angular-feather/icons';
 
 const icons = {
+  ArrowDown,
+  ArrowUp,
   Share2,
   Star,
   ArrowLeft,

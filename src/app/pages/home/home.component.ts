@@ -122,7 +122,7 @@ export class HomePageComponent implements OnInit {
   ngOnInit() {
     this.watchWindowSize();
     this.setupTabs();
-    console.log('role:', this.role);
+   
   }
 
   setupTabs() {
