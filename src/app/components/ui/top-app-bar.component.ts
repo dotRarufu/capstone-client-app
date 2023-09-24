@@ -27,67 +27,137 @@ import { ProjectService } from 'src/app/services/project.service';
         schedules: schedules$ | async,
         user: user$ | async,
         forcedSchedules: forcedSchedules$ | async
-        
       } as observables"
       [class.bg-[#463dbc]]="observables.user?.role_id === 5"
     >
       <div
         class=" flex  w-full flex-row  items-center justify-between text-primary-content   sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"
       >
-        <h1 class="text-xl ">{{ activePath }}</h1>
+        <div
+          (click)="navigateHome()"
+          class="btn-ghost btn flex items-center gap-2 p-1"
+        >
+          <img
+            class="aspect-square w-[40px] rounded-[5px] bg-secondary p-1"
+            src="assets/capstone.ico"
+            alt=""
+          />
+          <h1 class="text-lg normal-case text-primary-content">Capstone</h1>
+        </div>
 
-        <div class="dropdown-end dropdown ">
-          <label tabindex="0"
-            ><div
-              class="btn-ghost btn flex flex-row items-center gap-2 text-base"
-            >
-              {{ name | async }}
-              <div class="avatar">
-                <div class="w-[40px] rounded-full">
-                  <img
-                    [src]="userAvatarUrl$ | async"
-                    src-fallback="{{ fallbackAvatar$ | async }}"
-                  />
-                </div>
-              </div></div
-          ></label>
-          <ul
-            tabindex="0"
-            class="dropdown-content menu z-[999] w-52 rounded-[3px] bg-base-100 p-2 shadow"
+        <div class="flex gap-2">
+          <a
+            class="btn-ghost btn hidden justify-start  gap-2 rounded-[5px] text-primary-content sm1:flex"
+            (click)="navigateHome()"
+            >home
+          </a>
+          <a
+            class="btn-ghost btn hidden justify-start gap-4 rounded-[5px] text-primary-content
+              sm1:flex"
+            (click)="this.router.navigate(['profile', 'view'])"
           >
-            <a
-              class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
-              (click)="navigateHome()"
-              ><i-feather class="text-base-content/70" name="home" />home
-            </a>
-            <a
-              class="btn-ghost btn flex justify-start gap-2 rounded-[3px]
-              text-base-content"
-              (click)="this.router.navigate(['profile', 'view'])"
+            <div
+              *ngIf="
+                observables.notifications ||
+                  observables.schedules ||
+                  observables.forcedSchedules;
+                else empty
+              "
+              class="indicator flex-1 "
             >
-              <i-feather class="text-base-content/70 " name="user" />
-
-              <div
-                *ngIf="
-                  observables.notifications || observables.schedules || observables.forcedSchedules;
-                  else empty
-                "
-                class="indicator flex-1 "
+              <span
+                class="indicator-item aspect-square w-[10px] rounded-full bg-secondary"
               >
                 <span
-                  class="indicator-end indicator-middle indicator-item aspect-square w-[8px] rounded-full bg-primary"
+                  class="absolute left-[-1px]  top-[-1px] inline-flex h-[120%] w-[120%] animate-ping rounded-full bg-secondary opacity-75"
                 ></span>
-                <div class="text-left">profile</div>
+              </span>
+              <div class="text-left">profile</div>
+            </div>
+            <ng-template #empty>profile</ng-template>
+          </a>
+
+          <div class="dropdown-end dropdown ">
+            <label tabindex="0"
+              ><div
+                class="btn-ghost btn flex flex-row items-center gap-2 text-base"
+              >
+                <!-- <span class="hidden sm1:block">{{ name | async }}</span> -->
+                <div class="avatar hidden sm1:block">
+                  <div class="w-[40px] rounded-full">
+                    <img
+                      [src]="userAvatarUrl$ | async"
+                      src-fallback="{{ fallbackAvatar$ | async }}"
+                    />
+                  </div>
+                </div>
+                <i-feather
+                  name="list"
+                  class="text-primary-content/70 sm1:absolute sm1:opacity-0"
+                />
               </div>
-              <ng-template #empty>profile</ng-template>
-            </a>
-            <a
-              class="btn-ghost btn flex justify-start gap-2 rounded-[3px]
+            </label>
+            <ul
+              tabindex="0"
+              class="dropdown-content menu z-[999] w-52 rounded-[3px] bg-base-100 p-2 shadow"
+            >
+              <div class="flex flex-col gap-4 p-2 pb-2">
+                <div class="flex items-center gap-2">
+                  <div class="avatar">
+                    <div class="w-[40px] rounded-full">
+                      <img
+                        [src]="userAvatarUrl$ | async"
+                        src-fallback="{{ fallbackAvatar$ | async }}"
+                      />
+                    </div>
+                  </div>
+                  <span class="text-md font-bold uppercase text-base-content">
+                    {{ name | async }}
+                  </span>
+                </div>
+                <div class="h-[2px] w-full bg-base-content/10"></div>
+              </div>
+              <a
+                class="btn-ghost btn flex justify-start gap-4 rounded-[3px] text-base-content sm1:hidden"
+                (click)="navigateHome()"
+                ><i-feather class="text-base-content/70" name="home" />home
+              </a>
+              <a
+                class="btn-ghost btn flex justify-start gap-4 rounded-[3px] text-base-content
+              sm1:hidden"
+                (click)="this.router.navigate(['profile', 'view'])"
+              >
+                <i-feather class="text-base-content/70 " name="user" />
+
+                <div
+                  *ngIf="
+                    observables.notifications ||
+                      observables.schedules ||
+                      observables.forcedSchedules;
+                    else empty
+                  "
+                  class="indicator flex-1 "
+                >
+                  <span
+                    class="indicator-end indicator-middle indicator-item aspect-square w-[8px] rounded-full bg-primary"
+                  >
+                    <span
+                      class="absolute left-[-1px]  top-[-1px] inline-flex h-[120%] w-[120%] animate-ping rounded-full bg-secondary opacity-75"
+                    ></span>
+                  </span>
+                  <div class="text-left">profile</div>
+                </div>
+                <ng-template #empty>profile</ng-template>
+              </a>
+              <a
+                class="btn-ghost btn flex justify-start gap-4 rounded-[3px]
               text-base-content"
-              (click)="signOut()"
-              ><i-feather class="text-base-content/70" name="log-out" />sign out
-            </a>
-          </ul>
+                (click)="signOut()"
+                ><i-feather class="text-base-content/70" name="log-out" />sign
+                out
+              </a>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -144,8 +214,8 @@ export class TopAppBarComponent {
     switchMap((technicalAdvisers) =>
       this.authService.getForcedSchedules(technicalAdvisers)
     ),
-    map(p => p.length > 0),
-    tap(v => console.log("foredes:", v))
+    map((p) => p.length > 0),
+    tap((v) => console.log('foredes:', v))
   );
 
   signOut() {
