@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output, inject } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
@@ -25,11 +31,12 @@ import { User } from 'src/app/types/collection';
         <div class="flex flex-col gap-2 py-4">
           <h1 class="text-[2rem]">Sign Up</h1>
           <p class="text-sm opacity-80">
-          Your account is your key to seamless synchronization across devices and access to personalized features. It allows you to securely store and access your data from anywhere. 
+            Your account is your key to seamless synchronization across devices
+            and access to personalized features. It allows you to securely store
+            and access your data from anywhere.
           </p>
         </div>
 
-        <!-- todo: error message for inputs -->
         <input
           type="text"
           placeholder="Full Name"
@@ -41,7 +48,6 @@ import { User } from 'src/app/types/collection';
             <select
               class="select-bordered select w-full rounded-[3px] border-none text-base  font-normal  focus:rounded-[3px] "
             >
-              <!-- todo: make this dynamic -->
               <option disabled selected>What is your role?</option>
 
               <option (click)="roleId.setValue(0)">Student</option>
@@ -50,7 +56,7 @@ import { User } from 'src/app/types/collection';
           </div>
         </div>
         <button
-          (click)="isInLastStep = true"
+          (click)="toLastStep()"
           class="btn-primary btn w-full  rounded-[3px]  text-center text-base "
         >
           Next
@@ -103,15 +109,6 @@ import { User } from 'src/app/types/collection';
           </p>
         </div>
 
-        <!-- todo: error message for inputs -->
-
-        <!-- <input
-          type="number"
-          placeholder="Section"
-          [formControl]="section"
-          class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
-          min="1"
-        /> -->
         <input
           type="text"
           placeholder="Student Number"
@@ -148,11 +145,26 @@ import { User } from 'src/app/types/collection';
 export class SignupComponent {
   @Output() toLogin = new EventEmitter<void>();
 
-  email = new FormControl('', { nonNullable: true });
-  password = new FormControl('', { nonNullable: true });
-  studentNumber = new FormControl('', { nonNullable: true });
-  fullName = new FormControl('', { nonNullable: true });
-  roleId = new FormControl(0, { nonNullable: true });
+  email = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.email],
+  });
+  password = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  studentNumber = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.pattern('^\\d{2}-\\d{4}$')],
+  });
+  fullName = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.pattern('[a-zA-Z ]*')],
+  });
+  roleId = new FormControl(-1, {
+    nonNullable: true,
+    validators: [Validators.required, this.roleIdValidator()],
+  });
 
   section = 1;
 
@@ -162,7 +174,50 @@ export class SignupComponent {
   spinner = inject(NgxSpinnerService);
   toastr = inject(ToastrService);
 
+  toLastStep() {
+    if (this.fullName.invalid) {
+      this.toastr.error('Invalid name');
+
+      return;
+    }
+
+    if (this.roleId.invalid) {
+      this.toastr.error('Role cannot be empty');
+
+      return;
+    }
+
+    this.isInLastStep = true;
+  }
+
+  roleIdValidator(): ValidatorFn {
+    return (control: AbstractControl) => {
+      console.log("vlaidator:", control.value);
+      if (![0, 5].includes(control.value)) return { emptyRoleId: true };
+
+      return null;
+    };
+  }
+
   signUp() {
+    if (this.email.invalid) {
+      this.toastr.error('Invalid email');
+
+      return;
+    }
+
+    if (this.password.invalid) {
+      this.toastr.error('Password cannot be empty');
+
+      return;
+    }
+
+    if (this.studentNumber.invalid) {
+      this.toastr.error('Invalid student number');
+
+      return;
+    }
+
     this.spinner.show();
 
     const userInfo = {

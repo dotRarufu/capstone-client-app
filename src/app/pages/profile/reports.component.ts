@@ -17,10 +17,6 @@ import { ProjectsByStatusComponent } from '../home/project-by-status.component';
   ],
   template: `
     <ng-container *ngIf="!sideColumn">
-      <!-- <div
-        class="flex h-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible border border-red-500"
-      > -->
-
       <div
         class="flex w-full flex-wrap items-start justify-center gap-4  md:flex-col md:items-center"
       >

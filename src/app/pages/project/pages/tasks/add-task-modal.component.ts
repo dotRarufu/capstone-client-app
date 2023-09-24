@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TaskService } from 'src/app/services/task.service';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute } from '@angular/router';
@@ -50,7 +50,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             class="flex w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
           >
             <button
-            onclick="addTask.close()"
+              onclick="addTask.close()"
               (click)="handleDoneClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
@@ -60,8 +60,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 
             <div class="h-full"></div>
             <button
-            onclick="addTask.close()"
-
+              onclick="addTask.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x-circle" />
@@ -74,8 +73,14 @@ import { NgxSpinnerService } from 'ngx-spinner';
   `,
 })
 export class AddTaskModalComponent {
-  title = new FormControl('', { nonNullable: true });
-  description = new FormControl('', { nonNullable: true });
+  title = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  description = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
 
   taskService = inject(TaskService);
   toastr = inject(ToastrService);
@@ -89,6 +94,17 @@ export class AddTaskModalComponent {
   }
 
   handleDoneClick() {
+    if (this.title.invalid) {
+      this.toastr.error('Task title cannot be empty');
+
+      return;
+    }
+    if (this.description.invalid) {
+      this.toastr.error('Task description cannot be empty');
+
+      return;
+    }
+
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
 
     const tasks = this.taskStateService.getTasks();

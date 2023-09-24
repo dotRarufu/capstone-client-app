@@ -22,7 +22,7 @@ import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDa
 import { CommonModule } from '@angular/common';
 import { ModalDialog } from 'src/app/pages/home/scheduled-consultation-details-modal.component';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import dateToEpoch from 'src/app/utils/dateToEpoch';
 import { dateStringToEpoch } from 'src/app/utils/dateStringToEpoch';
@@ -144,11 +144,11 @@ import combineDateAndTime from 'src/app/utils/combineDateAndTime';
   `,
 })
 export class ForcedScheduleModalComponent {
-  description = new FormControl('', { nonNullable: true });
-  location = new FormControl('', { nonNullable: true });
-  startDate = new FormControl('', { nonNullable: true });
-  endDate = new FormControl('', { nonNullable: true });
-  date = new FormControl('', { nonNullable: true });
+  description = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  location = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  startDate = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  endDate = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  date = new FormControl('', { nonNullable: true, validators: [Validators.required] });
   // projectId = new FormControl(-1, { nonNullable: true });
   projectId = signal(-1);
 
@@ -172,6 +172,33 @@ export class ForcedScheduleModalComponent {
   }
 
   scheduleClick() {
+    if (this.description.invalid) {
+      this.toastr.error('Description cannot be empty');
+
+      return;
+    }
+    if (this.location.invalid) {
+      this.toastr.error('Location cannot be empty');
+
+      return;
+    }
+    if (this.date.invalid) {
+      this.toastr.error('Date cannot be empty');
+
+      return;
+    }
+    if (this.startDate.invalid) {
+      this.toastr.error('Start time cannot be empty');
+
+      return;
+    }
+    if (this.endDate.invalid) {
+      this.toastr.error('End time cannot be empty');
+
+      return;
+    }
+ 
+
     this.spinner.show();
     
     const endTime = dateToEpoch(hour24ToEpoch(this.endDate.value));

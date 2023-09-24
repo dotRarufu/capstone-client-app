@@ -21,7 +21,7 @@ import { ConsultationByCategoryReportComponent } from './consultation-by-categor
     ConsultationByCategoryReportComponent,
   ],
   template: `
-    <div class="flex flex-col items-center  gap-4 border border-green-500">
+    <div class="flex flex-col items-center  gap-4">
       <div
         class=" h-full  w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50 "
       >

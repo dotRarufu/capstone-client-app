@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { filter, from, map, switchMap } from 'rxjs';
 import { MilestoneService } from 'src/app/services/milestone.service';
@@ -87,9 +87,9 @@ import { NgxSpinnerService } from 'ngx-spinner';
   `,
 })
 export class AddMilestoneTemplateModalComponent {
-  title = new FormControl('', { nonNullable: true });
-  description = new FormControl('', { nonNullable: true });
-  dueDate = new FormControl('', { nonNullable: true });
+  title = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  description = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  dueDate = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
   authService = inject(AuthService);
   milestoneService = inject(MilestoneService);
@@ -97,6 +97,22 @@ export class AddMilestoneTemplateModalComponent {
   spinner = inject(NgxSpinnerService);
 
   handleDoneClick() {
+    if (this.title.invalid) {
+      this.toastr.error("Title cannot be empty")
+
+      return;
+    }
+    if (this.description.invalid) {
+      this.toastr.error("Description cannot be empty")
+
+      return;
+    }
+    if (this.dueDate.invalid) {
+      this.toastr.error("Due date cannot be empty")
+
+      return;
+    }
+
     this.spinner.show();
     const user$ = this.authService.getAuthenticatedUser();
     const status$ = user$.pipe(

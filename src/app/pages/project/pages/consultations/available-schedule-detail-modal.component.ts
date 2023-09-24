@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
@@ -146,9 +146,9 @@ export class AvailableScheduleDetailModalComponent {
   projectStateService = inject(ProjectStateService);
   spinner = inject(NgxSpinnerService);
 
-  startDate = new FormControl('', { nonNullable: true });
-  endDate = new FormControl('', { nonNullable: true });
-  date = new FormControl('', { nonNullable: true });
+  startDate = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  endDate = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  date = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
   consultationStateService = inject(ConsultationStateService);
 
@@ -160,7 +160,7 @@ export class AvailableScheduleDetailModalComponent {
       this.date.setValue(v.date);
     })
   );
-
+ 
   participant$ = this.projectStateService.activeParticipant$;
   // maybe convert getAuthentiatedUser to a state, to prevent multiple retrieval
   user$ = this.authService.getAuthenticatedUser();
@@ -171,6 +171,22 @@ export class AvailableScheduleDetailModalComponent {
   isInEdit = signal(false);
 
   handleRemoveClick() {
+    if (this.startDate.invalid) {
+      this.toastr.error("Start time cannot be empty");
+
+      return;
+    }
+    if (this.endDate.invalid) {
+      this.toastr.error("End time cannot be empty");
+
+      return;
+    }
+    if (this.date.invalid) {
+      this.toastr.error("Date cannot be empty");
+
+      return;
+    }
+
     this.spinner.show();
     const id = this.consultationStateService.getActiveSchedule()!.id;
 

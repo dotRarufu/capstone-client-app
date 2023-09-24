@@ -15,7 +15,7 @@ import { AError, ProjectService } from 'src/app/services/project.service';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectRow, User } from 'src/app/types/collection';
 import { ProjectCardPreviewComponent } from './project-card-preview.component';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import {
   Subject,
@@ -31,6 +31,7 @@ import {
   forkJoin,
   of,
   from,
+  skip,
 } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
@@ -77,7 +78,6 @@ import toProjectNumber from 'src/app/utils/toProjectNumber';
             <div class="h-[2px] w-full bg-base-content/10"></div>
             <input
               [formControl]="name"
-              (change)="newNameSubject.next(this.name.value)"
               type="text"
               placeholder="Type here"
               class="input-bordered input input-md w-full rounded-[3px] focus:input-primary  focus:outline-0"
@@ -89,7 +89,6 @@ import toProjectNumber from 'src/app/utils/toProjectNumber';
             <div class="h-[2px] w-full bg-base-content/10"></div>
             <textarea
               [formControl]="title"
-              (change)="newTitleSubject.next(this.title.value)"
               type="text"
               placeholder="Type here"
               class="textarea-bordered textarea input-md h-[144px] w-full rounded-[3px] focus:textarea-primary focus:outline-0"
@@ -108,7 +107,7 @@ import toProjectNumber from 'src/app/utils/toProjectNumber';
           Participants
 
           <button
-          onclick="addParticipant.showModal()"
+            onclick="addParticipant.showModal()"
             *ngIf="isStudent()"
             class="btn-ghost btn-sm btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
           >
@@ -139,7 +138,6 @@ import toProjectNumber from 'src/app/utils/toProjectNumber';
         <div class="join flex w-full">
           <input
             [formControl]="section"
-            (change)="newSectionSubject.next(this.section.value)"
             type="text"
             placeholder="3-1"
             class="input-bordered input input-md join-item w-full rounded-[3px] focus:input-primary  focus:outline-0"
@@ -213,10 +211,28 @@ export class GeneralComponent implements OnInit {
   authService = inject(AuthService);
   projectStateService = inject(ProjectStateService);
 
-  name = new FormControl('', { nonNullable: true });
-  title = new FormControl('', { nonNullable: true });
+  name = new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.pattern('^[A-Za-z0-9\\s!:\'"()\\-]+$'),
+    ],
+  });
+  title = new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.pattern('^[A-Za-z0-9\\s!:\'"()\\-]+$'),
+    ],
+  });
   // todo: refactor: use this.section.valueChanges
-  section = new FormControl('', { nonNullable: true });
+  section = new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.pattern('^[A-Za-z0-9\\s!:\'"()\\-]+$'),
+    ],
+  });
   isDone = new FormControl(false, { nonNullable: true });
 
   user = toSignal(
@@ -294,13 +310,15 @@ export class GeneralComponent implements OnInit {
       this.section.setValue(project.section);
     },
     error: (err) => {
-      this.toastr.error('error fetching project info');
+      this.toastr.error('Error fetching project info');
     },
   });
 
   newTitleSubject = new Subject<string>();
   newTitle$ = this.newTitleSubject.pipe(
     takeUntilDestroyed(),
+    skip(1),
+
     debounceTime(3000),
     distinctUntilChanged(),
     switchMap((newTitle) =>
@@ -309,12 +327,21 @@ export class GeneralComponent implements OnInit {
       })
     )
   );
+  linkTitle = this.title.valueChanges
+    .pipe(
+      filter((value) => {
+        if (this.title.invalid) this.toastr.error('Invalid title');
+
+        return !this.title.invalid && this.title.status !== "DISABLED";
+      })
+    )
+    .subscribe(this.newTitleSubject);
   newTitleSuccess$ = this.newTitle$
     .pipe(filter((v): v is ProjectRow => !v.hasOwnProperty('isError')))
     .subscribe({
       next: (res) => {
         this.toastr.success(
-          'successfully changed project title to ' + res.full_title
+          'Successfully changed project title to ' + res.full_title
         );
       },
     });
@@ -322,12 +349,22 @@ export class GeneralComponent implements OnInit {
     .pipe(filter((v): v is AError => v.hasOwnProperty('isError')))
     .subscribe({
       next: (res) => {
-        this.toastr.error('error changing title: ' + res.message);
+        this.toastr.error('Error changing title: ' + res.message);
       },
     });
   newSectionSubject = new Subject<string>();
+  linkSection = this.section.valueChanges
+    .pipe(
+      filter((value) => {
+        if (this.section.invalid) this.toastr.error('Invalid section');
+
+        return !this.section.invalid && this.section.status !== "DISABLED";
+      })
+    )
+    .subscribe(this.newSectionSubject);
   newSection$ = this.newSectionSubject.pipe(
     takeUntilDestroyed(),
+    skip(1),
     debounceTime(3000),
     distinctUntilChanged(),
     switchMap((newSection) =>
@@ -354,6 +391,7 @@ export class GeneralComponent implements OnInit {
   newNameSubject = new Subject<string>();
   newName$ = this.newNameSubject.pipe(
     takeUntilDestroyed(),
+    skip(1),
     debounceTime(3000),
     distinctUntilChanged(),
     switchMap((newTitle) =>
@@ -362,6 +400,15 @@ export class GeneralComponent implements OnInit {
       })
     )
   );
+  linkName = this.name.valueChanges
+    .pipe(
+      filter((value) => {
+        if (this.name.invalid) this.toastr.error('Invalid name');
+
+        return !this.name.invalid && this.name.status !== "DISABLED";
+      })
+    )
+    .subscribe(this.newNameSubject);
   newNameSuccess$ = this.newName$
     .pipe(filter((v): v is ProjectRow => !v.hasOwnProperty('isError')))
     .subscribe({

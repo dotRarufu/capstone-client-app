@@ -7,7 +7,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
   imports: [FeatherIconsModule],
   template: `
     <div class="flex w-full flex-col gap-[1rem]">
-      <div class="flex justify-between ">
+      <div class="flex justify-between">
         <h1 class="text-2xl text-base-content">Projects</h1>
         <button
           onclick="addProject.showModal()"

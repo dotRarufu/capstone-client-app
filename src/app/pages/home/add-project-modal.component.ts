@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FeatherModule } from 'angular-feather';
 import { ToastrService } from 'ngx-toastr';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
@@ -109,9 +109,10 @@ import { map } from 'rxjs';
   `,
 })
 export class AddProjectModalComponent {
-  name = new FormControl('', { nonNullable: true });
-  fullTitle = new FormControl('', { nonNullable: true });
-  section = new FormControl('', { nonNullable: true });
+  name = new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern('^[A-Za-z0-9\\s!:\'"()\\-]+$')],
+});
+  fullTitle = new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern('^[A-Za-z0-9\\s!:\'"()\\-]+$')] });
+  section = new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern('^[A-Za-z0-9\\s!:\'"()\\-]+$')] });
 
   projectService = inject(ProjectService);
   toastr = inject(ToastrService);
@@ -128,6 +129,22 @@ export class AddProjectModalComponent {
     );
 
   addProject() {
+    if (this.name.invalid) {
+      this.toastr.error("Invalid project name");
+
+      return;
+    }
+    if (this.fullTitle.invalid) {
+      this.toastr.error("Invalid title");
+
+      return;
+    }
+    if (this.section.invalid) {
+      this.toastr.error("Invalid section");
+
+      return;
+    }
+
     this.spinner.show();
     this.projectService
       .createProject(this.name.value, this.fullTitle.value, this.section.value)

@@ -5,8 +5,9 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { ProjectService } from 'src/app/services/project.service';
 import { HomeStateService } from './data-access/home-state.service';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { from, tap } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'title-analyzer-modal',
@@ -88,14 +89,24 @@ import { from, tap } from 'rxjs';
   `,
 })
 export class TitleAnalyzerModalComponent {
-  titleFromAlreadyHaveTitle = new FormControl('', { nonNullable: true });
+  titleFromAlreadyHaveTitle = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.pattern('^[A-Za-z0-9\\s!:\'"()\\-]+$')],
+  });
 
   homeStateService = inject(HomeStateService);
   projectService = inject(ProjectService);
+  toastr = inject(ToastrService);
   spinner = inject(NgxSpinnerService);
   router = inject(Router);
 
   analyzeTitle() {
+    if (this.titleFromAlreadyHaveTitle.invalid) {
+      this.toastr.error('Invalid title');
+
+      return;
+    }
+
     this.spinner.show();
     const analyze$ = from(
       this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle.value)

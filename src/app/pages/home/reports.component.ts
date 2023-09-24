@@ -10,10 +10,6 @@ import { CommonModule } from '@angular/common';
   imports: [NgChartsModule, CommonModule],
   template: `
     <ng-container *ngIf="!sideColumn">
-      <!-- <div
-        class="flex h-full flex-col gap-[16px] overflow-y-clip sm1:overflow-y-visible border border-red-500"
-      > -->
-
       <div class="flex flex-col items-center  gap-4">
         <div
           class=" h-full  w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50 "

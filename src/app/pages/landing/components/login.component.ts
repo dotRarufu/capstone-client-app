@@ -13,7 +13,12 @@ import { filter, from, tap, map, switchMap } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
 import { isNotNull } from 'src/app/utils/isNotNull';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  ReactiveFormsModule,
+  PatternValidator,
+  Validators,
+} from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SpinnerComponent } from 'src/app/components/spinner.component';
 
@@ -28,7 +33,7 @@ import { SpinnerComponent } from 'src/app/components/spinner.component';
       <div class="flex flex-col gap-2 py-4">
         <h1 class="text-[2rem]">Login</h1>
         <p class="text-sm opacity-80">
-          Welcome, start your capstone project journey by logging in. 
+          Welcome, start your capstone project journey by logging in.
         </p>
       </div>
       <input
@@ -82,7 +87,10 @@ import { SpinnerComponent } from 'src/app/components/spinner.component';
 })
 export class LoginComponent {
   @Output() toSignUp = new EventEmitter<void>();
-  email = new FormControl('', { nonNullable: true });
+  email = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.email],
+  });
   password = new FormControl('', { nonNullable: true });
 
   authService = inject(AuthService);
@@ -97,6 +105,12 @@ export class LoginComponent {
   authenticatedUser = toSignal(this.authenticatedUser$);
 
   handleButtonClick() {
+    if (this.email.invalid) {
+      this.toastr.error('Invalid email');
+
+      return;
+    }
+
     this.spinner.show();
 
     const signIn$ = this.authService.login(

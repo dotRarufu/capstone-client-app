@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
@@ -332,11 +332,11 @@ export class TitleBuilderComponent {
     client: string;
   } = { prefix: '', name: null, description: '', client: '' };
 
-  constructor(
-    private projectService: ProjectService,
-    private router: Router,
-    private spinner: NgxSpinnerService
-  ) {}
+ 
+    projectService = inject(ProjectService)
+    router = inject(Router)
+    spinner = inject(NgxSpinnerService)
+ 
 
   async analyzeTitle() {
     this.spinner.show();

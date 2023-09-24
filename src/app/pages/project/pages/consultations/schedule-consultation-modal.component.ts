@@ -7,7 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ConsultationData } from 'src/app/models/consultationData';
@@ -43,7 +43,6 @@ import { NgxSpinnerService } from 'ngx-spinner';
         class="flex w-full flex-col rounded-[3px] border border-base-content/10"
       >
         <div class="flex h-fit justify-between bg-primary p-[24px]">
-
           <div class="form-control ">
             <div
               class="input-group rounded-[3px] border border-base-content/50"
@@ -51,7 +50,6 @@ import { NgxSpinnerService } from 'ngx-spinner';
               <select
                 class="select-bordered select w-full rounded-[3px] border-none text-base  font-normal text-base-content focus:rounded-[3px] "
               >
-              
                 <option disabled selected>Select a schedule</option>
 
                 <option
@@ -61,7 +59,6 @@ import { NgxSpinnerService } from 'ngx-spinner';
                   {{ formatDate(schedule.date) }} |
                   {{ getTimeFromEpoch(schedule.start_time) }}
                 </option>
-
               </select>
             </div>
           </div>
@@ -176,7 +173,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             class="flex h-full w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
           >
             <button
-            onclick="scheduleConsultation.close()"
+              onclick="scheduleConsultation.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
               (click)="scheduleConsultation()"
             >
@@ -187,8 +184,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <div class="h-full"></div>
 
             <button
-            onclick="scheduleConsultation.close()"
-
+              onclick="scheduleConsultation.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x" /> cancel
@@ -200,8 +196,14 @@ import { NgxSpinnerService } from 'ngx-spinner';
   `,
 })
 export class ScheduleConsultationModalComponent {
-  description = new FormControl('', { nonNullable: true });
-  location = new FormControl('', { nonNullable: true });
+  description = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  location = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
   activeScheduleId = signal(-1);
   activeSchedule = computed(() => {
     const schedules = this.availableSchedules();
@@ -232,9 +234,9 @@ export class ScheduleConsultationModalComponent {
 
         if (uid === null) return of([]);
 
-        return this.authService.getProjectAvailableSchedules(uid).pipe(
-          tap(v => this.spinner.hide())
-        );
+        return this.authService
+          .getProjectAvailableSchedules(uid)
+          .pipe(tap((v) => this.spinner.hide()));
       })
     )
   );
@@ -248,6 +250,22 @@ export class ScheduleConsultationModalComponent {
   }
 
   scheduleConsultation() {
+    if (this.description.invalid) {
+      this.toastr.error('Description cannot be empty');
+
+      return;
+    }
+    if (this.location.invalid) {
+      this.toastr.error('Location cannot be empty');
+
+      return;
+    }
+    if (this.activeScheduleId() === -1) {
+      this.toastr.error('Schedule cannot be empty');
+
+      return;
+    }
+
     this.spinner.show();
 
     const data: ConsultationData = {
@@ -258,23 +276,18 @@ export class ScheduleConsultationModalComponent {
     };
 
     const projectId = Number(this.route.parent!.snapshot.url[0].path);
-    const request$ = this.consultationService.scheduleConsultation(
-      data,
-      projectId
-    ).pipe(
-      tap(() => this.authService.signalUpdateAvailableSchedules())
-    );
+    const request$ = this.consultationService
+      .scheduleConsultation(data, projectId)
+      .pipe(tap(() => this.authService.signalUpdateAvailableSchedules()));
 
     request$.subscribe({
       next: (message) => {
         this.toastr.success('created');
         this.spinner.hide();
-
       },
       error: (message) => {
         this.toastr.error(message);
         this.spinner.hide();
-
       },
     });
   }

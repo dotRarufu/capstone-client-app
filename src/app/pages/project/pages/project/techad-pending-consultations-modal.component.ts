@@ -24,7 +24,7 @@ import { ConsultationService } from 'src/app/services/consultation.service';
 import { ToastrService } from 'ngx-toastr';
 import { AccomplishmentsComponent } from '../consultations/accomplishments.component';
 import { ConsultationStateService } from '../consultations/data-access/consultations-state.service';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
@@ -137,7 +137,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             </button>
             <button
               *ngIf="!inDecline()"
-              onclick="techAdPendingConsultationsModal.close()"
+             
               (click)="inDecline.set(true)"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
@@ -176,7 +176,7 @@ export class TechAdPendingConsultationsModalComponent {
   consultationService = inject(ConsultationService);
 
   inDecline = signal(false);
-  declineReason = new FormControl('', { nonNullable: true });
+  declineReason = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
   showSpinner= this.spinner.show();
 
@@ -234,6 +234,12 @@ export class TechAdPendingConsultationsModalComponent {
   @ViewChild(ModalComponent, { static: false }) modalComponent!: ModalComponent;
 
   handleInvitation(decision: boolean) {
+    if (this.declineReason.invalid) {
+      this.toastr.error("Decline reason cannot be empty")
+
+      return;
+    }
+
     this.spinner.show();
     const activeConsultation =
       this.consultationStateService.getActiveConsultation()!;

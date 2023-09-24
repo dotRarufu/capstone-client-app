@@ -12,17 +12,29 @@ import {
 import { Project } from 'src/app/models/project';
 import { AuthService } from 'src/app/services/auth.service';
 import { User } from 'src/app/types/collection';
-import { BehaviorSubject, from, map, switchMap, tap, of, forkJoin, take } from 'rxjs';
+import {
+  BehaviorSubject,
+  from,
+  map,
+  switchMap,
+  tap,
+  of,
+  forkJoin,
+  take,
+  filter,
+  startWith,
+} from 'rxjs';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
 import { MilestonesTemplateComponent } from 'src/app/pages/profile/milestones-template.component';
 import { AddMilestoneModalComponent } from 'src/app/pages/project/pages/milestones/add-milestone.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ImgFallbackModule } from 'ngx-img-fallback';
 import { NotificationsComponent } from './notifications.component';
 import { ProjectService } from 'src/app/services/project.service';
+import { isNotNull } from 'src/app/utils/isNotNull';
 
 @Component({
   selector: 'profile-view',
@@ -97,9 +109,8 @@ import { ProjectService } from 'src/app/services/project.service';
                 <input
                   #nameInput
                   type="text"
-                  [defaultValue]="observables.user?.name"
+                  value="{{ observables.user?.name }}"
                   [formControl]="newName"
-                  (input)="showSaveButtonSubject.next(nameInput.value)"
                   placeholder="Type here"
                   class="input-bordered input input-sm w-full max-w-sm rounded-[5px] bg-base-300/80 p-[8px] text-base focus:input-primary focus:outline-0"
                 />
@@ -220,10 +231,9 @@ import { ProjectService } from 'src/app/services/project.service';
               <div class="flex justify-between gap-4">
                 <input
                   type="text"
-                  [defaultValue]="observables.user?.name"
+                  value="{{ observables.user?.name }}"
                   #nameInput
                   [formControl]="newName"
-                  (input)="showSaveButtonSubject.next(nameInput.value)"
                   placeholder="Type here"
                   class="input-bordered input input-sm w-full max-w-sm rounded-[5px] bg-base-300/80 p-[8px] text-base focus:input-primary focus:outline-0"
                 />
@@ -318,10 +328,21 @@ export class ProfileViewComponent implements OnInit {
   authService = inject(AuthService);
   projectService = inject(ProjectService);
 
+  newName = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.pattern('[a-zA-Z ]*')],
+  });
   showSaveButtonSubject = new BehaviorSubject('');
+  linkSaveButtonSubjectToName = this.newName.valueChanges.subscribe(
+    this.showSaveButtonSubject
+  );
   showSaveButton$ = this.showSaveButtonSubject.asObservable().pipe(
+    filter((v) => v !== ''),
+ 
     switchMap((v) => forkJoin({ v: of(v), user: this.user$ })),
-    map(({ v, user }) => v !== user.name)
+    
+    map(({ v, user }) => v !== user.name),
+ 
   );
   user$ = this.authService.getAuthenticatedUser().pipe(
     map((user) => {
@@ -329,9 +350,11 @@ export class ProfileViewComponent implements OnInit {
 
       return user;
     }),
-    switchMap((user) => this.authService.getUserProfile(user.uid)),
-    tap(() => this.spinner.hide()),
-    tap((user) => this.newName.setValue(user.name))
+    switchMap((user) =>
+      this.authService.getUserProfile(user.uid).pipe(take(1))
+    ),
+    tap(() => this.spinner.hide())
+    // tap((user) => this.newName.setValue(user.name))
   );
   fallbackAvatar$ = this.user$.pipe(
     map((user) => `https://api.multiavatar.com/${user.name}.png`)
@@ -362,17 +385,22 @@ export class ProfileViewComponent implements OnInit {
   projects: Project[] = [];
 
   nameIsInEdit = false;
-  newName = new FormControl('', { nonNullable: true });
 
   handleNameButton() {
+    if (this.newName.invalid) {
+      this.toastr.error('Invalid name');
+
+      return;
+    }
+
     this.spinner.show();
 
-    this.authService.updateName(this.newName.value).subscribe({
+    this.authService.updateName(this.newName.value!).subscribe({
       next: (status) => {
         this.toastr.success('successfully updated name');
         this.spinner.hide();
         // this.user().name = this.newName;
-        this.showSaveButtonSubject.next(this.newName.value);
+        this.showSaveButtonSubject.next(this.newName.value!);
       },
     });
   }
@@ -415,7 +443,8 @@ export class ProfileViewComponent implements OnInit {
     this.user$
       .pipe(
         take(1),
-        switchMap((user) => this.authService.uploadAvatar(file, user.uid)))
+        switchMap((user) => this.authService.uploadAvatar(file, user.uid))
+      )
       .subscribe({
         next: () => {
           this.spinner.hide();

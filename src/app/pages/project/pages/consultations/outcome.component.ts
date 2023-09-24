@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FeatherIconsModule, FormsModule],
+  imports: [CommonModule, FeatherIconsModule, ReactiveFormsModule],
   selector: 'outcome',
   template: `
     <div class="flex flex-col gap-2">
@@ -21,14 +22,14 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
             type="text"
             placeholder="Implemented time travel algorithm"
             class="bg-base input join-item w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
-            [(ngModel)]="inputField"
+            [formControl]="input"
           />
           <label
             tabindex="0"
             (click)="handleAddItem()"
             class="btn-ghost btn-sm join-item btn gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 text-base-content hover:border-base-content/30"
-            [class.btn-disabled]="inputField === ''"
-            [class.cursor-not-allowed]="inputField === ''"
+            [class.btn-disabled]="input.invalid"
+            [class.cursor-not-allowed]="input.invalid"
           >
             <i-feather class="text-base-content/70" name="plus" />
 
@@ -76,7 +77,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
   `,
 })
 export class OutcomeComponent {
-  inputField = '';
+  input = new FormControl("", {nonNullable: true, validators: [Validators.required]})
   // todo: rename to isDisplay
   @Input() hideInput? = false;
   @Input() heading = '';
@@ -84,10 +85,17 @@ export class OutcomeComponent {
   @Output() addItem = new EventEmitter<string>();
   @Output() deleteItem = new EventEmitter<string>();
 
+  toastr = inject(ToastrService);
+
   handleAddItem() {
-    if (this.addItem === undefined) return;
-    this.addItem.emit(this.inputField);
-    this.inputField = '';
+    if (this.input.invalid) {
+      this.toastr.error("Input cannot be empty");
+
+      return;
+    }
+
+    this.addItem.emit(this.input.value);
+    this.input.reset();
   }
 
   handleDeleteItem(item: string) {

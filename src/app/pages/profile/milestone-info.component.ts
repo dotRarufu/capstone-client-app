@@ -21,14 +21,15 @@ import {
   forkJoin,
   map,
   of,
+  skip,
   switchMap,
   tap,
 } from 'rxjs';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileStateService } from './data-access/profile-state.service';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from 'src/app/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { isNotNull } from 'src/app/utils/isNotNull';
@@ -47,7 +48,7 @@ import { ActivatedRoute } from '@angular/router';
         <input
           type="text"
           [formControl]="title"
-          (change)="this.newTitle$.next(this.title.value)"
+         
           placeholder="Type here"
           class="input-bordered input input-md w-full rounded-[3px] bg-base-300/80 focus:input-primary  focus:outline-0"
         />
@@ -59,7 +60,7 @@ import { ActivatedRoute } from '@angular/router';
         <textarea
           type="text"
           [formControl]="description"
-          (change)="this.newDescription$.next(this.description.value)"
+
           placeholder="Type here"
           class="textarea-bordered textarea input-md h-[144px] w-full rounded-[3px] bg-base-300/80 focus:textarea-primary focus:outline-0"
         ></textarea>
@@ -71,10 +72,7 @@ import { ActivatedRoute } from '@angular/router';
         <input
           type="date"
           [formControl]="dueDate"
-          (change)="
-            this.dueDate.value !== null &&
-              this.newDueDate$.next(this.dueDate.value)
-          "
+         
           class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-base-300/80 px-3 py-2 text-[20px] text-base text-base-content/70 placeholder:text-[20px] placeholder:text-base-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
         />
       </div>
@@ -103,9 +101,9 @@ export class MilestoneTemplateInfoComponent implements OnInit {
   milestoneService = inject(MilestoneService);
   toastr = inject(ToastrService);
 
-  title = new FormControl('', { nonNullable: true });
-  description = new FormControl('', { nonNullable: true });
-  dueDate = new FormControl('');
+  title = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  description = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  dueDate = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
   newTitle$ = new Subject<string>();
   newDescription$ = new Subject<string>();
@@ -121,7 +119,7 @@ export class MilestoneTemplateInfoComponent implements OnInit {
     }),
     map((d) => d.id),
     catchError(() => {
-      this.toastr.error('error getting milestone tempplate data');
+      this.toastr.error('Error getting milestone tempplate data');
 
       return EMPTY;
     })
@@ -131,6 +129,8 @@ export class MilestoneTemplateInfoComponent implements OnInit {
   ngOnInit(): void {
     this.newTitle$
       .pipe(
+        takeUntilDestroyed(),
+        skip(1),
         debounceTime(3000),
         distinctUntilChanged(),
 
@@ -144,16 +144,18 @@ export class MilestoneTemplateInfoComponent implements OnInit {
         next: (res) => {
           this.breadcrumb.set('@milestoneId', res.title);
           this.toastr.success(
-            'successfully changed milestone title to ' + res.title
+            'Successfully changed milestone title to ' + res.title
           );
         },
         error: () => {
-          this.toastr.error('error changing milestone title');
+          this.toastr.error('Error changing milestone title');
         },
       });
 
     this.newDescription$
       .pipe(
+        takeUntilDestroyed(),
+        skip(1),
         debounceTime(3000),
         distinctUntilChanged(),
 
@@ -166,15 +168,17 @@ export class MilestoneTemplateInfoComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.toastr.success(
-            'successfully changed milestone description to ' + res.description
+            'Successfully changed milestone description to ' + res.description
           );
         },
         error: () => {
-          this.toastr.error('error changing milestone description');
+          this.toastr.error('Error changing milestone description');
         },
       });
     this.newDueDate$
       .pipe(
+        takeUntilDestroyed(),
+        skip(1),
         debounceTime(3000),
         distinctUntilChanged(),
 
@@ -187,23 +191,58 @@ export class MilestoneTemplateInfoComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.toastr.success(
-            'successfully changed milestone template duedate to ' + res.due_date
+            'Successfully changed milestone template duedate to ' + res.due_date
           );
         },
         error: () => {
-          this.toastr.error('error changing milestone description');
+          this.toastr.error('Error changing milestone description');
         },
       });
   }
 
+  linkTitle = this.title.valueChanges
+    .pipe(
+      filter((value) => {
+        if (this.title.invalid) this.toastr.error('Title cannot be empty');
+
+        return !this.title.invalid && this.title.status !== 'DISABLED';
+      })
+    )
+    .subscribe(this.newTitle$);
+  linkDescription = this.description.valueChanges
+    .pipe(
+      filter((value) => {
+        if (this.description.invalid)
+          this.toastr.error('Description cannot be empty');
+
+        return (
+          !this.description.invalid && this.description.status !== 'DISABLED'
+        );
+      })
+    )
+    .subscribe(this.newDescription$);
+  linkDueDate = this.dueDate.valueChanges
+    .pipe(
+      filter((value) => {
+        if (this.dueDate.invalid)
+          this.toastr.error('Due date cannot ve empty');
+
+        return (
+          !this.dueDate.invalid && this.dueDate.status !== 'DISABLED'
+        );
+      })
+    )
+    .subscribe((v) => this.newDueDate$.next(v));
+
+
   handleDeleteMilestone() {
     this.milestoneService.deleteTemplate(this.id()).subscribe({
       next: () => {
-        this.toastr.success('successfully deleted a template');
+        this.toastr.success('Successfully deleted a template');
         this.profileStateService.setSelectedMilestoneId(null);
       },
       error: () => {
-        this.toastr.error('failed to delete a template');
+        this.toastr.error('Failed to delete a template');
       },
     });
   }

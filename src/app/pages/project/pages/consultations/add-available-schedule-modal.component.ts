@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FeatherModule } from 'angular-feather';
 import { ToastrService } from 'ngx-toastr';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
@@ -90,9 +90,9 @@ import timeToEpoch from 'src/app/utils/timeToEpoch';
   `,
 })
 export class AddAvailableScheduleModalComponent {
-  date = new FormControl('', { nonNullable: true });
-  startTime = new FormControl('', { nonNullable: true });
-  endTime = new FormControl('', { nonNullable: true });
+  date = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  startTime = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  endTime = new FormControl('', { nonNullable: true, validators: [Validators.required] });
   // section = new FormControl('', { nonNullable: true });
 
   projectService = inject(ProjectService);
@@ -111,6 +111,22 @@ export class AddAvailableScheduleModalComponent {
     );
 
   add() {
+    if (this.date.invalid) {
+      this.toastr.error('Date cannot be empty');
+
+      return;
+    }
+    if (this.startTime.invalid) {
+      this.toastr.error('Start time cannot be empty');
+
+      return;
+    }
+    if (this.endTime.invalid) {
+      this.toastr.error('End time cannot be empty');
+
+      return;
+    }
+
     this.spinner.show();
     const startTime = timeToEpoch(this.startTime.value);
     const endTime = timeToEpoch(this.endTime.value);

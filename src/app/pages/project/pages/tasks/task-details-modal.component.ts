@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TaskService } from 'src/app/services/task.service';
 import { ToastrService } from 'ngx-toastr';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { TaskStateService } from './data-access/tasks-state.service';
 import { EMPTY, filter, forkJoin, map, of, switchMap, tap } from 'rxjs';
@@ -161,8 +161,8 @@ export class TaskDetailsModalComponent {
   user$ = this.authService.getAuthenticatedUser().pipe(filter(isNotNull));
 
   isInEdit = signal(false);
-  description = new FormControl('', { nonNullable: true });
-  title = new FormControl('', { nonNullable: true });
+  description = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  title = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
   activeTask$ = this.taskStateService.activeTask$.pipe(
     switchMap(v => {
@@ -187,8 +187,25 @@ export class TaskDetailsModalComponent {
 
   // todo: delete add task comp, use this instead
   handleSaveClick() {
+    if (this.description.invalid) {
+      this.toastr.error("Description cannot be empty");
+
+      return;
+    }
+    if (this.title.invalid) {
+      this.toastr.error("Title cannot be empty");
+
+      return;
+    }
     const task = this.taskStateService.getActiveTask();
-    if (task === null) return;
+    if (task === null) {
+      this.toastr.error("Active task cannot be empty");
+
+      return;
+    }
+
+
+
 
     this.spinner.show();
 

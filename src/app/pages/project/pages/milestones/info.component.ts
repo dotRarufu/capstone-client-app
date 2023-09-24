@@ -11,18 +11,19 @@ import {
   from,
   map,
   of,
+  skip,
   switchMap,
   tap,
 } from 'rxjs';
 import { MilestoneService } from 'src/app/services/milestone.service';
 import { BreadcrumbModule, BreadcrumbService } from 'xng-breadcrumb';
 import { MilestoneData } from '../../../../types/collection';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { getRolePath } from 'src/app/utils/getRolePath';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { CommonModule } from '@angular/common';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
@@ -43,7 +44,6 @@ import { ProjectService } from 'src/app/services/project.service';
         <input
           type="text"
           [formControl]="title"
-          (change)="this.newTitle$.next(this.title.value)"
           placeholder="Type here"
           class="input-bordered input input-md w-full rounded-[3px]  bg-base-300/80 focus:input-primary focus:outline-0 "
         />
@@ -55,7 +55,6 @@ import { ProjectService } from 'src/app/services/project.service';
         <textarea
           type="text"
           [formControl]="description"
-          (change)="this.newDescription$.next(this.description.value)"
           placeholder="Type here"
           class="textarea-bordered textarea input-md h-[144px] w-full rounded-[3px] bg-base-300/80 focus:textarea-primary focus:outline-0"
         ></textarea>
@@ -75,7 +74,6 @@ import { ProjectService } from 'src/app/services/project.service';
             type="checkbox"
             [checked]="isAchieved"
             [formControl]="isAchieved"
-            (change)="this.newIsAchieved$.next(this.isAchieved.value)"
             class="toggle-success toggle"
           />
           <div class="text-base font-semibold">
@@ -114,9 +112,18 @@ export class MilestoneInfoComponent {
   toastr = inject(ToastrService);
   authService = inject(AuthService);
 
-  title = new FormControl('', { nonNullable: true });
-  description = new FormControl('', { nonNullable: true });
-  isAchieved = new FormControl(false, { nonNullable: true });
+  title = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  description = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  isAchieved = new FormControl(false, {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
 
   role$ = this.authService.getAuthenticatedUser().pipe(
     filter(isNotNull),
@@ -134,14 +141,11 @@ export class MilestoneInfoComponent {
       return this.projectService.getAdviserProjectRole(this.projectId, u.uid);
     }),
     tap((role) => {
-
       if (['c', 'ct'].includes(role)) return;
 
-
-        this.isAchieved.disable();
-        this.description.disable();
-        this.title.disable();
-      
+      this.isAchieved.disable();
+      this.description.disable();
+      this.title.disable();
     }),
     map((role) => ['c', 'ct'].includes(role))
   );
@@ -152,6 +156,8 @@ export class MilestoneInfoComponent {
 
   newIsAchievedSubscription = this.newIsAchieved$
     .pipe(
+      takeUntilDestroyed(),
+      skip(1),
       debounceTime(1000),
       distinctUntilChanged(),
       switchMap((newIsAchieved) =>
@@ -174,6 +180,8 @@ export class MilestoneInfoComponent {
 
   newDescriptionIsAchieved = this.newDescription$
     .pipe(
+      takeUntilDestroyed(),
+      skip(1),
       debounceTime(3000),
       distinctUntilChanged(),
       switchMap((newDescription) =>
@@ -195,6 +203,8 @@ export class MilestoneInfoComponent {
 
   newTitleSubscription = this.newTitle$
     .pipe(
+      takeUntilDestroyed(),
+      skip(1),
       debounceTime(3000),
       distinctUntilChanged(),
       switchMap((newTitle) =>
@@ -207,13 +217,46 @@ export class MilestoneInfoComponent {
       next: (res) => {
         this.breadcrumb.set('@milestoneId', res.title);
         this.toastr.success(
-          'successfully changed milestone title to ' + res.title
+          'Successfully changed milestone title to ' + res.title
         );
       },
       error: () => {
-        this.toastr.error('error changing milestone title');
+        this.toastr.error('Error changing milestone title');
       },
     });
+  linkTitle = this.title.valueChanges
+    .pipe(
+      filter((value) => {
+        if (this.title.invalid) this.toastr.error('Title cannot be empty');
+
+        return !this.title.invalid && this.title.status !== 'DISABLED';
+      })
+    )
+    .subscribe(this.newTitle$);
+  linkDescription = this.description.valueChanges
+    .pipe(
+      filter((value) => {
+        if (this.description.invalid)
+          this.toastr.error('Description cannot be empty');
+
+        return (
+          !this.description.invalid && this.description.status !== 'DISABLED'
+        );
+      })
+    )
+    .subscribe(this.newDescription$);
+  linkIsAchieved = this.isAchieved.valueChanges
+    .pipe(
+      filter((value) => {
+        if (this.isAchieved.invalid)
+          this.toastr.error('Invalid value in achieved field');
+
+        return (
+          !this.isAchieved.invalid && this.isAchieved.status !== 'DISABLED'
+        );
+      })
+    )
+    .subscribe(this.newIsAchieved$);
 
   milestoneData$ = this.route.url.pipe(
     map((url) => Number(url[0].path)),

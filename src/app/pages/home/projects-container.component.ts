@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
     >
       <div class="flex flex-col gap-1">
         <div
-          class="flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"
+          class="flex gap-2 items-center justify-between"
         >
           <h2 class="text-2xl">Projects</h2>
           <button
