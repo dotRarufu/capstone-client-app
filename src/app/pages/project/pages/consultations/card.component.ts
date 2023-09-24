@@ -144,8 +144,5 @@ export class ConsultationCardComponent {
   getEpochTime(unixEpoch: number) {
     return getTimeFromEpoch(unixEpoch);
   }
-  
-  test() {
-    console.log("idasdsa:", this.buttonId)
-  }
+
 }

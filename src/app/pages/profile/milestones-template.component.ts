@@ -215,14 +215,14 @@ export class MilestonesTemplateComponent {
   );
 
   reapplyTemplates() {
-    console.log('reapply start');
+    console.log('Reapply template start');
     this.spinner.show();
 
     const reapply$ = this.milestoneService.reapplyTemplates();
 
     reapply$.subscribe({
       next: (a) => {
-        console.log('reapplied res:', a);
+        console.log('Reapply done | res:', a);
         this.spinner.hide();
         this.toastr.success('Sucessfully re-applied templates');
       },

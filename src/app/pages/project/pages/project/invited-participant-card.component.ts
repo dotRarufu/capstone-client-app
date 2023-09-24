@@ -80,14 +80,12 @@ export class InvitedParticipantCardComponent implements OnInit {
   userUid = signal('');
   user$ = toObservable(this.userUid).pipe(
     filter(v => !!v),
-    tap(v => console.log("uid!!:", v)),
     switchMap((uid) => this.authService.getUserProfile(uid))
   );
   fallbackAvatar = `https://api.multiavatar.com/${
-    this.user.name || 'unnamed'
+    this.user.name || 'Unnamed'
   }.png`;
   userAvatarUrl$ = this.user$.pipe(
-    tap(v => console.log("user!!:", v)),
     map((user) => {
       const { avatar_last_update, avatar } = user;
       const time = avatar_last_update;

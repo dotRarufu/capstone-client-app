@@ -84,7 +84,7 @@ export class BottomNavComponent {
         return route;
       }),
       map((route) => route.snapshot.url[0].path),
-      tap((paramMap) => console.log('pathg', paramMap))
+     
     ),
     of(
       this.route.snapshot.children[0].url.length > 0

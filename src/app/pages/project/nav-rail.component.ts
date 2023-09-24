@@ -165,7 +165,7 @@ export class NavigationRailComponent {
       )
       .subscribe({
         next: (rolePath) => {
-          console.log('navigates:', rolePath, path);
+         
           if (rolePath === 's') {
             this.router.navigate([rolePath, 'p', this.projectId(), path]);
             return;

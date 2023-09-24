@@ -28,14 +28,14 @@ export const participantGuard = (route: ActivatedRouteSnapshot) => {
     ),
     map((dec) => {
       if (!dec) {
-        console.log('user is not a participant, and repelled by the guard:');
+        console.log('User is not a participant, and repelled by the guard:');
         router.navigate(['/', 'unauthorized']);
       }
 
       return dec;
     }),
     catchError((err) => {
-      console.log('error occured:', err);
+      console.log('Error occured in participant guard:', err);
 
       router.navigate(['/']);
       return of(false);

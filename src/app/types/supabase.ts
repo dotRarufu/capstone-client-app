@@ -611,6 +611,33 @@ export interface Database {
           }
         ]
       }
+      notification: {
+        Row: {
+          created_at: string
+          data_id: number
+          id: number
+          is_confirmed: boolean
+          receiver_id: string
+          type_id: number
+        }
+        Insert: {
+          created_at?: string
+          data_id: number
+          id?: number
+          is_confirmed?: boolean
+          receiver_id: string
+          type_id: number
+        }
+        Update: {
+          created_at?: string
+          data_id?: number
+          id?: number
+          is_confirmed?: boolean
+          receiver_id?: string
+          type_id?: number
+        }
+        Relationships: []
+      }
       preferability_advisers: {
         Row: {
           adviser_id: string

@@ -353,7 +353,6 @@ export class GeneralComponent implements OnInit {
 
   newNameSubject = new Subject<string>();
   newName$ = this.newNameSubject.pipe(
-    tap((v) => console.log('chagned:', v)),
     takeUntilDestroyed(),
     debounceTime(3000),
     distinctUntilChanged(),

@@ -42,16 +42,16 @@ export class GroupsConsultationCountReportComponent {
     .getAuthenticatedUser()
     .pipe(
       filter(isNotNull),
-      tap(v => console.log("1:", v)),
+
       switchMap((u) => this.projectService.getProjects()),
       filter(isNotNull),
-      tap(v => console.log("2:", v)),
-    
- 
-  
+
+
+
+
       switchMap((projects) => {
         if (projects.length === 0) return of([]);
-        console.log("projkets:", projects)
+
         const reqs = projects.map((p) =>
           this.consultationService
             .getConsultations(2, p.id)
@@ -60,14 +60,13 @@ export class GroupsConsultationCountReportComponent {
 
         return forkJoin(reqs);
       }),
-     
+
       map((projectsConsultations) => {
         const projects = projectsConsultations.map((pc) => pc.project.name);
         const counts = projectsConsultations.map(
           (pc) => pc.consultations.length
         );
-        console.log("projects:", projects)
-        console.log("counts:", counts)
+
 
         return {
           labels: [...projects],
@@ -80,7 +79,7 @@ export class GroupsConsultationCountReportComponent {
           ],
         };
       }),
-   
+
       tap((_) => this.chart?.update())
     );
 

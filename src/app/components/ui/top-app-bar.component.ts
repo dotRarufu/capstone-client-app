@@ -23,7 +23,7 @@ import { ProjectService } from 'src/app/services/project.service';
     <div
       class=" w-full bg-primary  px-[1rem]  py-[1rem]  sm1:px-[32px] sm2:px-0 md:px-[200px]"
       *ngIf="{
-        notifications: notifications$ | async,
+        projectInvitations: projectInvitations$ | async,
         schedules: schedules$ | async,
         user: user$ | async,
         forcedSchedules: forcedSchedules$ | async
@@ -58,7 +58,7 @@ import { ProjectService } from 'src/app/services/project.service';
           >
             <div
               *ngIf="
-                observables.notifications ||
+                observables.projectInvitations ||
                   observables.schedules ||
                   observables.forcedSchedules;
                 else empty
@@ -131,7 +131,7 @@ import { ProjectService } from 'src/app/services/project.service';
 
                 <div
                   *ngIf="
-                    observables.notifications ||
+                    observables.projectInvitations ||
                       observables.schedules ||
                       observables.forcedSchedules;
                     else empty
@@ -192,30 +192,43 @@ export class TopAppBarComponent {
       return newUrl;
     })
   );
-  notifications$ = this.authService
-    .getNotifications()
-    .pipe(map((n) => n.length > 0));
-  schedules$ = this.authService
-    .getUnavailableSchedules()
-    .pipe(map((n) => n.length > 0));
-  name = this.user$.pipe(map((user) => user?.name || 'unnamed'));
-  forcedSchedules$ = this.projectService.getProjects().pipe(
-    filter(isNotNull),
-    switchMap((projects) => {
-      if (projects.length === 0) return of([]);
 
-      return forkJoin(
-        projects.map(({ id }) => this.projectService.getProjectInfo(id))
-      );
+  name = this.user$.pipe(map((user) => user?.name || 'Unnamed'));
+
+  notifications$ = this.authService.getNotifications();
+
+  // for advisers
+  projectInvitations$ = this.notifications$.pipe(
+    map((notifications) => {
+      const res = notifications.filter((n) => n.type_id === 2);
+
+      if (notifications.length === 0) return [];
+
+      return res;
     }),
-    map((projects) => projects.map((p) => p.technical_adviser_id)),
-    map((ids) => ids.filter((id) => id !== null) as string[]),
+    map((n) => n.length > 0)
+  );
+  // for technical advisers
+  schedules$ = this.notifications$.pipe(
+    map((notifications) => {
+      const res = notifications.filter((n) => n.type_id === 1);
 
-    switchMap((technicalAdvisers) =>
-      this.authService.getForcedSchedules(technicalAdvisers)
-    ),
-    map((p) => p.length > 0),
-    tap((v) => console.log('foredes:', v))
+      if (notifications.length === 0) return [];
+
+      return res;
+    }),
+    map((n) => n.length > 0)
+  );
+  // for student
+  forcedSchedules$ = this.notifications$.pipe(
+    map((notifications) => {
+      const res = notifications.filter((n) => n.type_id === 0);
+
+      if (notifications.length === 0) return [];
+
+      return res;
+    }),
+    map((n) => n.length > 0)
   );
 
   signOut() {
@@ -232,16 +245,10 @@ export class TopAppBarComponent {
           const rolePath = getRolePath(user.role_id);
           const route = [rolePath, 'home'];
 
-          // if (rolePath !== 's') {
-          //   route.unshift('a');
-          // }
-
           return route;
         }),
         tap((route) => this.router.navigate(route))
       )
-      .subscribe({
-        next: () => {},
-      });
+      .subscribe();
   }
 }

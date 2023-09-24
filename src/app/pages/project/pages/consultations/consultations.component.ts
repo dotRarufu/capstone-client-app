@@ -289,8 +289,6 @@ export class ConsultationsComponent {
       default:
         break;
     }
-
-    console.log('category:', category);
   }
 
   getInvertedSort(category: string) {

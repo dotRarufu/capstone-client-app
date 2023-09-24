@@ -40,7 +40,7 @@ export const roleGuard = (role: string) => {
       tap((dec) => {
         if (dec) return;
 
-        console.log('repelled by role guard:', 'path role:', role);
+        console.log('Repelled by role guard:', 'path role:', role);
         router.navigate(['/', 'unauthorized']);
       })
     );

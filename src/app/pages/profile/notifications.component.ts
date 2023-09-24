@@ -9,7 +9,6 @@ import { ToastrService } from 'ngx-toastr';
 import getRoleName from 'src/app/utils/getRoleName';
 import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
 import getUniqueItems from 'src/app/utils/getUniqueItems';
-import { ScheduleNotificationDetailsModalComponent } from './schedule-notification-detail-modal.component';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import {
   ProfileStateService,
@@ -18,28 +17,26 @@ import {
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { Router } from '@angular/router';
 import { getRolePath } from 'src/app/utils/getRolePath';
+import { ConsultationService } from 'src/app/services/consultation.service';
 
 @Component({
   selector: 'notifications',
   standalone: true,
-  imports: [
-    CommonModule,
-    ScheduleNotificationDetailsModalComponent,
-    FeatherIconsModule,
-  ],
+  imports: [CommonModule, FeatherIconsModule],
   template: `
     <div
       *ngIf="{
-        notifications: (notifications$ | async) || [],
+        projectInvitations: (projectInvitations$ | async) || [],
         schedules: (schedules$ | async) || [],
-        forcedSchedules: (forcedSchedules$ | async) || []
+        forcedSchedules: (forcedSchedules$ | async) || [],
+
       } as observables"
       class="flex flex-col gap-4 py-4"
     >
       <h1 class="font-bold">Notifications</h1>
       <ul
         *ngIf="
-          observables.notifications.length > 0 ||
+          observables.projectInvitations.length > 0 ||
             observables.schedules.length > 0 ||
             observables.forcedSchedules.length > 0;
           else empty
@@ -47,22 +44,25 @@ import { getRolePath } from 'src/app/utils/getRolePath';
         class="flex w-full flex-col gap-2"
       >
         <li
-          *ngFor="let notification of observables.notifications"
+          *ngFor="let projectInvitation of observables.projectInvitations"
           class="flex w-full items-center justify-between rounded-[5px] bg-base-200 px-4 py-2"
         >
           <span class=""
-            ><span class="font-bold">{{ notification.senderData.name }}</span>
+            ><span class="font-bold">{{
+              projectInvitation.senderData.name
+            }}</span>
             invited you to participate in their project as
-            {{ notification.roleName }}</span
+            {{ projectInvitation.roleName }}</span
           >
           <div class="join rounded-[5px] border">
             <button
               (click)="
+                confirmNotification(projectInvitation.notification.id);
                 acceptInvitation(
-                  notification.id,
-                  notification.receiver_uid,
-                  notification.role,
-                  notification.project_id
+                  projectInvitation.id,
+                  projectInvitation.receiver_uid,
+                  projectInvitation.role,
+                  projectInvitation.project_id
                 )
               "
               class="btn-sm join-item btn hover:btn-success"
@@ -70,7 +70,10 @@ import { getRolePath } from 'src/app/utils/getRolePath';
               Accept
             </button>
             <button
-              (click)="deleteInvitation(notification.id)"
+              (click)="
+                confirmNotification(projectInvitation.notification.id);
+                deleteInvitation(projectInvitation.id)
+              "
               class="btn-sm join-item btn hover:btn-error"
             >
               Delete
@@ -80,7 +83,6 @@ import { getRolePath } from 'src/app/utils/getRolePath';
         <li
           *ngFor="let schedule of observables.schedules"
           class="flex w-full items-center justify-between rounded-[5px] bg-base-200 px-4 py-2"
-           
         >
           <span class=""
             ><span class="font-bold">{{ schedule.project.name }}</span> has
@@ -88,15 +90,16 @@ import { getRolePath } from 'src/app/utils/getRolePath';
           </span>
           <button
             class="btn-sm btn"
-          
-            (click)="confirmSchedule(schedule.id, schedule.project.id)"
+            (click)="
+              confirmNotification(schedule.notification.id);
+              navigateToProjectConsultation(schedule.project.id)
+            "
           >
             <i-feather
               name="log-in"
               class="h-[20px] w-[20px] text-base-content/70"
             />
           </button>
-        
         </li>
         <li
           *ngFor="let schedule of observables.forcedSchedules"
@@ -106,7 +109,13 @@ import { getRolePath } from 'src/app/utils/getRolePath';
             ><span class="font-bold">{{ schedule.organizer.name }}</span>
             scheduled a consultation for your project
           </span>
-          <button class="btn-sm btn" (click)="navigateToProjectConsultation(schedule.project_id)">
+          <button
+            class="btn-sm btn"
+            (click)="
+              confirmNotification(schedule.notification.id);
+              navigateToProjectConsultation(schedule.project_id)
+            "
+          >
             <i-feather
               name="log-in"
               class="h-[20px] w-[20px] text-base-content/70"
@@ -123,19 +132,44 @@ import { getRolePath } from 'src/app/utils/getRolePath';
         </div>
       </ng-template>
     </div>
-
-    
   `,
 })
 export class NotificationsComponent {
   authService = inject(AuthService);
   projectService = inject(ProjectService);
+  consultationService = inject(ConsultationService);
   toastr = inject(ToastrService);
   spinner = inject(NgxSpinnerService);
   profileStateService = inject(ProfileStateService);
   router = inject(Router);
 
-  notifications$ = this.authService.getNotifications().pipe(
+  notifications$ = this.authService.getNotifications();
+
+  // for advisers
+  projectInvitations$ = this.notifications$.pipe(
+    map((notifications) => {
+      const res = notifications.filter((n) => n.type_id === 2);
+
+      if (notifications.length === 0) return [];
+
+      return res;
+    }),
+
+    switchMap((notifications) => {
+      if (notifications.length === 0) return of([]);
+
+      return forkJoin(
+        notifications.map((n) =>
+          this.authService.getProjectInvitation(n.data_id).pipe(
+            map((projectInvitation) => ({
+              notification: n,
+              ...projectInvitation,
+            }))
+          )
+        )
+      );
+    }),
+
     switchMap((notifications) => {
       if (notifications.length === 0) return of([]);
 
@@ -165,18 +199,34 @@ export class NotificationsComponent {
       return res$;
     })
   );
-  schedules$ = this.authService.getUnavailableSchedules().pipe(
-    
+  // for technical advisers
+  schedules$ = this.notifications$.pipe(
+    map((notifications) => {
+      const res = notifications.filter((n) => n.type_id === 1);
+
+      if (notifications.length === 0) return [];
+
+      return res;
+    }),
+    switchMap((notifications) => {
+      if (notifications.length === 0) return of([]);
+
+      return forkJoin(
+        notifications.map((notification) =>
+          this.authService
+            .getScheduleData(notification.data_id)
+            .pipe(map((schedule) => ({ notification, ...schedule })))
+        )
+      );
+    }),
     switchMap((schedules) => {
       if (schedules.length === 0) return of([]);
 
       const nonNull = schedules.filter((s) => s.taken_by_project !== null);
       const uniqueSchedules = getUniqueItems(nonNull, 'taken_by_project');
-   
+
       const uniqueReqs$ = uniqueSchedules.map((s) =>
-        this.projectService
-          .getProjectInfo(s.taken_by_project!)
-          
+        this.projectService.getProjectInfo(s.taken_by_project!)
       );
 
       return forkJoin(uniqueReqs$).pipe(
@@ -188,11 +238,10 @@ export class NotificationsComponent {
 
             return { ...s, project: matchedProjectData! };
           })
-        ),
-         
+        )
       );
     }),
-  
+
     map((p) =>
       p
         .map((a) => ({
@@ -200,25 +249,36 @@ export class NotificationsComponent {
           formattedStartTime: convertUnixEpochToDateString(a.start_time),
         }))
         .flat(1)
-    ),
-    
+    )
   );
-  forcedSchedules$ = this.projectService.getProjects().pipe(
-    filter(isNotNull),
-    switchMap((projects) => {
-      if (projects.length === 0) return of([]);
+  // for student
+  forcedSchedules$ = this.notifications$.pipe(
+    map((notifications) => {
+      const res = notifications.filter((n) => n.type_id === 0);
+
+      if (notifications.length === 0) return [];
+
+      return res;
+    }),
+    switchMap((forcedSchedules) => {
+      if (forcedSchedules.length === 0) return of([]);
 
       return forkJoin(
-        projects.map(({ id }) => this.projectService.getProjectInfo(id))
+        forcedSchedules.map((schedule) =>
+          this.consultationService
+            .getConsultationDataById(schedule.data_id)
+            .pipe(
+              map((consultation) => ({
+                notification: schedule,
+                ...consultation,
+              }))
+            )
+        )
       );
     }),
-    map((projects) => projects.map((p) => p.technical_adviser_id)),
-    map((ids) => ids.filter((id) => id !== null) as string[]),
-
-    switchMap((technicalAdvisers) =>
-      this.authService.getForcedSchedules(technicalAdvisers)
-    ),
     switchMap((schedules) => {
+      if (schedules.length === 0) return of([]);
+
       const technicalAdvisers = getUniqueItems(schedules, 'organizer_id').map(
         (s) => s.organizer_id
       );
@@ -238,23 +298,20 @@ export class NotificationsComponent {
     })
   );
 
-  confirmSchedule(consultationId: number, projectId: number) {
+  confirmNotification(id: number) {
     this.spinner.show();
-
-    this.authService.confirmScheduleNotification(consultationId).subscribe({
+    // todo: update notifications on confirm
+    this.authService.confirmNotification(id).subscribe({
       complete: () => {
-        // this.spinner.hide();
-        // this.toastr.success('Schedule confirmed');
-        this.navigateToProjectConsultation(projectId);
+        this.spinner.hide();
+        this.toastr.success('Notification confirmed');
       },
       error: () => {
         this.spinner.hide();
-        this.toastr.error('Failed to confirm schedule');
+        this.toastr.error('Failed to confirm notification');
       },
     });
   }
-
-
 
   acceptInvitation(
     id: number,
@@ -303,17 +360,12 @@ export class NotificationsComponent {
       .pipe(
         filter(isNotNull),
 
-        map((user) => getRolePath(user.role_id)),
-
+        map((user) => getRolePath(user.role_id))
       )
       .subscribe({
         next: (rolePath) => {
-
           this.router.navigate([rolePath, 'p', projectId, 'consultations']);
-
-
-
-      },
+        },
       });
   }
 }

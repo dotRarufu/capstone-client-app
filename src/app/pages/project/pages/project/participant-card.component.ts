@@ -65,11 +65,10 @@ export class ParticipantCardComponent implements OnInit {
   userUid = signal('');
   user$ = toObservable(this.userUid).pipe(
     filter(v => !!v),
-    tap(v => console.log("uid!!:", v)),
     switchMap((uid) => this.authService.getUserProfile(uid))
   );
   fallbackAvatar = `https://api.multiavatar.com/${
-    this.user.name || 'unnamed'
+    this.user.name || 'Unnamed'
   }.png`;
   userAvatarUrl$ = this.user$.pipe(
     map((user) => {

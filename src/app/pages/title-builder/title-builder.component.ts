@@ -349,8 +349,6 @@ export class TitleBuilderComponent {
       name ? `${name}:` : description
     } ${description} for ${client} `;
 
-    console.log('this is run');
-
     await this.projectService.analyzeTitle(title);
     this.spinner.hide();
     this.router.navigate(['s', 'home', 'title-analyzer']);

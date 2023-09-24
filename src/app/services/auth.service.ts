@@ -30,6 +30,7 @@ export class AuthService {
   private readonly updateProjectInvitationsSubject = new BehaviorSubject(0);
   private readonly updateScheduleNotificationsSubject = new BehaviorSubject(0);
   private readonly updateAvailableSchedulesSubject = new BehaviorSubject(0);
+  private readonly updateNotificationsSubject = new BehaviorSubject(0);
   user$ = this.userSubject.asObservable();
   updateUserProfile$ = this.updateUserProfileSubject.asObservable();
   updateProjectInvitations$ =
@@ -38,6 +39,7 @@ export class AuthService {
     this.updateScheduleNotificationsSubject.asObservable();
   updateAvailableSchedules$ =
     this.updateAvailableSchedulesSubject.asObservable();
+  updateNotifications$ = this.updateNotificationsSubject.asObservable();
   // todo: should these use readonly?
   private router = inject(Router);
   private spinner = inject(NgxSpinnerService);
@@ -82,7 +84,6 @@ export class AuthService {
   }
 
   getUserProfile(uid: string) {
-    // console.log('get user profile uid:', uid);
     const user$ = this.updateUserProfile$.pipe(
       switchMap((__) => this.getUser(uid))
     );
@@ -309,14 +310,14 @@ export class AuthService {
   }
 
   getNotifications() {
-    const user$ = this.getAuthenticatedUser().pipe(filter(isNotNull));
-    const req$ = this.updateProjectInvitations$.pipe(
-      switchMap((_) => user$),
-      switchMap(({ uid }) => {
+    const user = this.getAuthenticatedUser().pipe(
+      filter(isNotNull),
+      switchMap((user) => {
         const req = this.client
-          .from('project_invitation')
+          .from('notification')
           .select('*')
-          .eq('receiver_uid', uid);
+          .eq('is_confirmed', false)
+          .eq('receiver_id', user.uid);
 
         return from(req).pipe(
           map((res) => {
@@ -325,6 +326,52 @@ export class AuthService {
             return data;
           })
         );
+      })
+    );
+
+    return this.updateNotifications$.pipe(switchMap((_) => user));
+  }
+
+  confirmNotification(id: number) {
+    const req = this.client
+      .from('notification')
+      .update({ is_confirmed: true })
+      .eq('id', id);
+
+    return from(req).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
+      }),
+      tap((_) => this.signalUpdateNotifications())
+    );
+  }
+
+  getProjectInvitation(id: number) {
+    const req = this.client.from('project_invitation').select('*').eq('id', id).single();
+
+    return from(req).pipe(
+      map((res) => {
+       
+        const { data } = errorFilter(res);
+
+        return data;
+      })
+    );
+  }
+
+  sendNotification(type: number, dataId: number, receiverId: string) {
+    const req = this.client.from('notification').insert({
+      type_id: type,
+      data_id: dataId,
+      receiver_id: receiverId,
+    });
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { statusText } = errorFilter(res);
+
+        return statusText;
       })
     );
 
@@ -345,7 +392,7 @@ export class AuthService {
 
         return statusText;
       }),
-      tap(() => this.signalUpdateProjectInvitations())
+      tap(() => this.signalUpdateNotifications())
     );
 
     let data: Partial<ProjectRow> = {
@@ -379,7 +426,7 @@ export class AuthService {
 
         return statusText;
       }),
-      tap(() => this.signalUpdateProjectInvitations())
+      tap(() => this.signalUpdateNotifications())
     );
 
     return req$;
@@ -439,7 +486,6 @@ export class AuthService {
       end_time,
       taken_by_project: projectId,
       is_available: false,
-      is_confirmed: true,
     };
     const req = this.client.from('available_schedule').insert(data).select('*');
     const req$ = from(req).pipe(
@@ -491,7 +537,7 @@ export class AuthService {
           .from('consultation')
           .select('*')
           .filter('organizer_id', 'in', `(${technicalAdvisers})`)
-          .eq("category_id", 1);
+          .eq('category_id', 1);
 
         const req$ = from(req).pipe(
           map((res) => {
@@ -631,56 +677,6 @@ export class AuthService {
     return req$;
   }
 
-  // add this in top app bar profile notif
-  getUnavailableSchedules() {
-    const technicalAdviser$ = this.getAuthenticatedUser().pipe(
-      filter(isNotNull),
-      switchMap((user) => {
-        if (user.role_id !== 5) return EMPTY;
-
-        return of(user);
-      })
-    );
-    const req$ = this.updateScheduleNotifications$.pipe(
-      switchMap((_) => technicalAdviser$),
-
-      switchMap((user) => {
-        const req = this.client
-          .from('available_schedule')
-          .select('*')
-          .eq('technical_adviser', user.uid)
-          .eq('is_confirmed', false)
-          .eq('is_available', false);
-
-        return from(req);
-      }),
-      map((res) => {
-        const { data } = errorFilter(res);
-
-        return data;
-      })
-    );
-
-    return req$;
-  }
-
-  confirmScheduleNotification(id: number) {
-    const req = this.client
-      .from('available_schedule')
-      .update({ is_confirmed: true })
-      .eq('id', id);
-    const req$ = from(req).pipe(
-      map((res) => {
-        const { statusText } = errorFilter(res);
-
-        return statusText;
-      }),
-      tap((_) => this.signalUpdateScheduleNotifications())
-    );
-
-    return req$;
-  }
-
   // after its associated consultation is complete
   deleteSchedule(id: number) {
     const req = this.client.from('available_schedule').delete().eq('id', id);
@@ -700,7 +696,6 @@ export class AuthService {
     startTimeEpoch: number,
     projectId: number
   ) {
-   
     const req = this.client
       .from('available_schedule')
       .select('*')
@@ -776,16 +771,13 @@ export class AuthService {
     const old = this.updateUserProfileSubject.getValue();
     this.updateUserProfileSubject.next(old + 1);
   }
-  private signalUpdateProjectInvitations() {
-    const old = this.updateProjectInvitationsSubject.getValue();
-    this.updateProjectInvitationsSubject.next(old + 1);
-  }
-  private signalUpdateScheduleNotifications() {
-    const old = this.updateScheduleNotificationsSubject.getValue();
-    this.updateScheduleNotificationsSubject.next(old + 1);
-  }
+  
   signalUpdateAvailableSchedules() {
     const old = this.updateAvailableSchedulesSubject.getValue();
     this.updateAvailableSchedulesSubject.next(old + 1);
+  }
+  signalUpdateNotifications() {
+    const old = this.updateNotificationsSubject.getValue();
+    this.updateNotificationsSubject.next(old + 1);
   }
 }

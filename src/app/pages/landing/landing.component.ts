@@ -64,7 +64,7 @@ export class LandingComponent implements OnInit {
       .subscribe({
         next: (user) => {
           const role = getRolePath(user.role_id);
-          console.log('role:', role);
+          console.log('User role:', role);
           if (role === 's') {
             this.router.navigate(['s']);
 

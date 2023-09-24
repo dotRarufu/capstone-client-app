@@ -16,11 +16,11 @@ export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
     tap((dec) => {
       if (dec) return;
 
-      console.log('user is not authenticated, and repelled by the guard');
+      console.log('User is not authenticated, and repelled by the guard');
       router.navigate(['/']);
     }),
     catchError((err) => {
-      console.log('error occured:', err);
+      console.log('Error occured in auth guard:', err);
 
       router.navigate(['/']);
       return of(false);

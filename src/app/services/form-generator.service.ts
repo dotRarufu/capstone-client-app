@@ -86,7 +86,7 @@ clearFormUrl() {
     a: TitleAnalyzerResult | undefined | null | AnalyzerResultError
   ) {
     if (a === undefined || a === null) {
-      console.log('should show error toast');
+     
       throw new Error('undefined result');
     }
 

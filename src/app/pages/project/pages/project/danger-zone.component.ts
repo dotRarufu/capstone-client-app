@@ -104,13 +104,13 @@ export class DangerZoneComponent {
   handleDeleteProject() {
     this.projectService.deleteProject(this.projectId).subscribe({
       next: () => {
-        this.toastr.success('project successfully deleted');
+        this.toastr.success('Project successfully deleted');
 
         this.navigateToHome();
       },
       error: (err) => {
-        console.log('error:', err);
-        this.toastr.error('failed to delete project');
+        console.log('Failed to delete project:', err);
+        this.toastr.error('Failed to delete project');
       },
     });
   }

@@ -55,6 +55,12 @@ export class ConsultationService {
       switchMap((_) =>
         this.authService.markScheduleUnavailable(data.scheduleId, projectId)
       ),
+      switchMap((_) =>
+        this.projectService.getProjectTechnicalAdviser(projectId)
+      ),
+      switchMap(({ technical_adviser_id: uid }) =>
+        this.authService.sendNotification(1, data.scheduleId, uid!)
+      ),
       tap(() => this.signalNewConsultation())
     );
 
@@ -250,8 +256,23 @@ export class ConsultationService {
 
     const req$ = from(req).pipe(
       map((res) => {
-        console.log('error:', res.error);
-        console.log('filters:', { projectId, scheduleId });
+        const resA = errorFilter(res);
+
+        return resA.data;
+      })
+    );
+
+    return req$;
+  }
+  getConsultationDataById(id: number) {
+    const req = this.client
+      .from('consultation')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    const req$ = from(req).pipe(
+      map((res) => {
         const resA = errorFilter(res);
 
         return resA.data;
@@ -274,7 +295,7 @@ export class ConsultationService {
             return p;
           }),
           map((p) => p.map((a) => a.id)),
-        
+
           switchMap((ids) => {
             return forkJoin(
               ids.map((id) =>
@@ -288,10 +309,9 @@ export class ConsultationService {
               )
             );
           }),
-        
+
           switchMap((ids) => {
-          
-            const counts = ids.map(({projectId}) => {
+            const counts = ids.map(({ projectId }) => {
               const req = this.client
                 .from('consultation')
                 .select('*')
@@ -312,7 +332,6 @@ export class ConsultationService {
 
             return forkJoin(counts);
           }),
-        
 
           map((d) => d.filter((a) => a > 0).length > 0)
         );
@@ -358,30 +377,40 @@ export class ConsultationService {
 
     return forkJoin({ user: user$, schedule: schedule$ }).pipe(
       switchMap(({ user: { uid }, schedule: scheduleId }) => {
-        console.log('insert:', {
-          ...consultationData,
-          organizer_id: uid,
-          category_id: 1,
-          schedule_id: scheduleId,
-        });
-        const req = this.client.from('consultation').insert({
-          ...consultationData,
-          organizer_id: uid,
-          category_id: 1,
-          schedule_id: scheduleId,
-        });
+        const req = this.client
+          .from('consultation')
+          .insert({
+            ...consultationData,
+            organizer_id: uid,
+            category_id: 1,
+            schedule_id: scheduleId,
+          })
+          .select('*');
 
         return from(req).pipe(
           map((res) => {
-            const { statusText } = errorFilter(res);
+            const { data } = errorFilter(res);
 
-            return statusText;
+            return data;
           })
         );
       }),
-      tap(() => this.signalNewConsultation())
+      switchMap((res) =>
+        this.projectService.getMembers(data.project_id).pipe(
+          switchMap((participants) => {
+            const reqs = participants.map(({ student_uid }) =>
+              this.authService.sendNotification(0, res[0].id, student_uid)
+            );
+
+            return forkJoin(reqs);
+          })
+        )
+      ),
+      tap((_) => this.signalNewConsultation())
     );
   }
+
+ 
 
   getConsultationsOrganizedBy(organizer_id: string) {
     const req = this.client
@@ -452,30 +481,7 @@ export class ConsultationService {
     const dateTime$ = this.authService.getScheduleData(data.scheduleId);
     return dateTime$.pipe(
       switchMap((dateTime) => {
-        // const date = new Date(dateTime.date);
-        // const time = new Date(0);
-        // time.setUTCSeconds(dateTime.start_time);
-
-        // const hours = time.getHours();
-        // const minutes = time.getMinutes();
-        // const seconds = time.getSeconds();
-        // const milliseconds = time.getMilliseconds();
-
-        // date.setHours(hours);
-        // date.setMinutes(minutes);
-        // date.setSeconds(seconds);
-        // date.setMilliseconds(milliseconds);
-
-        // Format the Date object
-        // const formattedDate = date.toLocaleString('en-US', {
-        //   year: 'numeric',
-        //   month: '2-digit',
-        //   day: '2-digit',
-        //   hour: '2-digit',
-        //   minute: '2-digit',
-        //   hour12: true,
-        // });
-        // console.log('new date epoch:', dateToEpoch(date));
+     
 
         const newData = {
           organizer_id: userUid,

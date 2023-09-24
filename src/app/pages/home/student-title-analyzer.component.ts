@@ -28,8 +28,4 @@ export class StudentTitleAnalyzerComponent {
   projectService = inject(ProjectService);
   homeStateService = inject(HomeStateService);
   result$  = this.projectService.analyzerResult$
-
-  a = this.projectService.analyzerResult$.pipe(
-    tap((v) => console.log('res emits:!', v))
-  );
 }

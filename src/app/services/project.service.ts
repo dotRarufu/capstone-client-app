@@ -78,14 +78,14 @@ export class ProjectService {
           }
 
           default:
-            console.log('unknown user role:', user.role_id);
+            console.log('Unknown user role:', user.role_id);
             throw new Error('cannt');
         }
-      }),
+      })
     );
 
     return this.projectUpdate$.pipe(
-      switchMap((_) => merge(of(null), projects$)),
+      switchMap((_) => merge(of(null), projects$))
     );
   }
 
@@ -227,6 +227,39 @@ export class ProjectService {
     );
 
     return res;
+  }
+
+  getMembers(projectId: number) {
+    const req = this.client
+      .from('member')
+      .select('*')
+      .eq('project_id', projectId);
+
+    const req$ = from(req).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      })
+    );
+
+    return req$;
+  }
+
+  getProjectTechnicalAdviser(projectId: number) {
+    const req = this.client
+      .from('project')
+      .select('*')
+      .eq('id', projectId)
+      .single();
+
+    return from(req).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      })
+    );
   }
 
   checkProjectParticipant(userUid: string, projectId: number) {
@@ -684,8 +717,6 @@ export class ProjectService {
     this.projectUpdate$.next(old + 1);
   }
   private signalInvitedParticipant() {
-    console.log('update invited participants!');
-
     const old = this.invitedParticipantUpdate$.getValue();
     this.invitedParticipantUpdate$.next(old + 1);
   }
@@ -697,15 +728,14 @@ export class ProjectService {
       .eq('student_uid', userUid);
 
     const projects$ = from(studentRequest).pipe(
-      tap((v) => console.log('get student projects:', v)),
+
       map((res) => {
         const { data } = errorFilter(res);
 
         return data.map((d) => d.project_id);
       }),
       switchMap((projectIds) => from(this.getProjectRows(projectIds))),
-      tap((v) => console.log('project rows:', v)),
-      
+
       switchMap((projectRows) => this.getProject(projectRows))
     );
 
@@ -771,7 +801,7 @@ export class ProjectService {
   }
 
   private getProject(projectRows: ProjectRow[]) {
-    if (projectRows.length === 0) return of([]); 
+    if (projectRows.length === 0) return of([]);
 
     const projects = projectRows.map((p) => {
       const projectMembers$ = from(this.getProjectMembers(p.id));
@@ -888,14 +918,18 @@ export class ProjectService {
       sender_uid: sender,
       role: roleId,
     };
-    const invitationReq = this.client.from('project_invitation').insert(data);
+    const invitationReq = this.client
+      .from('project_invitation')
+      .insert(data)
+      .select('*');
 
     const invitationReq$ = from(invitationReq).pipe(
       map((r) => {
-        const { statusText } = errorFilter(r);
+        const { data } = errorFilter(r);
 
-        return statusText;
-      })
+        return data[0];
+      }),
+      switchMap(({ id }) => this.authService.sendNotification(2, id, receiver))
     );
 
     return invitationReq$;
@@ -915,12 +949,12 @@ export class ProjectService {
   );
   clearAnalyzerResult() {
     this._analyzerResult$.next(undefined);
-    console.log('clear result');
+
   }
 
   // maybe rename this to backendService
   async analyzeTitle(title: string) {
-    console.log('analyzing title:', title);
+    console.log('Analyzing title:', title);
     const userId = '47033d78-0a18-4a0e-a5a5-1f9d51d04550'; // todo: get from logged in user
     const client = this.client;
     // todo: add types for edge fn
@@ -931,10 +965,10 @@ export class ProjectService {
         name: 'Functions',
       },
     });
-    console.log('response:', response);
+    console.log('Title analyzed:', response);
     const data = response.data as TitleAnalyzerResult | null;
     this._analyzerResult$.next(data);
-    console.log('emits:', data?.title_uniqueness);
+
 
     return data;
   }

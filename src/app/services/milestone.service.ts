@@ -231,7 +231,7 @@ export class MilestoneService {
       take(1),
       map((res) => {
         const { statusText } = errorFilter(res);
-        console.log('delete templateid:', templateId);
+
         return statusText;
       }),
       tap((_) => this.signalMilestoneTemplatesUpdate())
@@ -296,16 +296,16 @@ export class MilestoneService {
 
   reapplyTemplates() {
     const user$ = this.authService.getAuthenticatedUser().pipe(
-      tap((u) => console.log('user:', u)),
+
       filter(isNotNull)
     );
     const projects$ = this.projectService.getProjects().pipe(
       take(2),
-      tap((u) => console.log('projects:', u)),
+
       filter(isNotNull)
     );
     const req$ = forkJoin({ user: user$, projects: projects$ }).pipe(
-      tap((u) => console.log('runss!:', u)),
+
       switchMap(({ user, projects }) => {
         const req$ = projects.map((p) =>
           this.applyCapstoneAdviserTemplate(user.uid, p.id)
@@ -319,7 +319,7 @@ export class MilestoneService {
   }
 
   applyCapstoneAdviserTemplate(userUid: string, projectId: number) {
-    console.log('called! | user:', userUid);
+
     const templates$ = this.getMilestoneTemplates(userUid);
     const milestoneIds$ = from(
       this.client.from('milestone').select('id').eq('project_id', projectId)
@@ -343,7 +343,7 @@ export class MilestoneService {
     );
     const addReq$ = templates$.pipe(
       take(1),
-      tap((_) => console.log('adds new milestones')),
+
       switchMap((templates) => {
         if (templates.length === 0) return of([]);
 

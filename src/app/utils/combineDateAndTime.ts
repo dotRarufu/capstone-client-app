@@ -4,7 +4,7 @@ const combineDateAndTime = (dateString: string, timeEpoch: number) => {
   const date = new Date(dateString);
   const time = new Date(0);
   time.setUTCSeconds(timeEpoch);
-  // console.log("combinE:", {date, dateString});
+
 
   const hours = time.getHours();
   const minutes = time.getMinutes();
