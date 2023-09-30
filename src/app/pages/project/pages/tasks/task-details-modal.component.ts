@@ -232,11 +232,11 @@ export class TaskDetailsModalComponent {
     this.taskService.delete(task!.id, task!.assigner_id).subscribe({
       next: (status) => {
         this.spinner.hide();
-        this.toastr.success(status);
+        this.toastr.success("Task deleted");
       },
       error: (err) => {
         this.spinner.hide();
-        this.toastr.error(err);
+        this.toastr.error("Failed to delete task");
       },
     });
   }

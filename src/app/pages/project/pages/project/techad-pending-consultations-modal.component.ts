@@ -136,16 +136,17 @@ import { NgxSpinnerService } from 'ngx-spinner';
               <i-feather class="text-base-content/70" name="check" /> Accept
             </button>
             <button
+              
               *ngIf="!inDecline()"
-             
               (click)="inDecline.set(true)"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x-circle" /> Decline
             </button>
             <button
+              onclick="techAdPendingConsultationsModal.close()"
               *ngIf="inDecline()"
-              (click)="handleInvitation(false)"
+              (click)="handleInvitation(false); inDecline.set(false)"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="check" /> Confirm
@@ -156,6 +157,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <button
               onclick="techAdPendingConsultationsModal.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
+              (click)="inDecline.set(false)"
             >
               <i-feather class="text-base-content/70" name="x" />
               {{ !inDecline() ? 'close' : 'cancel' }}
@@ -176,14 +178,17 @@ export class TechAdPendingConsultationsModalComponent {
   consultationService = inject(ConsultationService);
 
   inDecline = signal(false);
-  declineReason = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  declineReason = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
 
-  showSpinner= this.spinner.show();
+  showSpinner = this.spinner.show();
 
   consultation$ = this.consultationStateService.consultation$.pipe(
-    switchMap(v => {
-      if (v ===null) {
-        this.spinner.hide()
+    switchMap((v) => {
+      if (v === null) {
+        this.spinner.hide();
         return EMPTY;
       }
 
@@ -235,7 +240,7 @@ export class TechAdPendingConsultationsModalComponent {
 
   handleInvitation(decision: boolean) {
     if (this.declineReason.invalid) {
-      this.toastr.error("Decline reason cannot be empty")
+      this.toastr.error('Decline reason cannot be empty');
 
       return;
     }
@@ -251,11 +256,13 @@ export class TechAdPendingConsultationsModalComponent {
       .subscribe({
         next: (res) => {
           this.spinner.hide();
-          this.toastr.success(res);
+          this.toastr.success(
+            `Consultation has been ${decision ? 'accepted' : 'declined'}`
+          );
         },
         error: (err) => {
           this.spinner.hide();
-          this.toastr.error(err);
+          this.toastr.error("Error occured: " + err);
         },
       });
   }

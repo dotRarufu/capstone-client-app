@@ -26,7 +26,8 @@ import { ProjectService } from 'src/app/services/project.service';
         projectInvitations: projectInvitations$ | async,
         schedules: schedules$ | async,
         user: user$ | async,
-        forcedSchedules: forcedSchedules$ | async
+        forcedSchedules: forcedSchedules$ | async,
+        declinedConsultations: declinedConsultations$ | async
       } as observables"
       [class.bg-[#463dbc]]="observables.user?.role_id === 5"
     >
@@ -60,6 +61,7 @@ import { ProjectService } from 'src/app/services/project.service';
               *ngIf="
                 observables.projectInvitations ||
                   observables.schedules ||
+                  observables.declinedConsultations ||
                   observables.forcedSchedules;
                 else empty
               "
@@ -223,6 +225,16 @@ export class TopAppBarComponent {
   forcedSchedules$ = this.notifications$.pipe(
     map((notifications) => {
       const res = notifications.filter((n) => n.type_id === 0);
+
+      if (notifications.length === 0) return [];
+
+      return res;
+    }),
+    map((n) => n.length > 0)
+  );
+  declinedConsultations$ = this.notifications$.pipe(
+    map((notifications) => {
+      const res = notifications.filter((n) => n.type_id === 3);
 
       if (notifications.length === 0) return [];
 

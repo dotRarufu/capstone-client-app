@@ -149,11 +149,11 @@ export class ParticipntDetailModalComponent {
 
     this.projectService.removeProjectParticipant(userUid, projectId).subscribe({
       complete: () => {
-        this.toastr.success('successfully removed user from the project');
+        this.toastr.success('Successfully removed user from the project');
         this.newRole.set('');
       },
       error: () => {
-        this.toastr.error('failed to removed user from the project');
+        this.toastr.error('Failed to removed user from the project');
       },
     });
   }

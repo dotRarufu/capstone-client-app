@@ -119,7 +119,7 @@ export class MilestoneTemplateInfoComponent implements OnInit {
     }),
     map((d) => d.id),
     catchError(() => {
-      this.toastr.error('Error getting milestone tempplate data');
+      this.toastr.error('Error getting milestone template data');
 
       return EMPTY;
     })
@@ -191,7 +191,7 @@ export class MilestoneTemplateInfoComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.toastr.success(
-            'Successfully changed milestone template duedate to ' + res.due_date
+            'Successfully changed milestone template due date to ' + res.due_date
           );
         },
         error: () => {
@@ -225,7 +225,7 @@ export class MilestoneTemplateInfoComponent implements OnInit {
     .pipe(
       filter((value) => {
         if (this.dueDate.invalid)
-          this.toastr.error('Due date cannot ve empty');
+          this.toastr.error('Due date cannot be empty');
 
         return (
           !this.dueDate.invalid && this.dueDate.status !== 'DISABLED'

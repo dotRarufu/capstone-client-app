@@ -129,11 +129,11 @@ export class DangerZoneComponent {
       )
       .subscribe({
         next: () => {
-          this.toastr.success('successfully left the project');
+          this.toastr.success('Successfully left the project');
           this.navigateToHome();
         },
         error: () => {
-          this.toastr.error('failed to leave the project');
+          this.toastr.error('Failed to leave the project');
         },
       });
   }

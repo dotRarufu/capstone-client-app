@@ -333,6 +333,7 @@ export class AuthService {
   }
 
   confirmNotification(id: number) {
+    console.log("confirm notif:", id)
     const req = this.client
       .from('notification')
       .update({ is_confirmed: true })

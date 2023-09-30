@@ -149,7 +149,7 @@ export class MilestonesComponent {
       return sorted;
     }),
     catchError((err) => {
-      this.toastr.error('error getting milestones:', err);
+      this.toastr.error('Error getting milestones:', err);
       return [];
     })
   );

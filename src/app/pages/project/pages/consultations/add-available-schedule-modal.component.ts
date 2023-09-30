@@ -1,5 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { FeatherModule } from 'angular-feather';
 import { ToastrService } from 'ngx-toastr';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
@@ -46,7 +52,7 @@ import timeToEpoch from 'src/app/utils/timeToEpoch';
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <div class="flex flex-col items-center gap-2 sm1:flex-row">
-            <span class="text-base-content"> FROM </span>
+              <span class="text-base-content"> FROM </span>
               <input
                 [formControl]="startTime"
                 type="time"
@@ -65,7 +71,7 @@ import timeToEpoch from 'src/app/utils/timeToEpoch';
 
           <ul class=" flex w-full flex-col  bg-neutral/20 p-0 sm1:w-[223px] ">
             <button
-            onclick="addAvailableSchedule.close()"
+              onclick="addAvailableSchedule.close()"
               (click)="add()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
@@ -76,8 +82,7 @@ import timeToEpoch from 'src/app/utils/timeToEpoch';
             <div class="h-full"></div>
 
             <button
-            onclick="addAvailableSchedule.close()"
-
+              onclick="addAvailableSchedule.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x-circle" />
@@ -90,9 +95,18 @@ import timeToEpoch from 'src/app/utils/timeToEpoch';
   `,
 })
 export class AddAvailableScheduleModalComponent {
-  date = new FormControl('', { nonNullable: true, validators: [Validators.required] });
-  startTime = new FormControl('', { nonNullable: true, validators: [Validators.required] });
-  endTime = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  date = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required, this.dateValidator()],
+  });
+  startTime = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  endTime = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
   // section = new FormControl('', { nonNullable: true });
 
   projectService = inject(ProjectService);
@@ -110,12 +124,34 @@ export class AddAvailableScheduleModalComponent {
       )
     );
 
+  dateValidator(): ValidatorFn {
+    return (control: AbstractControl) => {
+      console.log('date vlaidator:', control.value);
+
+      const date = new Date(control.value);
+      const current = new Date();
+
+      if (date < current) return { pastDate: true };
+
+      return null;
+    };
+  }
+
   add() {
-    if (this.date.invalid) {
+    const dateErrors = this.date.errors;
+
+    if (dateErrors && dateErrors['required']) {
       this.toastr.error('Date cannot be empty');
 
       return;
     }
+
+    if (dateErrors && dateErrors['pastDate']) {
+      this.toastr.error('Date cannot be in the past');
+
+      return;
+    }
+    
     if (this.startTime.invalid) {
       this.toastr.error('Start time cannot be empty');
 
@@ -153,7 +189,6 @@ export class AddAvailableScheduleModalComponent {
           this.date.reset();
           this.startTime.reset();
           this.endTime.reset();
-
         },
         error: (err) => {
           this.spinner.hide();

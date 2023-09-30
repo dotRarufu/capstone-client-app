@@ -236,7 +236,7 @@ export class SignupComponent {
         },
         error: (value) => {
           this.spinner.hide();
-          this.toastr.error(value as string);
+          this.toastr.error("Sign up failed, try again");
         },
       });
   }

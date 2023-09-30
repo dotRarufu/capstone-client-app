@@ -46,6 +46,8 @@ import { ProjectStateService } from './data-access/project-state.service';
 import { InvitedParticipantCardComponent } from './invited-participant-card.component';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import toProjectNumber from 'src/app/utils/toProjectNumber';
+import { dateToDateString } from 'src/app/utils/dateToDateString';
+import formatDate from 'src/app/utils/formatDate';
 
 @Component({
   selector: 'general',
@@ -142,7 +144,7 @@ import toProjectNumber from 'src/app/utils/toProjectNumber';
             placeholder="3-1"
             class="input-bordered input input-md join-item w-full rounded-[3px] focus:input-primary  focus:outline-0"
           />
-          <div class="form-control join-item ">
+          <div *ngIf="user()?.role_id !== 5" class="form-control join-item">
             <div
               class="input-group rounded-[3px] border border-base-content/50"
             >
@@ -167,7 +169,7 @@ import toProjectNumber from 'src/app/utils/toProjectNumber';
       <div class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Date Created</div>
         <div class="h-[2px] w-full bg-base-content/10"></div>
-        <div>{{ observables.project?.created_at }}</div>
+        <div>{{ observables.project?.createdAt }}</div>
       </div>
       <div class="flex flex-col gap-[4px]">
         <div class="text-base font-semibold">Project Number</div>
@@ -301,16 +303,22 @@ export class GeneralComponent implements OnInit {
       .pipe(map((role) => role === 'c'));
   });
 
-  project$ = this.projectService.getProjectInfo(this.projectId);
+  project$ = this.projectService.getProjectInfo(this.projectId).pipe(
+    map((p) => ({
+      ...p,
+      createdAt: formatDate(new Date(p.created_at)),
+    }))
+  );
   projectSubscription = this.project$.subscribe({
     next: (project) => {
       this.name.setValue(project.name);
       this.title.setValue(project.full_title);
       this.isDone.setValue(project.is_done);
+      console.log("section form control val:", project.section)
       this.section.setValue(project.section);
     },
     error: (err) => {
-      this.toastr.error('Error fetching project info');
+      this.toastr.error('Error fetching project data');
     },
   });
 
@@ -332,7 +340,7 @@ export class GeneralComponent implements OnInit {
       filter((value) => {
         if (this.title.invalid) this.toastr.error('Invalid title');
 
-        return !this.title.invalid && this.title.status !== "DISABLED";
+        return !this.title.invalid && this.title.status !== 'DISABLED';
       })
     )
     .subscribe(this.newTitleSubject);
@@ -358,7 +366,7 @@ export class GeneralComponent implements OnInit {
       filter((value) => {
         if (this.section.invalid) this.toastr.error('Invalid section');
 
-        return !this.section.invalid && this.section.status !== "DISABLED";
+        return !this.section.invalid && this.section.status !== 'DISABLED';
       })
     )
     .subscribe(this.newSectionSubject);
@@ -405,7 +413,7 @@ export class GeneralComponent implements OnInit {
       filter((value) => {
         if (this.name.invalid) this.toastr.error('Invalid name');
 
-        return !this.name.invalid && this.name.status !== "DISABLED";
+        return !this.name.invalid && this.name.status !== 'DISABLED';
       })
     )
     .subscribe(this.newNameSubject);
@@ -413,14 +421,14 @@ export class GeneralComponent implements OnInit {
     .pipe(filter((v): v is ProjectRow => !v.hasOwnProperty('isError')))
     .subscribe({
       next: (res) => {
-        this.toastr.success('successfully changed project name to ' + res.name);
+        this.toastr.success('Successfully changed project name to ' + res.name);
       },
     });
   newNameFailed$ = this.newName$
     .pipe(filter((v): v is AError => v.hasOwnProperty('isError')))
     .subscribe({
       next: (res) => {
-        this.toastr.error('error changing name: ' + res.message);
+        this.toastr.error('Error changing name: ' + res.message);
       },
     });
 
@@ -440,7 +448,7 @@ export class GeneralComponent implements OnInit {
     .subscribe({
       next: (res) => {
         this.toastr.success(
-          'successfully changed project is done to ' + res.is_done
+          'Successfully changed project is done to ' + res.is_done
         );
       },
     });
@@ -448,7 +456,7 @@ export class GeneralComponent implements OnInit {
     .pipe(filter((v): v is AError => v.hasOwnProperty('isError')))
     .subscribe({
       next: (res) => {
-        this.toastr.error('error changing is done property: ' + res.message);
+        this.toastr.error('Error changing is done property: ' + res.message);
       },
     });
 

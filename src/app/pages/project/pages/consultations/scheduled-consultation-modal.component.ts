@@ -215,11 +215,11 @@ export class ScheduledConsultationModalComponent {
     completeScheduled.subscribe({
       next: (res) => {
         this.spinner.hide();
-        this.toastr.success('success');
+        this.toastr.success('Consultation completed');
       },
       error: (err) => {
         this.spinner.hide();
-        this.toastr.error(err);
+        this.toastr.error("Failed to complete consultation");
       },
     });
   }

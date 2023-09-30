@@ -124,11 +124,11 @@ export class AddMilestoneModalComponent {
     status$.subscribe({
       next: (status) => {
         this.spinner.hide();
-        this.toastr.success(status);
+        this.toastr.success("Success");
       },
       error: (err) => {
         this.spinner.hide();       
-        this.toastr.error(err);
+        this.toastr.error("Error occured: " + err);
       },
      
     });

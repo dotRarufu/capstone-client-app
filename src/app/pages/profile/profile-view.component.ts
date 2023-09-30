@@ -338,11 +338,11 @@ export class ProfileViewComponent implements OnInit {
   );
   showSaveButton$ = this.showSaveButtonSubject.asObservable().pipe(
     filter((v) => v !== ''),
- 
+
     switchMap((v) => forkJoin({ v: of(v), user: this.user$ })),
-    
+
     map(({ v, user }) => v !== user.name),
- 
+
   );
   user$ = this.authService.getAuthenticatedUser().pipe(
     map((user) => {
@@ -354,7 +354,6 @@ export class ProfileViewComponent implements OnInit {
       this.authService.getUserProfile(user.uid).pipe(take(1))
     ),
     tap(() => this.spinner.hide())
-    // tap((user) => this.newName.setValue(user.name))
   );
   fallbackAvatar$ = this.user$.pipe(
     map((user) => `https://api.multiavatar.com/${user.name}.png`)
@@ -397,7 +396,7 @@ export class ProfileViewComponent implements OnInit {
 
     this.authService.updateName(this.newName.value!).subscribe({
       next: (status) => {
-        this.toastr.success('successfully updated name');
+        this.toastr.success('Successfully updated name');
         this.spinner.hide();
         // this.user().name = this.newName;
         this.showSaveButtonSubject.next(this.newName.value!);
@@ -425,11 +424,11 @@ export class ProfileViewComponent implements OnInit {
       )
       .subscribe({
         next: (status) => {
-          this.toastr.success('successfully removed photo');
+          this.toastr.success('Successfully removed photo');
           this.spinner.hide();
         },
         error: (status) => {
-          this.toastr.error('failed to removed photo');
+          this.toastr.error('Failed to remove photo');
           this.spinner.hide();
         },
       });
@@ -448,11 +447,11 @@ export class ProfileViewComponent implements OnInit {
       .subscribe({
         next: () => {
           this.spinner.hide();
-          this.toastr.success('photo uploaded successfully');
+          this.toastr.success('Image uploaded successfully');
         },
         error: () => {
           this.spinner.hide();
-          this.toastr.error('photo not uploaded ');
+          this.toastr.error('Image not uploaded ');
         },
       });
   }

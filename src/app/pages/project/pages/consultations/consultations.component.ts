@@ -318,8 +318,8 @@ export class ConsultationsComponent {
     const consultation = this.consultationStateService.getActiveConsultation()!;
 
     this.consultationService.cancelInvitation(consultation.id).subscribe({
-      next: (res) => this.toastr.success(res),
-      error: (res) => this.toastr.error(res),
+      next: (res) => this.toastr.success("Invitation canceled"),
+      error: (res) => this.toastr.error("Failed to cancel invitation"),
     });
   }
 

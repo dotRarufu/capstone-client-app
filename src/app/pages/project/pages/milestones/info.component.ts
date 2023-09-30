@@ -169,12 +169,11 @@ export class MilestoneInfoComponent {
     .subscribe({
       next: (res) => {
         this.toastr.success(
-          'successfully changed milestone data is achieved to ' +
-            res.is_achieved
+          'Successfully changed milestone data'
         );
       },
       error: () => {
-        this.toastr.error('error changing milestone data is achieved');
+        this.toastr.error('Error changing milestone data');
       },
     });
 
@@ -193,11 +192,11 @@ export class MilestoneInfoComponent {
     .subscribe({
       next: (res) => {
         this.toastr.success(
-          'successfully changed milestone description to ' + res.description
+          'Successfully changed milestone description to ' + res.description
         );
       },
       error: () => {
-        this.toastr.error('error changing milestone description');
+        this.toastr.error('Error changing milestone description');
       },
     });
 
@@ -271,7 +270,7 @@ export class MilestoneInfoComponent {
       this.isAchieved.setValue(!!d.is_achieved);
     }),
     catchError((err) => {
-      this.toastr.error('error getting milestone data:', err);
+      this.toastr.error('Error getting milestone data:', err);
 
       return EMPTY;
     })
@@ -291,11 +290,11 @@ export class MilestoneInfoComponent {
   handleDeleteMilestone() {
     this.milestoneService.delete(this.milestoneDataSignal().id).subscribe({
       next: () => {
-        this.toastr.success('successfully deleted a milestone');
+        this.toastr.success('Successfully deleted a milestone');
         this.router.navigate(['../../milestones'], { relativeTo: this.route });
       },
       error: () => {
-        this.toastr.error('failed to delete a milestone');
+        this.toastr.error('Failed to delete a milestone');
       },
     });
   }

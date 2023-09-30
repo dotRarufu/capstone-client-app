@@ -199,7 +199,7 @@ export class ScheduledConsultationDetailsModalComponent {
       },
       error: (err) => {
         this.spinner.hide();
-        this.toastr.error(err);
+        this.toastr.error(`Failed to complete schedule: ${err}`);
       },
     });
   }

@@ -282,11 +282,11 @@ export class ScheduleConsultationModalComponent {
 
     request$.subscribe({
       next: (message) => {
-        this.toastr.success('created');
+        this.toastr.success('Consultation scheduled');
         this.spinner.hide();
       },
       error: (message) => {
-        this.toastr.error(message);
+        this.toastr.error("Failed to schedule consultation");
         this.spinner.hide();
       },
     });

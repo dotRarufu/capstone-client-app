@@ -122,7 +122,7 @@ export class AddParticipantModalComponent {
     addParticipant$.subscribe({
       error: (e) => {
         this.spinner.hide();
-        this.toastr.error(e);
+        this.toastr.error("Error occured: " + e);
       },
       complete: () => {
         this.spinner.hide();

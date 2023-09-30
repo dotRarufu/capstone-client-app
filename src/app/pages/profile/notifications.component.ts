@@ -29,7 +29,7 @@ import { ConsultationService } from 'src/app/services/consultation.service';
         projectInvitations: (projectInvitations$ | async) || [],
         schedules: (schedules$ | async) || [],
         forcedSchedules: (forcedSchedules$ | async) || [],
-
+        declinedConsultations: (declinedConsultations$ | async) || [],
       } as observables"
       class="flex flex-col gap-4 py-4"
     >
@@ -38,6 +38,7 @@ import { ConsultationService } from 'src/app/services/consultation.service';
         *ngIf="
           observables.projectInvitations.length > 0 ||
             observables.schedules.length > 0 ||
+            observables.declinedConsultations.length > 0 ||
             observables.forcedSchedules.length > 0;
           else empty
         "
@@ -108,6 +109,27 @@ import { ConsultationService } from 'src/app/services/consultation.service';
           <span class=""
             ><span class="font-bold">{{ schedule.organizer.name }}</span>
             scheduled a consultation for your project
+          </span>
+          <button
+            class="btn-sm btn"
+            (click)="
+              confirmNotification(schedule.notification.id);
+              navigateToProjectConsultation(schedule.project_id)
+            "
+          >
+            <i-feather
+              name="log-in"
+              class="h-[20px] w-[20px] text-base-content/70"
+            />
+          </button>
+        </li>
+        <li
+          *ngFor="let schedule of observables.declinedConsultations"
+          class="flex w-full items-center justify-between rounded-[5px] bg-base-200 px-4 py-2"
+        >
+          <span class=""
+            ><span class="font-bold">{{ schedule.technicalAdviser.name }}</span>
+            Declined a consultation for your project
           </span>
           <button
             class="btn-sm btn"
@@ -296,6 +318,56 @@ export class NotificationsComponent {
         )
       );
     })
+  );
+  declinedConsultations$ = this.notifications$.pipe(
+    map((notifications) => {
+      const res = notifications.filter((n) => n.type_id === 3);
+      
+      if (notifications.length === 0) return [];
+
+      return res;
+    }),
+    switchMap((declinedConsultations) => {
+      if (declinedConsultations.length === 0) return of([]);
+
+      return forkJoin(
+        declinedConsultations.map((consultationNotif) =>
+          this.consultationService
+            .getConsultationDataById(consultationNotif.data_id)
+            .pipe(
+              map((consultation) => ({
+                notification: consultationNotif,
+                ...consultation,
+              }))
+            )
+        )
+      );
+    }),
+    switchMap((schedules) => {
+      if (schedules.length === 0) return of([]);
+
+      const projectIds = getUniqueItems(schedules, 'project_id').map(
+        (s) => s.project_id
+      );
+
+      const reqs = projectIds.map((id) =>
+        this.projectService.getAdvisers(id).pipe(
+          map((a) => a.technical_adviser_id),
+          switchMap((adviser) => this.authService.getUserData(adviser!)),
+          map((adviser) => ({ ...adviser, projectId: id }))
+        )
+      );
+
+      return forkJoin(reqs).pipe(
+        map((users) =>
+          schedules.map((s) => ({
+            ...s,
+            technicalAdviser: users.find((u) => u.projectId === s.project_id)!,
+          }))
+        )
+      );
+    }),
+    tap(res => console.log('res:', res))
   );
 
   confirmNotification(id: number) {

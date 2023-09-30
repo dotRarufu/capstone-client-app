@@ -208,7 +208,7 @@ export class MilestonesTemplateComponent {
       return sorted;
     }),
     catchError((err) => {
-      this.toastr.error('error getting milestone templates:', err);
+      this.toastr.error('Error getting milestone templates:', err);
 
       return EMPTY;
     })

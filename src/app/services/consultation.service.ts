@@ -96,14 +96,29 @@ export class ConsultationService {
       category_id: decision ? 1 : 3,
       decline_reason,
     };
-    const request = this.client.from('consultation').update(data).eq('id', id);
+    const request = this.client
+      .from('consultation')
+      .update(data)
+      .eq('id', id)
+      .select('*');
     const request$ = from(request).pipe(
       map((res) => {
-        const { statusText } = errorFilter(res);
+        const { statusText, data } = errorFilter(res);
 
-        return statusText;
+        return data[0];
       }),
-      tap((_) => this.signalNewConsultation())
+      tap((_) => this.signalNewConsultation()),
+      switchMap((res) =>
+        this.projectService.getMembers(res.project_id).pipe(
+          switchMap((participants) => {
+            const reqs = participants.map(({ student_uid }) =>
+              this.authService.sendNotification(3, res.id, student_uid)
+            );
+
+            return forkJoin(reqs);
+          })
+        )
+      )
     );
 
     return request$;
@@ -410,8 +425,6 @@ export class ConsultationService {
     );
   }
 
- 
-
   getConsultationsOrganizedBy(organizer_id: string) {
     const req = this.client
       .from('consultation')
@@ -481,8 +494,6 @@ export class ConsultationService {
     const dateTime$ = this.authService.getScheduleData(data.scheduleId);
     return dateTime$.pipe(
       switchMap((dateTime) => {
-     
-
         const newData = {
           organizer_id: userUid,
           project_id: projectId,

@@ -126,11 +126,11 @@ export class AddTaskModalComponent {
     status$.subscribe({
       next: (status) => {
         this.spinner.hide();
-        this.toastr.success(status);
+        this.toastr.success("Task added");
       },
       error: (err) => {
         this.spinner.hide();
-        this.toastr.error(err);
+        this.toastr.error("Failed to add task");
       },
     });
   }
