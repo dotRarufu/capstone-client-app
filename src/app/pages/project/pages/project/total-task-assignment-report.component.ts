@@ -33,9 +33,9 @@ import { AuthService } from 'src/app/services/auth.service';
         >
         </canvas>
         <p class="text-base text-base-content/70">
-          The display value of a grid item is blockified: if the specified
+          <!-- The display value of a grid item is blockified: if the specified
           display of an in-flow child of an element generating a grid container
-          is an inline-level value, it computes to its block-level equivalent
+          is an inline-level value, it computes to its block-level equivalent -->
         </p>
       </div>
     </div>

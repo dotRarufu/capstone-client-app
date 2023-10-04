@@ -14,6 +14,7 @@ import {
   forkJoin,
   from,
   map,
+  of,
   switchMap,
   take,
   tap,
@@ -21,6 +22,7 @@ import {
 import { formatStringArray } from 'src/app/utils/formatStringArray';
 import { getReadabilityScoreMeaning } from 'src/app/utils/getReadabilityScoreMeaning';
 import { AuthService } from 'src/app/services/auth.service';
+import { getCategoryName } from 'src/app/utils/getCategoryName';
 
 interface AnalysesDataItem {
   heading: string;
@@ -79,6 +81,33 @@ interface AnalysesDataItem {
           </ng-container>
         </div>
       </accordion>
+
+      <accordion
+        *ngIf="annualCategoryUniqueness$ | async as data"
+        [isResult]="true"
+        [score]="data.score"
+        [heading]="'Annual Category Uniqueness'"
+      >
+        <div class="flex flex-col gap-1 pt-[16px] text-base-content">
+          On a 100-based scoring system, your title's category uniqueness is
+          {{ data.score }}. The following are the past titles that is the same
+          with the title's category:
+
+          <ul *ngFor="let d of data.reports" class="flex w-full flex-col gap-1">
+            <li
+              *ngFor="let da of d.titles"
+              class="flex w-full justify-between gap-2 rounded-[5px] bg-base-200 p-2"
+            >
+              <span class="w-[75%]">
+                {{ da }}
+              </span>
+              <span class="w-[25%] text-sm text-base-content/50">
+                {{ d.category }}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </accordion>
     </div>
   `,
 })
@@ -99,6 +128,57 @@ export class ResultComponent {
       this.toastr.error('Error occured while analyzing title');
 
       return EMPTY;
+    })
+  );
+
+  annualCategoryUniqueness$ = this.result$.pipe(
+    map((d) => d.annual_category_uniqueness),
+    // get category name and title
+    switchMap(({ report, score }) => {
+      const reqs = report.map(({ title_id_list, category_id }) => {
+        const reqs = title_id_list.map((id) =>
+          this.projectService.getProjectInfo(id).pipe(map((v) => v.full_title))
+        );
+
+        return forkJoin(reqs).pipe(
+          map((titles) => {
+            return { category: getCategoryName(category_id), titles };
+          })
+        );
+      });
+
+      return forkJoin(reqs).pipe(map((v) => ({ score, reports: v })));
+    })
+  );
+
+  //* for dev
+  devannualCategoryUniqueness$ = of('').pipe(
+    map((_) => {
+      const res = {
+        score: 83,
+        report: [
+          { category_id: 1, title_id_list: [1, 2, 3] },
+          { category_id: 2, title_id_list: [1, 2, 3] },
+        ],
+        reports: [
+          {
+            category: 'Mobile Development',
+            titles: [
+              'Development and Evaluation of a Capstone Progress Tracker with Title Analyzer and Title Builder for Pamantasan ng Lungsod ng Valenzuela',
+              'Folkverse Game Dev',
+            ],
+          },
+          {
+            category: 'Web Development',
+            titles: [
+              'Development of Capstone',
+              'Development and Evaluation of a An Interactive 2D Game Instructor-Led Game for Grade 5 Students',
+            ],
+          },
+        ],
+      };
+
+      return res;
     })
   );
   title$ = this.result$.pipe(map((d) => d.title));
@@ -122,6 +202,7 @@ export class ResultComponent {
         value: data.title_uniqueness,
         content: `The provided title was compared to a set of ${titleCount} titles from previous projects in Pamantasan ng Lungsod ng Valenzuela. The analysis revealed that the title exhibits ${data.title_uniqueness}% uniqueness in relation to the existing titles.`,
       };
+
       const readability: AnalysesDataItem = {
         heading: 'Readability',
         value: data.readability,
@@ -131,7 +212,32 @@ export class ResultComponent {
         images: ['assets/readability-scores.PNG'],
       };
 
-      return [substantiveWordCount, titleUniqueness, readability];
+      const categoryRarity: AnalysesDataItem = {
+        heading: 'Category Rarity',
+        value: data.category_rarity.score,
+        content: `The title is categorized as ${data.category_rarity.report.map(
+          (v) => v.category_id
+        )}, with the following score respectively: ${data.category_rarity.report.map(
+          (v) => v.score
+        )}`,
+      };
+
+      const annualCategoryUniqueness: AnalysesDataItem = {
+        heading: 'Annual Category Uniqueness',
+        value: data.annual_category_uniqueness.score,
+        content: `}`,
+      };
+
+      // annual category uniqueness
+      // category rarity
+
+      // use initial title
+      return [
+        substantiveWordCount,
+        titleUniqueness,
+        readability,
+        categoryRarity,
+      ];
     })
   );
 
