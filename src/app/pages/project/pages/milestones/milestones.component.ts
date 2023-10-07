@@ -29,7 +29,7 @@ type Milestone = {
     FeatherIconsModule,
   ],
   template: `
-    <div class="flex flex-col gap-2 ">
+    <div class="flex flex-col gap-2  pb-4 ">
       <h1 class="hidden text-2xl text-base-content min-[998px]:block">
         Milestones
       </h1>

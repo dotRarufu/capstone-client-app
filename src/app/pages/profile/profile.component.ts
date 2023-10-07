@@ -35,7 +35,7 @@ import { CommonModule } from '@angular/common';
       </div>
 
       <div
-        class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
+        class="px-auto pb-4 flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
       >
         <div class="w-full sm2:flex sm2:justify-center md:hidden">
           <router-outlet />

@@ -31,7 +31,7 @@ import { ConsultationService } from 'src/app/services/consultation.service';
         forcedSchedules: (forcedSchedules$ | async) || [],
         declinedConsultations: (declinedConsultations$ | async) || [],
       } as observables"
-      class="flex flex-col gap-4 py-4"
+      class="flex flex-col gap-4"
     >
       <h1 class="font-bold">Notifications</h1>
       <ul

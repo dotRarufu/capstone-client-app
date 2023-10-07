@@ -57,7 +57,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
     >
       <ng-container *ngIf="!sideColumn">
         <div
-          class="flex w-full flex-col gap-[1rem] sm2:w-[840px] md:w-full lg:w-full "
+          class="flex w-full flex-col pb-4 gap-[1rem] sm2:w-[840px] md:w-full lg:w-full "
         >
           <div
             class="hidden flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between md:flex"
@@ -187,7 +187,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
 
       <ng-container *ngIf="sideColumn">
         <div
-          class="hidden w-full flex-col gap-[1rem] sm2:w-[840px] md:flex md:w-full lg:w-full"
+          class="hidden w-full flex-col gap-[1rem]  pb-4 sm2:w-[840px] md:flex md:w-full lg:w-full"
         >
           <div
             class="flex flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between"

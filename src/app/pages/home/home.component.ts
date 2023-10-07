@@ -53,7 +53,7 @@ import { ConsultationService } from 'src/app/services/consultation.service';
         <tabs />
       </div>
       <div
-        class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0 "
+        class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0  pb-4 "
         *ngIf="{ activeId: activeId$ | async } as observables"
       >
         <div

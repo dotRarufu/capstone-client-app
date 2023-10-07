@@ -61,7 +61,7 @@ type ConsultationCategory = 'Scheduled' | 'Pending' | 'Completed' | 'Declined';
         role: role$ | async
       } as observables"
     >
-      <div class="flex h-full flex-col gap-[16px]">
+      <div class="flex h-fit flex-col gap-[16px] pb-4 ">
         <div class="flex flex-col gap-2 ">
           <div class="flex justify-between ">
             <h1 class="hidden text-2xl text-base-content min-[998px]:block">
@@ -94,30 +94,41 @@ type ConsultationCategory = 'Scheduled' | 'Pending' | 'Completed' | 'Declined';
           *ngFor="let c of observables.consultations"
           [heading]="c.category"
         >
-        <ng-container *ngIf="{consultationItems: (c.items | async) || []} as consultationObservables">
-          <div class="mb-[12px] w-full" *ngIf="consultationObservables.consultationItems.length > 1">
-            <button
-              (click)="invertSortOrder(c.category)"
-              class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
-            >
-              SORT <i-feather class="text-base-content/70" [name]="getInvertedSort(c.category)" />
-            </button>
-          </div>
-          <div
-            class="flex flex-col items-center gap-[24px] sm1:flex-row sm1:flex-wrap sm1:justify-start"
+          <ng-container
+            *ngIf="{
+              consultationItems: (c.items | async) || []
+            } as consultationObservables"
           >
-            <consultation-card
-              *ngFor="let data of consultationObservables.consultationItems"
-              [data]="data"
-              (click)="
-                this.consultationStateService.setActiveConsultation(data)
-              "
-              [buttonId]="c.buttonId"
+            <div
+              class="mb-[12px] w-full"
+              *ngIf="consultationObservables.consultationItems.length > 1"
             >
-              <!-- todo: add slot for controls -->
-            </consultation-card>
-          </div>
-    </ng-container>
+              <button
+                (click)="invertSortOrder(c.category)"
+                class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+              >
+                SORT
+                <i-feather
+                  class="text-base-content/70"
+                  [name]="getInvertedSort(c.category)"
+                />
+              </button>
+            </div>
+            <div
+              class="flex flex-col items-center gap-[24px] sm1:flex-row sm1:flex-wrap sm1:justify-start"
+            >
+              <consultation-card
+                *ngFor="let data of consultationObservables.consultationItems"
+                [data]="data"
+                (click)="
+                  this.consultationStateService.setActiveConsultation(data)
+                "
+                [buttonId]="c.buttonId"
+              >
+                <!-- todo: add slot for controls -->
+              </consultation-card>
+            </div>
+          </ng-container>
         </accordion>
 
         <available-schedules *ngIf="observables.role === 't'" />
@@ -299,9 +310,8 @@ export class ConsultationsComponent {
         selected = this.sortPendingSubject;
         break;
       case 'Scheduled':
-
-      selected = this.sortScheduledSubject;
-      break
+        selected = this.sortScheduledSubject;
+        break;
       case 'Completed':
         selected = this.sortCompletedSubject;
         break;
@@ -318,8 +328,8 @@ export class ConsultationsComponent {
     const consultation = this.consultationStateService.getActiveConsultation()!;
 
     this.consultationService.cancelInvitation(consultation.id).subscribe({
-      next: (res) => this.toastr.success("Invitation canceled"),
-      error: (res) => this.toastr.error("Failed to cancel invitation"),
+      next: (res) => this.toastr.success('Invitation canceled'),
+      error: (res) => this.toastr.error('Failed to cancel invitation'),
     });
   }
 
