@@ -39,7 +39,7 @@ import { filter } from 'rxjs';
           <tabs [isResponsive]="false" />
         </div>
 
-        <div class="relative h-[calc(100vh-60px)] overflow-x-scroll">
+        <div class="relative h-[calc(100vh-60px)] overflow-x-clip">
           <router-outlet #myOutlet="outlet" />
           <button
             *ngIf="observables.formUrl !== ''"

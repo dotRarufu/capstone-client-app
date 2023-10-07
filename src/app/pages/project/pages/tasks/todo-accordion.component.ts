@@ -18,7 +18,7 @@ import { Component, Input } from '@angular/core';
         {{ heading }}
       </div>
       <div
-        class="collapse-content rounded-[4px] border rounded-t-none overflow-y-scroll  border-base-content/50 text-base-content"
+        class="collapse-content rounded-[4px] border rounded-t-none overflow-y-auto  border-base-content/50 text-base-content"
       >
         <div class="flex h-full justify-center ">
           <ng-content />

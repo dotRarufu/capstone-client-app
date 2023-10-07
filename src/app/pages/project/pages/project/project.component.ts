@@ -24,9 +24,9 @@ import {  RouterModule } from '@angular/router';
       </h1>
 
       <div
-        class="flex  flex-col gap-[16px] overflow-y-scroll pb-[16px] sm1:grid sm1:flex-1 sm1:grid-cols-[auto_1fr] sm1:pb-0 md:grid-cols-[1fr_3fr]"
+        class="flex  flex-col gap-[16px] overflow-y-auto pb-[16px] sm1:grid sm1:flex-1 sm1:grid-cols-[auto_1fr] sm1:pb-0 md:grid-cols-[1fr_3fr]"
       >
-        <ul class="flex w-full flex-col gap-[4px] overflow-y-scroll">
+        <ul class="flex w-full flex-col gap-[4px] overflow-y-clip">
           <a
             [routerLink]="['general']"
             routerLinkActive="btn-active"
@@ -58,7 +58,7 @@ import {  RouterModule } from '@angular/router';
         </ul>
 
         <div
-          class="h-full w-full overflow-x-scroll overflow-y-scroll sm1:pr-[32px] min-[998px]:h-full"
+          class="h-full w-full overflow-x-clip overflow-y-auto sm1:pr-[32px] min-[998px]:h-full"
         >
           <router-outlet />
         </div>

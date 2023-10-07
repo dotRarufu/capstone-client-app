@@ -35,7 +35,7 @@ import { ArchivedMarkComponent } from './archived-mark.component';
       </div>
 
       <div
-        class="w-screen flex-1  overflow-y-scroll p-4 px-[16px] sm1:px-[32px] sm2:w-full sm2:px-0 md:px-[200px] lg:px-0"
+        class="w-screen flex-1  overflow-y-auto p-4 px-[16px] sm1:px-[32px] sm2:w-full sm2:px-0 md:px-[200px] lg:px-0"
       >
         <div
           class="h-full w-full sm2:mx-auto sm2:w-[840px] md:w-full lg:w-[1040px]"

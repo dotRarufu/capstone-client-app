@@ -67,7 +67,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
           class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
         >
           <div
-            class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-scroll"
+            class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-auto"
           >
             <div>
               <!-- Selected schedule details goes here -->

@@ -10,11 +10,11 @@ import { TabsService } from 'src/app/services/tabs.service';
   imports: [CommonModule],
   template: `
     <div
-      class="overflow-x-scroll border-b border-base-content/20 px-[1rem] py-1 sm1:px-[32px] sm2:px-0  md:border-none"
+      class="overflow-x-clip border-b border-base-content/20 px-[1rem] py-1 sm1:px-[32px] sm2:px-0  md:border-none"
     >
       <div
         [class.md:hidden]="isResponsive"
-        class="mx-auto flex w-full flex-row  overflow-x-scroll sm1:overflow-x-visible sm2:w-[840px] "
+        class="mx-auto flex w-full flex-row overflow-x-clip sm1:overflow-x-visible  "
       >
         <div
           *ngFor="let tab of tabs"
