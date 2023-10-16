@@ -43,10 +43,12 @@ import {
   Edit2,
   Clock,
   Sun,
-  Watch
+  Watch,
+  Copy
 } from 'angular-feather/icons';
 
 const icons = {
+  Copy,
   Watch,
   Clock,
   Sun,

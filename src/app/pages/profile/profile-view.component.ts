@@ -35,6 +35,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
 import { NotificationsComponent } from './notifications.component';
 import { ProjectService } from 'src/app/services/project.service';
 import { isNotNull } from 'src/app/utils/isNotNull';
+import { ClipboardModule } from 'ngx-clipboard';
 
 @Component({
   selector: 'profile-view',
@@ -47,6 +48,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
     FeatherIconsModule,
     ReactiveFormsModule,
     NotificationsComponent,
+    ClipboardModule,
   ],
   template: `
     <ng-container
@@ -57,7 +59,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
     >
       <ng-container *ngIf="!sideColumn">
         <div
-          class="flex w-full flex-col pb-4 gap-[1rem] sm2:w-[840px] md:w-full lg:w-full "
+          class="flex w-full flex-col gap-[1rem] pb-4 sm2:w-[840px] md:w-full lg:w-full "
         >
           <div
             class="hidden flex-col gap-2 sm1:flex-row sm1:items-center sm1:justify-between md:flex"
@@ -128,8 +130,17 @@ import { isNotNull } from 'src/app/utils/isNotNull';
             <div class="flex items-center justify-between ">
               <div class="flex flex-col gap-[4px]">
                 <div class="text-base font-semibold">ID</div>
-                <p class="pl-[8px] text-base text-base-content/70">
+                <p
+                  class="flex items-center gap-2 pl-[8px] text-base text-base-content/70"
+                >
                   {{ observables.user?.uid }}
+                  <button
+                    ngxClipboard
+                    [cbContent]="observables.user?.uid"
+                    class=" btn-square btn-sm btn flex rounded-[5px] border border-transparent bg-base-300/0 p-[4px] hover:btn-primary hover:outline-none"
+                  >
+                    <i-feather name="copy" />
+                  </button>
                 </p>
               </div>
             </div>
@@ -341,8 +352,7 @@ export class ProfileViewComponent implements OnInit {
 
     switchMap((v) => forkJoin({ v: of(v), user: this.user$ })),
 
-    map(({ v, user }) => v !== user.name),
-
+    map(({ v, user }) => v !== user.name)
   );
   user$ = this.authService.getAuthenticatedUser().pipe(
     map((user) => {
@@ -418,9 +428,9 @@ export class ProfileViewComponent implements OnInit {
           const time = avatar_last_update;
           const path = `${uid}-t-${time}.png`;
 
-          return {path, uid};
+          return { path, uid };
         }),
-        switchMap(({path, uid}) => this.authService.deleteAvatar(path, uid))
+        switchMap(({ path, uid }) => this.authService.deleteAvatar(path, uid))
       )
       .subscribe({
         next: (status) => {

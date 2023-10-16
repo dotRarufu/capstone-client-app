@@ -28,6 +28,7 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "ng2-charts": "^4.1.1",
     "ng2-pdf-viewer": "^9.1.5",
+    "ngx-clipboard": "^16.0.0",
     "ngx-doc-viewer": "^15.0.1",
     "ngx-img-fallback": "^2.0.0",
     "ngx-spinner": "^16.0.2",
