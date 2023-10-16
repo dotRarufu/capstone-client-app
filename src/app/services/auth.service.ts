@@ -254,19 +254,33 @@ export class AuthService {
     );
   }
 
-  deleteAvatar(path: string) {
+  deleteAvatar(path: string, uid: string) {
     // todo: run this on new avatar upload, or learn the cdn bust cache
+    console.log("path:", path)
     const req = this.client.storage.from('avatars').remove([path]);
     const req$ = from(req).pipe(
       map((res) => {
         if (res.error !== null) throw new Error('failed to delete image');
-
+        
         return res.data;
       }),
+      switchMap(() => this.deleteUserLastAvatarUpdate(uid)),
       tap((_) => this.signalUpdateUserProfile())
     );
 
     return req$;
+  }
+
+  private deleteUserLastAvatarUpdate(uid: string) {
+    const req = this.client.from('user').update({avatar_last_update: null}).eq('uid', uid);
+
+    return from(req).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      }),
+    );
   }
 
   getUser(uid: string) {

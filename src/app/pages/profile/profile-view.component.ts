@@ -418,9 +418,9 @@ export class ProfileViewComponent implements OnInit {
           const time = avatar_last_update;
           const path = `${uid}-t-${time}.png`;
 
-          return path;
+          return {path, uid};
         }),
-        switchMap((path) => this.authService.deleteAvatar(path))
+        switchMap(({path, uid}) => this.authService.deleteAvatar(path, uid))
       )
       .subscribe({
         next: (status) => {
