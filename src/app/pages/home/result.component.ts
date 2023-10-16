@@ -124,6 +124,7 @@ export class ResultComponent {
   result$ = this.projectService.analyzerResult$.pipe(
     take(1),
     filter((res): res is TitleAnalyzerResult => res !== undefined),
+    tap(v => console.log("v:", v)),
     catchError((err) => {
       this.toastr.error('Error occured while analyzing title');
 
@@ -212,21 +213,21 @@ export class ResultComponent {
         images: ['assets/readability-scores.PNG'],
       };
 
-      const categoryRarity: AnalysesDataItem = {
-        heading: 'Category Rarity',
-        value: data.category_rarity.score,
-        content: `The title is categorized as ${data.category_rarity.report.map(
-          (v) => v.category_id
-        )}, with the following score respectively: ${data.category_rarity.report.map(
-          (v) => v.score
-        )}`,
-      };
+      // const categoryRarity: AnalysesDataItem = {
+      //   heading: 'Category Rarity',
+      //   value: data.category_rarity.score,
+      //   content: `The title is categorized as ${data.category_rarity.report.map(
+      //     (v) => v.category_id
+      //   )}, with the following score respectively: ${data.category_rarity.report.map(
+      //     (v) => v.score
+      //   )}`,
+      // };
 
-      const annualCategoryUniqueness: AnalysesDataItem = {
-        heading: 'Annual Category Uniqueness',
-        value: data.annual_category_uniqueness.score,
-        content: `}`,
-      };
+      // const annualCategoryUniqueness: AnalysesDataItem = {
+      //   heading: 'Annual Category Uniqueness',
+      //   value: data.annual_category_uniqueness.score,
+      //   content: `}`,
+      // };
 
       // annual category uniqueness
       // category rarity
@@ -236,7 +237,7 @@ export class ResultComponent {
         substantiveWordCount,
         titleUniqueness,
         readability,
-        categoryRarity,
+        // categoryRarity,
       ];
     })
   );
