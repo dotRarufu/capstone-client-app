@@ -105,7 +105,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <textarea
-              class="textarea h-[117px] w-full shrink-0 rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 text-base leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0"
+              class="textarea h-[117px] w-full shrink-0 rounded-[3px] border-[1px] text-base leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0"
               placeholder="Description"
               [formControl]="description"
             ></textarea>
@@ -113,7 +113,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <input
               type="text"
               placeholder="Location"
-              class="bg-base input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+              class="bg-base input w-full rounded-[3px] border-[1px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
               [formControl]="location"
             />
 
@@ -286,7 +286,7 @@ export class ScheduleConsultationModalComponent {
         this.spinner.hide();
       },
       error: (message) => {
-        this.toastr.error("Failed to schedule consultation");
+        this.toastr.error('Failed to schedule consultation');
         this.spinner.hide();
       },
     });

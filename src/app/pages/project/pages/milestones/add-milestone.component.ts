@@ -22,7 +22,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
               [formControl]="title"
               type="text"
               placeholder="Milestone Title"
-              class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
+              class="input w-full rounded-[3px]   border-[1px] bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
             />
           </div>
         </div>
@@ -41,7 +41,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 
             <textarea
               [formControl]="description"
-              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
+              class="textarea h-[117px] w-full rounded-[3px] border-[1px] leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0"
               placeholder="Description"
             ></textarea>
 
@@ -54,7 +54,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <input
               type="date"
               [formControl]="dueDate"
-              class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-transparent px-3 py-2 text-[20px] text-base text-primary-content/70 placeholder:text-[20px] placeholder:text-primary-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+              class="input w-full rounded-[3px] border-[1px] bg-transparent px-3 py-2 text-[20px] text-base text-primary-content/70 placeholder:text-[20px] placeholder:text-primary-content/70 placeholder:opacity-70 focus:border-secondary focus:outline-0 "
             />
           </div>
 
@@ -62,7 +62,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             class="flex w-full flex-col  bg-neutral/20 p-0 py-2 sm1:w-[223px]"
           >
             <button
-            onclick="addMilestone.close()"
+              onclick="addMilestone.close()"
               (click)="handleDoneClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
@@ -72,8 +72,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 
             <div class="h-full"></div>
             <button
-            onclick="addMilestone.close()"
-
+              onclick="addMilestone.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x-circle" />
@@ -86,9 +85,18 @@ import { NgxSpinnerService } from 'ngx-spinner';
   `,
 })
 export class AddMilestoneModalComponent {
-  title = new FormControl('', {nonNullable: true, validators: [Validators.required]});
-  description = new FormControl('', {nonNullable: true, validators: [Validators.required]});
-  dueDate = new FormControl('', {nonNullable: true, validators: [Validators.required]});
+  title = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  description = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  dueDate = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
 
   milestoneService = inject(MilestoneService);
   toastr = inject(ToastrService);
@@ -97,17 +105,17 @@ export class AddMilestoneModalComponent {
 
   handleDoneClick() {
     if (this.title.invalid) {
-      this.toastr.error("Title cannot be empty")
+      this.toastr.error('Title cannot be empty');
 
       return;
     }
     if (this.description.invalid) {
-      this.toastr.error("Description cannot be empty")
+      this.toastr.error('Description cannot be empty');
 
       return;
     }
     if (this.dueDate.invalid) {
-      this.toastr.error("Due date cannot be empty")
+      this.toastr.error('Due date cannot be empty');
 
       return;
     }
@@ -124,13 +132,12 @@ export class AddMilestoneModalComponent {
     status$.subscribe({
       next: (status) => {
         this.spinner.hide();
-        this.toastr.success("Success");
+        this.toastr.success('Success');
       },
       error: (err) => {
-        this.spinner.hide();       
-        this.toastr.error("Error occured: " + err);
+        this.spinner.hide();
+        this.toastr.error('Error occured: ' + err);
       },
-     
     });
   }
 }

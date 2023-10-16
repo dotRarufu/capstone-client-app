@@ -49,7 +49,7 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
               *ngIf="isInEdit()"
               [formControl]="date"
               type="date"
-              class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-transparent px-3 py-2 text-[20px] text-base text-primary-content/70 placeholder:text-[20px] placeholder:text-primary-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+              class="input w-full rounded-[3px] border-[1px] bg-transparent px-3 py-2 text-[20px] text-base text-primary-content/70 placeholder:text-[20px] placeholder:text-primary-content/70 placeholder:opacity-70 focus:border-secondary focus:outline-0 "
             />
           </div>
         </div>
@@ -74,28 +74,31 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
                 getTimeFromEpoch(observables.activeSchedule?.end_time || 0)
               }}</span>
             </div>
-            <div *ngIf="isInEdit()" class="flex items-center justify-between gap-2">
-            <span class="text-base-content"> FROM </span>
+            <div
+              *ngIf="isInEdit()"
+              class="flex items-center justify-between gap-2"
+            >
+              <span class="text-base-content"> FROM </span>
 
               <input
                 type="time"
                 [formControl]="startDate"
                 placeholder="Start"
-                class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+                class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
               />
               <span class="text-base-content"> TO </span>
               <input
                 type="time"
                 [formControl]="endDate"
                 placeholder="End"
-                class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+                class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
               />
             </div>
           </div>
 
           <ul class="flex w-full flex-col bg-neutral/20 p-0 py-2 sm1:w-[223px]">
             <button
-            onclick="availableScheduleDetail.close()"
+              onclick="availableScheduleDetail.close()"
               *ngIf="isInEdit()"
               (click)="handleSaveClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -104,7 +107,6 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
               save
             </button>
             <button
-            
               *ngIf="!isInEdit()"
               (click)="isInEdit.set(true)"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -113,8 +115,7 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
               Edit
             </button>
             <button
-            onclick="availableScheduleDetail.close()"
-
+              onclick="availableScheduleDetail.close()"
               *ngIf="!isInEdit()"
               (click)="handleRemoveClick()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -125,8 +126,7 @@ import epochTo24hour from 'src/app/utils/epochTo24hour';
 
             <div class="h-full"></div>
             <button
-            onclick="availableScheduleDetail.close()"
-
+              onclick="availableScheduleDetail.close()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
               <i-feather class="text-base-content/70" name="x-circle" />
@@ -146,9 +146,18 @@ export class AvailableScheduleDetailModalComponent {
   projectStateService = inject(ProjectStateService);
   spinner = inject(NgxSpinnerService);
 
-  startDate = new FormControl('', { nonNullable: true, validators: [Validators.required] });
-  endDate = new FormControl('', { nonNullable: true, validators: [Validators.required] });
-  date = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  startDate = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  endDate = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  date = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
 
   consultationStateService = inject(ConsultationStateService);
 
@@ -160,7 +169,7 @@ export class AvailableScheduleDetailModalComponent {
       this.date.setValue(v.date);
     })
   );
- 
+
   participant$ = this.projectStateService.activeParticipant$;
   // maybe convert getAuthentiatedUser to a state, to prevent multiple retrieval
   user$ = this.authService.getAuthenticatedUser();
@@ -172,17 +181,17 @@ export class AvailableScheduleDetailModalComponent {
 
   handleRemoveClick() {
     if (this.startDate.invalid) {
-      this.toastr.error("Start time cannot be empty");
+      this.toastr.error('Start time cannot be empty');
 
       return;
     }
     if (this.endDate.invalid) {
-      this.toastr.error("End time cannot be empty");
+      this.toastr.error('End time cannot be empty');
 
       return;
     }
     if (this.date.invalid) {
-      this.toastr.error("Date cannot be empty");
+      this.toastr.error('Date cannot be empty');
 
       return;
     }

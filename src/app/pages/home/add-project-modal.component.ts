@@ -27,7 +27,7 @@ import { map } from 'rxjs';
               type="text"
               [formControl]="name"
               placeholder="Project Name"
-              class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
+              class="input w-full rounded-[3px]   bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 border-[1px] focus:border-secondary focus:outline-0 "
             />
           </div>
         </div>
@@ -45,7 +45,7 @@ import { map } from 'rxjs';
 
             <textarea
               [formControl]="fullTitle"
-              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 text-base-content"
+              class="textarea h-[117px] w-full rounded-[3px] border-[1px] leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0"
               placeholder="Full Title"
             ></textarea>
 
@@ -58,7 +58,7 @@ import { map } from 'rxjs';
             <div class="join flex w-full">
               <input
                 [formControl]="section"
-                class="input join-item  w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 text-base-content"
+                class="input join-item  w-full rounded-[3px] border-[1px] leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0 text-base-content"
                 placeholder="New Section"
               />
               <div class="form-control join-item ">

@@ -25,7 +25,7 @@ import { MilestoneService } from 'src/app/services/milestone.service';
               [formControl]="userUid"
               type="text"
               placeholder="User ID"
-              class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
+              class="input w-full rounded-[3px]   border-[1px] bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
             />
           </div>
         </div>
@@ -38,9 +38,7 @@ import { MilestoneService } from 'src/app/services/milestone.service';
           >
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
-            <div
-              class="form-control rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50"
-            >
+            <div class="form-control rounded-[3px] border-[1px]">
               <div
                 class="input-group rounded-[3px] border border-base-content/50"
               >
@@ -122,7 +120,7 @@ export class AddParticipantModalComponent {
     addParticipant$.subscribe({
       error: (e) => {
         this.spinner.hide();
-        this.toastr.error("Error occured: " + e);
+        this.toastr.error('Error occured: ' + e);
       },
       complete: () => {
         this.spinner.hide();

@@ -21,7 +21,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
           <input
             type="text"
             placeholder="Implemented time travel algorithm"
-            class="bg-base input join-item w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+            class="bg-base input join-item w-full rounded-[3px] border-[1px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
             [formControl]="input"
           />
           <label
@@ -70,14 +70,19 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
             />
           </div>
 
-          <p class="text-base text-base-content/50">{{ hideInput ? 'Nothing to show' : 'Add something first'}}</p>
+          <p class="text-base text-base-content/50">
+            {{ hideInput ? 'Nothing to show' : 'Add something first' }}
+          </p>
         </div>
       </ng-template>
     </div>
   `,
 })
 export class OutcomeComponent {
-  input = new FormControl("", {nonNullable: true, validators: [Validators.required]})
+  input = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
   // todo: rename to isDisplay
   @Input() hideInput? = false;
   @Input() heading = '';
@@ -89,7 +94,7 @@ export class OutcomeComponent {
 
   handleAddItem() {
     if (this.input.invalid) {
-      this.toastr.error("Input cannot be empty");
+      this.toastr.error('Input cannot be empty');
 
       return;
     }

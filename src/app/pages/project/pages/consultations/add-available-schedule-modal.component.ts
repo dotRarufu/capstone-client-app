@@ -35,7 +35,7 @@ import timeToEpoch from 'src/app/utils/timeToEpoch';
             <input
               [formControl]="date"
               type="date"
-              class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-transparent px-3 py-2 text-[20px] text-base text-primary-content/70 placeholder:text-[20px] placeholder:text-primary-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+              class="input w-full rounded-[3px] border-[1px] bg-transparent px-3 py-2 text-[20px] text-base text-primary-content/70 placeholder:text-[20px] placeholder:text-primary-content/70 placeholder:opacity-70 focus:border-secondary focus:outline-0 "
             />
           </div>
         </div>
@@ -57,14 +57,14 @@ import timeToEpoch from 'src/app/utils/timeToEpoch';
                 [formControl]="startTime"
                 type="time"
                 placeholder="Start"
-                class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-secondary focus:outline-0 "
+                class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
               />
               <span class="text-base-content"> TO </span>
               <input
                 [formControl]="endTime"
                 type="time"
                 placeholder="End"
-                class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-secondary focus:outline-0 "
+                class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
               />
             </div>
           </div>
@@ -151,7 +151,7 @@ export class AddAvailableScheduleModalComponent {
 
       return;
     }
-    
+
     if (this.startTime.invalid) {
       this.toastr.error('Start time cannot be empty');
 

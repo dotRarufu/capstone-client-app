@@ -48,7 +48,6 @@ import { ActivatedRoute } from '@angular/router';
         <input
           type="text"
           [formControl]="title"
-         
           placeholder="Type here"
           class="input-bordered input input-md w-full rounded-[3px] bg-base-300/80 focus:input-primary  focus:outline-0"
         />
@@ -60,7 +59,6 @@ import { ActivatedRoute } from '@angular/router';
         <textarea
           type="text"
           [formControl]="description"
-
           placeholder="Type here"
           class="textarea-bordered textarea input-md h-[144px] w-full rounded-[3px] bg-base-300/80 focus:textarea-primary focus:outline-0"
         ></textarea>
@@ -72,8 +70,7 @@ import { ActivatedRoute } from '@angular/router';
         <input
           type="date"
           [formControl]="dueDate"
-         
-          class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-primary-content/50 bg-base-300/80 px-3 py-2 text-[20px] text-base text-base-content/70 placeholder:text-[20px] placeholder:text-base-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+          class="input w-full rounded-[3px] border-[1px] bg-base-300/80 px-3 py-2 text-[20px] text-base text-base-content/70 placeholder:text-[20px] placeholder:text-base-content/70 placeholder:opacity-70 focus:border-secondary focus:outline-0 "
         />
       </div>
 
@@ -101,9 +98,18 @@ export class MilestoneTemplateInfoComponent implements OnInit {
   milestoneService = inject(MilestoneService);
   toastr = inject(ToastrService);
 
-  title = new FormControl('', { nonNullable: true, validators: [Validators.required] });
-  description = new FormControl('', { nonNullable: true, validators: [Validators.required] });
-  dueDate = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  title = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  description = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  dueDate = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
 
   newTitle$ = new Subject<string>();
   newDescription$ = new Subject<string>();
@@ -191,7 +197,8 @@ export class MilestoneTemplateInfoComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.toastr.success(
-            'Successfully changed milestone template due date to ' + res.due_date
+            'Successfully changed milestone template due date to ' +
+              res.due_date
           );
         },
         error: () => {
@@ -224,16 +231,12 @@ export class MilestoneTemplateInfoComponent implements OnInit {
   linkDueDate = this.dueDate.valueChanges
     .pipe(
       filter((value) => {
-        if (this.dueDate.invalid)
-          this.toastr.error('Due date cannot be empty');
+        if (this.dueDate.invalid) this.toastr.error('Due date cannot be empty');
 
-        return (
-          !this.dueDate.invalid && this.dueDate.status !== 'DISABLED'
-        );
+        return !this.dueDate.invalid && this.dueDate.status !== 'DISABLED';
       })
     )
     .subscribe((v) => this.newDueDate$.next(v));
-
 
   handleDeleteMilestone() {
     this.milestoneService.deleteTemplate(this.id()).subscribe({

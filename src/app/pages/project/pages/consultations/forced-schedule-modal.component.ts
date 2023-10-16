@@ -78,7 +78,7 @@ import combineDateAndTime from 'src/app/utils/combineDateAndTime';
               <input
                 [formControl]="date"
                 type="date"
-                class="input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 bg-transparent px-3 py-2 text-[20px] text-base text-base-content/70 placeholder:text-[20px] placeholder:text-base-content/70 placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+                class="input w-full rounded-[3px] border-[1px] bg-transparent px-3 py-2 text-[20px] text-base text-base-content/70 placeholder:text-[20px] placeholder:text-base-content/70 placeholder:opacity-70 focus:border-secondary focus:outline-0 "
               />
             </div>
 
@@ -88,14 +88,14 @@ import combineDateAndTime from 'src/app/utils/combineDateAndTime';
                 type="time"
                 [formControl]="startDate"
                 placeholder="Start"
-                class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+                class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
               />
               <span class="text-base-content"> TO </span>
               <input
                 type="time"
                 [formControl]="endDate"
                 placeholder="End"
-                class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+                class="bg-base input w-full rounded-[3px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
               />
             </div>
 
@@ -106,7 +106,7 @@ import combineDateAndTime from 'src/app/utils/combineDateAndTime';
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <textarea
-              class="textarea h-[117px] w-full shrink-0 rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 text-base leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0"
+              class="textarea h-[117px] w-full shrink-0 rounded-[3px] border-[1px] text-base leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0"
               placeholder="Description"
               [formControl]="description"
             ></textarea>
@@ -114,7 +114,7 @@ import combineDateAndTime from 'src/app/utils/combineDateAndTime';
             <input
               type="text"
               placeholder="Location"
-              class="bg-base input w-full rounded-[3px] border-y-0 border-l-[3px] border-r-0 border-l-base-content/50 px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-l-[3px] focus:border-l-secondary focus:outline-0 "
+              class="bg-base input w-full rounded-[3px] border-[1px] px-3 py-2 text-base text-base-content placeholder:text-base placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
               [formControl]="location"
             />
           </div>
@@ -144,11 +144,26 @@ import combineDateAndTime from 'src/app/utils/combineDateAndTime';
   `,
 })
 export class ForcedScheduleModalComponent {
-  description = new FormControl('', { nonNullable: true, validators: [Validators.required] });
-  location = new FormControl('', { nonNullable: true, validators: [Validators.required] });
-  startDate = new FormControl('', { nonNullable: true, validators: [Validators.required] });
-  endDate = new FormControl('', { nonNullable: true, validators: [Validators.required] });
-  date = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  description = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  location = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  startDate = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  endDate = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  date = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
   // projectId = new FormControl(-1, { nonNullable: true });
   projectId = signal(-1);
 
@@ -197,13 +212,12 @@ export class ForcedScheduleModalComponent {
 
       return;
     }
- 
 
     this.spinner.show();
-    
+
     const endTime = dateToEpoch(hour24ToEpoch(this.endDate.value));
     const startTime = dateToEpoch(hour24ToEpoch(this.startDate.value));
-    const dateTime = combineDateAndTime(this.date.value, endTime)
+    const dateTime = combineDateAndTime(this.date.value, endTime);
     const data = {
       date_time: dateTime,
       description: this.description.value,

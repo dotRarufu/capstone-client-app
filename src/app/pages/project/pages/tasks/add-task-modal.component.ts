@@ -23,7 +23,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
               [formControl]="title"
               type="text"
               placeholder="Task Title"
-              class="input w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0 "
+              class="input w-full rounded-[3px]   bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 border-[1px] focus:border-secondary focus:outline-0 "
             />
           </div>
         </div>
@@ -42,7 +42,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 
             <textarea
               [formControl]="description"
-              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
+              class="textarea h-[117px] w-full rounded-[3px] border-[1px] leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0"
               placeholder="Description"
             ></textarea>
           </div>

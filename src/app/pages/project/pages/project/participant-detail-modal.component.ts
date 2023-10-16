@@ -55,7 +55,7 @@ import { AuthService } from 'src/app/services/auth.service';
             <div class="h-[2px] w-full bg-base-content/10"></div>
 
             <div
-              class="form-control rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50"
+              class="form-control rounded-[3px] border-[1px]"
             >
               <div
                 class="input-group rounded-[3px] border border-base-content/50"

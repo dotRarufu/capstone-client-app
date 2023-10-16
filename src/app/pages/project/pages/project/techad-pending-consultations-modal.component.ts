@@ -67,7 +67,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
           >
             <textarea
               [formControl]="declineReason"
-              class="textarea h-[117px] w-full rounded-[3px] border-y-0 border-l-[2px] border-r-0 border-l-primary-content/50 leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-l-[2px] focus:border-l-secondary focus:outline-0"
+              class="textarea h-[117px] w-full rounded-[3px] border-[1px] leading-normal text-base-content placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0"
               placeholder="Type something"
             ></textarea>
           </div>
@@ -136,7 +136,6 @@ import { NgxSpinnerService } from 'ngx-spinner';
               <i-feather class="text-base-content/70" name="check" /> Accept
             </button>
             <button
-              
               *ngIf="!inDecline()"
               (click)="inDecline.set(true)"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
@@ -262,7 +261,7 @@ export class TechAdPendingConsultationsModalComponent {
         },
         error: (err) => {
           this.spinner.hide();
-          this.toastr.error("Error occured: " + err);
+          this.toastr.error('Error occured: ' + err);
         },
       });
   }
