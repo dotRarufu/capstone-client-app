@@ -15,6 +15,7 @@ import { getTimeFromEpoch } from 'src/app/utils/getTimeFromEpoch';
 import { BehaviorSubject, map, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import sortArrayByProperty from 'src/app/utils/sortArrayByProperty';
+import { toNumericalDate } from 'src/app/utils/toNumericalDate';
 
 @Component({
   selector: 'available-schedules',
@@ -59,24 +60,39 @@ import sortArrayByProperty from 'src/app/utils/sortArrayByProperty';
           class="grid w-full cursor-pointer grid-cols-2 gap-2 rounded-[3px] bg-base-200 px-4 py-2  hover:bg-base-300 sm1:grid-cols-4 sm1:justify-between"
         >
           <div
-            class="p-0 text-left  text-base text-base-content sm1:grid sm1:w-fit sm1:place-content-center sm1:text-[18px]"
+            class="flex gap-2  p-0 text-left   text-base  text-base-content sm1:w-fit sm1:text-[18px]"
           >
-            {{ formatDate(schedule.date) }}
+            <i-feather
+              name="calendar"
+              class="aspect-square w-full text-base-content/70"
+            />
+            {{ toNumericalDate(schedule.date) }}
           </div>
           <div
-            class="text-right text-base text-base-content/70 sm1:grid sm1:place-content-center sm1:text-center"
+            class="flex gap-2 justify-end sm1:justify-start text-right text-base text-base-content/70 sm1:text-center"
           >
+            <i-feather
+              name="sun"
+              class="aspect-square w-full text-base-content/70"
+            />
             {{ getDayFromDate(schedule.date) }}
           </div>
 
           <div
-            class="p-0 text-left text-base text-base-content sm1:grid  sm1:place-content-center sm1:text-center sm1:text-[18px]"
+            class="flex gap-2 p-0 text-left text-base text-base-content sm1:text-center sm1:text-[18px]"
           >
+            <i-feather
+              name="clock"
+              class="aspect-square w-full text-base-content/70"
+            />
             {{ getTimeFromEpoch(schedule.start_time) }}
           </div>
           <span
             class="flex items-center justify-end text-right text-base text-base-content/70 "
-            >{{ getDuration(schedule.start_time, schedule.end_time) }}</span
+            > <i-feather
+              name="watch"
+              class="aspect-square w-full text-base-content/70"
+            />{{ getDuration(schedule.start_time, schedule.end_time) }}</span
           >
         </button>
 
@@ -132,5 +148,9 @@ export class AvailableSchedulesComponent {
 
   getTimeFromEpoch(t: number) {
     return getTimeFromEpoch(t);
+  }
+
+  toNumericalDate(d: string) {
+    return toNumericalDate(new Date(d));
   }
 }

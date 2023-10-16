@@ -955,7 +955,7 @@ export class ProjectService {
   // maybe rename this to backendService
   async analyzeTitle(title: string) {
     console.log('Analyzing title:', title);
-    const userId = '47033d78-0a18-4a0e-a5a5-1f9d51d04550'; // todo: get from logged in user
+    const userId = this.authService.getAuthenticatedUserGuaranteed().uid; // todo: get from logged in user
     const client = this.client;
     // todo: add types for edge fn
     const response = await client.functions.invoke('title-quality-checker', {

@@ -41,9 +41,15 @@ import {
   Share2,
   Star,
   Edit2,
+  Clock,
+  Sun,
+  Watch
 } from 'angular-feather/icons';
 
 const icons = {
+  Watch,
+  Clock,
+  Sun,
   ArrowDown,
   ArrowUp,
   Share2,

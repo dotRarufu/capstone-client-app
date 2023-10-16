@@ -65,22 +65,22 @@ clearFormUrl() {
   }
 
   // maybe rename this to backendService
-  async analyzeTitle(title: string) {
-    const userId = '47033d78-0a18-4a0e-a5a5-1f9d51d04550'; // todo: get from logged in user
-    const client = this.client;
-    // todo: add types for edge fn
-    const response = await client.functions.invoke('title-quality-checker', {
-      body: {
-        title,
-        userId,
-        name: 'Functions',
-      },
-    });
-    const data = response.data as TitleAnalyzerResult | null;
-    this._analyzerResult$.next(data);
+  // async analyzeTitle(title: string) {
+  //   const userId = '47033d78-0a18-4a0e-a5a5-1f9d51d04550'; // todo: get from logged in user
+  //   const client = this.client;
+  //   // todo: add types for edge fn
+  //   const response = await client.functions.invoke('title-quality-checker', {
+  //     body: {
+  //       title,
+  //       userId,
+  //       name: 'Functions',
+  //     },
+  //   });
+  //   const data = response.data as TitleAnalyzerResult | null;
+  //   this._analyzerResult$.next(data);
 
-    return data;
-  }
+  //   return data;
+  // }
 
   private checkError(
     a: TitleAnalyzerResult | undefined | null | AnalyzerResultError

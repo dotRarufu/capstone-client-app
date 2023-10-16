@@ -83,6 +83,10 @@ export class AuthService {
     return authenticatedUser$;
   }
 
+  getAuthenticatedUserGuaranteed() {
+    return this.userSubject.getValue()!
+  }
+
   getUserProfile(uid: string) {
     const user$ = this.updateUserProfile$.pipe(
       switchMap((__) => this.getUser(uid))
