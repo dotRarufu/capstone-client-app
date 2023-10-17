@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
     <ng-container *ngIf="!sideColumn">
       <div class="flex flex-col items-center  gap-4">
         <div
-          class=" h-full  w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50 "
+          class=" h-full  w-full rounded-[3px] border border-base-content/50  "
         >
           <div class="bg-primary p-4 text-primary-content">
             <h1 class="text-[20px] ">Tasks by Status</h1>
@@ -31,9 +31,7 @@ import { CommonModule } from '@angular/common';
           </div>
         </div>
 
-        <div
-          class=" h-fit w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50"
-        >
+        <div class=" h-fit w-full rounded-[3px] border border-base-content/50 ">
           <div class="bg-primary p-4 text-primary-content">
             <h1 class="text-[20px] ">Accomplished Milestones</h1>
           </div>
@@ -50,33 +48,25 @@ import { CommonModule } from '@angular/common';
           </div>
         </div>
 
-        <div
-          class="row-span-2 flex h-full w-full max-w-[429px] flex-col justify-start rounded-[3px] border border-base-content/50"
-        >
+        <div class=" h-fit w-full rounded-[3px] border border-base-content/50 ">
           <div class="bg-primary p-4 text-primary-content">
             <h1 class="text-[20px] ">Total Task Assignment</h1>
           </div>
-          <div class="flex h-full w-full flex-col gap-4 p-4">
+          <div class="flex justify-center p-4">
             <canvas
               baseChart
-              class=" w-full"
+              class=""
               [data]="totalTaskAssigmentData"
               type="pie"
               [options]="pieChartOptions"
               [plugins]="pieChartPlugins"
             >
             </canvas>
-            <p class="text-base text-base-content/70">
-              <!-- The display value of a grid item is blockified: if the specified
-              display of an in-flow child of an element generating a grid
-              container is an inline-level value, it computes to its block-level
-              equivalent -->
-            </p>
           </div>
         </div>
 
         <div
-          class="h-full min-h-[329px] w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50"
+          class="h-full w-full min-w-[229px] rounded-[3px] border border-base-content/50 "
         >
           <div class="bg-primary p-4 text-primary-content ">
             <h1 class="text-[20px] ">Consultations by Category</h1>
@@ -107,7 +97,7 @@ import { CommonModule } from '@angular/common';
 
         <div class="flex flex-col items-center gap-4  ">
           <div
-            class=" h-fit w-full max-w-[429px] rounded-[3px] border border-base-content/50"
+            class=" h-fit w-full rounded-[3px] border border-base-content/50 "
           >
             <div class="bg-primary p-4 text-primary-content">
               <h1 class="text-[20px] ">Tasks by Status</h1>
@@ -126,7 +116,7 @@ import { CommonModule } from '@angular/common';
           </div>
 
           <div
-            class="row-span-2 flex w-full max-w-[429px] flex-col justify-center rounded-[3px] border border-base-content/50"
+            class="row-span-2 flex max-h-[300px] w-full flex-col justify-center rounded-[3px] border border-base-content/50"
           >
             <div class="bg-primary p-4 text-primary-content">
               <h1 class="text-[20px] ">Accomplished Milestones</h1>
@@ -134,7 +124,7 @@ import { CommonModule } from '@angular/common';
             <div class="flex justify-center p-4">
               <canvas
                 baseChart
-                class=" w-full"
+                class=""
                 [data]="accomplishedMilestones"
                 type="pie"
                 [options]="pieChartOptions"
@@ -145,32 +135,52 @@ import { CommonModule } from '@angular/common';
           </div>
 
           <div
-            class=" row-span-2 flex h-full w-full max-w-[429px] flex-col justify-start rounded-[3px] border border-base-content/50"
+            class="row-span-2 flex max-h-[300px] w-full flex-col justify-center rounded-[3px] border border-base-content/50"
           >
             <div class="bg-primary p-4 text-primary-content">
               <h1 class="text-[20px] ">Total Task Assignment</h1>
             </div>
-            <div class="flex flex-col gap-4 p-4">
+            <div class="flex justify-center p-4">
               <canvas
                 baseChart
-                class=" w-full"
+                class=""
                 [data]="totalTaskAssigmentData"
                 type="pie"
                 [options]="pieChartOptions"
                 [plugins]="pieChartPlugins"
               >
               </canvas>
-              <p class="text-base text-base-content/70">
-                <!-- The display value of a grid item is blockified: if the specified
-                display of an in-flow child of an element generating a grid
-                container is an inline-level value, it computes to its
-                block-level equivalent -->
-              </p>
             </div>
           </div>
 
+          <!-- <div
+            class="row-span-2 flex max-h-[300px] w-full flex-col justify-center rounded-[3px] border border-base-content/50"
+          >
+            <div class="bg-primary p-4 text-primary-content">
+              <h1 class="text-[20px] ">Total Task Assignment</h1>
+            </div>
+            <div class="flex flex-col gap-4 p-4">
+
+              <canvas
+                baseChart
+                class=""
+                [data]="totalTaskAssigmentData"
+                type="pie"
+                [options]="pieChartOptions"
+                [plugins]="pieChartPlugins"
+              >
+              </canvas>
+             <p class="text-base text-base-content/70">
+                The display value of a grid item is blockified: if the specified
+                display of an in-flow child of an element generating a grid
+                container is an inline-level value, it computes to its
+                block-level equivalent
+              </p>
+            </div>
+          </div> -->
+
           <div
-            class=" h-fit w-full max-w-[429px] rounded-[3px] border border-base-content/50"
+            class=" h-fit w-full rounded-[3px] border border-base-content/50 "
           >
             <div class="bg-primary p-4 text-primary-content">
               <h1 class="text-[20px] ">Tasks by Status 2</h1>
@@ -228,12 +238,13 @@ export class ReportsComponent {
   barChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     plugins: {
-      datalabels: { color: '#ff0000' },
+      datalabels: { color: '#C9C5FF' },
     },
   };
   barChartPlugins = [DataLabelsPlugin];
   pieChartOptions: ChartConfiguration['options'] = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         // display: true',

@@ -71,6 +71,7 @@ export class ProjectsBySectionComponent {
 
   barChartOptions: ChartConfiguration['options'] = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       datalabels: { color: '#dad0f1', font: { size: 15, weight: 'bold' } },
     },

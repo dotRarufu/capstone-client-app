@@ -15,7 +15,7 @@ import { GroupsConsultationCountReportComponent } from './groups-consultation-co
     CommonModule,
     ProjectsBySectionComponent,
     ProjectsByStatusComponent,
-    GroupsConsultationCountReportComponent
+    GroupsConsultationCountReportComponent,
   ],
   template: `
     <div
@@ -23,9 +23,9 @@ import { GroupsConsultationCountReportComponent } from './groups-consultation-co
     >
       <ng-container *ngIf="!sideColumn">
         <div
-          class="flex w-full flex-wrap items-start justify-center gap-4  md:flex-col md:items-center"
+          class="flex w-full flex-wrap items-start justify-center gap-4  sm2:justify-start md:flex-col md:items-center"
         >
-        <div class="w-full min-w-[229px] max-w-[329px]">
+          <div class="w-full min-w-[229px] max-w-[329px]">
             <projects-by-status-report />
           </div>
 
@@ -41,30 +41,27 @@ import { GroupsConsultationCountReportComponent } from './groups-consultation-co
 
       <ng-container *ngIf="sideColumn">
         <div class="flex h-full flex-col gap-[16px] ">
-        <div class="flex flex-col gap-1">
-          <div class="flex justify-between ">
-            <h1 class="text-2xl text-base-content ">Reports</h1>
+          <div class="flex flex-col gap-1">
+            <div class="flex justify-between ">
+              <h1 class="text-2xl text-base-content ">Reports</h1>
+            </div>
+            <div class="h-[2px] w-full bg-base-content/10"></div>
           </div>
-          <div class="h-[2px] w-full bg-base-content/10"></div>
-        </div>
-
-
 
           <div
-            class="flex w-full flex-wrap items-start justify-center gap-4  md:flex-col md:items-center"
+            class="flex w-full flex-wrap items-start justify-center gap-4  sm2:justify-start md:flex-col md:items-center"
           >
-          <div class="w-full min-w-[229px] max-w-[329px]">
+            <div class=" w-full sm2:min-w-[229px] sm2:max-w-[329px]">
               <projects-by-status-report />
             </div>
 
-            <div class="w-full min-w-[229px] max-w-[429px]">
+            <div class="w-full sm2:min-w-[229px] sm2:max-w-[429px]">
               <projects-by-section-report />
             </div>
 
-
-          <div class="w-full min-w-[229px] max-w-[429px]">
-            <groups-consultation-count-report />
-          </div>
+            <div class="w-full sm2:min-w-[229px] sm2:max-w-[429px]">
+              <groups-consultation-count-report />
+            </div>
           </div>
         </div>
       </ng-container>

@@ -23,7 +23,7 @@ import { ConsultationByCategoryReportComponent } from './consultation-by-categor
   template: `
     <div class="flex flex-col items-center  gap-4">
       <div
-        class=" h-full  w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50 "
+        class=" h-full  w-full rounded-[3px] border border-base-content/50 "
       >
         <div class="bg-primary p-4 text-primary-content">
           <h1 class="text-[20px] ">Tasks by Status</h1>
@@ -43,7 +43,7 @@ import { ConsultationByCategoryReportComponent } from './consultation-by-categor
       </div>
 
       <div
-        class=" h-fit w-full min-w-[229px] max-w-[429px] rounded-[3px] border border-base-content/50"
+        class="  w-full rounded-[3px] border border-base-content/50"
       >
         <div class="bg-primary p-4 text-primary-content">
           <h1 class="text-[20px] ">Accomplished Milestones</h1>
@@ -61,9 +61,11 @@ import { ConsultationByCategoryReportComponent } from './consultation-by-categor
         </div>
       </div>
 
+      <div class="w-full ">
       <total-task-assignment-report />
+    </div>
 
-      <div class="w-full min-w-[229px] max-w-[429px]">
+      <div class="w-full ">
         <consultation-by-category-report />
       </div>
     </div>
@@ -139,6 +141,7 @@ export class ProjectReportsComponent {
   };
   pieChartOptions: ChartConfiguration['options'] = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       datalabels: {
         color: '#dad0f1',
