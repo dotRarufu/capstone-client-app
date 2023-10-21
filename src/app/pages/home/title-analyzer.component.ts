@@ -1,18 +1,33 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { Project } from 'src/app/models/project';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ProjectService } from '../../services/project.service';
+import { RequestCardComponent } from './request-card.component';
+import { switchMap, forkJoin, map } from 'rxjs';
 
 @Component({
   selector: 'title-analyzer',
   standalone: true,
-  imports: [FeatherIconsModule, AccordionComponent, CommonModule],
+  imports: [
+    FeatherIconsModule,
+    AccordionComponent,
+    CommonModule,
+    RequestCardComponent,
+    RouterModule
+  ],
   template: `
     <div class="w-full ">
       <div class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full ">
+        <router-outlet #myOutlet="outlet" />
+      </div>
+
+      <div
+        [class.hidden]="myOutlet.isActivated"
+        class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full "
+      >
         <div class="flex flex-col gap-1">
           <div class="flex justify-between ">
             <h1 class="text-2xl text-base-content">Title Analysis</h1>
@@ -45,6 +60,32 @@ import { ProjectService } from '../../services/project.service';
             </ng-container>
           </div>
         </accordion>
+
+        <div class="flex flex-col gap-1">
+          <div class="flex justify-between ">
+            <h1 class="text-2xl text-base-content">Requests</h1>
+            <button
+              class="btn-ghost btn-sm flex items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+            >
+              <i-feather
+                class="h-[20px] w-[20px] text-base-content/70"
+                name="zap"
+              />
+              <span class="uppercase"> Filter </span>
+            </button>
+          </div>
+          <div class="h-[2px] w-full bg-base-content/10"></div>
+        </div>
+
+        <div
+          class="flex flex-wrap gap-2"
+          *ngIf="{ requests: (requests$ | async) || [] } as observables"
+        >
+          <request-card
+            *ngFor="let request of observables.requests"
+            [id]="request"
+          />
+        </div>
       </div>
     </div>
   `,
@@ -78,17 +119,15 @@ export class TitleAnalyzerComponent {
 
   projectService = inject(ProjectService);
 
-  constructor() {
-    // Store requests id in another table
-    // Retrieve all users' request id
-    // Create ui to display finished and unfinished requests
+  requests$ = this.projectService.getUsersTitleRequests();
+  // .pipe(
+  //   switchMap((ids) => {
+  //     // 'e7ffbaa7-974a-4dde-bd19-340ac2d7eb1a'
+  //     const reqs = ids.map((id) =>
+  //       this.projectService.getTitleAnayzeResult(id)
+  //     );
 
-    this.projectService
-      .getTitleAnayzeResult('e7ffbaa7-974a-4dde-bd19-340ac2d7eb1a')
-      .subscribe({
-        next: (data) => {
-          console.log('data:', data.title, data.title_uniqueness);
-        },
-      });
-  }
+  //     return forkJoin(reqs);
+  //   })
+  // )
 }

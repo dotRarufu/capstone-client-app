@@ -179,18 +179,28 @@ export interface Database {
       }
       ai_service_request: {
         Row: {
-          data: string
+          data: string | null
           id: string
+          sender: string
         }
         Insert: {
-          data: string
+          data?: string | null
           id?: string
+          sender: string
         }
         Update: {
-          data?: string
+          data?: string | null
           id?: string
+          sender?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ai_service_request_sender_fkey"
+            columns: ["sender"]
+            referencedRelation: "user"
+            referencedColumns: ["uid"]
+          }
+        ]
       }
       annual_cat_uniqueness_categories: {
         Row: {

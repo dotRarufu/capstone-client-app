@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { TitleAnalyzerResult } from 'src/app/models/titleAnalyzerResult';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
@@ -116,20 +116,25 @@ export class ResultComponent {
 
   @Input() sideColumn? = false;
 
+  route = inject(ActivatedRoute);
   router = inject(Router);
   projectService = inject(ProjectService);
   spinner = inject(NgxSpinnerService);
   toastr = inject(ToastrService);
 
-  result$ = this.projectService.analyzerResult$.pipe(
-    take(1),
-    filter((res): res is TitleAnalyzerResult => res !== undefined),
+  id = this.route.snapshot.paramMap.get("requestId")!;
+  result$ = this.projectService.getTitleAnayzeResult(this.id).pipe(
     catchError((err) => {
       this.toastr.error('Error occured while analyzing title');
 
       return EMPTY;
     })
   );
+
+  constructor() {
+    const requestId = this.route.snapshot.paramMap.get("requestId");
+    console.log("requestId:", requestId)
+  }
 
   annualCategoryUniqueness$ = this.result$.pipe(
     map((d) => d.annual_category_uniqueness),
@@ -212,21 +217,21 @@ export class ResultComponent {
         images: ['assets/readability-scores.PNG'],
       };
 
-      // const categoryRarity: AnalysesDataItem = {
-      //   heading: 'Category Rarity',
-      //   value: data.category_rarity.score,
-      //   content: `The title is categorized as ${data.category_rarity.report.map(
-      //     (v) => v.category_id
-      //   )}, with the following score respectively: ${data.category_rarity.report.map(
-      //     (v) => v.score
-      //   )}`,
-      // };
+      const categoryRarity: AnalysesDataItem = {
+        heading: 'Category Rarity',
+        value: data.category_rarity.score,
+        content: `The title is categorized as ${data.category_rarity.report.map(
+          (v) => v.category_id
+        )}, with the following score respectively: ${data.category_rarity.report.map(
+          (v) => v.score
+        )}`,
+      };
 
-      // const annualCategoryUniqueness: AnalysesDataItem = {
-      //   heading: 'Annual Category Uniqueness',
-      //   value: data.annual_category_uniqueness.score,
-      //   content: `}`,
-      // };
+      const annualCategoryUniqueness: AnalysesDataItem = {
+        heading: 'Annual Category Uniqueness',
+        value: data.annual_category_uniqueness.score,
+        content: `The title is ${data.annual_category_uniqueness.score} unique among the titles sent in this system for the current year`,
+      };
 
       // annual category uniqueness
       // category rarity
@@ -236,7 +241,8 @@ export class ResultComponent {
         substantiveWordCount,
         titleUniqueness,
         readability,
-        // categoryRarity,
+        categoryRarity,
+        annualCategoryUniqueness
       ];
     })
   );

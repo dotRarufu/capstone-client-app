@@ -5,27 +5,26 @@ import { ResultComponent } from './result.component';
 import { HomeStateService } from './data-access/home-state.service';
 import { ProjectService } from '../../services/project.service';
 import { tap } from 'rxjs';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'student-title-analyzer',
   standalone: true,
-  imports: [TitleAnalyzerComponent, CommonModule, ResultComponent],
+  imports: [
+    TitleAnalyzerComponent,
+    CommonModule,
+    ResultComponent,
+    RouterModule,
+  ],
   template: `
-    <div class="flex flex-col gap-4" *ngIf="{result: result$ | async} as observbles">
-      <ng-container *ngIf="!observbles.result">
-        <title-analyzer
-          (analyzeClicked)="homeStateService.setAlreadyHaveTitle(false)"
-        />
-      </ng-container>
-
-      <ng-container *ngIf="observbles.result">
-        <title-analyzer-result />
-      </ng-container>
+    <div class="flex flex-col gap-4">
+      <title-analyzer
+        (analyzeClicked)="homeStateService.setAlreadyHaveTitle(false)"
+      />
     </div>
   `,
 })
 export class StudentTitleAnalyzerComponent {
-  projectService = inject(ProjectService);
+  route = inject(ActivatedRoute);
   homeStateService = inject(HomeStateService);
-  result$  = this.projectService.analyzerResult$
 }

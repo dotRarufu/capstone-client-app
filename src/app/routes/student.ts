@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { TitleAnalyzerComponent } from '../pages/home/title-analyzer.component';
+
 import { TitleBuilderComponent } from '../pages/title-builder/title-builder.component';
 import { TasksPageComponent } from '../pages/project/pages/tasks/tasks.component';
 import { ProjectComponent } from '../pages/project/pages/project/project.component';
@@ -18,6 +19,7 @@ import { ProjectPageComponent } from '../pages/project/project.component';
 import { FormComponent } from '../pages/forms/form.component';
 import { Form3Component } from '../pages/forms/form-3.component';
 import { Form4Component } from '../pages/forms/form-4.component';
+import { ResultComponent } from '../pages/home/result.component';
 
 const routes: Routes = [
   {
@@ -27,7 +29,14 @@ const routes: Routes = [
     children: [
       {
         path: 'title-analyzer',
+        // these comps does not serve any function
         component: TitleAnalyzerComponent,
+        children: [
+          {
+            path: ':requestId',
+            component: ResultComponent,
+          },
+        ],
       },
       {
         path: 'projects',
