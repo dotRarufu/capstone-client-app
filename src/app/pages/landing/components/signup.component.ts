@@ -46,12 +46,13 @@ import { User } from 'src/app/types/collection';
         <div class="form-control ">
           <div class="input-group rounded-[3px] border border-base-content/50">
             <select
+              [formControl]="roleId"
               class="select-bordered select w-full rounded-[3px] border-none text-base  font-normal  focus:rounded-[3px] "
             >
-              <option disabled selected>What is your role?</option>
+              <option disabled [ngValue]="-1">What is your role?</option>
 
-              <option (click)="roleId.setValue(0)">Student</option>
-              <option (click)="roleId.setValue(5)">Adviser</option>
+              <option [ngValue]="0">Student</option>
+              <option [ngValue]="5">Adviser</option>
             </select>
           </div>
         </div>
@@ -175,12 +176,14 @@ export class SignupComponent {
   toastr = inject(ToastrService);
 
   toLastStep() {
+    console.log('1');
     if (this.fullName.invalid) {
       this.toastr.error('Invalid name');
 
       return;
     }
 
+    console.log('2');
     if (this.roleId.invalid) {
       this.toastr.error('Role cannot be empty');
 
@@ -192,7 +195,7 @@ export class SignupComponent {
 
   roleIdValidator(): ValidatorFn {
     return (control: AbstractControl) => {
-      console.log("vlaidator:", control.value);
+      console.log('vlaidator:', control.value);
       if (![0, 5].includes(control.value)) return { emptyRoleId: true };
 
       return null;
@@ -236,7 +239,7 @@ export class SignupComponent {
         },
         error: (value) => {
           this.spinner.hide();
-          this.toastr.error("Sign up failed, try again");
+          this.toastr.error('Sign up failed, try again');
         },
       });
   }
