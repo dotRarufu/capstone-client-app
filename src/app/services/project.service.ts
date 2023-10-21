@@ -31,6 +31,24 @@ export type AError = {
   isError: true;
 };
 
+export type PickledResult = {
+  annual_category_uniqueness: {
+    report: { category_id: number; title_id_list: number[] }[];
+    score: number;
+  };
+  category_rarity: {
+    report: { category_id: number; score: number }[];
+    score: number;
+  };
+  readability: number;
+  substantive_words: {
+    count: number;
+    words: string[];
+  };
+  title_uniqueness: number;
+  title: string;
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -728,7 +746,6 @@ export class ProjectService {
       .eq('student_uid', userUid);
 
     const projects$ = from(studentRequest).pipe(
-
       map((res) => {
         const { data } = errorFilter(res);
 
@@ -949,7 +966,6 @@ export class ProjectService {
   );
   clearAnalyzerResult() {
     this._analyzerResult$.next(undefined);
-
   }
 
   // maybe rename this to backendService
@@ -969,7 +985,24 @@ export class ProjectService {
     const data = response.data as TitleAnalyzerResult | null;
     this._analyzerResult$.next(data);
 
-
     return data;
+  }
+
+  getTitleAnayzeResult(id: string) {
+    const req = this.client
+      .from('ai_service_request')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    return from(req).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      }),
+      // @ts-ignore
+      map((data) => window.jsonpickle.decode(data.data) as PickledResult)
+    );
   }
 }

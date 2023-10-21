@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AccordionComponent } from 'src/app/components/ui/accordion.component';
 import { Project } from 'src/app/models/project';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
+import { ProjectService } from '../../services/project.service';
 
 @Component({
   selector: 'title-analyzer',
@@ -74,4 +75,20 @@ export class TitleAnalyzerComponent {
     },
   ];
   @Output() analyzeClicked = new EventEmitter<void>();
+
+  projectService = inject(ProjectService);
+
+  constructor() {
+    // Store requests id in another table
+    // Retrieve all users' request id
+    // Create ui to display finished and unfinished requests
+
+    this.projectService
+      .getTitleAnayzeResult('e7ffbaa7-974a-4dde-bd19-340ac2d7eb1a')
+      .subscribe({
+        next: (data) => {
+          console.log('data:', data.title, data.title_uniqueness);
+        },
+      });
+  }
 }

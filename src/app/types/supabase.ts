@@ -177,6 +177,21 @@ export interface Database {
           }
         ]
       }
+      ai_service_request: {
+        Row: {
+          data: string
+          id: string
+        }
+        Insert: {
+          data: string
+          id?: string
+        }
+        Update: {
+          data?: string
+          id?: string
+        }
+        Relationships: []
+      }
       annual_cat_uniqueness_categories: {
         Row: {
           category_id: number
@@ -712,7 +727,7 @@ export interface Database {
           id?: number
           is_done: boolean
           name: string
-          section: string
+          section?: string
           technical_adviser_id?: string | null
         }
         Update: {
@@ -818,7 +833,7 @@ export interface Database {
         Row: {
           annual_category_uniqueness: number
           category_rarity: number
-          preferability: number
+          preferability: number | null
           readability: number
           substantive_words_count: number
           title: string | null
@@ -829,7 +844,7 @@ export interface Database {
         Insert: {
           annual_category_uniqueness: number
           category_rarity: number
-          preferability: number
+          preferability?: number | null
           readability: number
           substantive_words_count: number
           title?: string | null
@@ -840,7 +855,7 @@ export interface Database {
         Update: {
           annual_category_uniqueness?: number
           category_rarity?: number
-          preferability?: number
+          preferability?: number | null
           readability?: number
           substantive_words_count?: number
           title?: string | null

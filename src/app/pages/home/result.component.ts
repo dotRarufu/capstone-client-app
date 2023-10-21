@@ -124,7 +124,6 @@ export class ResultComponent {
   result$ = this.projectService.analyzerResult$.pipe(
     take(1),
     filter((res): res is TitleAnalyzerResult => res !== undefined),
-    tap(v => console.log("v:", v)),
     catchError((err) => {
       this.toastr.error('Error occured while analyzing title');
 
