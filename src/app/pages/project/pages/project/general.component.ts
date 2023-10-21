@@ -152,11 +152,12 @@ import formatDate from 'src/app/utils/formatDate';
                 class="select-bordered select w-full rounded-[3px] border-none text-base  font-normal  focus:rounded-[3px] "
                 [formControl]="section"
               >
-                <option disabled selected>Sections</option>
+                <option disabled [ngValue]="''">Sections</option>
 
                 <option
                   *ngFor="let s of observables.sections"
-                  (click)="newSectionSubject.next(s); section.setValue(s)"
+                 
+                  [ngValue]="s"
                 >
                   {{ s }}
                 </option>
@@ -235,6 +236,9 @@ export class GeneralComponent implements OnInit {
       Validators.pattern('^[A-Za-z0-9\\s!:\'"()\\-]+$'),
     ],
   });
+  newSection = this.section.valueChanges.subscribe(s => {
+    this.newSectionSubject.next(s)
+  })
   isDone = new FormControl(false, { nonNullable: true });
 
   user = toSignal(

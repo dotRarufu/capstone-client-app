@@ -64,9 +64,10 @@ import { AuthService } from 'src/app/services/auth.service';
                   [disabled]="
                     observables.user?.uid !== observables.participant?.uid
                   "
+                  [formControl]="newRole"
                   class="select-bordered select w-full rounded-[3px] border-none font-normal text-base-content  outline-0  focus:rounded-[3px] "
                 >
-                  <option disabled selected>
+                  <option disabled [ngValue]="''">
                     {{
                       observables.participant?.projectRole || 'Select a role'
                     }}
@@ -74,7 +75,7 @@ import { AuthService } from 'src/app/services/auth.service';
 
                   <ng-container *ngIf="observables.participant?.role_id === 0">
                     <option
-                      (click)="newRole.set(role)"
+                      [ngValue]="role"
                       *ngFor="let role of studentRoleOptions"
                     >
                       {{ role }}
@@ -88,7 +89,7 @@ import { AuthService } from 'src/app/services/auth.service';
           <ul class="flex w-full flex-col bg-neutral/20 p-0 py-2 sm1:w-[223px]">
             <button
             onclick="participantDetail.close()"
-              *ngIf="newRole() !== ''"
+              *ngIf="newRole.value !== ''"
               (click)="handleSaveClick(observables.participant!.uid)"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
@@ -142,7 +143,9 @@ export class ParticipntDetailModalComponent {
   adviserRoleOptions = ['Subject Adviser', 'Technical Adviser'];
   studentRoleOptions = ['Communication', 'Developer', 'Documentation'];
 
-  newRole = signal('');
+  newRole = new FormControl('', {
+    nonNullable: true,
+  });
 
   handleRemoveClick(userUid: string) {
     const projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
@@ -150,7 +153,7 @@ export class ParticipntDetailModalComponent {
     this.projectService.removeProjectParticipant(userUid, projectId).subscribe({
       complete: () => {
         this.toastr.success('Successfully removed user from the project');
-        this.newRole.set('');
+        this.newRole.reset();
       },
       error: () => {
         this.toastr.error('Failed to removed user from the project');
@@ -163,12 +166,12 @@ export class ParticipntDetailModalComponent {
     const projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
 
     this.projectService
-      .changeParticipantRole(uid, projectId, this.newRole())
+      .changeParticipantRole(uid, projectId, this.newRole.value)
       .subscribe({
         complete: () => {
-          this.toastr.success(`Role updated to ${this.newRole()}`);
+          this.toastr.success(`Role updated to ${this.newRole.value}`);
           this.spinner.hide();
-          this.newRole.set('');
+          this.newRole.reset();
         },
         error: () => {
           this.toastr.error('Failed to change role');

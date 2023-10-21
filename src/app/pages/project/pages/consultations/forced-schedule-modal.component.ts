@@ -54,13 +54,14 @@ import combineDateAndTime from 'src/app/utils/combineDateAndTime';
               class="input-group rounded-[3px] border border-base-content/50"
             >
               <select
+                [formControl]="projectId"
                 class="select-bordered select w-full rounded-[3px] border-none text-base  font-normal text-base-content focus:rounded-[3px] "
               >
-                <option disabled selected>Select a project</option>
+                <option disabled [ngValue]="-1">Select a project</option>
 
                 <option
                   *ngFor="let project of observables.projects"
-                  (click)="projectId.set(project.id)"
+                  [ngValue]="project.id"
                 >
                   {{ project.id }} | {{ project.name }}
                 </option>
@@ -164,8 +165,11 @@ export class ForcedScheduleModalComponent {
     nonNullable: true,
     validators: [Validators.required],
   });
-  // projectId = new FormControl(-1, { nonNullable: true });
-  projectId = signal(-1);
+  projectId = new FormControl(-1, {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+  // projectId = signal(-1);
 
   taskService = inject(TaskService);
   consultationStateService = inject(ConsultationStateService);
@@ -224,7 +228,7 @@ export class ForcedScheduleModalComponent {
       endTime,
       startTime,
       location: this.location.value,
-      project_id: this.projectId(),
+      project_id: this.projectId.value,
     };
 
     this.consultationService.forceSchedule(data).subscribe({
@@ -253,6 +257,6 @@ export class ForcedScheduleModalComponent {
     this.endDate.reset();
     this.description.reset();
     this.location.reset();
-    this.projectId.set(-1);
+    this.projectId.reset();
   }
 }

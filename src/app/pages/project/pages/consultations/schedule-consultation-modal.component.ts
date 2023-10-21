@@ -48,13 +48,14 @@ import { NgxSpinnerService } from 'ngx-spinner';
               class="input-group rounded-[3px] border border-base-content/50"
             >
               <select
+                [formControl]="activeScheduleId"
                 class="select-bordered select w-full rounded-[3px] border-none text-base  font-normal text-base-content focus:rounded-[3px] "
               >
-                <option disabled selected>Select a schedule</option>
+                <option disabled [ngValue]="-1">Select a schedule</option>
 
                 <option
                   *ngFor="let schedule of availableSchedules()"
-                  (click)="activeScheduleId.set(schedule.id)"
+                  [ngValue]="schedule.id"
                 >
                   {{ formatDate(schedule.date) }} |
                   {{ getTimeFromEpoch(schedule.start_time) }}
@@ -204,13 +205,16 @@ export class ScheduleConsultationModalComponent {
     nonNullable: true,
     validators: [Validators.required],
   });
-  activeScheduleId = signal(-1);
+  activeScheduleId = new FormControl(-1, {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
   activeSchedule = computed(() => {
     const schedules = this.availableSchedules();
 
     if (schedules === undefined) return null;
 
-    const active = schedules.filter((s) => s.id === this.activeScheduleId())[0];
+    const active = schedules.filter((s) => s.id === this.activeScheduleId.value)[0];
 
     return active;
   });
@@ -260,7 +264,7 @@ export class ScheduleConsultationModalComponent {
 
       return;
     }
-    if (this.activeScheduleId() === -1) {
+    if (this.activeScheduleId.value === -1) {
       this.toastr.error('Schedule cannot be empty');
 
       return;
@@ -269,7 +273,7 @@ export class ScheduleConsultationModalComponent {
     this.spinner.show();
 
     const data: ConsultationData = {
-      scheduleId: this.activeScheduleId(),
+      scheduleId: this.activeScheduleId.value,
       description: this.description.value,
       location: this.location.value,
       taskIds: this.selectedTasks().map((t) => t.id),

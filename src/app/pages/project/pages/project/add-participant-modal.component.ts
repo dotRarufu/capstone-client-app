@@ -43,13 +43,14 @@ import { MilestoneService } from 'src/app/services/milestone.service';
                 class="input-group rounded-[3px] border border-base-content/50"
               >
                 <select
+                  [formControl]="role"
                   class="select-bordered select w-full rounded-[3px] border-none font-normal text-base-content  outline-0  focus:rounded-[3px] "
                 >
                   <!-- todo: make this dynamic -->
-                  <option disabled selected>Select a role</option>
-                  <option (click)="selectRole(0)">Student</option>
-                  <option (click)="selectRole(1)">Subject Adviser</option>
-                  <option (click)="selectRole(2)">Technical Adviser</option>
+                  <option disabled [ngValue]="-1">Select a role</option>
+                  <option [ngValue]="0">Student</option>
+                  <option [ngValue]="1">Subject Adviser</option>
+                  <option [ngValue]="2">Technical Adviser</option>
                 </select>
               </div>
             </div>
@@ -90,7 +91,10 @@ export class AddParticipantModalComponent {
   toastr = inject(ToastrService);
   route = inject(ActivatedRoute);
 
-  role = signal(-1);
+  role = new FormControl(-1, {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
 
   addParticipant() {
     if (this.userUid.invalid) {
@@ -98,7 +102,7 @@ export class AddParticipantModalComponent {
 
       return;
     }
-    if (this.role() === -1) {
+    if (this.role.value === -1) {
       this.toastr.error('Role cannot be empty');
 
       return;
@@ -107,7 +111,7 @@ export class AddParticipantModalComponent {
     this.spinner.show();
     const projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
     const addParticipant$ = this.projectService
-      .addParticipant(this.userUid.value, projectId, this.role())
+      .addParticipant(this.userUid.value, projectId, this.role.value)
       .pipe(
         switchMap((_) =>
           this.milestoneService.applyCapstoneAdviserTemplate(
@@ -130,7 +134,5 @@ export class AddParticipantModalComponent {
     });
   }
 
-  selectRole(id: number) {
-    this.role.set(id);
-  }
+  
 }

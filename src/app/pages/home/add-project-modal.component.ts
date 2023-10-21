@@ -66,14 +66,15 @@ import { map } from 'rxjs';
                   class="input-group rounded-[3px] border border-base-content/50"
                 >
                   <select
+                  [formControl]="section"
                     class="select-bordered select w-full rounded-[3px] border-none font-normal  text-base-content  focus:rounded-[3px] "
                   >
-                    <option disabled selected>Sections</option>
+                    <option disabled [ngValue]="''">Sections</option>
 
                     <option
                       *ngFor="let s of observables.sections"
-                      (click)="section.setValue(s)"
 
+                      [ngValue]="s"
                     >
                       {{ s }}
                     </option>
