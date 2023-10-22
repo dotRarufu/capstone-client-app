@@ -3,9 +3,11 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { from, tap } from 'rxjs';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { TopAppBarComponent } from 'src/app/components/ui/top-app-bar.component';
 import { ProjectService } from 'src/app/services/project.service';
+import { HomeStateService } from '../home/data-access/home-state.service';
 
 type Action =
   | 'defaultPrefix'
@@ -347,9 +349,10 @@ export class TitleBuilderComponent {
   projectService = inject(ProjectService);
   router = inject(Router);
   spinner = inject(NgxSpinnerService);
-  toastr = inject(ToastrService)
+  toastr = inject(ToastrService);
+  homeStateService = inject(HomeStateService);
 
-  async analyzeTitle() {
+  analyzeTitle() {
     this.spinner.show();
     const prefix = this.title.prefix;
     const name = this.title.name;
@@ -360,9 +363,21 @@ export class TitleBuilderComponent {
       name ? `${name}:` : description
     } ${description} for ${client} `;
 
-    await this.projectService.analyzeTitle(title);
-    this.spinner.hide();
-    this.router.navigate(['s', 'home', 'title-analyzer']);
+    const req = from(this.projectService.analyzeTitle(title))
+      .pipe(tap(() => this.homeStateService.updateRequests()))
+      .subscribe({
+        next: (res) => {
+          this.toastr.success(`Request ${res.id} has been placed in queue `);
+          this.router.navigate(['s', 'home', 'title-analyzer']);
+          this.spinner.hide();
+        },
+        error: (err) => {
+          const message = err as string;
+          this.toastr.error(message);
+
+          this.spinner.hide();
+        },
+      });
   }
 
   editTitle(action: Action, ...params: string[]) {
@@ -381,8 +396,8 @@ export class TitleBuilderComponent {
   }
 
   nextStep(step: number, action?: Action, ...params: string[]) {
-    if (params.includes("")) {
-      this.toastr.error("Input cannot be empty")
+    if (params.includes('')) {
+      this.toastr.error('Input cannot be empty');
 
       return;
     }

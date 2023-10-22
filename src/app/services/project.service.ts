@@ -982,8 +982,9 @@ export class ProjectService {
       },
     });
     console.log('Title analyzed:', response);
-    const data = response.data as TitleAnalyzerResult | null;
-    this._analyzerResult$.next(data);
+    const data = response.data as {message: string, id: string} | {error: string};
+
+    if ("error" in data) throw data.error;
 
     return data;
   }
@@ -1061,7 +1062,7 @@ export class ProjectService {
           body: JSON.stringify({ id }),
         };
 
-        const req = fetch(address, options);
+        const req = fetch(`${address}/delete`, options);
 
         return from(req).pipe(
           switchMap(

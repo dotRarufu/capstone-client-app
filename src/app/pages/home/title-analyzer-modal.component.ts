@@ -110,8 +110,20 @@ export class TitleAnalyzerModalComponent {
     this.spinner.show();
     const analyze$ = from(
       this.projectService.analyzeTitle(this.titleFromAlreadyHaveTitle.value)
+    ).pipe(
+      tap(() => this.homeStateService.updateRequests())
     );
 
-    analyze$.subscribe({ next: () => this.spinner.hide() });
+    analyze$.subscribe({
+      next: (res) => {
+        this.toastr.success(`Request ${res.id} has been placed in queue `);
+        this.spinner.hide();
+      },
+      error: (err) => {
+        const message = err as string;
+        this.toastr.error(message);
+        this.spinner.hide();
+      },
+    });
   }
 }
