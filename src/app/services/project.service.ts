@@ -1011,7 +1011,10 @@ export class ProjectService {
 
     const req =
       isFinished === null
-        ? this.client.from('ai_service_request').select('id, sent, finished ').eq('sender', user)
+        ? this.client
+            .from('ai_service_request')
+            .select('id, sent, finished ')
+            .eq('sender', user)
         : isFinished
         ? this.client
             .from('ai_service_request')
@@ -1033,17 +1036,44 @@ export class ProjectService {
     );
   }
 
-  cancelRequest(id: string) {
-    const req = this.client.from("ai_service_request").delete().eq("id", id)
+  private getReceiverNodeAddress() {
+    const req = this.client
+      .from('secrets')
+      .select()
+      .eq('name', 'title-quality-checker-url')
+      .single();
 
     return from(req).pipe(
-      map(
-        (res) => {
-          const {data} = errorFilter(res);
+      map((res) => {
+        const { data } = errorFilter(res);
 
-          return data
-        }
-      )
-    )
+        return data.value;
+      })
+    );
+  }
+
+  cancelRequest(id: string) {
+    return this.getReceiverNodeAddress().pipe(
+      switchMap((address) => {
+        const options = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id }),
+        };
+
+        const req = fetch(address, options);
+
+        return from(req).pipe(
+          switchMap(
+            (res) => res.json() as Promise<{ message?: string; error?: string }>
+          ),
+          map((res) => {
+            if (res.error !== undefined) throw new Error(res.error);
+
+            return res.message!;
+          })
+        );
+      })
+    );
   }
 }

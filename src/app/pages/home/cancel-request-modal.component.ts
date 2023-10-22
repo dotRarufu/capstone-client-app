@@ -44,7 +44,7 @@ export class CancelRequestModalComponent {
   cancelRequest() {
     this.spinner.show();
     
-    const removeProject$ = this.homeStateService.activeRequestId$.pipe(
+    const cancelRequest$ = this.homeStateService.activeRequestId$.pipe(
       map((id) => {
         if (id === null) throw new Error('No project id passed');
         
@@ -54,14 +54,14 @@ export class CancelRequestModalComponent {
       tap(() => this.homeStateService.updateRequests())
     );
 
-    removeProject$.subscribe({
+    cancelRequest$.subscribe({
       next: (res) => {
         this.spinner.hide();
         this.toastr.success('Request cancelled')},
       error: (err) => {
         console.log("err:", err)
         this.spinner.hide();
-        this.toastr.error('Failed to cancel request')},
+        this.toastr.error(err)},
     });
   }
 }
