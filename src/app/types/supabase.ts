@@ -180,18 +180,24 @@ export interface Database {
       ai_service_request: {
         Row: {
           data: string | null
+          finished: string | null
           id: string
           sender: string
+          sent: string | null
         }
         Insert: {
           data?: string | null
+          finished?: string | null
           id?: string
           sender: string
+          sent?: string | null
         }
         Update: {
           data?: string | null
+          finished?: string | null
           id?: string
           sender?: string
+          sent?: string | null
         }
         Relationships: [
           {

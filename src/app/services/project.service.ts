@@ -1009,19 +1009,26 @@ export class ProjectService {
   getUsersTitleRequests(isFinished: boolean | null = null) {
     const user = this.authService.getAuthenticatedUserGuaranteed().uid;
 
-    const req = isFinished === null ? this.client.from('ai_service_request').select('id').eq('sender', user)
-      : isFinished ? this.client.from('ai_service_request').select('id').eq('sender', user).neq('data', null)
-      : this.client
-          .from('ai_service_request')
-          .select('*')
-          .eq('sender', user)
-          .eq('data', null)
+    const req =
+      isFinished === null
+        ? this.client.from('ai_service_request').select('id, sent, finished ').eq('sender', user)
+        : isFinished
+        ? this.client
+            .from('ai_service_request')
+            .select('id, sent, finished')
+            .eq('sender', user)
+            .neq('data', null)
+        : this.client
+            .from('ai_service_request')
+            .select('id, sent, finished')
+            .eq('sender', user)
+            .eq('data', null);
 
     return from(req).pipe(
       map((res) => {
         const { data } = errorFilter(res);
 
-        return data.map((d) => d.id);
+        return data;
       })
     );
   }

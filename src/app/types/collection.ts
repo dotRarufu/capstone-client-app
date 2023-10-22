@@ -18,3 +18,5 @@ export type MilestoneData =
   Database['public']['Tables']['milestone_data']['Row'];
 export type AvailableSchedule =
   Database['public']['Tables']['available_schedule']['Row'];
+export type AiServiceRequestRow =
+  Database['public']['Tables']['ai_service_request']['Row'];

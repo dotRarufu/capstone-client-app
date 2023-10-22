@@ -19,6 +19,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ProjectService } from 'src/app/services/project.service';
 import { dateToDateStringWithTime } from 'src/app/utils/dateToDateStringWithTime';
 import short from 'short-uuid';
+import { AiServiceRequestRow } from 'src/app/types/collection';
 
 @Component({
   selector: 'request-card',
@@ -53,7 +54,7 @@ import short from 'short-uuid';
           <i-feather class="text-base-content/70" name="x" />
         </button>
         <button
-        (click)="handleClick()"
+          (click)="handleClick()"
           class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
         >
           <i-feather class="text-base-content/70" name="log-in" />
@@ -64,9 +65,13 @@ import short from 'short-uuid';
   `,
 })
 export class RequestCardComponent implements OnInit {
-  @Input() id = '';
+  @Input() data: Pick<AiServiceRequestRow, 'id' | 'sent' | 'finished'> = {
+    id: '',
+    sent: '',
+    finished: '',
+  };
   shortUuid = signal('');
-  title = signal('Untitled request');
+
   sent = signal(dateToDateStringWithTime(new Date()));
   finished = signal(dateToDateStringWithTime(new Date()));
 
@@ -74,22 +79,26 @@ export class RequestCardComponent implements OnInit {
   router = inject(Router);
 
   ngOnInit(): void {
-  
+    const sentDate = dateToDateStringWithTime(new Date(this.data.sent || ''));
+    const finished = this.data.finished;
+    const finishedDate = finished
+      ? dateToDateStringWithTime(new Date(finished))
+      : 'Not yet';
+    this.sent.set(sentDate);
+    this.finished.set(finishedDate);
     const translator = short();
-    const shorted = translator.fromUUID(this.id);
+    const shorted = translator.fromUUID(this.data.id);
     this.shortUuid.set(shorted);
-    this.projectService.getTitleAnayzeResult(this.id).subscribe({
+    this.projectService.getTitleAnayzeResult(this.data.id).subscribe({
       // todo: add sent and finished fields in db
-      next: ({ title }) => {
-        this.title.set(title);
-      },
+
       error: () => {
-        console.error('Error getting request result:', this.id);
+        console.error('Error getting request result:', this.data.id);
       },
     });
   }
 
   handleClick() {
-    this.router.navigate(['s', 'home', 'title-analyzer', this.id]);
+    this.router.navigate(['s', 'home', 'title-analyzer', this.data.id]);
   }
 }

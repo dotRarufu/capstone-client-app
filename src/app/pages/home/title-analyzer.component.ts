@@ -6,7 +6,16 @@ import { Project } from 'src/app/models/project';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ProjectService } from '../../services/project.service';
 import { RequestCardComponent } from './request-card.component';
-import { switchMap, forkJoin, map } from 'rxjs';
+import {
+  switchMap,
+  forkJoin,
+  map,
+  BehaviorSubject,
+  withLatestFrom,
+  combineLatest,
+} from 'rxjs';
+import { sortStringArray } from 'src/app/utils/sortStringArray';
+import sortArrayByProperty from 'src/app/utils/sortArrayByProperty';
 
 @Component({
   selector: 'title-analyzer',
@@ -16,10 +25,13 @@ import { switchMap, forkJoin, map } from 'rxjs';
     AccordionComponent,
     CommonModule,
     RequestCardComponent,
-    RouterModule
+    RouterModule,
   ],
   template: `
-    <div class="w-full ">
+    <div
+      class="w-full"
+      *ngIf="{ requests: (requests$ | async) || [] } as observables"
+    >
       <div class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full ">
         <router-outlet #myOutlet="outlet" />
       </div>
@@ -64,26 +76,51 @@ import { switchMap, forkJoin, map } from 'rxjs';
         <div class="flex flex-col gap-1">
           <div class="flex justify-between ">
             <h1 class="text-2xl text-base-content">Requests</h1>
-            <button
-              class="btn-ghost btn-sm flex items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
-            >
-              <i-feather
-                class="h-[20px] w-[20px] text-base-content/70"
-                name="zap"
-              />
-              <span class="uppercase"> Filter </span>
-            </button>
+            <div class="flex gap-2">
+              <button
+                *ngIf="observables.requests.length > 1"
+                (click)="invertSortOrder()"
+                class="btn-ghost btn-sm flex items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+              >
+                <i-feather
+                  class="h-[20px] w-[20px] text-base-content/70"
+                  [name]="getInvertedSort()"
+                />
+                <span class="uppercase"> Sort </span>
+              </button>
+
+              <div class="dropdown-end dropdown">
+                <label
+                  tabindex="0"
+                  class="btn-ghost btn-sm flex items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
+                >
+                  <i-feather
+                    class="h-[20px] w-[20px] text-base-content/70"
+                    name="zap"
+                  />
+                  <span class="uppercase"> Filter </span>
+                </label>
+                <ul
+                  tabindex="0"
+                  class="dropdown-content rounded-[3px] z-[1] w-52 bg-base-100 p-2 shadow-md"
+                >
+                <div class="form-control w-full">
+                  <label class="cursor-pointer label">
+                    <span class="label-text">Finished</span>
+                    <input type="checkbox" class="toggle toggle-success" (change)="switchFilter()" checked/>
+                  </label>
+                </div>
+                </ul>
+              </div>
+            </div>
           </div>
           <div class="h-[2px] w-full bg-base-content/10"></div>
         </div>
 
-        <div
-          class="flex flex-wrap gap-2"
-          *ngIf="{ requests: (requests$ | async) || [] } as observables"
-        >
+        <div class="flex flex-wrap gap-2">
           <request-card
             *ngFor="let request of observables.requests"
-            [id]="request"
+            [data]="request"
           />
         </div>
       </div>
@@ -119,15 +156,41 @@ export class TitleAnalyzerComponent {
 
   projectService = inject(ProjectService);
 
-  requests$ = this.projectService.getUsersTitleRequests();
-  // .pipe(
-  //   switchMap((ids) => {
-  //     // 'e7ffbaa7-974a-4dde-bd19-340ac2d7eb1a'
-  //     const reqs = ids.map((id) =>
-  //       this.projectService.getTitleAnayzeResult(id)
-  //     );
+  requests$ = this.projectService.getUsersTitleRequests().pipe(
+    switchMap((requests) =>
+      combineLatest({
+        order: this.sortSubject.asObservable(),
+        isFinished: this.finishedFilterSubject.asObservable(),
+      }).pipe(
+        map((obs) => {
+          return { ...obs, requests };
+        }),
+        map(({ requests, order, isFinished }) => {
+          const finished = requests.filter((r) => r.finished !== null);
+          const unFinished = requests.filter((r) => r.finished === null);
+          const filtered = isFinished ? finished : unFinished;
+          const sorted = sortArrayByProperty(filtered, 'finished', order);
 
-  //     return forkJoin(reqs);
-  //   })
-  // )
+          return sorted;
+        })
+      )
+    )
+  );
+
+  sortSubject = new BehaviorSubject<'asc' | 'desc'>('asc');
+  finishedFilterSubject = new BehaviorSubject(true);
+
+  invertSortOrder() {
+    const old = this.sortSubject.getValue();
+    this.sortSubject.next(old === 'asc' ? 'desc' : 'asc');
+  }
+
+  getInvertedSort() {
+    return this.sortSubject.getValue() === 'asc' ? 'arrow-down' : 'arrow-up';
+  }
+
+  switchFilter() {
+    const old = this.finishedFilterSubject.getValue();
+    this.finishedFilterSubject.next(!old)
+  }
 }
