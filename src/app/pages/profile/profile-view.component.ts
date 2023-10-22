@@ -137,6 +137,7 @@ import { ClipboardModule } from 'ngx-clipboard';
                   <button
                     ngxClipboard
                     [cbContent]="observables.user?.uid"
+                    (click)="clipboardClick()"
                     class=" btn-square btn-sm btn flex rounded-[5px] border border-transparent bg-base-300/0 p-[4px] hover:btn-primary hover:outline-none"
                   >
                     <i-feather name="copy" />
@@ -416,6 +417,10 @@ export class ProfileViewComponent implements OnInit {
 
   handleUploadClick() {
     this.fileInput.nativeElement.click();
+  }
+
+  clipboardClick() {
+    this.toastr.success("User id copied to clipboard")
   }
 
   handleDeletePhotoClick() {
