@@ -1032,4 +1032,18 @@ export class ProjectService {
       })
     );
   }
+
+  cancelRequest(id: string) {
+    const req = this.client.from("ai_service_request").delete().eq("id", id)
+
+    return from(req).pipe(
+      map(
+        (res) => {
+          const {data} = errorFilter(res);
+
+          return data
+        }
+      )
+    )
+  }
 }

@@ -6,6 +6,7 @@ import { Project } from 'src/app/models/project';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ProjectService } from '../../services/project.service';
 import { RequestCardComponent } from './request-card.component';
+import { CancelRequestModalComponent } from './cancel-request-modal.component';
 import {
   switchMap,
   forkJoin,
@@ -16,6 +17,8 @@ import {
 } from 'rxjs';
 import { sortStringArray } from 'src/app/utils/sortStringArray';
 import sortArrayByProperty from 'src/app/utils/sortArrayByProperty';
+import { HomeStateService } from './data-access/home-state.service';
+
 
 @Component({
   selector: 'title-analyzer',
@@ -26,6 +29,7 @@ import sortArrayByProperty from 'src/app/utils/sortArrayByProperty';
     CommonModule,
     RequestCardComponent,
     RouterModule,
+    CancelRequestModalComponent
   ],
   template: `
     <div
@@ -116,15 +120,32 @@ import sortArrayByProperty from 'src/app/utils/sortArrayByProperty';
           </div>
           <div class="h-[2px] w-full bg-base-content/10"></div>
         </div>
+ 
 
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-2" *ngIf="observables.requests.length > 0; else empty">
           <request-card
             *ngFor="let request of observables.requests"
             [data]="request"
           />
         </div>
+
+        <ng-template #empty>
+          <div
+            class="py-4 flex items-center justify-center gap-[8px]
+            text-base-content/50"
+          >
+            <i-feather name="slash" class="" />
+            <span class="text-base">You have no {{finishedFilterSubject.getValue() ? "finished" : "unfinished"}} request</span>
+          </div>
+        </ng-template>
+
+
+      
+       
       </div>
     </div>
+
+    <cancel-request-modal />
   `,
 })
 //   todo: create a constant file, or fetch data from database. Maybe we can create an interface to edit the constants
@@ -155,8 +176,10 @@ export class TitleAnalyzerComponent {
   @Output() analyzeClicked = new EventEmitter<void>();
 
   projectService = inject(ProjectService);
+  homeStateService = inject(HomeStateService)
 
-  requests$ = this.projectService.getUsersTitleRequests().pipe(
+  requests$ = this.homeStateService.updateRequests$.pipe(
+    switchMap(() => this.projectService.getUsersTitleRequests()),
     switchMap((requests) =>
       combineLatest({
         order: this.sortSubject.asObservable(),

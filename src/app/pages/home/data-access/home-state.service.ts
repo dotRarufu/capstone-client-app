@@ -25,13 +25,26 @@ export class HomeStateService {
   >(null);
   private readonly activeConsultationSubject =
     new BehaviorSubject<ActiveConsultation | null>(null);
+  private readonly activeRequestIdSubject =
+    new BehaviorSubject<string | null>(null);
+  private readonly updateRequestsSubject =
+    new BehaviorSubject(0);
 
   activeConsultation$ = this.activeConsultationSubject.asObservable();
   activeProjectId$ = this.activeProjectIdSubject.asObservable();
+  activeRequestId$ = this.activeRequestIdSubject.asObservable();
   alreadyHaveTitle$ = this.alreadyHaveTitleSubject.asObservable();
+  updateRequests$ = this.updateRequestsSubject.asObservable();
 
+  updateRequests() {
+    const old = this.updateRequestsSubject.getValue();
+    this.updateRequestsSubject.next(old + 1);
+  }
   setActiveProjectId(id: number) {
     this.activeProjectIdSubject.next(id);
+  }
+  setActiveRequestId(id: string) {
+    this.activeRequestIdSubject.next(id);
   }
 
   setAlreadyHaveTitle(v: boolean) {
@@ -42,5 +55,8 @@ export class HomeStateService {
   }
   getActiveConsultation() {
     return this.activeConsultationSubject.getValue();
+  }
+  getActiveRequestId() {
+    return this.activeRequestIdSubject.getValue();
   }
 }

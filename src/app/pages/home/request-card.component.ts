@@ -20,6 +20,7 @@ import { ProjectService } from 'src/app/services/project.service';
 import { dateToDateStringWithTime } from 'src/app/utils/dateToDateStringWithTime';
 import short from 'short-uuid';
 import { AiServiceRequestRow } from 'src/app/types/collection';
+import { HomeStateService } from './data-access/home-state.service';
 
 @Component({
   selector: 'request-card',
@@ -30,8 +31,16 @@ import { AiServiceRequestRow } from 'src/app/types/collection';
       class="w-[262px]  rounded-[4px] border border-neutral/50 bg-base-100 drop-shadow"
     >
       <h2
+        *ngIf="!finished()"
         (click)="handleClick()"
-        class="link-hover link flex w-full flex-col justify-center break-words bg-primary p-[1rem] text-base text-primary-content"
+        class=" flex w-full flex-col justify-center break-words bg-primary p-[1rem] text-base text-primary-content "
+      >
+        {{ shortUuid() }}
+      </h2>
+      <h2
+        *ngIf="finished()"
+        (click)="handleClick()"
+        class="link-hover link flex w-full flex-col justify-center break-words bg-primary p-[1rem] text-base text-primary-content "
       >
         {{ shortUuid() }}
       </h2>
@@ -43,17 +52,21 @@ import { AiServiceRequestRow } from 'src/app/types/collection';
         </div>
         <div class="flex justify-between">
           <span>Finished:</span>
-          <span>{{ finished() }}</span>
+          <span>{{ finished() || 'Not yet' }}</span>
         </div>
       </div>
       <div class="flex w-full justify-end px-[1rem] py-4 text-base ">
         <button
-          onclick="removeProjectModal.showModal()"
+          *ngIf="!finished()"
+          onclick="cancelRequestModal.showModal()"
+          (click)="handleXClick()"
           class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
         >
           <i-feather class="text-base-content/70" name="x" />
         </button>
+
         <button
+          *ngIf="finished()"
           (click)="handleClick()"
           class="btn-ghost btn-sm btn text-base-content hover:rounded-[3px]"
         >
@@ -73,17 +86,18 @@ export class RequestCardComponent implements OnInit {
   shortUuid = signal('');
 
   sent = signal(dateToDateStringWithTime(new Date()));
-  finished = signal(dateToDateStringWithTime(new Date()));
+  finished = signal('');
 
   projectService = inject(ProjectService);
   router = inject(Router);
+  homeStateService = inject(HomeStateService);
 
   ngOnInit(): void {
     const sentDate = dateToDateStringWithTime(new Date(this.data.sent || ''));
     const finished = this.data.finished;
     const finishedDate = finished
       ? dateToDateStringWithTime(new Date(finished))
-      : 'Not yet';
+      : '';
     this.sent.set(sentDate);
     this.finished.set(finishedDate);
     const translator = short();
@@ -98,7 +112,13 @@ export class RequestCardComponent implements OnInit {
     });
   }
 
+  handleXClick() {
+    this.homeStateService.setActiveRequestId(this.data.id);
+  }
+
   handleClick() {
+    if (!this.finished()) return;
+
     this.router.navigate(['s', 'home', 'title-analyzer', this.data.id]);
   }
 }
