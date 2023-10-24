@@ -263,8 +263,16 @@ import { ClipboardModule } from 'ngx-clipboard';
             <div class="flex items-center justify-between ">
               <div class="flex flex-col gap-[4px]">
                 <div class="text-base font-semibold">ID</div>
-                <p class="pl-[8px] text-base text-base-content/70">
+                <p class="flex items-center gap-2 pl-[8px] text-base text-base-content/70">
                   {{ observables.user?.uid }}
+                  <button
+                    ngxClipboard
+                    [cbContent]="observables.user?.uid"
+                    (click)="clipboardClick()"
+                    class=" btn-square btn-sm btn flex rounded-[5px] border border-transparent bg-base-300/0 p-[4px] hover:btn-primary hover:outline-none"
+                  >
+                    <i-feather name="copy" />
+                  </button>
                 </p>
               </div>
             </div>
