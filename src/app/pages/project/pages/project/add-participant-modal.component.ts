@@ -1,5 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl,
+  FormControl,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
@@ -82,7 +86,7 @@ import { MilestoneService } from 'src/app/services/milestone.service';
 export class AddParticipantModalComponent {
   userUid = new FormControl('', {
     nonNullable: true,
-    validators: [Validators.required],
+    validators: [Validators.required, this.userIdValidator()],
   });
 
   spinner = inject(NgxSpinnerService);
@@ -96,9 +100,18 @@ export class AddParticipantModalComponent {
     validators: [Validators.required],
   });
 
+  userIdValidator(): ValidatorFn {
+    return (control: AbstractControl) => {
+       const pattern = /\s/;
+      if (pattern.test(control.value)) return { hasSpace: true };
+
+      return null;
+    };
+  }
+
   addParticipant() {
     if (this.userUid.invalid) {
-      this.toastr.error('User ID cannot be empty');
+      this.toastr.error('Invalid User ID');
 
       return;
     }
@@ -133,6 +146,4 @@ export class AddParticipantModalComponent {
       },
     });
   }
-
-  
 }
