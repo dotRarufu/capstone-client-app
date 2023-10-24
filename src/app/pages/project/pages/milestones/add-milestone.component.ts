@@ -41,7 +41,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 
             <textarea
               [formControl]="description"
-              class="textarea h-[117px] w-full rounded-[3px] border-[1px] leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0"
+              class="textarea h-[117px] w-full text-base-content rounded-[3px] border-[1px] leading-normal placeholder:text-base-content placeholder:opacity-70 focus:border-secondary focus:outline-0"
               placeholder="Description"
             ></textarea>
 
@@ -54,7 +54,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <input
               type="date"
               [formControl]="dueDate"
-              class="input w-full rounded-[3px] border-[1px] bg-transparent px-3 py-2 text-[20px] text-base text-primary-content/70 placeholder:text-[20px] placeholder:text-primary-content/70 placeholder:opacity-70 focus:border-secondary focus:outline-0 "
+              class="input w-full rounded-[3px] border-[1px] bg-transparent px-3 py-2 text-[20px] text-base text-base-content/70 placeholder:text-[20px] placeholder:text-primary-content/70 placeholder:opacity-70 focus:border-secondary focus:outline-0 "
             />
           </div>
 

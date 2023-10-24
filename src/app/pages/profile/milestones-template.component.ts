@@ -37,7 +37,7 @@ import { ProfileStateService } from './data-access/profile-state.service';
     >
       <ng-container *ngIf="!sideColumn">
         <div
-          class="rounded-[5px] border-base-content/50 bg-base-100 "
+          class="flex flex-col gap-2 rounded-[5px] border-base-content/50 bg-base-100"
         >
           <div class="flex items-center justify-between">
             <h1 class="text-[18px] font-semibold">Milestones Template</h1>
@@ -56,7 +56,7 @@ import { ProfileStateService } from './data-access/profile-state.service';
           <div
             class="flex h-full flex-col justify-start gap-x-[16px] sm1:grid sm1:grid-cols-[1fr_3fr] md:grid-cols-[1fr_3fr]"
           >
-            <ul class="steps steps-vertical pt-0 sm1:block px-4">
+            <ul class="steps steps-vertical px-4 pt-0 sm1:block">
               <li
                 *ngFor="let milestone of observables.milestones"
                 class="step"
@@ -69,7 +69,7 @@ import { ProfileStateService } from './data-access/profile-state.service';
                       profileStateService.setSelectedMilestoneId(milestone.id)
                     "
                     [class.text-primary]="
-                    observables.selectedMilestoneId === milestone.id
+                      observables.selectedMilestoneId === milestone.id
                     "
                   >
                     {{ milestone.title }}
@@ -95,7 +95,6 @@ import { ProfileStateService } from './data-access/profile-state.service';
             <div class="pt-[20px]">
               <milestone-template-info
                 *ngIf="observables.selectedMilestoneId !== null; else empty"
-
               />
 
               <ng-template #empty>
@@ -142,7 +141,7 @@ import { ProfileStateService } from './data-access/profile-state.service';
                       profileStateService.setSelectedMilestoneId(milestone.id)
                     "
                     [class.text-primary]="
-                    observables.selectedMilestoneId === milestone.id
+                      observables.selectedMilestoneId === milestone.id
                     "
                   >
                     {{ milestone.title }}

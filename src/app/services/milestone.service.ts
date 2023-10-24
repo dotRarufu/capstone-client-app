@@ -89,15 +89,33 @@ export class MilestoneService {
     if (milestoneDataId < 0)
       return throwError(() => new Error('milestone data id is invalid'));
 
-    const req = this.client
-      .from('milestone')
+    const reqDataDelete = this.client
+      .from('milestone_data')
       .delete()
-      .eq('id', milestoneDataId);
-    const req$ = from(req).pipe(
+      .eq('id', milestoneDataId)
+      .select()
+      .single();
+    const req$ = from(reqDataDelete).pipe(
       map((res) => {
-        const { statusText } = errorFilter(res);
+        console.log('deletemilestone:', milestoneDataId);
+        console.log('res m:', res);
+        const { data } = errorFilter(res);
 
-        return statusText;
+        return data.milestone_id;
+      }),
+      switchMap((milestoneId) => {
+        const reqRecordDelete = this.client
+          .from('milestone')
+          .delete()
+          .eq('id', milestoneId);
+
+        return from(reqRecordDelete).pipe(
+          map((res) => {
+            const { statusText } = errorFilter(res);
+
+            return statusText;
+          })
+        );
       }),
       tap((_) => this.signalMilestonesUpdate())
     );
@@ -295,17 +313,15 @@ export class MilestoneService {
   }
 
   reapplyTemplates() {
-    const user$ = this.authService.getAuthenticatedUser().pipe(
-
-      filter(isNotNull)
-    );
+    const user$ = this.authService
+      .getAuthenticatedUser()
+      .pipe(filter(isNotNull));
     const projects$ = this.projectService.getProjects().pipe(
       take(2),
 
       filter(isNotNull)
     );
     const req$ = forkJoin({ user: user$, projects: projects$ }).pipe(
-
       switchMap(({ user, projects }) => {
         const req$ = projects.map((p) =>
           this.applyCapstoneAdviserTemplate(user.uid, p.id)
@@ -319,7 +335,6 @@ export class MilestoneService {
   }
 
   applyCapstoneAdviserTemplate(userUid: string, projectId: number) {
-
     const templates$ = this.getMilestoneTemplates(userUid);
     const milestoneIds$ = from(
       this.client.from('milestone').select('id').eq('project_id', projectId)
