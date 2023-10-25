@@ -238,7 +238,7 @@ export class TechAdPendingConsultationsModalComponent {
   @ViewChild(ModalComponent, { static: false }) modalComponent!: ModalComponent;
 
   handleInvitation(decision: boolean) {
-    if (this.declineReason.invalid) {
+    if (this.declineReason.invalid && decision === false) {
       this.toastr.error('Decline reason cannot be empty');
 
       return;
