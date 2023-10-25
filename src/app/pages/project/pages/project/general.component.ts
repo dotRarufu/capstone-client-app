@@ -236,7 +236,13 @@ export class GeneralComponent implements OnInit {
       Validators.pattern('^[A-Za-z0-9\\s!:\'"()\\-]+$'),
     ],
   });
-  newSection = this.section.valueChanges.subscribe(s => {
+  newSection = this.section.valueChanges.pipe(skip(2)).subscribe(s => {
+    console.log("section formcontrol emits:", s)
+
+    if (s === '') return;
+
+    console.log("set it")
+
     this.newSectionSubject.next(s)
   })
   isDone = new FormControl(false, { nonNullable: true });
