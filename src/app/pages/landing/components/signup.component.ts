@@ -7,6 +7,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
@@ -73,6 +74,7 @@ import { User } from 'src/app/types/collection';
             </div>
           </div>
           <button
+            (click)="signUpWithGoogle()"
             class="btn-ghost btn flex w-full flex-row items-center justify-center gap-2 px-1 opacity-75"
           >
             <img src="assets/google.svg" alt="" />
@@ -82,9 +84,7 @@ import { User } from 'src/app/types/collection';
         <div class="flex-grow"></div>
         <div class="flex w-full flex-row items-center justify-center gap-2">
           <div class="opacity-75">Already have an account?</div>
-          <a class="btn-link btn no-underline " (click)="toLogin.emit()"
-            >LOGIN</a
-          >
+          <a class="btn-link btn no-underline " (click)="loginClick()">LOGIN</a>
         </div>
       </div>
     </ng-container>
@@ -144,8 +144,6 @@ import { User } from 'src/app/types/collection';
   `,
 })
 export class SignupComponent {
-  @Output() toLogin = new EventEmitter<void>();
-
   email = new FormControl('', {
     nonNullable: true,
     validators: [Validators.required, Validators.email],
@@ -171,6 +169,7 @@ export class SignupComponent {
 
   isInLastStep = false;
 
+  router = inject(Router);
   authService = inject(AuthService);
   spinner = inject(NgxSpinnerService);
   toastr = inject(ToastrService);
@@ -183,7 +182,6 @@ export class SignupComponent {
       return;
     }
 
-    console.log('2');
     if (this.roleId.invalid) {
       this.toastr.error('Role cannot be empty');
 
@@ -235,12 +233,24 @@ export class SignupComponent {
         next: (value) => {
           this.toastr.success('Sign up success');
           this.spinner.hide();
-          this.toLogin.emit();
+         
         },
         error: (value) => {
           this.spinner.hide();
           this.toastr.error('Sign up failed, try again');
         },
       });
+  }
+
+  signUpWithGoogle() {
+    this.authService.signUpWithGoogle().subscribe({
+      next: () => {
+        console.log("done sign up with google")
+      }
+    })
+  }
+
+  loginClick() {
+    this.router.navigate(['login']);
   }
 }

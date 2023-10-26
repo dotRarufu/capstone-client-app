@@ -67,6 +67,7 @@ import { SpinnerComponent } from 'src/app/components/spinner.component';
           </div>
         </div>
         <button
+        (click)="loginWithGoogle()"
           class="btn-ghost btn flex w-full flex-row items-center justify-center gap-2 px-1 opacity-75"
         >
           <img src="assets/google.svg" alt="" />
@@ -76,7 +77,7 @@ import { SpinnerComponent } from 'src/app/components/spinner.component';
       <div class="flex-grow"></div>
       <div class="flex w-full flex-row items-center justify-center gap-2">
         <div class="opacity-75">Don't have an account?</div>
-        <a class="btn-link btn no-underline " (click)="toSignUp.emit()"
+        <a (click)="signUpClick()" class="btn-link btn no-underline "
           >SIGN UP</a
         >
       </div>
@@ -133,5 +134,15 @@ export class LoginComponent {
           this.toastr.error('Login failed');
         },
       });
+  }
+
+  loginWithGoogle() {
+    this.authService.loginWithGoogle()
+  }
+
+  signUpClick() {
+    this.router.navigate(['signup']);
+    
+    
   }
 }

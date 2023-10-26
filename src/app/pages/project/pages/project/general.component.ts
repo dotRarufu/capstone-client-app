@@ -156,7 +156,7 @@ import formatDate from 'src/app/utils/formatDate';
 
                 <option
                   *ngFor="let s of observables.sections"
-                 
+
                   [ngValue]="s"
                 >
                   {{ s }}
@@ -248,9 +248,10 @@ export class GeneralComponent implements OnInit {
   isDone = new FormControl(false, { nonNullable: true });
 
   user = toSignal(
-    this.authService.user$.pipe(
+    this.authService.getAuthenticatedUser().pipe(
       take(1),
       map((u) => {
+        console.log("u:", u)
         if (u === null) {
           throw new Error('no logged in user');
         }

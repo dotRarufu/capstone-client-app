@@ -3,16 +3,43 @@ import { LandingComponent } from '../pages/landing/landing.component';
 import { ProfileComponent } from '../pages/profile/profile.component';
 import { ProfileViewComponent } from '../pages/profile/profile-view.component';
 import { authGuard } from '../guards/auth.guard';
+import { auth2Guard } from '../guards/auth-2.guard';
 import { roleGuard } from '../guards/role.guard';
 import { UnauthorizedComponent } from '../pages/unauthorized/unauthorized.component';
 import { NotFoundComponent } from '../pages/not-found/not-found.component';
 import { AdviserProfileReportsComponent } from '../pages/profile/adviser-profile-reports.component';
 import { ProfileReportsComponent } from '../pages/profile/profile-reports.component';
+import { SignupComponent } from '../pages/landing/components/signup.component';
+import { LoginComponent } from '../pages/landing/components/login.component';
+import { SignupContinueComponent } from '../pages/landing/components/signup-continue.component';
 
 export const app: Routes = [
   {
+    //todo: add guard using this from(this.client.auth.getUser())
+    canActivate: [auth2Guard],
+    path: 'signup-continue',
+    component: SignupContinueComponent,
+  },
+  {
     path: '',
     component: LandingComponent,
+
+    children: [
+      {
+        path: 'login',
+        component: LoginComponent,
+      },
+      {
+        path: 'signup',
+        component: SignupComponent,
+      },
+
+      {
+        path: '',
+        redirectTo: '/login',
+        pathMatch: 'full',
+      },
+    ],
   },
   {
     path: 'profile',

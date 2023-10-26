@@ -19,6 +19,7 @@ import supabaseClient from '../lib/supabase';
 import errorFilter from '../utils/errorFilter';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { isNotNull } from '../utils/isNotNull';
+import { getBaseUrl } from '../utils/getBaseUrl';
 
 @Injectable({
   providedIn: 'root',
@@ -46,7 +47,7 @@ export class AuthService {
 
   authStateChange = this.client.auth.onAuthStateChange((event, session) => {
     // todo: turn to switch
-
+    console.log('auth state changed:', event, session);
     if (event === 'SIGNED_OUT') {
       console.log('User signed out');
       this.userSubject.next(null);
@@ -73,18 +74,21 @@ export class AuthService {
             const { data } = errorFilter(res);
 
             return data;
-          })
+          }),
+          tap((loggedInUser) => this.userSubject.next(loggedInUser))
         );
 
         return user$;
-      })
+      }),
+      tap((res) => console.log('authenticated userr es:', res))
     );
 
     return authenticatedUser$;
   }
 
   getAuthenticatedUserGuaranteed() {
-    return this.userSubject.getValue()!
+    console.log('should be guaranteed:', this.userSubject.getValue());
+    return this.userSubject.getValue()!;
   }
 
   getUserProfile(uid: string) {
@@ -145,6 +149,27 @@ export class AuthService {
       switchMap((user) =>
         this.createStudentInfo(user.uid, userInfo.studentNumber)
       )
+    );
+
+    return signUp$;
+  }
+
+  continueSignUp(userInfo: {
+    name: string;
+    roleId: number;
+    studentNumber: string;
+  }) {
+    const signUp$ = from(this.client.auth.getUser()).pipe(
+      map((response) => response.data.user!),
+      tap((v) => console.log('1')),
+      switchMap((user) => this.updateUserData(user.id, userInfo)),
+      tap((v) => console.log('2')),
+      switchMap((user) =>
+        this.createStudentInfo(user.uid, userInfo.studentNumber)
+      ),
+      tap((v) => console.log('3')),
+      switchMap((u) => this.updateCurrentUser(u.uid)),
+      tap((v) => console.log('4'))
     );
 
     return signUp$;
@@ -256,12 +281,12 @@ export class AuthService {
 
   deleteAvatar(path: string, uid: string) {
     // todo: run this on new avatar upload, or learn the cdn bust cache
-    console.log("path:", path)
+    console.log('path:', path);
     const req = this.client.storage.from('avatars').remove([path]);
     const req$ = from(req).pipe(
       map((res) => {
         if (res.error !== null) throw new Error('failed to delete image');
-        
+
         return res.data;
       }),
       switchMap(() => this.deleteUserLastAvatarUpdate(uid)),
@@ -272,14 +297,17 @@ export class AuthService {
   }
 
   private deleteUserLastAvatarUpdate(uid: string) {
-    const req = this.client.from('user').update({avatar_last_update: null}).eq('uid', uid);
+    const req = this.client
+      .from('user')
+      .update({ avatar_last_update: null })
+      .eq('uid', uid);
 
     return from(req).pipe(
       map((res) => {
         const { data } = errorFilter(res);
 
         return data;
-      }),
+      })
     );
   }
 
@@ -308,19 +336,23 @@ export class AuthService {
     return req$;
   }
 
-  private createStudentInfo(uid: string, studentNumber: string) {
+  createStudentInfo(uid: string, studentNumber: string) {
     const client = this.client;
     const data = {
       uid,
       number: studentNumber,
     };
 
-    const insert = client.from('student_info').insert(data);
+    const insert = client
+      .from('student_info')
+      .insert(data)
+      .select('*')
+      .single();
     const insert$ = from(insert).pipe(
       map((res) => {
-        const { statusText } = errorFilter(res);
+        const { data } = errorFilter(res);
 
-        return statusText;
+        return data;
       })
     );
 
@@ -351,7 +383,7 @@ export class AuthService {
   }
 
   confirmNotification(id: number) {
-    console.log("confirm notif:", id)
+    console.log('confirm notif:', id);
     const req = this.client
       .from('notification')
       .update({ is_confirmed: true })
@@ -368,11 +400,14 @@ export class AuthService {
   }
 
   getProjectInvitation(id: number) {
-    const req = this.client.from('project_invitation').select('*').eq('id', id).single();
+    const req = this.client
+      .from('project_invitation')
+      .select('*')
+      .eq('id', id)
+      .single();
 
     return from(req).pipe(
       map((res) => {
-       
         const { data } = errorFilter(res);
 
         return data;
@@ -735,7 +770,7 @@ export class AuthService {
     return req$;
   }
 
-  private updateUserData(
+  updateUserData(
     userId: string,
     //todo: create interface for this, name it UserRow
     user: { name: string; roleId: number }
@@ -770,27 +805,26 @@ export class AuthService {
   }
 
   private updateCurrentUser(id: string) {
+    console.log('updateucrrentuser:', id);
     const userDetails$ = this.getUser(id);
-    userDetails$
-      .pipe(
-        map((user) => ({
-          name: user.name,
-          role_id: user.role_id,
-          uid: id,
-          avatar_last_update: user.avatar_last_update,
-        })),
-        tap((loggedInUser) => this.userSubject.next(loggedInUser))
-      )
-      .subscribe({
-        next: () => {},
-      });
+    userDetails$.pipe(
+      map((user) => ({
+        name: user.name,
+        role_id: user.role_id,
+        uid: id,
+        avatar_last_update: user.avatar_last_update,
+      })),
+      tap((loggedInUser) => this.userSubject.next(loggedInUser))
+    );
+
+    return userDetails$;
   }
 
   private signalUpdateUserProfile() {
     const old = this.updateUserProfileSubject.getValue();
     this.updateUserProfileSubject.next(old + 1);
   }
-  
+
   signalUpdateAvailableSchedules() {
     const old = this.updateAvailableSchedulesSubject.getValue();
     this.updateAvailableSchedulesSubject.next(old + 1);
@@ -798,5 +832,37 @@ export class AuthService {
   signalUpdateNotifications() {
     const old = this.updateNotificationsSubject.getValue();
     this.updateNotificationsSubject.next(old + 1);
+  }
+
+  signUpWithGoogle() {
+    const login = this.client.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: getBaseUrl() + '/signup-continue' },
+    });
+
+    const login$ = from(login).pipe(tap((u) => console.log('should navigate')));
+
+    return login$;
+  }
+
+  loginWithGoogle() {
+    const login = this.client.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: '',
+      },
+    });
+
+    const login$ = from(login).pipe(
+      // switchMap((authRes) => {
+      //   if (!authRes.data.user) throw Error('wip, auth res user is undefined');
+
+      //   return this.getUserData(authRes.data.url.);
+      // }),
+      // tap((user) => this.userSubject.next(user))
+      switchMap((_) => this.getAuthenticatedUser())
+    );
+
+    return login$;
   }
 }
