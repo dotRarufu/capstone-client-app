@@ -39,7 +39,7 @@ import { HomeStateService } from './data-access/home-state.service';
       >
       <router-outlet #myOutlet="outlet" />
 
- 
+
       <div
         [class.hidden]="myOutlet.isActivated"
         class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full "
@@ -180,6 +180,16 @@ export class TitleAnalyzerComponent {
         'assets/readability-formula.png',
         'assets/readability-scores.PNG',
       ],
+    },
+    {
+      heading: 'Category Rarity',
+      content:
+        "Category rarity is computed by estimating the title's category from the following: information systems development, web application development, mobile computing systems, game development, e-learning systems, interactive experience systems, information kiosks. For example, in 2019 there was an e-learning project, while in 2022, there was a web application, and it is 2023 at the present. If a group presented a title that is under the e-learning category, then they would get a high score, but if their title is under web application, then it would get a low score as it had just been developed last year."
+    },
+    {
+      heading: 'Annual Category Uniqueness',
+      content:
+        "An example is, in the current year, two groups are interested in developing an e-learning system. If the first person presents another e-learning system, they would receive a low score. However, if the first person presents a web application, they would receive a high score, as it has not been presented yet in the current year."
     },
   ];
   @Output() analyzeClicked = new EventEmitter<void>();
