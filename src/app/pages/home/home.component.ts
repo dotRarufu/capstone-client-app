@@ -3,7 +3,6 @@ import { TabDefinition } from 'src/app/models/tab';
 import { filter, fromEvent, map, switchMap, tap } from 'rxjs';
 import { TabsService } from 'src/app/services/tabs.service';
 import { CommonModule } from '@angular/common';
-import { ResultComponent } from './result.component';
 import { ProjectsComponent } from './projects-container.component';
 import { TitleAnalyzerModalComponent } from './title-analyzer-modal.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
@@ -12,7 +11,6 @@ import { TabsComponent } from 'src/app/components/ui/tabs.component';
 import { ModalComponent } from 'src/app/components/ui/modal.component';
 import { ActivatedRoute } from '@angular/router';
 import { AdviserProjectsComponent } from './adviser-projects.component';
-import { StudentTitleAnalyzerComponent } from './student-title-analyzer.component';
 import { StudentProjectsComponent } from './student-projects.component';
 import { SpinnerComponent } from 'src/app/components/spinner.component';
 import { RemoveProjectModalComponent } from './remove-project-modal.component';
@@ -23,13 +21,14 @@ import { ScheduledConsultationsComponent } from './scheduled-consultations.compo
 import { AuthService } from 'src/app/services/auth.service';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { ConsultationService } from 'src/app/services/consultation.service';
+import { HomeStateService } from './data-access/home-state.service';
+import { TitleAnalyzerComponent } from './title-analyzer.component';
 
 @Component({
   selector: 'home-page',
   standalone: true,
   imports: [
     CommonModule,
-    ResultComponent,
     ProjectsComponent,
     TitleAnalyzerModalComponent,
     NgxSpinnerModule,
@@ -38,13 +37,13 @@ import { ConsultationService } from 'src/app/services/consultation.service';
     ModalComponent,
     ProjectsAccordionComponent,
     AdviserProjectsComponent,
-    StudentTitleAnalyzerComponent,
+    TitleAnalyzerComponent,
     StudentProjectsComponent,
     AdviserReportsComponent,
     SpinnerComponent,
     RemoveProjectModalComponent,
     AddProjectModalComponent,
-    ScheduledConsultationsComponent
+    ScheduledConsultationsComponent,
   ],
   template: `
     <div class="flex flex-col gap-[1rem]">
@@ -53,28 +52,28 @@ import { ConsultationService } from 'src/app/services/consultation.service';
         <tabs />
       </div>
       <div
-        class="px-auto flex justify-center px-[1rem] sm1:px-[2rem] sm2:px-0 md:px-[200px] lg:px-0  pb-4 "
+        class="px-auto flex justify-center px-[1rem] pb-4 sm1:px-[2rem] sm2:px-0 md:px-[200px]  lg:px-0 "
         *ngIf="{ activeId: activeId$ | async } as observables"
       >
         <div
-          class=" flex w-full justify-center gap-4 flex-row md:w-full lg:w-[1040px]"
+          class=" flex w-full flex-row justify-center gap-4 md:w-full lg:w-[1040px]"
         >
           <div
-            class=" w-full sm2:w-[840px]  md:w-full lg:w-[1040px] flex flex-col gap-8"
+            class=" flex w-full  flex-col gap-8 sm2:w-[840px] md:w-full lg:w-[1040px]"
             *ngIf="
-              (observables.activeId === 'projects' || isDesktop) &&
-              (role === 'a')
+              (observables.activeId === 'projects' || isDesktop) && role === 'a'
             "
           >
             <adviser-projects />
-            <scheduled-consultations *ngIf="hasScheduledConsultation$ | async"/>
+            <scheduled-consultations
+              *ngIf="hasScheduledConsultation$ | async"
+            />
           </div>
 
           <div
             class="flex  w-full sm2:w-[840px] md:w-[294px] md:basis-[294px] lg:w-[1040px]"
             *ngIf="
-              (observables.activeId === 'reports' || isDesktop) &&
-              (role === 'a')
+              (observables.activeId === 'reports' || isDesktop) && role === 'a'
             "
           >
             <adviser-reports [sideColumn]="true" />
@@ -87,7 +86,9 @@ import { ConsultationService } from 'src/app/services/consultation.service';
               role === 's'
             "
           >
-            <student-title-analyzer />
+            <title-analyzer
+              (analyzeClicked)="homeStateService.setAlreadyHaveTitle(false)"
+            />
           </div>
 
           <div
@@ -113,8 +114,9 @@ export class HomePageComponent implements OnInit {
   route = inject(ActivatedRoute);
   authService = inject(AuthService);
   consultationService = inject(ConsultationService);
-  hasScheduledConsultation$ = this.consultationService.checkHasScheduledConsultation()
-
+  hasScheduledConsultation$ =
+    this.consultationService.checkHasScheduledConsultation();
+  homeStateService = inject(HomeStateService);
   role = this.route.snapshot.data['role'];
   isDesktop = false;
   activeId$ = this.tabsService.activeId$;
@@ -122,7 +124,6 @@ export class HomePageComponent implements OnInit {
   ngOnInit() {
     this.watchWindowSize();
     this.setupTabs();
-   
   }
 
   setupTabs() {

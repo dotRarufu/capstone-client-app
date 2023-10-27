@@ -42,7 +42,7 @@ interface AnalysesDataItem {
   ],
   template: `
     <div
-      class="flex w-full flex-col gap-[16px] sm2:max-w-[840px] md:max-w-none  lg:max-w-[1040px] "
+      class="flex w-full flex-col gap-[16px] sm2:max-w-[840px] md:max-w-none  lg:max-w-[1040px]"
     >
       <div class="flex justify-between gap-2">
         <h1 class="text-[24px] text-base-content">

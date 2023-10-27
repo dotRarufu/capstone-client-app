@@ -7,6 +7,7 @@ import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.modul
 import { ProjectService } from '../../services/project.service';
 import { RequestCardComponent } from './request-card.component';
 import { CancelRequestModalComponent } from './cancel-request-modal.component';
+import { ResultComponent } from './result.component';
 import {
   switchMap,
   forkJoin,
@@ -19,7 +20,6 @@ import { sortStringArray } from 'src/app/utils/sortStringArray';
 import sortArrayByProperty from 'src/app/utils/sortArrayByProperty';
 import { HomeStateService } from './data-access/home-state.service';
 
-
 @Component({
   selector: 'title-analyzer',
   standalone: true,
@@ -29,17 +29,17 @@ import { HomeStateService } from './data-access/home-state.service';
     CommonModule,
     RequestCardComponent,
     RouterModule,
-    CancelRequestModalComponent
+    CancelRequestModalComponent,
+    ResultComponent
   ],
   template: `
     <div
       class="w-full"
       *ngIf="{ requests: (requests$ | async) || [] } as observables"
-    >
-      <div class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full ">
-        <router-outlet #myOutlet="outlet" />
-      </div>
+      >
+      <router-outlet #myOutlet="outlet" />
 
+ 
       <div
         [class.hidden]="myOutlet.isActivated"
         class="flex w-full flex-col gap-[16px]  sm2:w-[840px] md:w-full "
@@ -106,23 +106,30 @@ import { HomeStateService } from './data-access/home-state.service';
                 </label>
                 <ul
                   tabindex="0"
-                  class="dropdown-content rounded-[3px] z-[1] w-52 bg-base-100 p-2 shadow-md"
+                  class="dropdown-content z-[1] w-52 rounded-[3px] bg-base-100 p-2 shadow-md"
                 >
-                <div class="form-control w-full">
-                  <label class="cursor-pointer label">
-                    <span class="label-text">Finished</span>
-                    <input type="checkbox" class="toggle toggle-success" (change)="switchFilter()" checked/>
-                  </label>
-                </div>
+                  <div class="form-control w-full">
+                    <label class="label cursor-pointer">
+                      <span class="label-text">Finished</span>
+                      <input
+                        type="checkbox"
+                        class="toggle-success toggle"
+                        (change)="switchFilter()"
+                        checked
+                      />
+                    </label>
+                  </div>
                 </ul>
               </div>
             </div>
           </div>
           <div class="h-[2px] w-full bg-base-content/10"></div>
         </div>
- 
 
-        <div class="flex flex-wrap gap-2" *ngIf="observables.requests.length > 0; else empty">
+        <div
+          class="flex flex-wrap gap-2"
+          *ngIf="observables.requests.length > 0; else empty"
+        >
           <request-card
             *ngFor="let request of observables.requests"
             [data]="request"
@@ -131,17 +138,19 @@ import { HomeStateService } from './data-access/home-state.service';
 
         <ng-template #empty>
           <div
-            class="py-4 flex items-center justify-center gap-[8px]
+            class="flex items-center justify-center gap-[8px] py-4
             text-base-content/50"
           >
             <i-feather name="slash" class="" />
-            <span class="text-base">You have no {{finishedFilterSubject.getValue() ? "finished" : "unfinished"}} request</span>
+            <span class="text-base"
+              >You have no
+              {{
+                finishedFilterSubject.getValue() ? 'finished' : 'unfinished'
+              }}
+              request</span
+            >
           </div>
         </ng-template>
-
-
-      
-       
       </div>
     </div>
 
@@ -176,7 +185,7 @@ export class TitleAnalyzerComponent {
   @Output() analyzeClicked = new EventEmitter<void>();
 
   projectService = inject(ProjectService);
-  homeStateService = inject(HomeStateService)
+  homeStateService = inject(HomeStateService);
 
   requests$ = this.homeStateService.updateRequests$.pipe(
     switchMap(() => this.projectService.getUsersTitleRequests()),
@@ -214,6 +223,6 @@ export class TitleAnalyzerComponent {
 
   switchFilter() {
     const old = this.finishedFilterSubject.getValue();
-    this.finishedFilterSubject.next(!old)
+    this.finishedFilterSubject.next(!old);
   }
 }

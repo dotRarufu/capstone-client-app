@@ -30,11 +30,12 @@ const routes: Routes = [
       {
         path: 'title-analyzer',
         // these comps does not serve any function
-        component: TitleAnalyzerComponent,
+        // component: TitleAnalyzerComponent,
         children: [
           {
             path: ':requestId',
             component: ResultComponent,
+            // children: []
           },
         ],
       },
