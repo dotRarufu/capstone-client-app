@@ -1,8 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 
 @Component({
   selector: 'project-card-preview',
   standalone: true,
+  imports: [FeatherIconsModule, CommonModule],
   template: `
     <div
       class="h-[240px] w-[262px] rounded-[4px] border border-neutral/50 bg-base-100 drop-shadow"
@@ -13,6 +16,22 @@ import { Component, Input } from '@angular/core';
         <p class=" truncate">
           {{ name }}
         </p>
+
+        <div class="flex gap-4">
+          <span class="text-base text-primary-content/70 no-underline">10 </span>
+          <div class="flex w-full items-center gap-2">
+            <span
+              class="flex items-center justify-center"
+              *ngFor="let c of [1, 2, 3]"
+            >
+              <i-feather
+                class="text-success"
+                style="width: 16px; height: 16px;"
+                name="check-circle"
+              />
+            </span>
+          </div>
+        </div>
       </div>
       <div
         class="h-[106px] w-full gap-[8px] p-[1rem] text-base text-base-content"
