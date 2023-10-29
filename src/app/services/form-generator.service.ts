@@ -35,6 +35,8 @@ clearFormUrl() {
     dateTime: number,
     dateTimeList: number[] = [-1]
   ) {
+    if (dateTime < 0) return throwError(() => new Error('No date time'));
+
     if (formNumber < 0) return throwError(() => new Error('No form number'));
 
     if (projectId < 0)
@@ -53,6 +55,15 @@ clearFormUrl() {
 
     const req$ = from(req).pipe(
       map((res) => {
+        console.log("body:", {
+          formNumber,
+          projectId,
+          dateTime,
+          // why accept dateTimeRange? why not just output the form 4 without asking for range
+          dateTimeList,
+          name: 'Functions',
+        })
+        console.log("res:", res)
         if (res.error !== null || res.data === null)
           throw new Error('error 10123');
 

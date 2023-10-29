@@ -36,6 +36,7 @@ import {
   ChevronLeft,
   ChevronDown,
   CheckCircle,
+  Filter,
   Minus,
   Save,
   Share2,
@@ -48,6 +49,7 @@ import {
 } from 'angular-feather/icons';
 
 const icons = {
+  Filter,
   Copy,
   Watch,
   Clock,

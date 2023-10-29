@@ -11,6 +11,7 @@ import {
   catchError,
   filter,
   finalize,
+  skip,
   switchMap,
   tap,
 } from 'rxjs';
@@ -83,24 +84,28 @@ export class Form3Component {
   dateTime = new FormControl(-1, {
     nonNullable: true,
   });
-  loader = this.dateTime.valueChanges.subscribe(() => {
-    this.spinner.show();
-  });
-  dateTimes$ = this.consultationService.getConsultations(2, this.projectId);
-  src$ = this.formGeneratorService
-    .generateForm(this.projectId, this.formNumber, this.dateTime.value)
-    .pipe(
-      tap((_) => {
-        this.toastr.success('Form generated');
-        this.spinner.hide();
-      }),
-      catchError((err) => {
-        this.toastr.error('Could not generate form:', err);
-        this.spinner.hide();
 
-        return EMPTY;
-      })
-    );
+  dateTimes$ = this.consultationService.getConsultations(2, this.projectId);
+  src$ = this.dateTime.valueChanges.pipe(
+    tap((_) => this.spinner.show()),
+    switchMap((a) =>
+      this.formGeneratorService.generateForm(
+        this.projectId,
+        this.formNumber,
+        this.dateTime.value
+      )
+    ),
+    tap((_) => {
+      this.toastr.success('Form generated');
+      this.spinner.hide();
+    }),
+    catchError((err) => {
+      this.toastr.error('Could not generate form:', err);
+      this.spinner.hide();
+
+      return EMPTY;
+    })
+  );
 
   toDateString(unix: number) {
     return convertUnixEpochToDateString(unix);

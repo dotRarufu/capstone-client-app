@@ -100,7 +100,7 @@ import { HomeStateService } from './data-access/home-state.service';
                 >
                   <i-feather
                     class="h-[20px] w-[20px] text-base-content/70"
-                    name="zap"
+                    name="filter"
                   />
                   <span class="uppercase"> Filter </span>
                 </label>
