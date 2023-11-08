@@ -122,7 +122,7 @@ export class ResultComponent {
   spinner = inject(NgxSpinnerService);
   toastr = inject(ToastrService);
 
-  id = this.route.snapshot.paramMap.get("requestId")!;
+  id = this.route.snapshot.paramMap.get('requestId')!;
   result$ = this.projectService.getTitleAnayzeResult(this.id).pipe(
     catchError((err) => {
       this.toastr.error('Error occured while analyzing title');
@@ -132,8 +132,8 @@ export class ResultComponent {
   );
 
   constructor() {
-    const requestId = this.route.snapshot.paramMap.get("requestId");
-    console.log("requestId:", requestId)
+    const requestId = this.route.snapshot.paramMap.get('requestId');
+    console.log('requestId:', requestId);
   }
 
   annualCategoryUniqueness$ = this.result$.pipe(
@@ -191,6 +191,31 @@ export class ResultComponent {
     data: this.result$,
     titleCount: from(this.projectService.getProjectCount()),
   }).pipe(
+    switchMap(({ data, titleCount }) => {
+      const categoryIds = data.category_rarity.report.map((v) => v.category_id);
+      const req = forkJoin(
+        categoryIds.map((id) => this.projectService.getCategoryName(id))
+      ).pipe(
+        map((v) => {
+          const newReport = data.category_rarity.report.map((a) => {
+            const match = v.find(b => b.category_id === a.category_id)!
+
+            // if (!match) return a;
+
+            return { ...a, name: match.name }
+          });
+          const newCategoryRarity = {
+            ...data.category_rarity,
+            report: newReport,
+          };
+          const res = { data: {...data, category_rarity: newCategoryRarity}, titleCount };
+
+          return res;
+        })
+      );
+
+      return req;
+    }),
     map(({ data, titleCount }) => {
       const substantiveWordCount: AnalysesDataItem = {
         heading: 'Substantive Word Count',
@@ -221,7 +246,7 @@ export class ResultComponent {
         heading: 'Category Rarity',
         value: data.category_rarity.score,
         content: `The title is categorized as ${data.category_rarity.report.map(
-          (v) => v.category_id
+          (v) => v.name
         )}, with the following score respectively: ${data.category_rarity.report.map(
           (v) => v.score
         )}`,
@@ -230,7 +255,7 @@ export class ResultComponent {
       const annualCategoryUniqueness: AnalysesDataItem = {
         heading: 'Annual Category Uniqueness',
         value: data.annual_category_uniqueness.score,
-        content: `The title is ${data.annual_category_uniqueness.score} unique among the titles sent in this system for the current year`,
+        content: `The title is ${data.annual_category_uniqueness.score}% unique among the titles sent in this system for the current year`,
       };
 
       // annual category uniqueness
@@ -242,7 +267,7 @@ export class ResultComponent {
         titleUniqueness,
         readability,
         categoryRarity,
-        annualCategoryUniqueness
+        annualCategoryUniqueness,
       ];
     })
   );

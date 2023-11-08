@@ -982,9 +982,11 @@ export class ProjectService {
       },
     });
     console.log('Title analyzed:', response);
-    const data = response.data as {message: string, id: string} | {error: string};
+    const data = response.data as
+      | { message: string; id: string }
+      | { error: string };
 
-    if ("error" in data) throw data.error;
+    if ('error' in data) throw data.error;
 
     return data;
   }
@@ -1004,6 +1006,22 @@ export class ProjectService {
       }),
       // @ts-ignore
       map((data) => window.jsonpickle.decode(data.data) as PickledResult)
+    );
+  }
+
+  getCategoryName(id: number) {
+    const req = this.client
+      .from('categories')
+      .select('*')
+      .eq('category_id', id)
+      .single();
+
+    return from(req).pipe(
+      map((res) => {
+        const { data } = errorFilter(res);
+
+        return data;
+      })
     );
   }
 
