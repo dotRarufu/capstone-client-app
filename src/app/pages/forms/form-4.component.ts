@@ -74,7 +74,7 @@ export class Form4Component implements OnInit {
       this.formGeneratorService.generateForm(
         this.projectId,
         this.formNumber,
-        -1,
+        0,
         dateTimeList
       )
     ),

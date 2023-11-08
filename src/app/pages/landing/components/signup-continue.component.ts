@@ -50,7 +50,7 @@ import { User } from 'src/app/types/collection';
         />
         <input
           type="text"
-          placeholder="Student Number"
+          [placeholder]="roleId.value === 0 ? 'Student Number' : 'Faculty Number'"
           [formControl]="studentNumber"
           class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
         />
@@ -122,7 +122,7 @@ export class SignupContinueComponent implements OnInit {
 
   roleIdValidator(): ValidatorFn {
     return (control: AbstractControl) => {
-   
+
       if (![0, 5].includes(control.value)) return { emptyRoleId: true };
 
       return null;
@@ -138,7 +138,7 @@ export class SignupContinueComponent implements OnInit {
 
         return this.authService.getUser(userId);
       }),
-      
+
     ).subscribe({
       next: () => this.router.navigate(["/"])
     })
@@ -147,7 +147,7 @@ export class SignupContinueComponent implements OnInit {
 
   signUp() {
     if (this.studentNumber.invalid) {
-      this.toastr.error('Invalid student number');
+      this.toastr.error(`Invalid ${this.roleId.value === 0 ? 'student number' : 'faculty number'}`);
 
       return;
     }

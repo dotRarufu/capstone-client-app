@@ -88,7 +88,7 @@ export class FormComponent implements OnInit {
       this.formGeneratorService.generateForm(
         this.projectId,
         this.formNumber,
-        -1
+        0
       )
     ),
     tap((_) => {

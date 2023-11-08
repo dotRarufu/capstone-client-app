@@ -246,6 +246,9 @@ export class ScheduleConsultationModalComponent {
   );
 
   doneTasks = signal<Task[]>([]);
+  projectDoneTasks = this.taskService.getTasks(2, this.projectId).subscribe({
+    next: (tasks) => this.doneTasks.set(tasks)
+  })
   selectedTasks = signal<Task[]>([]);
 
   handleClosedEvent() {

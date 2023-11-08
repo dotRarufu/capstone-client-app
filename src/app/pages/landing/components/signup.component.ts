@@ -112,7 +112,9 @@ import { User } from 'src/app/types/collection';
 
         <input
           type="text"
-          placeholder="Student Number"
+          [placeholder]="
+            roleId.value === 0 ? 'Student Number' : 'Faculty Number'
+          "
           [formControl]="studentNumber"
           class=" input w-full rounded-[3px] border border-base-content/50 px-3 py-2 placeholder:text-base placeholder:text-base-content placeholder:opacity-70"
         />
@@ -214,7 +216,11 @@ export class SignupComponent {
     }
 
     if (this.studentNumber.invalid) {
-      this.toastr.error('Invalid student number');
+      this.toastr.error(
+        `Invalid ${
+          this.roleId.value === 0 ? 'student number' : 'faculty number'
+        }`
+      );
 
       return;
     }
@@ -233,7 +239,7 @@ export class SignupComponent {
         next: (value) => {
           this.toastr.success('Sign up success');
           this.spinner.hide();
-         
+          this.router.navigate(['login']);
         },
         error: (value) => {
           this.spinner.hide();
@@ -245,9 +251,9 @@ export class SignupComponent {
   signUpWithGoogle() {
     this.authService.signUpWithGoogle().subscribe({
       next: () => {
-        console.log("done sign up with google")
-      }
-    })
+        console.log('done sign up with google');
+      },
+    });
   }
 
   loginClick() {
