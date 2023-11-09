@@ -123,7 +123,7 @@ export class LoginComponent {
       .pipe(
         filter(isNotNull),
         map((user) => getRolePath(user.role_id)),
-        tap((_) => this.spinner.hide())
+        tap(() => this.spinner.hide())
       )
       .subscribe({
         next: (rolePath) => {
@@ -142,7 +142,7 @@ export class LoginComponent {
 
   signUpClick() {
     this.router.navigate(['signup']);
-    
-    
+
+
   }
 }

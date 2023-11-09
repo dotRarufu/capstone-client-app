@@ -23,7 +23,7 @@ import { Component } from '@angular/core';
           alt=""
         />
       </div>
-      <div class="absolute bottom-4 right-4 text-sm">Version 2.3.1</div>
+      <div class="absolute bottom-4 right-4 text-sm">Version 2.3.3</div>
     </div>
   `,
 })

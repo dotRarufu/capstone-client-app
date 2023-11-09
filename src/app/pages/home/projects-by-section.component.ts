@@ -66,7 +66,7 @@ export class ProjectsBySectionComponent {
           },
         ],
       })),
-      tap((_) => this.chart?.update())
+      tap(() => this.chart?.update())
     );
 
   barChartOptions: ChartConfiguration['options'] = {

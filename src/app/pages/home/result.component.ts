@@ -158,7 +158,7 @@ export class ResultComponent {
 
   //* for dev
   devannualCategoryUniqueness$ = of('').pipe(
-    map((_) => {
+    map(() => {
       const res = {
         score: 83,
         report: [
@@ -198,17 +198,20 @@ export class ResultComponent {
       ).pipe(
         map((v) => {
           const newReport = data.category_rarity.report.map((a) => {
-            const match = v.find(b => b.category_id === a.category_id)!
+            const match = v.find((b) => b.category_id === a.category_id)!;
 
             // if (!match) return a;
 
-            return { ...a, name: match.name }
+            return { ...a, name: match.name };
           });
           const newCategoryRarity = {
             ...data.category_rarity,
             report: newReport,
           };
-          const res = { data: {...data, category_rarity: newCategoryRarity}, titleCount };
+          const res = {
+            data: { ...data, category_rarity: newCategoryRarity },
+            titleCount,
+          };
 
           return res;
         })

@@ -78,8 +78,8 @@ export class Form4Component implements OnInit {
         dateTimeList
       )
     ),
-    tap((_) => {
-      this.toastr.success('Form generated', );
+    tap(() => {
+      this.toastr.success('Form generated');
       this.spinner.hide();
     }),
     catchError((err) => {

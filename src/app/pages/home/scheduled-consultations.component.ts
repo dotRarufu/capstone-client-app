@@ -145,7 +145,7 @@ export class ScheduledConsultationsComponent {
         )
       )
     ),
-    tap((_) => this.spinner.show()),
+    tap(() => this.spinner.show()),
     map((projects) => {
       if (projects.length === 0) throw new Error('User has no projects');
 
@@ -166,7 +166,7 @@ export class ScheduledConsultationsComponent {
 
   consultations$ = this.authService.getAuthenticatedUser().pipe(
     filter(isNotNull),
-    switchMap((_) => this.consultationService.newConsultation$),
+    switchMap(() => this.consultationService.newConsultation$),
 
     switchMap((u) => this.rawConsultations$),
 
@@ -254,7 +254,7 @@ export class ScheduledConsultationsComponent {
             return { ...c, organizer: match };
           })
         ),
-        tap((_) => this.spinner.hide())
+        tap(() => this.spinner.hide())
       );
 
       return usersData$;

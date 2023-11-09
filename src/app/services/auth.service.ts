@@ -69,7 +69,7 @@ export class AuthService {
         const user$ = from(
           this.client.from('user').select('*').eq('uid', user.id).single()
         ).pipe(
-          tap((_) => this.updateCurrentUser(user.id)),
+          tap(() => this.updateCurrentUser(user.id)),
           map((res) => {
             const { data } = errorFilter(res);
 
@@ -104,7 +104,7 @@ export class AuthService {
     );
 
     return this.updateUserProfile$.pipe(
-      switchMap((_) => combineLatest([user$, email$])),
+      switchMap(() => combineLatest([user$, email$])),
       map(([user, email]) => ({ ...user, email }))
     );
   }
@@ -239,7 +239,7 @@ export class AuthService {
       })
     );
 
-    return req$.pipe(tap((_) => this.signalUpdateUserProfile()));
+    return req$.pipe(tap(() => this.signalUpdateUserProfile()));
   }
 
   uploadAvatar(photo: File, uid: string) {
@@ -275,7 +275,7 @@ export class AuthService {
     );
 
     return forkJoin([avatarLastUpdate$, upload$]).pipe(
-      tap((_) => this.signalUpdateUserProfile())
+      tap(() => this.signalUpdateUserProfile())
     );
   }
 
@@ -290,7 +290,7 @@ export class AuthService {
         return res.data;
       }),
       switchMap(() => this.deleteUserLastAvatarUpdate(uid)),
-      tap((_) => this.signalUpdateUserProfile())
+      tap(() => this.signalUpdateUserProfile())
     );
 
     return req$;
@@ -379,7 +379,7 @@ export class AuthService {
       })
     );
 
-    return this.updateNotifications$.pipe(switchMap((_) => user));
+    return this.updateNotifications$.pipe(switchMap(() => user));
   }
 
   confirmNotification(id: number) {
@@ -395,7 +395,7 @@ export class AuthService {
 
         return statusText;
       }),
-      tap((_) => this.signalUpdateNotifications())
+      tap(() => this.signalUpdateNotifications())
     );
   }
 
@@ -468,7 +468,7 @@ export class AuthService {
       })
     );
 
-    return req$.pipe(switchMap((_) => update$));
+    return req$.pipe(switchMap(() => update$));
   }
 
   deleteInvitation(id: number) {
@@ -505,7 +505,7 @@ export class AuthService {
 
         return { statusText, data: data[0] };
       }),
-      tap((_) => this.signalUpdateAvailableSchedules())
+      tap(() => this.signalUpdateAvailableSchedules())
     );
 
     const isDuplicate$ = from(
@@ -548,7 +548,7 @@ export class AuthService {
 
         return { statusText, data: data[0] };
       }),
-      tap((_) => this.signalUpdateAvailableSchedules())
+      tap(() => this.signalUpdateAvailableSchedules())
     );
 
     const isDuplicate$ = from(
@@ -617,7 +617,7 @@ export class AuthService {
     );
 
     const req$ = this.updateAvailableSchedules$.pipe(
-      switchMap((_) => technicalAdviser$),
+      switchMap(() => technicalAdviser$),
       switchMap((uid) =>
         this.client
           .from('available_schedule')
@@ -643,7 +643,7 @@ export class AuthService {
       .eq('is_available', true);
 
     const req$ = this.updateAvailableSchedules$.pipe(
-      switchMap((_) => from(req)),
+      switchMap(() => from(req)),
       map((res) => {
         const { data } = errorFilter(res);
 
@@ -711,7 +711,7 @@ export class AuthService {
 
         return statusText;
       }),
-      tap((_) => this.signalUpdateAvailableSchedules())
+      tap(() => this.signalUpdateAvailableSchedules())
     );
 
     return req$;
@@ -725,7 +725,7 @@ export class AuthService {
 
         return statusText;
       }),
-      tap((_) => this.signalUpdateAvailableSchedules())
+      tap(() => this.signalUpdateAvailableSchedules())
     );
 
     return req$;
@@ -860,7 +860,7 @@ export class AuthService {
       //   return this.getUserData(authRes.data.url.);
       // }),
       // tap((user) => this.userSubject.next(user))
-      switchMap((_) => this.getAuthenticatedUser())
+      switchMap(() => this.getAuthenticatedUser())
     );
 
     return login$;

@@ -166,7 +166,7 @@ export class HomePageComponent implements OnInit {
   watchWindowSize() {
     const windowResize$ = fromEvent(window, 'resize');
     this.isDesktop = window.innerWidth >= 1240;
-    windowResize$.pipe(map((_) => window.innerWidth)).subscribe({
+    windowResize$.pipe(map(() => window.innerWidth)).subscribe({
       next: (width) => {
         this.isDesktop = width >= 1240;
       },

@@ -3,7 +3,16 @@ import { Component, ViewChild, inject } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { BaseChartDirective, NgChartsModule } from 'ng2-charts';
-import { Observable, filter, forkJoin, map, of, switchMap, take, tap } from 'rxjs';
+import {
+  Observable,
+  filter,
+  forkJoin,
+  map,
+  of,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { ProjectService } from 'src/app/services/project.service';
@@ -43,19 +52,16 @@ export class GroupsConsultationCountReportComponent {
     .pipe(
       filter(isNotNull),
 
-      switchMap((u) => this.projectService.getProjects()),
+      switchMap(() => this.projectService.getProjects()),
       filter(isNotNull),
-
-
-
-
       switchMap((projects) => {
         if (projects.length === 0) return of([]);
 
         const reqs = projects.map((p) =>
-          this.consultationService
-            .getConsultations(2, p.id)
-            .pipe(take(1), map((consultations) => ({ project: p, consultations })))
+          this.consultationService.getConsultations(2, p.id).pipe(
+            take(1),
+            map((consultations) => ({ project: p, consultations }))
+          )
         );
 
         return forkJoin(reqs);
@@ -66,7 +72,6 @@ export class GroupsConsultationCountReportComponent {
         const counts = projectsConsultations.map(
           (pc) => pc.consultations.length
         );
-
 
         return {
           labels: [...projects],
@@ -80,7 +85,7 @@ export class GroupsConsultationCountReportComponent {
         };
       }),
 
-      tap((_) => this.chart?.update())
+      tap(() => this.chart?.update())
     );
 
   barChartOptions: ChartConfiguration['options'] = {

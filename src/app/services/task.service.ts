@@ -55,7 +55,7 @@ export class TaskService {
       })
     );
     const add$ = taskCount$.pipe(
-      switchMap((_) => userUid$),
+      switchMap(() => userUid$),
       // take(1),
       map((uid) => {
         const data = {
@@ -78,7 +78,7 @@ export class TaskService {
 
         return statusText;
       }),
-      tap((_) => this.signalNewTask())
+      tap(() => this.signalNewTask())
     );
 
     return add$;
@@ -105,13 +105,13 @@ export class TaskService {
       })
     );
     const delete$ = userCheck$.pipe(
-      switchMap((_) => request$),
+      switchMap(() => request$),
       map((res) => {
         const { statusText } = errorFilter(res);
 
         return statusText;
       }),
-      tap((_) => this.signalNewTask())
+      tap(() => this.signalNewTask())
     );
 
     return delete$;
@@ -136,7 +136,7 @@ export class TaskService {
 
         return statusText;
       }),
-      tap((_) => this.signalNewTask())
+      tap(() => this.signalNewTask())
     );
 
     return edit$;
@@ -159,7 +159,7 @@ export class TaskService {
 
         return statusText;
       }),
-      tap((_) => this.signalNewTask())
+      tap(() => this.signalNewTask())
     );
 
     return edit$;

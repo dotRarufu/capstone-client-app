@@ -84,15 +84,10 @@ export class FormComponent implements OnInit {
         throw new Error('Insufficient adviser');
       }
     }),
-    switchMap((_) =>
-      this.formGeneratorService.generateForm(
-        this.projectId,
-        this.formNumber,
-        0
-      )
+    switchMap(() =>
+      this.formGeneratorService.generateForm(this.projectId, this.formNumber, 0)
     ),
-    tap((_) => {
-      console.log('url:', _);
+    tap(() => {
       this.toastr.success('Form generated');
       this.spinner.hide();
     }),
@@ -101,8 +96,7 @@ export class FormComponent implements OnInit {
       this.spinner.hide();
 
       return of(null);
-    }),
-   
+    })
   );
 
   ngOnInit(): void {

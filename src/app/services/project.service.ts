@@ -103,17 +103,17 @@ export class ProjectService {
     );
 
     return this.projectUpdate$.pipe(
-      switchMap((_) => merge(of(null), projects$))
+      switchMap(() => merge(of(null), projects$))
     );
   }
 
   createProject(name: string, fullTitle: string, section: string) {
     const user$ = this.authService.getAuthenticatedUser().pipe(
-      map((_) => {
+      map((v) => {
         if (name === '' || fullTitle === '')
           throw new Error('You passed an empty string');
 
-        return _;
+        return v;
       }),
       map((user) => {
         if (user === null) throw new Error('no logged in user');
@@ -156,7 +156,7 @@ export class ProjectService {
           switchMap((user) => this.addStudentMember(projectId, user.uid))
         )
       ),
-      tap((_) => this.signalProjectUpdate())
+      tap(() => this.signalProjectUpdate())
     );
 
     return insertRequest$;
@@ -367,7 +367,7 @@ export class ProjectService {
       switchMap(({ role_id }) => {
         if (role_id === 0)
           return this.addStudentMember(projectId, userUid).pipe(
-            tap((_) => this.signalNewParticipant())
+            tap(() => this.signalNewParticipant())
           );
 
         if (![5].includes(role_id)) throw new Error('unknon role');
@@ -376,7 +376,7 @@ export class ProjectService {
           switchMap((sender) =>
             this.addProjectAdviser(sender.uid, userUid, projectId, roleId)
           ),
-          tap((_) => this.signalInvitedParticipant())
+          tap(() => this.signalInvitedParticipant())
         );
 
         return addProjectAdviser$;
@@ -384,9 +384,9 @@ export class ProjectService {
     );
 
     return isParticipant$.pipe(
-      switchMap((_) => roleMatchesTargetUser$),
-      switchMap((_) => isAlreadyInvited$),
-      switchMap((_) => req$)
+      switchMap(() => roleMatchesTargetUser$),
+      switchMap(() => isAlreadyInvited$),
+      switchMap(() => req$)
     );
   }
 
@@ -441,8 +441,8 @@ export class ProjectService {
 
         return statusText;
       }),
-      switchMap((_) => this.deleteEmptyProject(projectId)),
-      tap((_) => {
+      switchMap(() => this.deleteEmptyProject(projectId)),
+      tap(() => {
         if (!isLeave) {
           this.signalNewParticipant();
         }
@@ -462,7 +462,7 @@ export class ProjectService {
         const { statusText } = errorFilter(res);
         return statusText;
       }),
-      tap((_) => this.signalInvitedParticipant())
+      tap(() => this.signalInvitedParticipant())
     );
 
     return req$;
@@ -482,21 +482,21 @@ export class ProjectService {
 
       switchMap((user) => this.removeProjectParticipant(user.uid, projectId)),
 
-      tap((_) => this.signalProjectUpdate())
+      tap(() => this.signalProjectUpdate())
     );
     return request$;
   }
 
   updateGeneralInfo(projectId: number, data: Partial<ProjectRow>) {
     const req$ = of('').pipe(
-      map((_) => {
+      map((v) => {
         if (!checkObjectHasKeys(data)) throw new Error('empty data');
         if (data.full_title === '') throw new Error('empty full title');
         if (data.name === '') throw new Error('empty name');
 
-        return _;
+        return v;
       }),
-      switchMap((_) => {
+      switchMap(() => {
         const req = this.client
           .from('project')
           .update(data)
@@ -617,7 +617,7 @@ export class ProjectService {
 
         return res;
       }),
-      tap((_) => this.signalNewParticipant())
+      tap(() => this.signalNewParticipant())
     );
 
     return req$;
@@ -630,7 +630,7 @@ export class ProjectService {
       .eq('project_id', projectId);
 
     const req$ = this.invitedParticipantUpdate$.asObservable().pipe(
-      switchMap((_) => from(req)),
+      switchMap(() => from(req)),
       map((res) => {
         const { data } = errorFilter(res);
 

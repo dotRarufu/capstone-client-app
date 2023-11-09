@@ -1,25 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import {
-  BehaviorSubject,
-  EMPTY,
-  catchError,
-  filter,
-  finalize,
-  skip,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { EMPTY, catchError, switchMap, tap } from 'rxjs';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ConsultationService } from 'src/app/services/consultation.service';
 import { FormGeneratorService } from 'src/app/services/form-generator.service';
 import { convertUnixEpochToDateString } from 'src/app/utils/convertUnixEpochToDateString';
-import { isNotNull } from 'src/app/utils/isNotNull';
 
 @Component({
   standalone: true,
@@ -60,10 +50,10 @@ import { isNotNull } from 'src/app/utils/isNotNull';
 
       <ng-template #empty>
         <div
-          class=" flex flex-col items-center justify-center gap-[8px]
+          class="flex flex-col items-center justify-center gap-[8px]
         text-base-content/50"
         >
-          <i-feather name="calendar" class="" />
+          <i-feather name="calendar" />
           <span class="text-base">Select a date</span>
         </div>
       </ng-template>
@@ -79,7 +69,6 @@ export class Form3Component {
 
   formNumber = Number(this.route.snapshot.url[0].path);
   projectId = Number(this.route.parent!.parent!.parent!.snapshot.url[0].path);
-  // dateTimeSubject = new BehaviorSubject<number | null>(null);
 
   dateTime = new FormControl(-1, {
     nonNullable: true,
@@ -87,7 +76,7 @@ export class Form3Component {
 
   dateTimes$ = this.consultationService.getConsultations(2, this.projectId);
   src$ = this.dateTime.valueChanges.pipe(
-    tap((_) => this.spinner.show()),
+    tap(() => this.spinner.show()),
     switchMap((a) =>
       this.formGeneratorService.generateForm(
         this.projectId,
@@ -95,7 +84,7 @@ export class Form3Component {
         this.dateTime.value
       )
     ),
-    tap((_) => {
+    tap(() => {
       this.toastr.success('Form generated');
       this.spinner.hide();
     }),

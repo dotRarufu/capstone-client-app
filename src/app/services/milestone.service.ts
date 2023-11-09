@@ -58,7 +58,7 @@ export class MilestoneService {
         return data[0].id;
       }),
       switchMap((id) => this.createMilestoneData(id, data)),
-      tap((_) => this.signalMilestonesUpdate())
+      tap(() => this.signalMilestonesUpdate())
     );
 
     return req$;
@@ -117,7 +117,7 @@ export class MilestoneService {
           })
         );
       }),
-      tap((_) => this.signalMilestonesUpdate())
+      tap(() => this.signalMilestonesUpdate())
     );
 
     return req$;
@@ -141,7 +141,7 @@ export class MilestoneService {
 
         return data[0];
       }),
-      tap((_) => this.signalMilestonesUpdate())
+      tap(() => this.signalMilestonesUpdate())
     );
 
     return req$;
@@ -153,7 +153,7 @@ export class MilestoneService {
       return throwError(() => new Error('projectId is invalid'));
 
     const req$ = this.updateMilestones$.pipe(
-      switchMap((_) =>
+      switchMap(() =>
         this.client.from('milestone').select('*').eq('project_id', projectId)
       ),
       map((res) => {
@@ -226,7 +226,7 @@ export class MilestoneService {
       .eq('user_uid', userUid);
     const req$ = from(req);
     const res = this.updateMilestonetemplatess$.pipe(
-      switchMap((_) => req$),
+      switchMap(() => req$),
       map((res) => {
         const { data } = errorFilter(res);
 
@@ -252,7 +252,7 @@ export class MilestoneService {
 
         return statusText;
       }),
-      tap((_) => this.signalMilestoneTemplatesUpdate())
+      tap(() => this.signalMilestoneTemplatesUpdate())
     );
 
     return req$;
@@ -277,7 +277,7 @@ export class MilestoneService {
 
         return data[0];
       }),
-      tap((_) => this.signalMilestoneTemplatesUpdate())
+      tap(() => this.signalMilestoneTemplatesUpdate())
     );
 
     return req$;
@@ -306,7 +306,7 @@ export class MilestoneService {
 
         return statusText;
       }),
-      tap((_) => this.signalMilestoneTemplatesUpdate())
+      tap(() => this.signalMilestoneTemplatesUpdate())
     );
 
     return res$;
@@ -374,7 +374,7 @@ export class MilestoneService {
       })
     );
 
-    return deleteReq$.pipe(switchMap((_) => addReq$));
+    return deleteReq$.pipe(switchMap(() => addReq$));
   }
 
   private signalMilestonesUpdate() {

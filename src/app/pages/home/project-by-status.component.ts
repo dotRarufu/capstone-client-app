@@ -34,9 +34,8 @@ export class ProjectsByStatusComponent {
   projectService = inject(ProjectService);
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
-  data$: Observable<ChartData<'pie', number[], string | string[]>> = this.projectService
-    .getProjects()
-    .pipe(
+  data$: Observable<ChartData<'pie', number[], string | string[]>> =
+    this.projectService.getProjects().pipe(
       filter(isNotNull),
       map((projects) => {
         const done = projects.filter((p) => p.isDone).length;
@@ -52,14 +51,14 @@ export class ProjectsByStatusComponent {
           ],
         };
 
-        return newData
+        return newData;
       }),
-      tap((_) => this.chart?.update())
+      tap(() => this.chart?.update())
     );
 
   pieChartOptions: ChartConfiguration['options'] = {
     responsive: true,
-maintainAspectRatio: false,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         // display: true',

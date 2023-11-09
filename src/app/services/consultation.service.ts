@@ -52,10 +52,10 @@ export class ConsultationService {
 
     const request$ = user$.pipe(
       switchMap((user) => this.insertConsultation(user.uid, data, projectId)),
-      switchMap((_) =>
+      switchMap(() =>
         this.authService.markScheduleUnavailable(data.scheduleId, projectId)
       ),
-      switchMap((_) =>
+      switchMap(() =>
         this.projectService.getProjectTechnicalAdviser(projectId)
       ),
       switchMap(({ technical_adviser_id: uid }) =>
@@ -76,14 +76,12 @@ export class ConsultationService {
     if (id < 0) return throwError(() => new Error('Id is invalid'));
 
     const request$ = this.markAsComplete(id).pipe(
-      switchMap((_) =>
+      switchMap(() =>
         this.insertConsultationOutcome(0, actualAccomplishments, id)
       ),
-      switchMap((_) =>
-        this.insertConsultationOutcome(1, proposedNextSteps, id)
-      ),
-      switchMap((_) => this.insertConsultationOutcome(2, nextDeliverables, id)),
-      tap((_) => this.signalNewConsultation())
+      switchMap(() => this.insertConsultationOutcome(1, proposedNextSteps, id)),
+      switchMap(() => this.insertConsultationOutcome(2, nextDeliverables, id)),
+      tap(() => this.signalNewConsultation())
     );
 
     return request$;
@@ -107,7 +105,7 @@ export class ConsultationService {
 
         return data[0];
       }),
-      tap((_) => this.signalNewConsultation()),
+      tap(() => this.signalNewConsultation()),
       switchMap((res) =>
         this.projectService.getMembers(res.project_id).pipe(
           switchMap((participants) => {
@@ -421,7 +419,7 @@ export class ConsultationService {
           })
         )
       ),
-      tap((_) => this.signalNewConsultation())
+      tap(() => this.signalNewConsultation())
     );
   }
 
