@@ -7,6 +7,7 @@ import {
   WritableSignal,
   computed,
   inject,
+  effect,
   signal,
 } from '@angular/core';
 import { Project } from 'src/app/models/project';
@@ -177,7 +178,7 @@ import { ClipboardModule } from 'ngx-clipboard';
                     (input)="changeTheme()"
                     type="checkbox"
                     class="toggle-primary toggle"
-                    checked
+                    [checked]="theme() !== 'original'"
                   />
                 </label>
               </li>
@@ -310,7 +311,7 @@ import { ClipboardModule } from 'ngx-clipboard';
                     (input)="changeTheme()"
                     type="checkbox"
                     class="toggle-primary toggle"
-                    checked
+                    [checked]="theme() !== 'original'"
                   />
                 </label>
               </li>
@@ -347,7 +348,6 @@ export class ProfileViewComponent implements OnInit {
   toastr = inject(ToastrService);
   authService = inject(AuthService);
   projectService = inject(ProjectService);
-
   newName = new FormControl('', {
     nonNullable: true,
     validators: [Validators.required, Validators.pattern('[a-zA-Z ]*')],
@@ -398,7 +398,11 @@ export class ProfileViewComponent implements OnInit {
 
   search: string = '';
   deferredPrompt: any;
-  theme: string = 'original';
+  theme = signal<string>(localStorage.getItem("capstoneTheme") || "original");
+  themeEffect = effect(() => {
+    document.querySelector('html')?.setAttribute('data-theme', this.theme());
+    localStorage.setItem("capstoneTheme", this.theme())
+  })
 
   projects: Project[] = [];
 
@@ -489,8 +493,7 @@ export class ProfileViewComponent implements OnInit {
   }
 
   changeTheme() {
-    this.theme = this.theme === 'dark' ? 'original' : 'dark';
-    document.querySelector('html')?.setAttribute('data-theme', this.theme);
+    this.theme.set(this.theme() === 'dark' ? 'original' : 'dark');
   }
 
   installPwa() {

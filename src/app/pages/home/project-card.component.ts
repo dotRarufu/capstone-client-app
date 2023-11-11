@@ -91,7 +91,15 @@ export class ProjectCardComponent implements OnChanges {
     switchMap((p) =>
       this.consultationService
         .getConsultations(2, p.id)
-        .pipe(map((consultations) => ({ ...p, consultations })))
+        .pipe(map((consultations) => {
+          if (consultations.length > 5) return {
+            ...p,
+            consultations: consultations.slice(0, 4)
+          }
+
+          return { ...p, consultations }
+        }
+      ))
     )
   );
   @Input({ required: true }) project!: Project;
