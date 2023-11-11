@@ -48,6 +48,7 @@ import { isNotNull } from 'src/app/utils/isNotNull';
 import toProjectNumber from 'src/app/utils/toProjectNumber';
 import { dateToDateString } from 'src/app/utils/dateToDateString';
 import formatDate from 'src/app/utils/formatDate';
+import { ConsultationService } from 'src/app/services/consultation.service';
 
 @Component({
   selector: 'general',
@@ -100,7 +101,7 @@ import formatDate from 'src/app/utils/formatDate';
 
         <div *ngIf="isStudent()" class="flex w-[320px] flex-col gap-[4px]">
           <div class="text-base font-semibold">Preview</div>
-          <project-card-preview [name]="name.value" [title]="title.value" />
+          <project-card-preview [name]="name.value" [title]="title.value" [projectId]="projectId"/>
         </div>
       </div>
 
@@ -208,6 +209,7 @@ import formatDate from 'src/app/utils/formatDate';
 })
 export class GeneralComponent implements OnInit {
   projectService = inject(ProjectService);
+
   spinner = inject(NgxSpinnerService);
   route = inject(ActivatedRoute);
   toastr = inject(ToastrService);
@@ -273,6 +275,7 @@ export class GeneralComponent implements OnInit {
 
   projectId = Number(this.route.parent!.parent!.snapshot.url[0].path);
 
+  
   isStudent = computed(() => {
     const user = this.user();
 
