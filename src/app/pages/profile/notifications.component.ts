@@ -2,7 +2,7 @@ import { Component, Input, inject } from '@angular/core';
 import { NgChartsModule } from 'ng2-charts';
 import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/services/auth.service';
-import { filter, forkJoin, map, of, switchMap, take, tap } from 'rxjs';
+import { filter, forkJoin, map, of, switchMap, take, tap, EMPTY } from 'rxjs';
 import { ProjectService } from 'src/app/services/project.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
@@ -327,6 +327,7 @@ export class NotificationsComponent {
 
       return res;
     }),
+    tap(v => console.log("NOTIF: 1:", v)),
     switchMap((declinedConsultations) => {
       if (declinedConsultations.length === 0) return of([]);
 
@@ -343,31 +344,47 @@ export class NotificationsComponent {
         )
       );
     }),
+    tap(v => console.log("NOTIF: 3:", v)),
     switchMap((schedules) => {
       if (schedules.length === 0) return of([]);
-
+      console.log("NOTIF: schedules:", schedules)
       const projectIds = getUniqueItems(schedules, 'project_id').map(
         (s) => s.project_id
       );
 
       const reqs = projectIds.map((id) =>
         this.projectService.getAdvisers(id).pipe(
+          tap(v => console.log("NOTIF: 2.1.1:", v)),
           map((a) => a.technical_adviser_id),
-          switchMap((adviser) => this.authService.getUserData(adviser!)),
+          switchMap((adviser) => {
+            const deletedUserData = {
+              avatar_last_update:  null,
+              name: "Deleted user",
+              role_id: 5,
+              uid: 'deleted-user-uid'
+          };
+
+            if (adviser === null) return of(deletedUserData);
+
+            return this.authService.getUserData(adviser!)
+          }),
+          tap(v => console.log("NOTIF: 2.1.2:", v)),
           map((adviser) => ({ ...adviser, projectId: id }))
         )
       );
 
       return forkJoin(reqs).pipe(
+        tap(v => console.log("NOTIF: 2.1:", v)),
         map((users) =>
           schedules.map((s) => ({
             ...s,
             technicalAdviser: users.find((u) => u.projectId === s.project_id)!,
           }))
-        )
+        ),
+        tap(v => console.log("NOTIF: 2.2:", v)),
       );
     }),
-    tap(res => console.log('res:', res))
+    tap(v => console.log("NOTIF: 2:", v)),
   );
 
   confirmNotification(id: number) {

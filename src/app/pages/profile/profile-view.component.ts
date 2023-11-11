@@ -181,14 +181,14 @@ import { ClipboardModule } from 'ngx-clipboard';
                   />
                 </label>
               </li>
-              <li class="flex w-full items-center justify-between px-1 py-2">
+              <!-- <li class="flex w-full items-center justify-between px-1 py-2">
                 <span class="label-text text-[18px] sm2:text-[20px]"
                   >Add to Home Screen</span
                 >
                 <button (click)="installPwa()" class="btn-primary btn-sm btn">
                   Install
                 </button>
-              </li>
+              </li> -->
             </ul>
 
             <notifications />

@@ -198,7 +198,10 @@ export class TopAppBarComponent {
   name = this.user$.pipe(map((user) => user?.name || 'Unnamed'));
 
   notifications$ = this.authService.getNotifications();
-
+  // observables.projectInvitations ||
+  //                 observables.schedules ||
+  //                 observables.declinedConsultations ||
+  //                 observables.forcedSchedules;
   // for advisers
   projectInvitations$ = this.notifications$.pipe(
     map((notifications) => {
@@ -208,7 +211,8 @@ export class TopAppBarComponent {
 
       return res;
     }),
-    map((n) => n.length > 0)
+    tap(v => console.log("TOP: project invitations:", v)),
+    map((n) => n.length > 0),
   );
   // for technical advisers
   schedules$ = this.notifications$.pipe(
@@ -219,7 +223,8 @@ export class TopAppBarComponent {
 
       return res;
     }),
-    map((n) => n.length > 0)
+    tap(v => console.log("TOP: schedulkes:", v)),
+    map((n) => n.length > 0),
   );
   // for student
   forcedSchedules$ = this.notifications$.pipe(
@@ -230,7 +235,8 @@ export class TopAppBarComponent {
 
       return res;
     }),
-    map((n) => n.length > 0)
+    tap(v => console.log("TOP: forced schedules:", v)),
+    map((n) => n.length > 0),
   );
   declinedConsultations$ = this.notifications$.pipe(
     map((notifications) => {
@@ -240,7 +246,8 @@ export class TopAppBarComponent {
 
       return res;
     }),
-    map((n) => n.length > 0)
+    tap(v => console.log("TOP: declinedconsultations:", v)),
+    map((n) => n.length > 0),
   );
 
   signOut() {

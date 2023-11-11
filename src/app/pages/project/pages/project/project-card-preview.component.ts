@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { from, of, switchMap,tap, BehaviorSubject } from 'rxjs';
+import { from, of, switchMap,tap, BehaviorSubject, map } from 'rxjs';
 import { FeatherIconsModule } from 'src/app/components/icons/feather-icons.module';
 import { ConsultationService } from 'src/app/services/consultation.service';
 
@@ -69,7 +69,7 @@ export class ProjectCardPreviewComponent {
         }
         return this.consultationService.getConsultations(2, projectId);
       }),
-      tap(v => console.log("consulsad:", v))
+      map(v => v.length >= 5 ? new Array(5).fill('') : v)
     ),
     {
       initialValue: [],
