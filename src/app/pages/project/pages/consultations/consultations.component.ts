@@ -136,9 +136,11 @@ type ConsultationCategory = 'Scheduled' | 'Pending' | 'Completed' | 'Declined';
 
       <add-available-schedule-modal *ngIf="observables.role === 't'" />
       <available-schedule-detail-modal *ngIf="observables.role === 't'" />
+
       <schedule-consultation-modal *ngIf="observables.role === 's'" />
       <consultation-details-modal />
       <declined-consultation-modal />
+
       <!-- for scheduled and declined consultations -->
       <consultation-details-modal [id]="'pendingConsultationsModal'">
         <button

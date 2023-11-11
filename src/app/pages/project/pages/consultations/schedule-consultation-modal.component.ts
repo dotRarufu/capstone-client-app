@@ -214,7 +214,9 @@ export class ScheduleConsultationModalComponent {
 
     if (schedules === undefined) return null;
 
-    const active = schedules.filter((s) => s.id === this.activeScheduleId.value)[0];
+    const active = schedules.filter(
+      (s) => s.id === this.activeScheduleId.value
+    )[0];
 
     return active;
   });
@@ -236,7 +238,11 @@ export class ScheduleConsultationModalComponent {
         this.spinner.show();
         const uid = p.technical_adviser_id;
 
-        if (uid === null) return of([]);
+        if (uid === null) {
+          this.spinner.hide();
+
+          return of([]);
+        }
 
         return this.authService
           .getProjectAvailableSchedules(uid)
@@ -247,8 +253,8 @@ export class ScheduleConsultationModalComponent {
 
   doneTasks = signal<Task[]>([]);
   projectDoneTasks = this.taskService.getTasks(2, this.projectId).subscribe({
-    next: (tasks) => this.doneTasks.set(tasks)
-  })
+    next: (tasks) => this.doneTasks.set(tasks),
+  });
   selectedTasks = signal<Task[]>([]);
 
   handleClosedEvent() {

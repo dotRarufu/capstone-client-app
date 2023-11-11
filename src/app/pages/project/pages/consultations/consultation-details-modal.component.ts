@@ -41,12 +41,10 @@ import { NgxSpinnerService } from 'ngx-spinner';
         } as observables"
       >
         <div class="flex h-full items-center bg-primary p-[24px]">
-          
-            <h1 class="text-[20px] text-primary-content">
-              {{ epochToDate(observables.consultation?.date_time || 0) }}
-              {{ epochToTime(observables.consultation?.date_time || 0) }}
-            </h1>
-         
+          <h1 class="text-[20px] text-primary-content">
+            {{ epochToDate(observables.consultation?.date_time || 0) }}
+            {{ epochToTime(observables.consultation?.date_time || 0) }}
+          </h1>
         </div>
         <div
           class="flex flex-col bg-base-100 sm1:h-[calc(100%-96px)] sm1:flex-row"
@@ -129,15 +127,16 @@ export class ConsultationDetailsModalComponent {
   authService = inject(AuthService);
   projectService = inject(ProjectService);
   spinner = inject(NgxSpinnerService);
-  showSpinner = this.spinner.show()
+  showSpinner = this.spinner.show();
   consultation$ = this.consultationStateService.consultation$.pipe(
-    switchMap(v => {
-      if (v ===null) {
-        this.spinner.hide()
+    switchMap((v) => {
+      if (v === null) {
+        this.spinner.hide();
         return EMPTY;
       }
 
-      return of(v);
+      return of(v)
+      // return of(v).pipe(tap(() => this.spinner.hide()));
     }),
     switchMap((consultation) =>
       this.authService
@@ -167,7 +166,7 @@ export class ConsultationDetailsModalComponent {
       )
     ),
     tap(() => this.spinner.hide())
-   );
+  );
 
   accomplishedTasks$ = this.consultation$.pipe(
     switchMap((c) => this.taskService.getAccompishedTasks(c.id))
