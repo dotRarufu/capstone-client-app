@@ -79,7 +79,7 @@ import { HomeStateService } from './data-access/home-state.service';
 
         <div class="flex flex-col gap-1">
           <div class="flex justify-between ">
-            <h1 class="text-2xl text-base-content">Requests</h1>
+            <h1 class="text-2xl text-base-content">Title Analyze Requests</h1>
             <div class="flex gap-2">
               <button
                 *ngIf="observables.requests.length > 1"

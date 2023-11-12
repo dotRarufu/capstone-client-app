@@ -183,13 +183,16 @@ export class CompletedConsultationModalComponent {
   );
 
   res$ = this.consultation$.pipe(
-    switchMap(({ id }) => this.consultationService.getConsultationOutcomes(id))
+    switchMap(({ id }) => this.consultationService.getConsultationOutcomes(id)),
+   
   );
 
   actualAccomplishments$ = this.res$.pipe(
     map((res) => res.actualAccomplishments)
   );
-  proposedNextSteps$ = this.res$.pipe(map((res) => res.proposedNextSteps));
+  proposedNextSteps$ = this.res$.pipe(map((res) => res.proposedNextSteps),
+  tap(v => console.log("propsed ns:", v))
+  );
   nextDeliverables$ = this.res$.pipe(map((res) => res.nextDeliverables));
 
   epochToDate(epoch: number) {

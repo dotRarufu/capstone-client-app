@@ -153,7 +153,6 @@ type ConsultationCategory = 'Scheduled' | 'Pending' | 'Completed' | 'Declined';
         </button>
       </consultation-details-modal>
       <completed-consultation-modal
-        *ngIf="['c', 't', 'ct'].includes(observables.role || '')"
       />
       <scheduled-consultation-modal
         *ngIf="['t', 'ct'].includes(observables.role || '')"
@@ -248,7 +247,8 @@ export class ConsultationsComponent {
               sortArrayByProperty(consultations, 'date_time', order)
             )
           ),
-        buttonId: ['t', 'ct'].includes(role) ? 'techAdCompleted' : '',
+          // todo: rename to completed
+        buttonId: 'techAdCompleted',
       },
       {
         category: 'Declined',

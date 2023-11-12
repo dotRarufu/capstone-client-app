@@ -91,7 +91,7 @@ export class OutcomeComponent {
   @Output() deleteItem = new EventEmitter<string>();
 
   toastr = inject(ToastrService);
-
+  a = console.log("renders outcome")
   handleAddItem() {
     if (this.input.invalid) {
       this.toastr.error('Input cannot be empty');

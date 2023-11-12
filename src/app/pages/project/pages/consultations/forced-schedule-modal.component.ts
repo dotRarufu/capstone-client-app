@@ -128,7 +128,7 @@ import combineDateAndTime from 'src/app/utils/combineDateAndTime';
               (click)="scheduleClick(); closeModal()"
               class="btn-ghost btn flex justify-start gap-2 rounded-[3px] text-base-content"
             >
-              <i-feather class="text-base-content/70" name="x" /> Schedule
+              <i-feather class="text-base-content/70" name="calendar" /> Schedule
             </button>
             <div class="h-full"></div>
 
