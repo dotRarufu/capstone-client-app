@@ -1,12 +1,29 @@
-# Capstone Client Side
+<br/>
+<p align="center">
+  <h3 align="center">Capstone Client Side</h3>
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.1.
+  <p align="center">
+    a client-side web app
+    <br/>
+    <br/>
+  </p>
+  <div style="text-align:center">
+     <img src="docs/mock-devices.png" alt="mock-devices" style="width:300px;"/>
+  </div>
+</p>
 
-## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+## Built With
+
+
+
+* [Angular]()
+* [RxJS]()
+* [Tailwind]()
+* [DaisyUI]()
+
+ 
 
