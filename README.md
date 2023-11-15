@@ -7,9 +7,9 @@
     <br/>
     <br/>
   </p>
-  <div style="text-align:center">
+  <p align="center">
      <img src="docs/mock-devices.png" alt="mock-devices" style="width:300px;"/>
-  </div>
+  </p>
 </p>
 
 
