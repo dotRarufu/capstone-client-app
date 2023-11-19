@@ -37,6 +37,7 @@ import { NotificationsComponent } from './notifications.component';
 import { ProjectService } from 'src/app/services/project.service';
 import { isNotNull } from 'src/app/utils/isNotNull';
 import { ClipboardModule } from 'ngx-clipboard';
+import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
   selector: 'profile-view',
@@ -178,7 +179,7 @@ import { ClipboardModule } from 'ngx-clipboard';
                     (input)="changeTheme()"
                     type="checkbox"
                     class="toggle-primary toggle"
-                    [checked]="theme() !== 'original'"
+                    [checked]="themeService.theme() !== 'original'"
                   />
                 </label>
               </li>
@@ -264,7 +265,9 @@ import { ClipboardModule } from 'ngx-clipboard';
             <div class="flex items-center justify-between ">
               <div class="flex flex-col gap-[4px]">
                 <div class="text-base font-semibold">ID</div>
-                <p class="flex items-center gap-2 pl-[8px] text-base text-base-content/70">
+                <p
+                  class="flex items-center gap-2 pl-[8px] text-base text-base-content/70"
+                >
                   {{ observables.user?.uid }}
                   <button
                     ngxClipboard
@@ -311,7 +314,7 @@ import { ClipboardModule } from 'ngx-clipboard';
                     (input)="changeTheme()"
                     type="checkbox"
                     class="toggle-primary toggle"
-                    [checked]="theme() !== 'original'"
+                    [checked]="themeService.theme() !== 'original'"
                   />
                 </label>
               </li>
@@ -348,6 +351,8 @@ export class ProfileViewComponent implements OnInit {
   toastr = inject(ToastrService);
   authService = inject(AuthService);
   projectService = inject(ProjectService);
+  themeService = inject(ThemeService);
+  // a = this.themeService.
   newName = new FormControl('', {
     nonNullable: true,
     validators: [Validators.required, Validators.pattern('[a-zA-Z ]*')],
@@ -398,11 +403,6 @@ export class ProfileViewComponent implements OnInit {
 
   search: string = '';
   deferredPrompt: any;
-  theme = signal<string>(localStorage.getItem("capstoneTheme") || "original");
-  themeEffect = effect(() => {
-    document.querySelector('html')?.setAttribute('data-theme', this.theme());
-    localStorage.setItem("capstoneTheme", this.theme())
-  })
 
   projects: Project[] = [];
 
@@ -432,7 +432,7 @@ export class ProfileViewComponent implements OnInit {
   }
 
   clipboardClick() {
-    this.toastr.success("User id copied to clipboard")
+    this.toastr.success('User id copied to clipboard');
   }
 
   handleDeletePhotoClick() {
@@ -493,7 +493,9 @@ export class ProfileViewComponent implements OnInit {
   }
 
   changeTheme() {
-    this.theme.set(this.theme() === 'dark' ? 'original' : 'dark');
+    this.themeService.theme.set(
+      this.themeService.theme() === 'dark' ? 'original' : 'dark'
+    );
   }
 
   installPwa() {
