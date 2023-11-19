@@ -39,8 +39,8 @@ import { ProjectService } from 'src/app/services/project.service';
           class="btn-ghost btn flex items-center gap-2 p-1"
         >
           <img
-            class="aspect-square w-[40px] rounded-[5px] bg-secondary p-1"
-            src="assets/capstone.ico"
+            class="aspect-square w-[40px] rounded-[5px]"
+            src="assets/app-icon-bged.png"
             alt=""
           />
           <h1 class="text-lg normal-case text-primary-content">Capstone</h1>
