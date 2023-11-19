@@ -49,7 +49,7 @@ import { ProfileStateService } from './data-access/profile-state.service';
                 class="h-[20px] w-[20px] text-base-content/70"
                 name="plus"
               />
-              <span class="uppercase"> Re-apply </span>
+              <span class="uppercase"> Re-apply milestones</span>
             </button>
           </div>
 
@@ -88,7 +88,7 @@ import { ProfileStateService } from './data-access/profile-state.service';
                   class="h-[20px] w-[20px] text-base-content/70"
                   name="plus"
                 />
-                <span class="uppercase"> Add </span>
+                <span class="uppercase"> Add Milestone </span>
               </li>
             </ul>
 
@@ -123,7 +123,7 @@ import { ProfileStateService } from './data-access/profile-state.service';
                 class="h-[20px] w-[20px] text-base-content/70"
                 name="plus"
               />
-              <span class="uppercase"> Add </span>
+              <span class="uppercase"> Add Milestone</span>
             </button>
           </div>
 

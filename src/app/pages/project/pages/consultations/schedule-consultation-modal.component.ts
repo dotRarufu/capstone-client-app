@@ -127,7 +127,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
                 >
                   <i-feather class="text-base-content/70" name="plus" />
 
-                  Add
+                  Add Accomplishment
                 </label>
                 <ul
                   tabindex="0"

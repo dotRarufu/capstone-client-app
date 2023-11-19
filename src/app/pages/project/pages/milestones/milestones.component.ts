@@ -76,7 +76,7 @@ type Milestone = {
                 class="h-[20px] w-[20px] text-base-content/70"
                 name="plus"
               />
-              <span class="uppercase"> Add </span>
+              <span class="uppercase"> Add Milestone </span>
             </li>
           </ul>
 

@@ -116,7 +116,7 @@ import { ConsultationService } from 'src/app/services/consultation.service';
           >
             <i-feather class="text-base-content/70" name="plus" />
 
-            Add
+            Add Participant
           </button>
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>

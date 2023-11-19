@@ -23,7 +23,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
             <input
               [formControl]="title"
               type="text"
-              placeholder="Milestone Title"
+              placeholder="Enter milestone title"
               class="input w-full rounded-[3px]   border-[1px] bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
             />
           </div>

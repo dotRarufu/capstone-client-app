@@ -51,7 +51,7 @@ import { TaskStateService } from './data-access/tasks-state.service';
               class="h-[20px] w-[20px] text-base-content/70"
               name="plus"
             />
-            <span class="uppercase"> Add </span>
+            <span class="uppercase"> Add Task </span>
           </button>
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>

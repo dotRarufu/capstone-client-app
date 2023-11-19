@@ -39,7 +39,7 @@ import { ImgFallbackModule } from 'ngx-img-fallback';
       >
         <span class="text-[12px] text-base-content/70"> BY </span>
 
-        {{ observables.adviser?.name || 'Unnamed' }}
+        {{ observables.adviser?.name || '' }}
 
         <img
           class="avatar w-8 rounded-full bg-primary/50 aspect-square"

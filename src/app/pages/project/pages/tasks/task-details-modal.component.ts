@@ -46,13 +46,9 @@ import { NgxSpinnerService } from 'ngx-spinner';
               class="input w-full rounded-[3px]   border-[1px] bg-primary px-3 py-2 text-[20px] text-primary-content placeholder:text-[20px] placeholder:text-primary-content placeholder:opacity-70 focus:border-secondary focus:outline-0 "
             />
 
-            <div
-              *ngIf="!isInEdit()"
-              class="text-[12px] text-primary-content/50"
-            >
+            <div *ngIf="!isInEdit()" class="text-base text-primary-content/50">
               Created at {{ observables.activeTask?.dateAdded }} by
-              {{ observables.activeTask?.assigner?.name }} | Currently in
-              {{ observables.activeTask?.statusName }}
+              {{ observables.activeTask?.assigner?.name }}
             </div>
           </div>
         </div>
@@ -62,6 +58,16 @@ import { NgxSpinnerService } from 'ngx-spinner';
           <div
             class="flex w-full flex-col gap-2 bg-base-100 px-6 py-4 sm1:overflow-y-auto"
           >
+            <div class="flex items-center justify-between ">
+              <h1 class="text-[20px] text-base-content">Status</h1>
+            </div>
+
+            <div class="h-[2px] w-full bg-base-content/10"></div>
+
+            <div *ngIf="!isInEdit()" class="text-base text-base-content">
+              {{ observables.activeTask?.statusName }}
+            </div>
+
             <div class="flex items-center justify-between ">
               <h1 class="text-[20px] text-base-content">Description</h1>
             </div>

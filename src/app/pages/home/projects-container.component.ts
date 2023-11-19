@@ -25,7 +25,7 @@ import { CommonModule } from '@angular/common';
               name="plus"
             />
 
-            Add
+            Create Project
           </button>
         </div>
         <div class="h-[2px] w-full bg-base-content/10"></div>

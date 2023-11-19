@@ -74,7 +74,7 @@ type ConsultationCategory = 'Scheduled' | 'Pending' | 'Completed' | 'Declined';
               class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
             >
               <i-feather class="text-base-content/70" name="plus" />
-              <span class="uppercase"> Arrange </span>
+              <span class="uppercase"> Arrange Consultation </span>
             </button>
 
             <button
@@ -83,7 +83,7 @@ type ConsultationCategory = 'Scheduled' | 'Pending' | 'Completed' | 'Declined';
               class="btn-ghost btn-sm flex flex-row items-center gap-2 rounded-[3px] border-base-content/30 bg-base-content/10 font-[500] text-base-content hover:border-base-content/30"
             >
               <i-feather class="text-base-content/70" name="plus" />
-              <span class="uppercase"> Schedule </span>
+              <span class="uppercase"> Schedule Consultation </span>
             </button>
           </div>
 

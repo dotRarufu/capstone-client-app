@@ -37,7 +37,7 @@ import { toNumericalDate } from 'src/app/utils/toNumericalDate';
             >
               <i-feather class="text-base-content/70" name="plus" />
 
-              Add
+              Add Schedule
             </button>
             <button
               *ngIf="observables.availableSchedules.length > 1"
